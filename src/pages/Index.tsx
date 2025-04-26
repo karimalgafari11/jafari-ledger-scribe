@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import { Sidebar } from "@/components/Sidebar";
+import { cn } from "@/lib/utils";
+import AccountingSidebar from "@/components/AccountingSidebar";
 import Dashboard from "./Dashboard";
 import Reports from "./Reports";
-import { cn } from "@/lib/utils";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("reports");
@@ -28,7 +28,7 @@ const Index = () => {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar activePage={activePage} onChangePage={setActivePage} />
+      <AccountingSidebar autoClose={true} />
       <div className={cn("flex-1 overflow-auto")}>
         {renderContent()}
       </div>
