@@ -1,6 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface ReportCardProps {
   title: string;
@@ -34,9 +35,18 @@ export function ReportCard({
             </div>
           </div>
           <p className="text-sm text-gray-600 mb-3">{description}</p>
-          <div className="flex items-center text-xs text-gray-500">
-            <span>آخر تحديث:</span>
-            <span className="mr-1">{date}</span>
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-gray-500">
+              <span>آخر تحديث:</span>
+              <span className="mr-1">{date}</span>
+            </div>
+            <Button 
+              size="sm"
+              variant="outline"
+              className="text-sm border-teal text-teal hover:bg-teal hover:text-white"
+            >
+              عرض التقرير
+            </Button>
           </div>
         </div>
       </div>
