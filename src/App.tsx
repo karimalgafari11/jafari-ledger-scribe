@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,10 @@ import ProductsPage from "./pages/inventory/ProductsPage";
 import StockMovementsPage from "./pages/inventory/StockMovementsPage";
 import CountingPage from "./pages/inventory/CountingPage";
 import ReorderPage from "./pages/inventory/ReorderPage";
+import SystemSettingsPage from "./pages/settings/SystemSettingsPage";
+import BranchesPage from "./pages/settings/BranchesPage";
+import UsersPage from "./pages/settings/UsersPage";
+import BackupPage from "./pages/settings/BackupPage";
 
 const queryClient = new QueryClient();
 
@@ -59,10 +62,10 @@ const App = () => (
           <Route path="/customers/statement" element={<NotFound />} />
           
           {/* Settings Routes */}
-          <Route path="/settings/system" element={<NotFound />} />
-          <Route path="/settings/branch" element={<NotFound />} />
-          <Route path="/settings/users" element={<NotFound />} />
-          <Route path="/settings/backup" element={<NotFound />} />
+          <Route path="/settings/system" element={<SystemSettingsPage />} />
+          <Route path="/settings/branch" element={<BranchesPage />} />
+          <Route path="/settings/users" element={<UsersPage />} />
+          <Route path="/settings/backup" element={<BackupPage />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
