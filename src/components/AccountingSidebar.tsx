@@ -1,17 +1,17 @@
-
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   LayoutDashboard,
-  Package,
   Box,
   ListChecks,
   ShoppingCart,
   FileText,
   ChartBar,
   Users,
-  Settings
+  Settings,
+  DollarSign,
+  Wrench
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -76,80 +76,81 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
   const currentPath = location.pathname;
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
-  // Define menu structure
   const menuItems = [
     {
-      section: "Dashboard",
+      section: "لوحة التحكم",
       icon: <LayoutDashboard size={20} />,
       path: "/dashboard",
       children: []
     },
     {
-      section: "Inventory",
-      icon: <Package size={20} />,
+      section: "المخزون",
+      icon: <Box size={20} />,
       children: [
-        { label: "Manage Products", path: "/inventory/products", icon: <Box size={18} /> },
-        { label: "Manage Warehouses", path: "/inventory/warehouses", icon: <Package size={18} /> },
-        { label: "Inventory Counting", path: "/inventory/counting", icon: <ListChecks size={18} /> }
+        { label: "إدارة الأصناف", path: "/inventory/products", icon: <Box size={18} /> },
+        { label: "متابعة حركات المخزون", path: "/inventory/movements", icon: <Box size={18} /> },
+        { label: "الجرد الفعلي", path: "/inventory/counting", icon: <ListChecks size={18} /> },
+        { label: "مستويات إعادة الطلب", path: "/inventory/reorder", icon: <Box size={18} /> }
       ]
     },
     {
-      section: "Point of Sale",
-      icon: <ShoppingCart size={20} />,
+      section: "المصروفات",
+      icon: <DollarSign size={20} />,
       children: [
-        { label: "Sales Registers", path: "/pos/registers", icon: <ShoppingCart size={18} /> },
-        { label: "Sales Screen", path: "/pos/sales", icon: <ShoppingCart size={18} /> },
-        { label: "Open Sales Transactions", path: "/pos/transactions", icon: <ShoppingCart size={18} /> },
-        { label: "Daily Cash Register Closure", path: "/pos/closure", icon: <ShoppingCart size={18} /> }
+        { label: "تسجيل مصروف جديد", path: "/expenses/new", icon: <DollarSign size={18} /> },
+        { label: "تصنيف المصروفات", path: "/expenses/categories", icon: <DollarSign size={18} /> },
+        { label: "تقارير المصروفات", path: "/expenses/reports", icon: <ChartBar size={18} /> }
       ]
     },
     {
-      section: "Sales",
+      section: "الفواتير والطلبات",
       icon: <FileText size={20} />,
       children: [
-        { label: "Sales Invoices", path: "/sales/invoices", icon: <FileText size={18} /> },
-        { label: "Sales Returns", path: "/sales/returns", icon: <FileText size={18} /> }
+        { label: "الفواتير الصادرة", path: "/invoices/outgoing", icon: <FileText size={18} /> },
+        { label: "عروض الأسعار", path: "/invoices/quotes", icon: <FileText size={18} /> },
+        { label: "أوامر البيع", path: "/invoices/sales-orders", icon: <ShoppingCart size={18} /> },
+        { label: "مرتجعات المبيعات", path: "/invoices/returns", icon: <FileText size={18} /> }
       ]
     },
     {
-      section: "Purchases",
-      icon: <FileText size={20} />,
+      section: "التحكم بالمخزن",
+      icon: <Wrench size={20} />,
       children: [
-        { label: "Purchase Invoices", path: "/purchases/invoices", icon: <FileText size={18} /> },
-        { label: "Purchase Returns", path: "/purchases/returns", icon: <FileText size={18} /> }
+        { label: "نقل داخلي بين المستودعات", path: "/inventory-control/transfer", icon: <Box size={18} /> },
+        { label: "إدارة مواقع التخزين", path: "/inventory-control/locations", icon: <Wrench size={18} /> },
+        { label: "تسجيل المخزون التالف", path: "/inventory-control/damaged", icon: <Box size={18} /> }
       ]
     },
     {
-      section: "Reports",
+      section: "المحاسبة",
       icon: <ChartBar size={20} />,
       children: [
-        { label: "Sales Report", path: "/reports", icon: <ChartBar size={18} /> },
-        { label: "Profit and Loss Report", path: "/reports/profitloss", icon: <ChartBar size={18} /> },
-        { label: "Inventory Report", path: "/reports/inventory", icon: <ChartBar size={18} /> },
-        { label: "Customer and Supplier Report", path: "/reports/customersupplier", icon: <ChartBar size={18} /> }
+        { label: "شجرة الحسابات", path: "/accounting/chart", icon: <ChartBar size={18} /> },
+        { label: "القيود اليومية", path: "/accounting/journals", icon: <FileText size={18} /> },
+        { label: "مراكز الكلفة", path: "/accounting/cost-centers", icon: <ChartBar size={18} /> },
+        { label: "الإعدادات المحاسبية", path: "/accounting/settings", icon: <Settings size={18} /> }
       ]
     },
     {
-      section: "Customers",
+      section: "العملاء",
       icon: <Users size={20} />,
       children: [
-        { label: "Customer Management", path: "/customers/manage", icon: <Users size={18} /> },
-        { label: "Customer Account Statement", path: "/customers/statement", icon: <Users size={18} /> }
+        { label: "إدارة العملاء", path: "/customers/manage", icon: <Users size={18} /> },
+        { label: "كشف حساب العميل", path: "/customers/statement", icon: <FileText size={18} /> }
       ]
     },
     {
-      section: "Settings",
+      section: "الإعدادات",
       icon: <Settings size={20} />,
       children: [
-        { label: "System Settings", path: "/settings/system", icon: <Settings size={18} /> },
-        { label: "Branch Management", path: "/settings/branch", icon: <Settings size={18} /> },
-        { label: "User Management", path: "/settings/users", icon: <Settings size={18} /> },
-        { label: "Backup and Restore", path: "/settings/backup", icon: <Settings size={18} /> }
+        { label: "إعدادات النظام", path: "/settings/system", icon: <Settings size={18} /> },
+        { label: "إدارة الفروع", path: "/settings/branch", icon: <Settings size={18} /> },
+        { label: "إدارة المستخدمين", path: "/settings/users", icon: <Users size={18} /> },
+        { label: "النسخ الاحتياطي", path: "/settings/backup", icon: <Settings size={18} /> }
       ]
     }
   ];
 
-  // Check if a section contains the active path
   const isSectionActive = (section: any): boolean => {
     if (section.path && currentPath === section.path) return true;
     if (section.children && section.children.length > 0) {
@@ -158,7 +159,6 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
     return false;
   };
 
-  // Auto expand sections that contain the active path on first render
   React.useEffect(() => {
     const newExpandedSections: Record<string, boolean> = {};
     menuItems.forEach((section) => {
@@ -169,7 +169,6 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
     setExpandedSections(newExpandedSections);
   }, []);
 
-  // Toggle section expansion
   const toggleSection = (section: string) => {
     if (autoClose) {
       const newExpandedSections: Record<string, boolean> = {};
@@ -185,19 +184,17 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
     }
   };
 
-  // Navigate to a path
   const handleItemClick = (path: string) => {
     navigate(path);
   };
 
-  // Render the menu
   return (
     <div className="h-screen bg-sidebar overflow-y-auto flex-shrink-0 w-64">
       <div className="p-4 flex justify-between items-center border-b border-sidebar-border">
         <div className="text-sidebar-foreground font-bold text-xl">الجعفري</div>
       </div>
 
-      <div className="p-2 space-y-1">
+      <div className="p-2 space-y-1 rtl">
         {menuItems.map((item) => (
           <div key={item.section} className="mb-1">
             {item.children && item.children.length > 0 ? (
@@ -206,7 +203,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
                 onOpenChange={() => toggleSection(item.section)}
                 className="transition-all duration-200"
               >
-                <CollapsibleTrigger className="w-full text-left">
+                <CollapsibleTrigger className="w-full text-right">
                   <SidebarItem
                     icon={item.icon}
                     label={item.section}
@@ -216,7 +213,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
                   />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pl-3 animate-accordion-down">
-                  <div className="mt-1 ml-2 border-l-2 border-sidebar-border pl-2 space-y-1">
+                  <div className="mt-1 mr-2 border-r-2 border-sidebar-border pr-2 space-y-1">
                     {item.children.map((child) => (
                       <SidebarItem
                         key={child.path}
@@ -244,7 +241,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({ autoClose = true }) => 
         ))}
       </div>
 
-      <div className="mt-auto p-4 border-t border-sidebar-border">
+      <div className="mt-auto p-4 border-t border-sidebar-border rtl">
         <div className="text-sidebar-foreground text-sm">
           <p>مرحباً بك، أحمد</p>
           <p className="text-xs opacity-70">مدير النظام</p>
