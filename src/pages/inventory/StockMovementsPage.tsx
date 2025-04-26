@@ -5,8 +5,8 @@ import { DataGrid } from "@/components/inventory/DataGrid";
 import { MovementsToolbar } from "@/components/inventory/MovementsToolbar";
 import { useStockMovements } from "@/hooks/useStockMovements";
 import { toast } from "sonner";
-import { Eye, FileText, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { createStockMovementActions } from "@/components/inventory/StockMovementActions";
+import { createStockMovementColumns } from "@/components/inventory/StockMovementColumns";
 
 const StockMovementsPage = () => {
   const {
@@ -27,7 +27,6 @@ const StockMovementsPage = () => {
   };
 
   const handleBulkDelete = () => {
-    // In a real app, this would delete multiple movements
     toast.success(`تم حذف ${selectedMovements.length} حركة بنجاح`);
     clearSelectedMovements();
   };
@@ -72,97 +71,12 @@ const StockMovementsPage = () => {
     }).format(date);
   };
 
-  const columns = [
-    {
-      id: "date",
-      header: "التاريخ",
-      accessorKey: "date",
-      width: "150px",
-      isSortable: true,
-      cell: (value: Date) => formatDate(value)
-    },
-    {
-      id: "type",
-      header: "نوع الحركة",
-      accessorKey: "type",
-      width: "120px",
-      isSortable: true,
-      cell: (value: 'inbound' | 'outbound' | 'transfer') => {
-        let color;
-        let label;
-        
-        switch(value) {
-          case 'inbound':
-            color = "bg-green-600";
-            label = "وارد";
-            break;
-          case 'outbound':
-            color = "bg-red-600";
-            label = "صادر";
-            break;
-          case 'transfer':
-            color = "bg-blue-600";
-            label = "نقل";
-            break;
-        }
-        
-        return <Badge className={color}>{label}</Badge>;
-      }
-    },
-    {
-      id: "itemName",
-      header: "الصنف",
-      accessorKey: "itemName",
-      width: "200px",
-      isSortable: true
-    },
-    {
-      id: "quantity",
-      header: "الكمية",
-      accessorKey: "quantity",
-      width: "100px",
-      isSortable: true
-    },
-    {
-      id: "sourceWarehouse",
-      header: "المصدر",
-      accessorKey: "sourceWarehouse",
-      width: "150px",
-      isSortable: true
-    },
-    {
-      id: "destinationWarehouse",
-      header: "الوجهة",
-      accessorKey: "destinationWarehouse",
-      width: "150px",
-      isSortable: true
-    },
-    {
-      id: "notes",
-      header: "ملاحظات",
-      accessorKey: "notes",
-      width: "200px"
-    }
-  ];
-
-  const actions = [
-    {
-      icon: <Eye className="h-4 w-4" />,
-      label: "عرض",
-      onClick: (row: any) => handleViewDetails(row.id)
-    },
-    {
-      icon: <FileText className="h-4 w-4" />,
-      label: "تصدير",
-      onClick: (row: any) => handleExportMovement(row.id)
-    },
-    {
-      icon: <Trash2 className="h-4 w-4" />,
-      label: "حذف",
-      onClick: (row: any) => handleDelete(row.id),
-      variant: "ghost" as const // Using 'as const' to specify the literal type
-    }
-  ];
+  const columns = createStockMovementColumns({ formatDate });
+  const actions = createStockMovementActions({
+    onViewDetails: handleViewDetails,
+    onExportMovement: handleExportMovement,
+    onDelete: handleDelete,
+  });
 
   return (
     <div className="h-screen overflow-y-auto bg-gray-50">
