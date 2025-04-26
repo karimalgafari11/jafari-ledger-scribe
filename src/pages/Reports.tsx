@@ -64,7 +64,7 @@ const Reports = () => {
 
   return (
     <div className="h-screen overflow-y-auto bg-gray-50">
-      <Header title="التقارير" />
+      <Header title="التقارير" showBack={true} />
       
       <main className="p-6">
         <div className="mb-8 rtl">

@@ -1,11 +1,32 @@
 
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/SearchBar";
+import { ArrowLeft } from "lucide-react";
+import { useSidebarNavigation } from "@/hooks/useSidebarNavigation";
 
-export function Header({ title }: { title: string }) {
+interface HeaderProps {
+  title: string;
+  showBack?: boolean;
+}
+
+export function Header({ title, showBack = false }: HeaderProps) {
+  const { handleItemClick } = useSidebarNavigation();
+
   return (
     <header className="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between rtl">
-      <h1 className="text-2xl font-bold text-teal">{title}</h1>
+      <div className="flex items-center gap-4">
+        {showBack && (
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => handleItemClick("/")}
+            className="ml-2"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <h1 className="text-2xl font-bold text-teal">{title}</h1>
+      </div>
       
       <div className="flex items-center gap-4">
         <div className="w-64">
