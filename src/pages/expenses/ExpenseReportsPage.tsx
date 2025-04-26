@@ -2,14 +2,14 @@
 import React, { useState, useRef } from "react";
 import { Header } from "@/components/Header";
 import { useExpenses } from "@/hooks/useExpenses";
-import { Expense } from "@/types/expenses";
-import { subDays, startOfMonth } from "date-fns";
 import { toast } from "sonner";
 import { ExpenseReportStats } from "@/components/expenses/ExpenseReportStats";
 import { ExpenseReportFilters } from "@/components/expenses/ExpenseReportFilters";
 import { ExpenseReportActions } from "@/components/expenses/ExpenseReportActions";
 import { ExpenseReportCharts } from "@/components/expenses/ExpenseReportCharts";
 import { ReportTable } from "@/components/reports/ReportTable";
+import { subDays, startOfMonth } from "date-fns";
+import { prepareChartData } from "@/utils/chartUtils";
 
 const ExpenseReportsPage: React.FC = () => {
   const { expenses, categories } = useExpenses();
@@ -49,75 +49,6 @@ const ExpenseReportsPage: React.FC = () => {
     0
   );
 
-  const prepareChartData = () => {
-    const expensesByCategory: Record<string, number> = {};
-    filteredExpenses.forEach((expense) => {
-      if (!expensesByCategory[expense.category]) {
-        expensesByCategory[expense.category] = 0;
-      }
-      expensesByCategory[expense.category] += expense.amount;
-    });
-
-    const categoryLabels = Object.keys(expensesByCategory);
-    const categoryData = Object.values(expensesByCategory);
-
-    const expensesByPaymentMethod: Record<string, number> = {
-      cash: 0,
-      credit: 0,
-      bank: 0,
-    };
-    filteredExpenses.forEach((expense) => {
-      expensesByPaymentMethod[expense.paymentMethod] += expense.amount;
-    });
-
-    const pieColors = [
-      "rgba(255, 99, 132, 0.7)",
-      "rgba(54, 162, 235, 0.7)",
-      "rgba(255, 206, 86, 0.7)",
-      "rgba(75, 192, 192, 0.7)",
-      "rgba(153, 102, 255, 0.7)",
-      "rgba(255, 159, 64, 0.7)",
-    ];
-
-    const pieChartBorderColors = [
-      "rgba(255, 99, 132, 1)",
-      "rgba(54, 162, 235, 1)",
-      "rgba(255, 206, 86, 1)",
-      "rgba(75, 192, 192, 1)",
-      "rgba(153, 102, 255, 1)",
-      "rgba(255, 159, 64, 1)",
-    ];
-
-    return {
-      pieChartData: {
-        labels: categoryLabels,
-        datasets: [
-          {
-            label: "المصروفات",
-            data: categoryData as number[],
-            backgroundColor: pieColors,
-            borderColor: pieChartBorderColors,
-          },
-        ],
-      },
-      barChartData: {
-        labels: ["نقداً", "بطاقة ائتمان", "تحويل بنكي"],
-        datasets: [
-          {
-            label: "المصروفات حسب طريقة الدفع",
-            data: [
-              expensesByPaymentMethod.cash,
-              expensesByPaymentMethod.credit,
-              expensesByPaymentMethod.bank,
-            ] as number[],
-            backgroundColor: "rgba(54, 162, 235, 0.7)",
-            borderColor: "rgba(54, 162, 235, 1)",
-          },
-        ],
-      },
-    };
-  };
-
   const handleDateRangePresetChange = (preset: string) => {
     setDateRangePreset(preset);
     const today = new Date();
@@ -152,7 +83,7 @@ const ExpenseReportsPage: React.FC = () => {
     }
   };
 
-  const chartData = prepareChartData();
+  const chartData = prepareChartData(filteredExpenses);
 
   const exportReport = (format: "excel" | "pdf") => {
     toast.success(`تم تصدير التقرير بتنسيق ${format === "excel" ? "Excel" : "PDF"}`);
