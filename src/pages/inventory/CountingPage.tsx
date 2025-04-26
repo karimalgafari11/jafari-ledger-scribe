@@ -5,9 +5,9 @@ import { DataGrid } from "@/components/inventory/DataGrid";
 import { CountingForm } from "@/components/inventory/CountingForm";
 import { useInventoryCounting } from "@/hooks/useInventoryCounting";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Plus, Eye, FileText, CheckCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { createCountingActions } from "@/components/inventory/CountingActions";
+import { createCountingColumns } from "@/components/inventory/CountingColumns";
+import { CountingToolbar } from "@/components/inventory/CountingToolbar";
 
 const CountingPage = () => {
   const {
@@ -18,9 +18,6 @@ const CountingPage = () => {
     setWarehouseFilter,
     statusFilter,
     setStatusFilter,
-    currentCount,
-    viewCount,
-    closeCountView,
     isCreatingCount,
     startNewCount,
     cancelNewCount,
@@ -65,70 +62,12 @@ const CountingPage = () => {
     toast.success("تم حفظ الجرد بنجاح");
   };
 
-  const columns = [
-    {
-      id: "date",
-      header: "التاريخ",
-      accessorKey: "date",
-      width: "150px",
-      isSortable: true,
-      cell: (value: Date) => formatDate(value)
-    },
-    {
-      id: "warehouseName",
-      header: "المستودع",
-      accessorKey: "warehouseName",
-      width: "180px",
-      isSortable: true
-    },
-    {
-      id: "status",
-      header: "الحالة",
-      accessorKey: "status",
-      width: "120px",
-      isSortable: true,
-      cell: (value: 'draft' | 'completed') => {
-        if (value === 'draft') {
-          return <Badge className="bg-amber-500">مسودة</Badge>;
-        } else {
-          return <Badge className="bg-green-600">مكتمل</Badge>;
-        }
-      }
-    },
-    {
-      id: "itemsCount",
-      header: "عدد الأصناف",
-      accessorKey: "items",
-      width: "120px",
-      cell: (value: any[]) => value.length
-    },
-    {
-      id: "notes",
-      header: "ملاحظات",
-      accessorKey: "notes",
-      width: "200px"
-    }
-  ];
-
-  const getActions = () => [
-    {
-      icon: <Eye className="h-4 w-4" />,
-      label: "عرض",
-      onClick: (row: any) => viewCount(row.id)
-    },
-    {
-      icon: <FileText className="h-4 w-4" />,
-      label: "طباعة",
-      onClick: (row: any) => handleExport(row.id)
-    },
-    {
-      icon: <CheckCircle className="h-4 w-4" />,
-      label: "اعتماد",
-      onClick: (row: any) => handleComplete(row.id),
-      condition: (row: any) => row.status === 'draft',
-      variant: "ghost" as const // Using 'as const' to specify the literal type
-    }
-  ];
+  const columns = createCountingColumns({ formatDate });
+  const actions = createCountingActions({
+    onViewDetails: id => toast.info(`عرض تفاصيل الجرد: ${id}`),
+    onExport: handleExport,
+    onComplete: handleComplete
+  });
 
   const renderContent = () => {
     if (isCreatingCount) {
@@ -147,46 +86,20 @@ const CountingPage = () => {
     
     return (
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row gap-4 justify-between rtl">
-          <div className="flex items-center gap-2">
-            <input 
-              type="text" 
-              placeholder="البحث..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-4 py-2 border rounded-md"
-            />
-            <select 
-              value={warehouseFilter}
-              onChange={(e) => setWarehouseFilter(e.target.value)}
-              className="px-4 py-2 border rounded-md"
-            >
-              <option value="">جميع المستودعات</option>
-              <option value="المستودع الرئيسي">المستودع الرئيسي</option>
-              <option value="فرع الرياض">فرع الرياض</option>
-              <option value="فرع جدة">فرع جدة</option>
-            </select>
-            <select 
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as "draft" | "completed" | "")}
-              className="px-4 py-2 border rounded-md"
-            >
-              <option value="">جميع الحالات</option>
-              <option value="draft">مسودة</option>
-              <option value="completed">مكتمل</option>
-            </select>
-          </div>
-          
-          <Button className="bg-teal hover:bg-teal-dark text-white gap-2" onClick={startNewCount}>
-            <Plus size={18} />
-            إنشاء جرد جديد
-          </Button>
-        </div>
+        <CountingToolbar 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          warehouseFilter={warehouseFilter}
+          setWarehouseFilter={setWarehouseFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          onNewCount={startNewCount}
+        />
         
         <DataGrid 
           data={counts} 
           columns={columns}
-          actions={getActions()}
+          actions={actions}
           emptyMessage="لا توجد عمليات جرد مسجلة"
         />
       </div>
