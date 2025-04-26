@@ -1,10 +1,9 @@
-
 import { Header } from "@/components/Header";
 import { ReportCategory } from "@/components/ReportCategory";
 import { ReportCard } from "@/components/ReportCard";
 import { Input } from "@/components/ui/input";
 import { useReports } from "@/hooks/useReports";
-import { BookmarkStar, Star, ShoppingCart, Package, Wallet, Wrench } from "lucide-react";
+import { Bookmark, Star, ShoppingCart, Package, Wallet, Wrench } from "lucide-react";
 import { allReports } from "@/data/reports";
 import { toast } from "sonner";
 
@@ -46,7 +45,7 @@ const Reports = () => {
           <h2 className="text-xl font-semibold mb-4 rtl">فئات التقارير</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 rtl">
             <ReportCategory 
-              icon={<BookmarkStar className="text-yellow-500" />} 
+              icon={<Bookmark className="text-yellow-500" />} 
               label="المفضلة"
               isActive={activeCategory === 'favorites'}
               onClick={() => setActiveCategory('favorites')}
