@@ -1,8 +1,9 @@
 
 import React from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarItemProps } from "@/types/sidebar";
+import SidebarItemIcon from "./SidebarItemIcon";
+import SidebarItemContent from "./SidebarItemContent";
 
 const SidebarItem: React.FC<SidebarItemProps> = ({
   icon,
@@ -23,17 +24,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           : "text-sidebar-foreground hover:bg-sidebar-primary/30 hover:text-sidebar-foreground"
       )}
     >
-      <span className={cn("text-xl flex-shrink-0", isActive ? "text-sidebar-accent-foreground" : "")}>{icon}</span>
-      <span className="flex-grow">{label}</span>
-      {hasChildren && (
-        <ChevronDown
-          size={16}
-          className={cn(
-            "transition-transform duration-200 ease-in-out",
-            isExpanded ? "transform rotate-180" : ""
-          )}
-        />
-      )}
+      <SidebarItemIcon icon={icon} isActive={isActive} />
+      <SidebarItemContent 
+        label={label}
+        hasChildren={hasChildren}
+        isExpanded={isExpanded}
+      />
     </div>
   );
 };
