@@ -121,7 +121,7 @@ const ExpenseReportsPage: React.FC = () => {
   );
 
   const prepareChartData = () => {
-    const expensesByCategory = {};
+    const expensesByCategory: Record<string, number> = {};
     filteredExpenses.forEach((expense) => {
       if (!expensesByCategory[expense.category]) {
         expensesByCategory[expense.category] = 0;
@@ -132,7 +132,7 @@ const ExpenseReportsPage: React.FC = () => {
     const categoryLabels = Object.keys(expensesByCategory);
     const categoryData = Object.values(expensesByCategory);
 
-    const expensesByPaymentMethod = {
+    const expensesByPaymentMethod: Record<string, number> = {
       cash: 0,
       credit: 0,
       bank: 0,
@@ -165,7 +165,7 @@ const ExpenseReportsPage: React.FC = () => {
         datasets: [
           {
             label: "المصروفات",
-            data: categoryData,
+            data: categoryData as number[],
             backgroundColor: pieColors[0],
             borderColor: pieChartBorderColors[0],
           },
@@ -180,7 +180,7 @@ const ExpenseReportsPage: React.FC = () => {
               expensesByPaymentMethod.cash,
               expensesByPaymentMethod.credit,
               expensesByPaymentMethod.bank,
-            ],
+            ] as number[],
             backgroundColor: "rgba(54, 162, 235, 0.7)",
             borderColor: "rgba(54, 162, 235, 1)",
           },
