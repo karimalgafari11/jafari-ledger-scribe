@@ -1,12 +1,13 @@
 
 import React from "react";
 import { Header } from "@/components/Header";
-import { CountingTable } from "@/components/inventory/CountingTable";
+import { DataGrid } from "@/components/inventory/DataGrid";
 import { CountingForm } from "@/components/inventory/CountingForm";
 import { useInventoryCounting } from "@/hooks/useInventoryCounting";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Eye, FileText, CheckCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const CountingPage = () => {
   const {
@@ -40,6 +41,94 @@ const CountingPage = () => {
     completeCount(id);
     toast.success("تم اعتماد الجرد بنجاح");
   };
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('ar-SA', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    }).format(date);
+  };
+
+  const handleSaveCount = (notes: string) => {
+    if (!newCountWarehouse) {
+      toast.error("الرجاء تحديد المستودع");
+      return;
+    }
+    
+    if (newCountItems.length === 0) {
+      toast.error("لا توجد أصناف للجرد");
+      return;
+    }
+    
+    saveNewCount(notes);
+    toast.success("تم حفظ الجرد بنجاح");
+  };
+
+  const columns = [
+    {
+      id: "date",
+      header: "التاريخ",
+      accessorKey: "date",
+      width: "150px",
+      isSortable: true,
+      cell: (value: Date) => formatDate(value)
+    },
+    {
+      id: "warehouseName",
+      header: "المستودع",
+      accessorKey: "warehouseName",
+      width: "180px",
+      isSortable: true
+    },
+    {
+      id: "status",
+      header: "الحالة",
+      accessorKey: "status",
+      width: "120px",
+      isSortable: true,
+      cell: (value: 'draft' | 'completed') => {
+        if (value === 'draft') {
+          return <Badge className="bg-amber-500">مسودة</Badge>;
+        } else {
+          return <Badge className="bg-green-600">مكتمل</Badge>;
+        }
+      }
+    },
+    {
+      id: "itemsCount",
+      header: "عدد الأصناف",
+      accessorKey: "items",
+      width: "120px",
+      cell: (value: any[]) => value.length
+    },
+    {
+      id: "notes",
+      header: "ملاحظات",
+      accessorKey: "notes",
+      width: "200px"
+    }
+  ];
+
+  const getActions = () => [
+    {
+      icon: <Eye className="h-4 w-4" />,
+      label: "عرض",
+      onClick: (row: any) => viewCount(row.id)
+    },
+    {
+      icon: <FileText className="h-4 w-4" />,
+      label: "طباعة",
+      onClick: (row: any) => handleExport(row.id)
+    },
+    {
+      icon: <CheckCircle className="h-4 w-4" />,
+      label: "اعتماد",
+      onClick: (row: any) => handleComplete(row.id),
+      condition: (row: any) => row.status === 'draft',
+      variant: "ghost" 
+    }
+  ];
 
   const renderContent = () => {
     if (isCreatingCount) {
@@ -94,29 +183,14 @@ const CountingPage = () => {
           </Button>
         </div>
         
-        <CountingTable 
-          counts={counts} 
-          onViewDetails={viewCount}
-          onExport={handleExport}
-          onComplete={handleComplete}
+        <DataGrid 
+          data={counts} 
+          columns={columns}
+          actions={getActions()}
+          emptyMessage="لا توجد عمليات جرد مسجلة"
         />
       </div>
     );
-  };
-
-  const handleSaveCount = (notes: string) => {
-    if (!newCountWarehouse) {
-      toast.error("الرجاء تحديد المستودع");
-      return;
-    }
-    
-    if (newCountItems.length === 0) {
-      toast.error("لا توجد أصناف للجرد");
-      return;
-    }
-    
-    saveNewCount(notes);
-    toast.success("تم حفظ الجرد بنجاح");
   };
 
   return (

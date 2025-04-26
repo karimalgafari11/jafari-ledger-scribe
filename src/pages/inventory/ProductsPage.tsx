@@ -1,10 +1,11 @@
 
 import { useState } from "react";
 import { Header } from "@/components/Header";
-import { ProductsTable } from "@/components/inventory/ProductsTable";
+import { DataGrid } from "@/components/inventory/DataGrid";
 import { ProductsToolbar } from "@/components/inventory/ProductsToolbar";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
 import { toast } from "sonner";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 const ProductsPage = () => {
   const {
@@ -51,6 +52,81 @@ const ProductsPage = () => {
     toast.info(`تحرير المنتج: ${id}`);
   };
 
+  const columns = [
+    {
+      id: "code",
+      header: "كود الصنف",
+      accessorKey: "code",
+      width: "120px",
+      isSortable: true
+    },
+    {
+      id: "name",
+      header: "اسم الصنف",
+      accessorKey: "name",
+      width: "200px",
+      isSortable: true
+    },
+    {
+      id: "price",
+      header: "السعر",
+      accessorKey: "price",
+      width: "120px",
+      isSortable: true,
+      cell: (value: number) => value.toFixed(2)
+    },
+    {
+      id: "category",
+      header: "الفئة",
+      accessorKey: "category",
+      width: "150px",
+      isSortable: true
+    },
+    {
+      id: "quantity",
+      header: "الكمية المتاحة",
+      accessorKey: "quantity",
+      width: "150px",
+      isSortable: true,
+      cell: (value: number, row: any) => {
+        const isLow = value < row.reorderLevel;
+        return <span className={`${value <= 0 ? 'text-red-700 font-bold' : isLow ? 'text-orange-500 font-bold' : ''}`}>{value}</span>;
+      }
+    },
+    {
+      id: "isActive",
+      header: "الحالة",
+      accessorKey: "isActive",
+      width: "100px",
+      cell: (value: boolean) => (
+        <span className={`px-2 py-1 text-xs rounded-full ${
+          value ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+        }`}>
+          {value ? 'نشط' : 'غير نشط'}
+        </span>
+      )
+    }
+  ];
+
+  const actions = [
+    {
+      icon: <Eye className="h-4 w-4" />,
+      label: "عرض",
+      onClick: (row: any) => handleViewDetails(row.id)
+    },
+    {
+      icon: <Pencil className="h-4 w-4" />,
+      label: "تحرير",
+      onClick: (row: any) => handleEdit(row.id)
+    },
+    {
+      icon: <Trash2 className="h-4 w-4" />,
+      label: "حذف",
+      onClick: (row: any) => handleDelete(row.id),
+      variant: "ghost"
+    }
+  ];
+
   return (
     <div className="h-screen overflow-y-auto bg-gray-50">
       <div className="sticky top-0 z-10 bg-white shadow-sm">
@@ -69,13 +145,24 @@ const ProductsPage = () => {
           onShare={handleShare}
         />
         
-        <ProductsTable 
-          products={products} 
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-          onViewDetails={handleViewDetails}
-          selectedProducts={selectedProducts}
+        <DataGrid 
+          data={products} 
+          columns={columns}
+          actions={actions}
+          selectable={true}
+          selectedRows={selectedProducts}
           onToggleSelection={toggleProductSelection}
+          onSelectAll={(selected) => {
+            if (selected) {
+              products.forEach(product => {
+                if (!selectedProducts.includes(product.id)) {
+                  toggleProductSelection(product.id);
+                }
+              });
+            } else {
+              clearSelectedProducts();
+            }
+          }}
         />
       </main>
     </div>
