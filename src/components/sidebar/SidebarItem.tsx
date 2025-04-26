@@ -4,19 +4,22 @@ import { cn } from "@/lib/utils";
 import { SidebarItemProps } from "@/types/sidebar";
 import SidebarItemIcon from "./SidebarItemIcon";
 import SidebarItemContent from "./SidebarItemContent";
+import { useSidebarNavigation } from "@/hooks/useSidebarNavigation";
 
 const SidebarItem: React.FC<SidebarItemProps> = ({
   icon,
   label,
+  path,
   isActive,
-  onClick,
   hasChildren = false,
   isExpanded = false,
   depth = 0
 }) => {
+  const { handleItemClick } = useSidebarNavigation();
+
   return (
     <div
-      onClick={onClick}
+      onClick={() => handleItemClick(path)}
       className={cn(
         "flex items-center gap-2 py-2 px-4 rounded-md mb-0.5 cursor-pointer transition-all duration-200 group relative",
         isActive 
