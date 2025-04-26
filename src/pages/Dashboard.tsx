@@ -1,7 +1,6 @@
-
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, LineChart } from "@/components/ui/chart";
+import { BarChart, LineChart } from "@/components/ui/charts";
 
 const Dashboard = () => {
   // Sample data for charts
