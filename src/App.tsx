@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import ProductsPage from "./pages/inventory/ProductsPage";
+import StockMovementsPage from "./pages/inventory/StockMovementsPage";
+import CountingPage from "./pages/inventory/CountingPage";
+import ReorderPage from "./pages/inventory/ReorderPage";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +28,9 @@ const App = () => (
           
           {/* Inventory Routes */}
           <Route path="/inventory/products" element={<ProductsPage />} />
-          <Route path="/inventory/movements" element={<NotFound />} />
-          <Route path="/inventory/counting" element={<NotFound />} />
-          <Route path="/inventory/reorder" element={<NotFound />} />
+          <Route path="/inventory/movements" element={<StockMovementsPage />} />
+          <Route path="/inventory/counting" element={<CountingPage />} />
+          <Route path="/inventory/reorder" element={<ReorderPage />} />
           
           {/* Expenses Routes */}
           <Route path="/expenses/new" element={<NotFound />} />
