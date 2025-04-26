@@ -1,4 +1,6 @@
 
+import { Expense } from "@/types/expenses";
+
 export const getPieChartColors = () => {
   const pieColors = [
     "rgba(255, 99, 132, 0.7)",
