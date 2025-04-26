@@ -1,11 +1,10 @@
-
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { 
   Search, 
   Plus, 
-  FilePdf, 
+  File, 
   FileSpreadsheet, 
   Share2, 
   Trash2,
@@ -149,7 +148,7 @@ export function ProductsToolbar({
           </Popover>
           
           <Button variant="outline" onClick={() => onExport('pdf')} className="gap-2">
-            <FilePdf size={18} />
+            <File size={18} />
             PDF
           </Button>
           
