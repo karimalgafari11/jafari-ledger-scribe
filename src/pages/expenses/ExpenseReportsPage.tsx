@@ -95,8 +95,8 @@ const ExpenseReportsPage: React.FC = () => {
           {
             label: "المصروفات",
             data: categoryData as number[],
-            backgroundColor: pieColors[0],
-            borderColor: pieChartBorderColors[0],
+            backgroundColor: pieColors,
+            borderColor: pieChartBorderColors,
           },
         ],
       },
@@ -194,6 +194,11 @@ const ExpenseReportsPage: React.FC = () => {
           barChartData={chartData.barChartData}
           filteredExpenses={filteredExpenses}
         />
+        {filteredExpenses.length > 0 && (
+          <div className="mt-6">
+            <ReportTable expenses={filteredExpenses} />
+          </div>
+        )}
       </div>
     </div>
   );

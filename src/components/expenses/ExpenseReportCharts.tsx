@@ -25,6 +25,26 @@ export const ExpenseReportCharts: React.FC<ExpenseReportChartsProps> = ({
           <TabsTrigger value="bar">رسم شريطي</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="table" className="mt-0">
+          <Card>
+            <CardContent className="p-6">
+              <div className="h-[400px] overflow-y-auto">
+                {filteredExpenses.length > 0 ? (
+                  <div className="h-full">
+                    <p className="mb-4 font-semibold text-lg">قائمة المصروفات</p>
+                  </div>
+                ) : (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-muted-foreground">
+                      لا توجد بيانات كافية لعرض الجدول
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="pie" className="mt-0">
           <Card>
             <CardContent className="p-6">

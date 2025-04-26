@@ -4,7 +4,7 @@ import * as RechartsPrimitive from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 
 // Define a proper type for the chart data
-interface ChartData {
+export interface ChartData {
   labels: string[];
   datasets: {
     label: string;
