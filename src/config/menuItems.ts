@@ -21,6 +21,12 @@ export const menuItems: MenuItem[] = [
     children: []
   },
   {
+    section: "التقارير",
+    icon: ChartBar,
+    path: "/reports",
+    children: []
+  },
+  {
     section: "المخزون",
     icon: Box,
     children: [
