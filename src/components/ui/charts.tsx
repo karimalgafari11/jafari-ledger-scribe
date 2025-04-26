@@ -26,23 +26,22 @@ export const BarChart = React.forwardRef<
       config={{}} 
       {...props}
     >
-      {() => (
-        <RechartsPrimitive.BarChart data={transformedData}>
-          <RechartsPrimitive.XAxis dataKey="name" />
-          <RechartsPrimitive.YAxis />
-          <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
-          <RechartsPrimitive.Tooltip />
-          <RechartsPrimitive.Legend />
-          {data.datasets.map((dataset: any, index: number) => (
-            <RechartsPrimitive.Bar
-              key={index}
-              dataKey={dataset.label}
-              fill={dataset.backgroundColor}
-              stroke={dataset.borderColor}
-            />
-          ))}
-        </RechartsPrimitive.BarChart>
-      )}
+      {/* Fixed: Using JSX element directly instead of a function */}
+      <RechartsPrimitive.BarChart data={transformedData}>
+        <RechartsPrimitive.XAxis dataKey="name" />
+        <RechartsPrimitive.YAxis />
+        <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+        <RechartsPrimitive.Tooltip />
+        <RechartsPrimitive.Legend />
+        {data.datasets.map((dataset: any, index: number) => (
+          <RechartsPrimitive.Bar
+            key={index}
+            dataKey={dataset.label}
+            fill={dataset.backgroundColor}
+            stroke={dataset.borderColor}
+          />
+        ))}
+      </RechartsPrimitive.BarChart>
     </ChartContainer>
   );
 });
@@ -71,29 +70,28 @@ export const LineChart = React.forwardRef<
       config={{}} 
       {...props}
     >
-      {() => (
-        <RechartsPrimitive.LineChart data={transformedData}>
-          <RechartsPrimitive.XAxis dataKey="name" />
-          <RechartsPrimitive.YAxis />
-          <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
-          <RechartsPrimitive.Tooltip />
-          <RechartsPrimitive.Legend />
-          {data.datasets.map((dataset: any, index: number) => (
-            <RechartsPrimitive.Line
-              key={index}
-              type="monotone"
-              dataKey={dataset.label}
-              stroke={dataset.borderColor}
-              fill={dataset.backgroundColor}
-              dot={true}
-              activeDot={{ r: 8 }}
-              strokeWidth={2}
-              connectNulls
-              // Removed the tension property as it's not supported by Recharts
-            />
-          ))}
-        </RechartsPrimitive.LineChart>
-      )}
+      {/* Fixed: Using JSX element directly instead of a function */}
+      <RechartsPrimitive.LineChart data={transformedData}>
+        <RechartsPrimitive.XAxis dataKey="name" />
+        <RechartsPrimitive.YAxis />
+        <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+        <RechartsPrimitive.Tooltip />
+        <RechartsPrimitive.Legend />
+        {data.datasets.map((dataset: any, index: number) => (
+          <RechartsPrimitive.Line
+            key={index}
+            type="monotone"
+            dataKey={dataset.label}
+            stroke={dataset.borderColor}
+            fill={dataset.backgroundColor}
+            dot={true}
+            activeDot={{ r: 8 }}
+            strokeWidth={2}
+            connectNulls
+            // Removed the tension property as it's not supported by Recharts
+          />
+        ))}
+      </RechartsPrimitive.LineChart>
     </ChartContainer>
   );
 });

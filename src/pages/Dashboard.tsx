@@ -25,7 +25,6 @@ const Dashboard = () => {
         data: [28, 48, 40, 19, 86, 27],
         borderColor: "#0a6e78",
         backgroundColor: "transparent",
-        // Removed the tension property as it's not supported
       }
     ],
   };
@@ -85,7 +84,6 @@ const Dashboard = () => {
               <BarChart 
                 data={revenueData}
                 className="w-full h-full"
-                config={{}}
               />
             </CardContent>
           </Card>
@@ -98,7 +96,6 @@ const Dashboard = () => {
               <LineChart 
                 data={expensesData}
                 className="w-full h-full"
-                config={{}}
               />
             </CardContent>
           </Card>
