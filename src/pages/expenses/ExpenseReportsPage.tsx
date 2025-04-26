@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Header } from "@/components/Header";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -17,7 +16,6 @@ import { PieChart, LineChart, BarChart } from "@/components/ui/charts";
 import { Calendar as CalendarIcon, Download, FileText, ArrowDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-// مكون جدول التقرير
 const ReportTable = ({ expenses }: { expenses: Expense[] }) => {
   return (
     <div className="overflow-x-auto">
@@ -97,11 +95,9 @@ const ExpenseReportsPage: React.FC = () => {
   const [dateRangePreset, setDateRangePreset] = useState<string>("month");
   const reportRef = useRef<HTMLDivElement>(null);
 
-  // استخراج البيانات المصفاة
   const getFilteredExpenses = () => {
     let filtered = [...expenses];
 
-    // تصفية حسب التاريخ
     if (dateRange.from && dateRange.to) {
       filtered = filtered.filter(
         (expense) =>
@@ -109,7 +105,6 @@ const ExpenseReportsPage: React.FC = () => {
       );
     }
 
-    // تصفية حسب التصنيف
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
         (expense) => expense.category === selectedCategory
@@ -125,9 +120,7 @@ const ExpenseReportsPage: React.FC = () => {
     0
   );
 
-  // تحضير بيانات الرسم البياني
   const prepareChartData = () => {
-    // البيانات حسب التصنيف
     const expensesByCategory = {};
     filteredExpenses.forEach((expense) => {
       if (!expensesByCategory[expense.category]) {
@@ -139,7 +132,6 @@ const ExpenseReportsPage: React.FC = () => {
     const categoryLabels = Object.keys(expensesByCategory);
     const categoryData = Object.values(expensesByCategory);
 
-    // البيانات حسب طريقة الدفع
     const expensesByPaymentMethod = {
       cash: 0,
       credit: 0,
@@ -149,6 +141,24 @@ const ExpenseReportsPage: React.FC = () => {
       expensesByPaymentMethod[expense.paymentMethod] += expense.amount;
     });
 
+    const pieColors = [
+      "rgba(255, 99, 132, 0.7)",
+      "rgba(54, 162, 235, 0.7)",
+      "rgba(255, 206, 86, 0.7)",
+      "rgba(75, 192, 192, 0.7)",
+      "rgba(153, 102, 255, 0.7)",
+      "rgba(255, 159, 64, 0.7)",
+    ];
+
+    const pieChartBorderColors = [
+      "rgba(255, 99, 132, 1)",
+      "rgba(54, 162, 235, 1)",
+      "rgba(255, 206, 86, 1)",
+      "rgba(75, 192, 192, 1)",
+      "rgba(153, 102, 255, 1)",
+      "rgba(255, 159, 64, 1)",
+    ];
+
     return {
       pieChartData: {
         labels: categoryLabels,
@@ -156,22 +166,8 @@ const ExpenseReportsPage: React.FC = () => {
           {
             label: "المصروفات",
             data: categoryData,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.7)",
-              "rgba(54, 162, 235, 0.7)",
-              "rgba(255, 206, 86, 0.7)",
-              "rgba(75, 192, 192, 0.7)",
-              "rgba(153, 102, 255, 0.7)",
-              "rgba(255, 159, 64, 0.7)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)",
-            ],
+            backgroundColor: pieColors[0],
+            borderColor: pieChartBorderColors[0],
           },
         ],
       },
@@ -185,16 +181,8 @@ const ExpenseReportsPage: React.FC = () => {
               expensesByPaymentMethod.credit,
               expensesByPaymentMethod.bank,
             ],
-            backgroundColor: [
-              "rgba(54, 162, 235, 0.7)",
-              "rgba(255, 99, 132, 0.7)",
-              "rgba(75, 192, 192, 0.7)",
-            ],
-            borderColor: [
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 99, 132, 1)",
-              "rgba(75, 192, 192, 1)",
-            ],
+            backgroundColor: "rgba(54, 162, 235, 0.7)",
+            borderColor: "rgba(54, 162, 235, 1)",
           },
         ],
       },
@@ -203,7 +191,6 @@ const ExpenseReportsPage: React.FC = () => {
 
   const chartData = prepareChartData();
 
-  // تعيين نطاق التاريخ
   const handleDateRangePresetChange = (preset: string) => {
     setDateRangePreset(preset);
     const today = new Date();
@@ -238,15 +225,11 @@ const ExpenseReportsPage: React.FC = () => {
     }
   };
 
-  // تصدير التقرير كـ Excel أو PDF
   const exportReport = (format: "excel" | "pdf") => {
-    // هذا مثال توضيحي - في تطبيق حقيقي سنقوم بتنفيذ التصدير بشكل فعلي
     toast.success(`تم تصدير التقرير بتنسيق ${format === "excel" ? "Excel" : "PDF"}`);
   };
 
-  // مشاركة التقرير عبر WhatsApp
   const shareViaWhatsApp = () => {
-    // هذا مثال توضيحي - في تطبيق حقيقي سنقوم بإنشاء رابط مشاركة
     toast.success("تم نسخ رابط التقرير للمشاركة عبر WhatsApp");
   };
 
