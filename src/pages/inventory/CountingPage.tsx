@@ -126,7 +126,7 @@ const CountingPage = () => {
       label: "اعتماد",
       onClick: (row: any) => handleComplete(row.id),
       condition: (row: any) => row.status === 'draft',
-      variant: "ghost" 
+      variant: "ghost" as const // Using 'as const' to specify the literal type
     }
   ];
 

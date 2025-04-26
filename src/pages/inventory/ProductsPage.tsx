@@ -123,7 +123,7 @@ const ProductsPage = () => {
       icon: <Trash2 className="h-4 w-4" />,
       label: "حذف",
       onClick: (row: any) => handleDelete(row.id),
-      variant: "ghost"
+      variant: "ghost" as const // Using 'as const' to specify the literal type
     }
   ];
 
