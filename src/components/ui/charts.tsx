@@ -10,15 +10,23 @@ export const BarChart = React.forwardRef<
     options?: any;
   }
 >(({ data, options, className, ...props }, ref) => {
+  // Transform the data for Recharts format
+  const transformedData = data.labels.map((label: any, i: number) => ({
+    name: label,
+    ...data.datasets.reduce((acc: any, dataset: any) => {
+      acc[dataset.label] = dataset.data[i];
+      return acc;
+    }, {})
+  }));
+  
   return (
-    <ChartContainer ref={ref} className={className} config={{}} {...props}>
-      <RechartsPrimitive.BarChart data={data.labels.map((label: any, i: number) => ({
-        name: label,
-        ...data.datasets.reduce((acc: any, dataset: any) => {
-          acc[dataset.label] = dataset.data[i];
-          return acc;
-        }, {})
-      }))}>
+    <ChartContainer 
+      ref={ref} 
+      className={className} 
+      config={{}} 
+      {...props}
+    >
+      <RechartsPrimitive.BarChart data={transformedData}>
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
@@ -45,15 +53,23 @@ export const LineChart = React.forwardRef<
     options?: any;
   }
 >(({ data, options, className, ...props }, ref) => {
+  // Transform the data for Recharts format
+  const transformedData = data.labels.map((label: any, i: number) => ({
+    name: label,
+    ...data.datasets.reduce((acc: any, dataset: any) => {
+      acc[dataset.label] = dataset.data[i];
+      return acc;
+    }, {})
+  }));
+  
   return (
-    <ChartContainer ref={ref} className={className} config={{}} {...props}>
-      <RechartsPrimitive.LineChart data={data.labels.map((label: any, i: number) => ({
-        name: label,
-        ...data.datasets.reduce((acc: any, dataset: any) => {
-          acc[dataset.label] = dataset.data[i];
-          return acc;
-        }, {})
-      }))}>
+    <ChartContainer 
+      ref={ref} 
+      className={className} 
+      config={{}} 
+      {...props}
+    >
+      <RechartsPrimitive.LineChart data={transformedData}>
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
@@ -70,7 +86,7 @@ export const LineChart = React.forwardRef<
             activeDot={{ r: 8 }}
             strokeWidth={2}
             connectNulls
-            tension={dataset.tension}
+            // Removed the tension property as it's not supported by Recharts
           />
         ))}
       </RechartsPrimitive.LineChart>

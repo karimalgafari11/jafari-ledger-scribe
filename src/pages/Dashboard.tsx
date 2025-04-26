@@ -1,3 +1,4 @@
+
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, LineChart } from "@/components/ui/charts";
@@ -24,7 +25,7 @@ const Dashboard = () => {
         data: [28, 48, 40, 19, 86, 27],
         borderColor: "#0a6e78",
         backgroundColor: "transparent",
-        tension: 0.3,
+        // Removed the tension property as it's not supported
       }
     ],
   };
@@ -82,12 +83,9 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="h-80">
               <BarChart 
-                data={revenueData} 
-                options={{
-                  plugins: { legend: { position: "top", align: "end" } },
-                  responsive: true,
-                  maintainAspectRatio: false,
-                }} 
+                data={revenueData}
+                className="w-full h-full"
+                config={{}}
               />
             </CardContent>
           </Card>
@@ -98,12 +96,9 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="h-80">
               <LineChart 
-                data={expensesData} 
-                options={{
-                  plugins: { legend: { position: "top", align: "end" } },
-                  responsive: true,
-                  maintainAspectRatio: false,
-                }} 
+                data={expensesData}
+                className="w-full h-full"
+                config={{}}
               />
             </CardContent>
           </Card>
