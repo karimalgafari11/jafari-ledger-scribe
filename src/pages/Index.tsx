@@ -4,9 +4,16 @@ import { cn } from "@/lib/utils";
 import AccountingSidebar from "@/components/AccountingSidebar";
 import Dashboard from "./Dashboard";
 import Reports from "./Reports";
+import NewExpensePage from "./expenses/NewExpensePage";
+import ExpenseCategoriesPage from "./expenses/ExpenseCategoriesPage";
+import ExpenseReportsPage from "./expenses/ExpenseReportsPage";
+import InvoicesPage from "./invoices/InvoicesPage";
+import QuotesPage from "./invoices/QuotesPage";
+import SalesOrdersPage from "./invoices/SalesOrdersPage";
+import ReturnsPage from "./invoices/ReturnsPage";
 
 const Index = () => {
-  const [activePage, setActivePage] = useState("reports");
+  const [activePage, setActivePage] = useState("dashboard");
 
   const renderContent = () => {
     switch (activePage) {
@@ -14,6 +21,20 @@ const Index = () => {
         return <Dashboard />;
       case "reports":
         return <Reports />;
+      case "expenses-new":
+        return <NewExpensePage />;
+      case "expenses-categories":
+        return <ExpenseCategoriesPage />;
+      case "expenses-reports":
+        return <ExpenseReportsPage />;
+      case "invoices-outgoing":
+        return <InvoicesPage />;
+      case "invoices-quotes":
+        return <QuotesPage />;
+      case "invoices-sales-orders":
+        return <SalesOrdersPage />;
+      case "invoices-returns":
+        return <ReturnsPage />;
       default:
         return (
           <div className="h-screen flex items-center justify-center bg-gray-100 rtl">

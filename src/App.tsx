@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,13 @@ import SystemSettingsPage from "./pages/settings/SystemSettingsPage";
 import BranchesPage from "./pages/settings/BranchesPage";
 import UsersPage from "./pages/settings/UsersPage";
 import BackupPage from "./pages/settings/BackupPage";
+import NewExpensePage from "./pages/expenses/NewExpensePage";
+import ExpenseCategoriesPage from "./pages/expenses/ExpenseCategoriesPage";
+import ExpenseReportsPage from "./pages/expenses/ExpenseReportsPage";
+import InvoicesPage from "./pages/invoices/InvoicesPage";
+import QuotesPage from "./pages/invoices/QuotesPage";
+import SalesOrdersPage from "./pages/invoices/SalesOrdersPage";
+import ReturnsPage from "./pages/invoices/ReturnsPage";
 
 const queryClient = new QueryClient();
 
@@ -36,15 +44,15 @@ const App = () => (
           <Route path="/inventory/reorder" element={<ReorderPage />} />
           
           {/* Expenses Routes */}
-          <Route path="/expenses/new" element={<NotFound />} />
-          <Route path="/expenses/categories" element={<NotFound />} />
-          <Route path="/expenses/reports" element={<NotFound />} />
+          <Route path="/expenses/new" element={<NewExpensePage />} />
+          <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
+          <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
           
           {/* Invoices Routes */}
-          <Route path="/invoices/outgoing" element={<NotFound />} />
-          <Route path="/invoices/quotes" element={<NotFound />} />
-          <Route path="/invoices/sales-orders" element={<NotFound />} />
-          <Route path="/invoices/returns" element={<NotFound />} />
+          <Route path="/invoices/outgoing" element={<InvoicesPage />} />
+          <Route path="/invoices/quotes" element={<QuotesPage />} />
+          <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
+          <Route path="/invoices/returns" element={<ReturnsPage />} />
           
           {/* Inventory Control Routes */}
           <Route path="/inventory-control/transfer" element={<NotFound />} />
