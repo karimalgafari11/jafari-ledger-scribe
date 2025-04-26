@@ -3,37 +3,46 @@ import React from "react";
 import * as RechartsPrimitive from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 
+// Define a proper type for the chart data
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor?: string;
+    borderColor?: string;
+  }[];
+}
+
 export const BarChart = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof ChartContainer> & {
-    data: any;
-    options?: any;
+  Omit<React.ComponentProps<typeof ChartContainer>, "children" | "config"> & {
+    data: ChartData;
   }
->(({ data, options, className, ...props }, ref) => {
+>(({ data, className, ...props }, ref) => {
   // Transform the data for Recharts format
-  const transformedData = data.labels.map((label: any, i: number) => ({
+  const transformedData = data.labels.map((label, i) => ({
     name: label,
-    ...data.datasets.reduce((acc: any, dataset: any) => {
+    ...data.datasets.reduce((acc, dataset) => {
       acc[dataset.label] = dataset.data[i];
       return acc;
-    }, {})
+    }, {} as Record<string, number>)
   }));
   
   return (
     <ChartContainer 
       ref={ref} 
-      className={className} 
+      className={className}
       config={{}} 
       {...props}
     >
-      {/* Fixed: Using JSX element directly instead of a function */}
       <RechartsPrimitive.BarChart data={transformedData}>
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
         <RechartsPrimitive.Tooltip />
         <RechartsPrimitive.Legend />
-        {data.datasets.map((dataset: any, index: number) => (
+        {data.datasets.map((dataset, index) => (
           <RechartsPrimitive.Bar
             key={index}
             dataKey={dataset.label}
@@ -49,35 +58,33 @@ BarChart.displayName = "BarChart";
 
 export const LineChart = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof ChartContainer> & {
-    data: any;
-    options?: any;
+  Omit<React.ComponentProps<typeof ChartContainer>, "children" | "config"> & {
+    data: ChartData;
   }
->(({ data, options, className, ...props }, ref) => {
+>(({ data, className, ...props }, ref) => {
   // Transform the data for Recharts format
-  const transformedData = data.labels.map((label: any, i: number) => ({
+  const transformedData = data.labels.map((label, i) => ({
     name: label,
-    ...data.datasets.reduce((acc: any, dataset: any) => {
+    ...data.datasets.reduce((acc, dataset) => {
       acc[dataset.label] = dataset.data[i];
       return acc;
-    }, {})
+    }, {} as Record<string, number>)
   }));
   
   return (
     <ChartContainer 
       ref={ref} 
-      className={className} 
+      className={className}
       config={{}} 
       {...props}
     >
-      {/* Fixed: Using JSX element directly instead of a function */}
       <RechartsPrimitive.LineChart data={transformedData}>
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
         <RechartsPrimitive.Tooltip />
         <RechartsPrimitive.Legend />
-        {data.datasets.map((dataset: any, index: number) => (
+        {data.datasets.map((dataset, index) => (
           <RechartsPrimitive.Line
             key={index}
             type="monotone"
@@ -88,7 +95,6 @@ export const LineChart = React.forwardRef<
             activeDot={{ r: 8 }}
             strokeWidth={2}
             connectNulls
-            // Removed the tension property as it's not supported by Recharts
           />
         ))}
       </RechartsPrimitive.LineChart>
