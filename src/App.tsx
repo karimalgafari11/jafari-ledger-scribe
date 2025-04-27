@@ -23,6 +23,7 @@ import InvoicesPage from "./pages/invoices/InvoicesPage";
 import QuotesPage from "./pages/invoices/QuotesPage";
 import SalesOrdersPage from "./pages/invoices/SalesOrdersPage";
 import ReturnsPage from "./pages/invoices/ReturnsPage";
+import AccountChartPage from "./pages/accounting/AccountChartPage";
 
 const queryClient = new QueryClient();
 
@@ -54,16 +55,16 @@ const App = () => (
           <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
           <Route path="/invoices/returns" element={<ReturnsPage />} />
           
+          {/* Accounting Routes */}
+          <Route path="/accounting/chart" element={<AccountChartPage />} />
+          <Route path="/accounting/journals" element={<NotFound />} />
+          <Route path="/accounting/cost-centers" element={<NotFound />} />
+          <Route path="/accounting/settings" element={<NotFound />} />
+          
           {/* Inventory Control Routes */}
           <Route path="/inventory-control/transfer" element={<NotFound />} />
           <Route path="/inventory-control/locations" element={<NotFound />} />
           <Route path="/inventory-control/damaged" element={<NotFound />} />
-          
-          {/* Accounting Routes */}
-          <Route path="/accounting/chart" element={<NotFound />} />
-          <Route path="/accounting/journals" element={<NotFound />} />
-          <Route path="/accounting/cost-centers" element={<NotFound />} />
-          <Route path="/accounting/settings" element={<NotFound />} />
           
           {/* Customer Routes */}
           <Route path="/customers/manage" element={<NotFound />} />

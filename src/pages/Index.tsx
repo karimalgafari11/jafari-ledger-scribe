@@ -11,6 +11,7 @@ import InvoicesPage from "./invoices/InvoicesPage";
 import QuotesPage from "./invoices/QuotesPage";
 import SalesOrdersPage from "./invoices/SalesOrdersPage";
 import ReturnsPage from "./invoices/ReturnsPage";
+import AccountChartPage from "./accounting/AccountChartPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -35,6 +36,8 @@ const Index = () => {
         return <SalesOrdersPage />;
       case "invoices-returns":
         return <ReturnsPage />;
+      case "accounting-chart":
+        return <AccountChartPage />;
       default:
         return (
           <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
