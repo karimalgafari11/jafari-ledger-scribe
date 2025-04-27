@@ -10,6 +10,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { AccountActions } from "./AccountActions";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { AccountTree } from "./AccountTree";
 
 interface AccountTreeNodeProps {
   account: AccountNode;
