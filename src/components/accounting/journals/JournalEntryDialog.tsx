@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -51,7 +50,6 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
   const [totalCredit, setTotalCredit] = useState(0);
   const [isBalanced, setIsBalanced] = useState(true);
 
-  // Reset form when dialog opens/closes
   useEffect(() => {
     if (isCreateDialogOpen) {
       setEntryNumber(generateEntryNumber());
@@ -65,7 +63,6 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
     }
   }, [isCreateDialogOpen, generateEntryNumber]);
 
-  // Set form data when editing
   useEffect(() => {
     if ((isEditDialogOpen || isViewDialogOpen) && selectedEntry) {
       setEntryNumber(selectedEntry.entryNumber);
@@ -85,7 +82,6 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
     }
   }, [isEditDialogOpen, isViewDialogOpen, selectedEntry]);
 
-  // Calculate totals when lines change
   useEffect(() => {
     const debitTotal = lines.reduce((sum, line) => sum + (line.debit || 0), 0);
     const creditTotal = lines.reduce((sum, line) => sum + (line.credit || 0), 0);
@@ -142,7 +138,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
       totalDebit,
       totalCredit,
       status: saveAs,
-      createdBy: "المستخدم الحالي" // In a real app, this would come from the authentication system
+      createdBy: "المستخدم الحالي"
     };
 
     if (isCreateDialogOpen) {
