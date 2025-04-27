@@ -23,9 +23,15 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   onConfirm,
   accountName,
 }) => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onConfirm();
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rtl">
+      <DialogContent className="rtl" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle>تأكيد الحذف</DialogTitle>
           <DialogDescription>
@@ -35,16 +41,16 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
         <DialogFooter className="sm:justify-start">
           <Button
             variant="destructive"
-            onClick={() => {
-              onConfirm();
-              onOpenChange(false);
-            }}
+            onClick={handleDelete}
           >
             حذف
           </Button>
           <Button
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenChange(false);
+            }}
           >
             إلغاء
           </Button>

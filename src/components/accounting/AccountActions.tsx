@@ -27,7 +27,10 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => onEdit(accountId)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(accountId);
+        }}
         className="h-8 w-8"
       >
         <Edit className="h-4 w-4" />
@@ -37,7 +40,10 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => onDelete(accountId)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(accountId);
+        }}
         className="h-8 w-8"
       >
         <Trash className="h-4 w-4" />
@@ -46,19 +52,39 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Share className="h-4 w-4" />
             <span className="sr-only">مشاركة</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onShare(accountId, 'link')}>
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(accountId, 'link');
+            }}
+          >
             نسخ الرابط
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onShare(accountId, 'email')}>
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(accountId, 'email');
+            }}
+          >
             مشاركة عبر البريد
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onShare(accountId, 'whatsapp')}>
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(accountId, 'whatsapp');
+            }}
+          >
             مشاركة عبر واتساب
           </DropdownMenuItem>
         </DropdownMenuContent>
