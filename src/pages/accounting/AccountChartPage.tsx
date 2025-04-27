@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -5,6 +6,8 @@ import { toast } from "sonner";
 import { AccountPageHeader } from "@/components/accounting/AccountPageHeader";
 import { AccountsContent } from "@/components/accounting/AccountsContent";
 import { AccountDialogs } from "@/components/accounting/AccountDialogs";
+import { Account } from "@/types/accounts";
+import { Loader } from "lucide-react";
 
 const AccountChartPage: React.FC = () => {
   const {
