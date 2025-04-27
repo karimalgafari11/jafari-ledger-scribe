@@ -11,6 +11,12 @@ import { ChevronDown } from "lucide-react";
 import { AccountActions } from "./AccountActions";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { AccountTree } from "./AccountTree";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AccountTreeNodeProps {
   account: AccountNode;
@@ -40,14 +46,25 @@ export const AccountTreeNode: React.FC<AccountTreeNodeProps> = ({
     }
   };
 
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case "asset": return "أصول";
+      case "liability": return "التزامات";
+      case "equity": return "حقوق ملكية";
+      case "revenue": return "إيرادات";
+      case "expense": return "مصروفات";
+      default: return type;
+    }
+  };
+
   return (
-    <>
+    <TooltipProvider>
       <div className="rounded-md border border-gray-200 bg-white">
         <div className={cn(
           "flex items-center justify-between p-2",
           account.level === 1 && "bg-gray-50"
         )}>
-          <div className="flex items-center">
+          <div className="flex items-center flex-1">
             {hasChildren ? (
               <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger className="mr-2 p-1 hover:bg-gray-100 rounded-full">
@@ -62,22 +79,30 @@ export const AccountTreeNode: React.FC<AccountTreeNodeProps> = ({
             ) : (
               <div className="mr-2 w-6" />
             )}
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{account.number}</span>
-                <span className={cn(
-                  "font-medium",
-                  getTypeColor(account.type)
-                )}>
-                  {account.name}
-                </span>
-              </div>
-              {account.balance !== 0 && (
-                <div className="text-xs text-gray-600">
-                  الرصيد: {account.balance.toLocaleString("ar-SA")} ر.س
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{account.number}</span>
+                    <span className={cn(
+                      "font-medium",
+                      getTypeColor(account.type)
+                    )}>
+                      {account.name}
+                    </span>
+                  </div>
+                  {account.balance !== 0 && (
+                    <div className="text-xs text-gray-600">
+                      الرصيد: {account.balance.toLocaleString("ar-SA")} ر.س
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>نوع الحساب: {getTypeLabel(account.type)}</p>
+                {account.level > 1 && <p>المستوى: {account.level}</p>}
+              </TooltipContent>
+            </Tooltip>
           </div>
           
           <AccountActions
@@ -102,14 +127,14 @@ export const AccountTreeNode: React.FC<AccountTreeNodeProps> = ({
             </CollapsibleContent>
           </Collapsible>
         )}
-      </div>
 
-      <DeleteConfirmDialog
-        open={confirmDelete}
-        onOpenChange={setConfirmDelete}
-        onConfirm={() => onDelete(account.id)}
-        accountName={account.name}
-      />
-    </>
+        <DeleteConfirmDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          onConfirm={() => onDelete(account.id)}
+          accountName={account.name}
+        />
+      </div>
+    </TooltipProvider>
   );
 };
