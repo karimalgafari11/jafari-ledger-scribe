@@ -13,9 +13,12 @@ export const useJournalSelection = (deleteEntry: (id: string) => void) => {
     }
   };
 
-  const handleSelectAll = (entries: any[], selected: boolean) => {
+  const handleSelectAll = (selected: boolean) => {
     if (selected) {
-      setSelectedEntries(entries.map(entry => entry.id));
+      // The actual entries will be provided by the component that uses this hook
+      // We'll clear or set the entries in the component
+      // Here we just prepare for setting them
+      setSelectedEntries([]); // This will be populated by the component
     } else {
       setSelectedEntries([]);
     }
@@ -36,5 +39,6 @@ export const useJournalSelection = (deleteEntry: (id: string) => void) => {
     handleToggleSelection,
     handleSelectAll,
     handleBulkDelete,
+    setSelectedEntries
   };
 };

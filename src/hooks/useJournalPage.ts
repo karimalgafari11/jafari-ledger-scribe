@@ -4,6 +4,8 @@ import { useJournalDialogs } from './journals/useJournalDialogs';
 import { useJournalFilters } from './journals/useJournalFilters';
 import { useJournalSelection } from './journals/useJournalSelection';
 import { useJournalActions } from './journals/useJournalActions';
+import { JournalEntry, JournalStatus } from '@/types/journal';
+import { toast } from 'sonner';
 
 export const useJournalPage = () => {
   const {

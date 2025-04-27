@@ -38,8 +38,32 @@ const JournalEntriesPage: React.FC = () => {
     handleSelectAll,
     handleExport,
     handlePrintPreview,
-    handleShareWhatsApp
+    handleShareWhatsApp,
+    setSelectedEntries
   } = useJournalPage();
+
+  // Wrapper functions to handle the type mismatches
+  const handleSelectAllEntries = (selected: boolean) => {
+    if (selected) {
+      setSelectedEntries(filteredEntries.map(entry => entry.id));
+    } else {
+      setSelectedEntries([]);
+    }
+  };
+
+  const handleViewEntry = (id: string) => {
+    const entry = filteredEntries.find(entry => entry.id === id);
+    if (entry) {
+      handleView(entry);
+    }
+  };
+
+  const handleEditEntry = (id: string) => {
+    const entry = filteredEntries.find(entry => entry.id === id);
+    if (entry) {
+      handleEdit(entry);
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 rtl">
@@ -70,12 +94,12 @@ const JournalEntriesPage: React.FC = () => {
         entries={filteredEntries}
         selectedEntries={selectedEntries}
         onToggleSelection={handleToggleSelection}
-        onSelectAll={handleSelectAll}
+        onSelectAll={handleSelectAllEntries}
         onDelete={handleDelete}
         onBulkDelete={handleBulkDelete}
         isLoading={isLoading}
-        onView={handleView}
-        onEdit={handleEdit}
+        onView={handleViewEntry}
+        onEdit={handleEditEntry}
       />
 
       <JournalEntryDialog
