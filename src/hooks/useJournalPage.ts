@@ -46,6 +46,7 @@ export const useJournalPage = () => {
     handleToggleSelection,
     handleSelectAll,
     handleBulkDelete,
+    setSelectedEntries,
   } = useJournalSelection(deleteEntry);
 
   const {
@@ -127,5 +128,6 @@ export const useJournalPage = () => {
     handleExport,
     handlePrintPreview,
     handleShareWhatsApp: () => handleShareWhatsApp(selectedEntries, entries),
+    setSelectedEntries, // Added this line to export setSelectedEntries
   };
 };

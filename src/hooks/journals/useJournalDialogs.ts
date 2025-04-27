@@ -12,11 +12,13 @@ export const useJournalDialogs = () => {
     setIsCreateDialogOpen(true);
   };
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (entry: JournalEntry) => {
+    setCurrentEntry(entry);
     setIsEditDialogOpen(true);
   };
 
-  const handleView = (id: string) => {
+  const handleView = (entry: JournalEntry) => {
+    setCurrentEntry(entry);
     setIsViewDialogOpen(true);
   };
 
@@ -27,6 +29,7 @@ export const useJournalDialogs = () => {
     setIsEditDialogOpen,
     isViewDialogOpen,
     setIsViewDialogOpen,
+    currentEntry,
     handleCreate,
     handleEdit,
     handleView,
