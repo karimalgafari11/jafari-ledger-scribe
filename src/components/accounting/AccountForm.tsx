@@ -151,7 +151,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               <FormLabel>الحساب الأب</FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value || undefined}
+                defaultValue={field.value || ""}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -159,7 +159,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">بدون حساب أب</SelectItem>
+                  <SelectItem value="null">بدون حساب أب</SelectItem>
                   {parentOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}

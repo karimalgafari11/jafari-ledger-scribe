@@ -84,11 +84,12 @@ const AccountChartPage: React.FC = () => {
   };
 
   const handleAddSubmit = (data: any) => {
-    const parentAccount = data.parentId ? findAccount(data.parentId) : null;
+    const parentAccount = data.parentId && data.parentId !== "null" ? findAccount(data.parentId) : null;
     const level = parentAccount ? parentAccount.level + 1 : 1;
     
     addAccount({
       ...data,
+      parentId: data.parentId === "null" ? null : data.parentId,
       balance: 0,
       level,
       isActive: true,
@@ -100,12 +101,13 @@ const AccountChartPage: React.FC = () => {
   const handleEditSubmit = (data: any) => {
     if (!selectedAccount) return;
     
-    const parentAccount = data.parentId ? findAccount(data.parentId) : null;
+    const parentAccount = data.parentId && data.parentId !== "null" ? findAccount(data.parentId) : null;
     const level = parentAccount ? parentAccount.level + 1 : 1;
     
     updateAccount({
       ...selectedAccount,
       ...data,
+      parentId: data.parentId === "null" ? null : data.parentId,
       level,
     });
     
