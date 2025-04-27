@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/popover";
 import { AccountAnalysisCharts } from "@/components/accounting/AccountAnalysisCharts";
 import { cn } from "@/lib/utils";
+import { AccountFilters } from "@/components/accounting/AccountFilters";
+import { ReportDialog } from "@/components/accounting/ReportDialog";
 
 const AccountChartPage: React.FC = () => {
   const {
@@ -40,6 +42,7 @@ const AccountChartPage: React.FC = () => {
   const [filterType, setFilterType] = useState<string>("");
   const [minBalance, setMinBalance] = useState<string>("");
   const [maxBalance, setMaxBalance] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const filteredAccounts = React.useMemo(() => {
     let filtered = [...accountTree];
@@ -141,9 +144,30 @@ const AccountChartPage: React.FC = () => {
     setIsEditDialogOpen(false);
   };
 
-  const handleGenerateReport = () => {
-    toast.success("جاري تحضير التقرير...");
-    // Future enhancement: Generate and download PDF report
+  const handleFilterChange = (type: string, min: string, max: string) => {
+    setIsLoading(true);
+    setFilterType(type);
+    setMinBalance(min);
+    setMaxBalance(max);
+    setTimeout(() => setIsLoading(false), 500);
+    toast.success("تم تطبيق التصفية");
+  };
+
+  const handleResetFilters = () => {
+    setFilterType("");
+    setMinBalance("");
+    setMaxBalance("");
+    toast.success("تم إعادة تعيين التصفية");
+  };
+
+  const handleGenerateReport = async (type: string) => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast.success(`تم إنشاء التقرير بنجاح (${type})`);
+    } catch (error) {
+      toast.error("حدث خطأ أثناء إنشاء التقرير");
+      throw error;
+    }
   };
 
   return (
@@ -154,61 +178,19 @@ const AccountChartPage: React.FC = () => {
         <div className="flex items-center gap-4 w-1/2">
           <SearchBar placeholder="البحث في الحسابات..." onChange={handleSearch} />
           
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
-                <span className="sr-only">تصفية</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 rtl">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">نوع الحساب</label>
-                  <select
-                    className="w-full p-2 border rounded-md"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                  >
-                    <option value="">الكل</option>
-                    <option value="asset">أصول</option>
-                    <option value="liability">التزامات</option>
-                    <option value="equity">حقوق ملكية</option>
-                    <option value="revenue">إيرادات</option>
-                    <option value="expense">مصروفات</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">الرصيد</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="number"
-                      placeholder="الحد الأدنى"
-                      className="p-2 border rounded-md"
-                      value={minBalance}
-                      onChange={(e) => setMinBalance(e.target.value)}
-                    />
-                    <input
-                      type="number"
-                      placeholder="الحد الأقصى"
-                      className="p-2 border rounded-md"
-                      value={maxBalance}
-                      onChange={(e) => setMaxBalance(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <AccountFilters
+            filterType={filterType}
+            minBalance={minBalance}
+            maxBalance={maxBalance}
+            onFilterChange={handleFilterChange}
+            onReset={handleResetFilters}
+            isFiltered={!!(filterType || minBalance || maxBalance)}
+          />
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleGenerateReport}
-          >
-            <FileBarChart className="h-4 w-4" />
-            <span className="sr-only">تقرير</span>
-          </Button>
+          <ReportDialog
+            accounts={filteredAccounts}
+            onGenerate={handleGenerateReport}
+          />
         </div>
 
         <Button onClick={() => setIsAddDialogOpen(true)}>
@@ -219,13 +201,24 @@ const AccountChartPage: React.FC = () => {
 
       <div className="space-y-6">
         <div className="bg-white rounded-lg shadow p-4">
-          {filteredAccounts.length > 0 ? (
-            <AccountTree
-              accounts={filteredAccounts}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onShare={handleShare}
-            />
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredAccounts.length > 0 ? (
+            <>
+              {(filterType || minBalance || maxBalance) && (
+                <div className="mb-4 text-sm text-gray-500">
+                  تم العثور على {filteredAccounts.length} حساب
+                </div>
+              )}
+              <AccountTree
+                accounts={filteredAccounts}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onShare={handleShare}
+              />
+            </>
           ) : (
             <div className="text-center py-8 text-gray-500">
               لم يتم العثور على حسابات. أضف حسابًا جديدًا للبدء.
@@ -233,7 +226,7 @@ const AccountChartPage: React.FC = () => {
           )}
         </div>
 
-        <AccountAnalysisCharts accounts={accountTree} />
+        <AccountAnalysisCharts accounts={filteredAccounts} />
       </div>
 
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
