@@ -1,29 +1,10 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { useAccounts } from "@/hooks/useAccounts";
-import { Account } from "@/types/accounts";
-import { AccountTree } from "@/components/accounting/AccountTree";
-import { AccountForm } from "@/components/accounting/AccountForm";
-import { SearchBar } from "@/components/SearchBar";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Plus, Filter, FileBarChart, Loader } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { AccountAnalysisCharts } from "@/components/accounting/AccountAnalysisCharts";
-import { cn } from "@/lib/utils";
-import { AccountFilters } from "@/components/accounting/AccountFilters";
-import { ReportDialog } from "@/components/accounting/ReportDialog";
+import { AccountPageHeader } from "@/components/accounting/AccountPageHeader";
+import { AccountsContent } from "@/components/accounting/AccountsContent";
+import { AccountDialogs } from "@/components/accounting/AccountDialogs";
 
 const AccountChartPage: React.FC = () => {
   const {
@@ -175,91 +156,40 @@ const AccountChartPage: React.FC = () => {
     <div className="container mx-auto p-6 rtl">
       <Header title="دليل الحسابات" showBack={true} />
 
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4 w-1/2">
-          <SearchBar placeholder="البحث في الحسابات..." onChange={handleSearch} />
-          
-          <AccountFilters
-            filterType={filterType}
-            minBalance={minBalance}
-            maxBalance={maxBalance}
-            onFilterChange={handleFilterChange}
-            onReset={handleResetFilters}
-            isFiltered={!!(filterType || minBalance || maxBalance)}
-          />
+      <AccountPageHeader
+        onSearch={handleSearch}
+        onAddAccount={() => setIsAddDialogOpen(true)}
+        filterType={filterType}
+        minBalance={minBalance}
+        maxBalance={maxBalance}
+        onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
+        accounts={filteredAccounts}
+        onGenerateReport={handleGenerateReport}
+      />
 
-          <ReportDialog
-            accounts={filteredAccounts}
-            onGenerate={handleGenerateReport}
-          />
-        </div>
+      <AccountsContent
+        isLoading={isLoading}
+        filteredAccounts={filteredAccounts}
+        filterType={filterType}
+        minBalance={minBalance}
+        maxBalance={maxBalance}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onShare={handleShare}
+      />
 
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="ml-2 h-4 w-4" />
-          إضافة حساب
-        </Button>
-      </div>
-
-      <div className="space-y-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : filteredAccounts.length > 0 ? (
-            <>
-              {(filterType || minBalance || maxBalance) && (
-                <div className="mb-4 text-sm text-gray-500">
-                  تم العثور على {filteredAccounts.length} حساب
-                </div>
-              )}
-              <AccountTree
-                accounts={filteredAccounts}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onShare={handleShare}
-              />
-            </>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              لم يتم العثور على حسابات. أضف حسابًا جديدًا للبدء.
-            </div>
-          )}
-        </div>
-
-        <AccountAnalysisCharts accounts={filteredAccounts} />
-      </div>
-
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="rtl">
-          <DialogHeader>
-            <DialogTitle>إضافة حساب جديد</DialogTitle>
-          </DialogHeader>
-          <AccountForm
-            parentOptions={getParentAccountOptions()}
-            onSubmit={handleAddSubmit}
-            onSuggestNumber={suggestAccountNumber}
-            onCancel={() => setIsAddDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="rtl">
-          <DialogHeader>
-            <DialogTitle>تعديل حساب</DialogTitle>
-          </DialogHeader>
-          {selectedAccount && (
-            <AccountForm
-              account={selectedAccount}
-              parentOptions={getParentAccountOptions()}
-              onSubmit={handleEditSubmit}
-              onSuggestNumber={suggestAccountNumber}
-              onCancel={() => setIsEditDialogOpen(false)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <AccountDialogs
+        isAddDialogOpen={isAddDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        isEditDialogOpen={isEditDialogOpen}
+        setIsEditDialogOpen={setIsEditDialogOpen}
+        selectedAccount={selectedAccount}
+        parentOptions={getParentAccountOptions()}
+        onAddSubmit={handleAddSubmit}
+        onEditSubmit={handleEditSubmit}
+        onSuggestNumber={suggestAccountNumber}
+      />
     </div>
   );
 };
