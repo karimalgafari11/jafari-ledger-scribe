@@ -26,6 +26,15 @@ export const PieChart = React.forwardRef<
     value: data.datasets[0].data[i],
   }));
 
+  // Get colors from the utils - these are the colors we'll use for individual pie slices
+  const pieColors = [
+    'rgba(54, 162, 235, 0.7)',
+    'rgba(255, 99, 132, 0.7)',
+    'rgba(75, 192, 192, 0.7)',
+    'rgba(153, 102, 255, 0.7)',
+    'rgba(255, 159, 64, 0.7)'
+  ];
+
   return (
     <ChartContainer 
       ref={ref} 
@@ -47,9 +56,7 @@ export const PieChart = React.forwardRef<
           {transformedData.map((entry, index) => (
             <RechartsPrimitive.Cell 
               key={`cell-${index}`} 
-              fill={Array.isArray(data.datasets[0].backgroundColor) 
-                ? data.datasets[0].backgroundColor[index % data.datasets[0].backgroundColor.length] 
-                : data.datasets[0].backgroundColor || `hsl(${index * 45}, 70%, 60%)`} 
+              fill={pieColors[index % pieColors.length]} 
             />
           ))}
         </RechartsPrimitive.Pie>

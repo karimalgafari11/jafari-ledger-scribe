@@ -3,6 +3,7 @@ import React from "react";
 import { Account } from "@/types/accounts";
 import { PieChart, BarChart, LineChart } from "@/components/ui/charts";
 import { cn } from "@/lib/utils";
+import { getPieChartColors } from "@/utils/chartUtils";
 
 interface AccountAnalysisChartsProps {
   accounts: Account[];
@@ -17,6 +18,9 @@ export function AccountAnalysisCharts({ accounts, className }: AccountAnalysisCh
     return acc;
   }, {} as Record<string, number>);
 
+  // Get chart colors
+  const { pieColors } = getPieChartColors();
+  
   // Transform data for charts
   const pieChartData = {
     labels: Object.keys(typeDistribution).map(type => {
@@ -32,13 +36,8 @@ export function AccountAnalysisCharts({ accounts, className }: AccountAnalysisCh
     datasets: [{
       label: 'توزيع الحسابات',
       data: Object.values(typeDistribution),
-      backgroundColor: [
-        'rgba(54, 162, 235, 0.7)',
-        'rgba(255, 99, 132, 0.7)',
-        'rgba(75, 192, 192, 0.7)',
-        'rgba(153, 102, 255, 0.7)',
-        'rgba(255, 159, 64, 0.7)'
-      ]
+      backgroundColor: pieColors[0], // Use a single color instead of array
+      borderColor: 'rgba(255, 255, 255, 0.5)'
     }]
   };
 
