@@ -8,11 +8,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { JournalEntry, JournalEntryLine, JournalStatus } from "@/types/journal";
-import { Plus, Trash2, Save, Check, X, ArrowLeft } from "lucide-react";
+import { Save, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { JournalEntryForm } from "./entry-form/JournalEntryForm";
 
 interface JournalEntryDialogProps {
   isCreateDialogOpen: boolean;
@@ -152,246 +151,6 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
 
   const isCurrentlyEditable = (isCreateDialogOpen || isEditDialogOpen) && !viewOnly;
 
-  const renderDialogContent = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <Label htmlFor="entryNumber">رقم القيد</Label>
-          <Input
-            id="entryNumber"
-            value={entryNumber}
-            onChange={(e) => setEntryNumber(e.target.value)}
-            disabled={!isCreateDialogOpen || !isCurrentlyEditable}
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="entryDate">تاريخ القيد</Label>
-          <Input
-            id="entryDate"
-            type="date"
-            value={entryDate}
-            onChange={(e) => setEntryDate(e.target.value)}
-            disabled={!isCurrentlyEditable}
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="status">الحالة</Label>
-          <Input
-            id="status"
-            value={status === 'draft' ? 'مسودة' : status === 'approved' ? 'معتمد' : 'ملغي'}
-            disabled
-          />
-        </div>
-      </div>
-      
-      <div>
-        <Label htmlFor="description">الوصف العام</Label>
-        <Input
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          disabled={!isCurrentlyEditable}
-          placeholder="أدخل وصفاً عاماً للقيد"
-        />
-      </div>
-      
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-medium">تفاصيل القيد</h3>
-          {isCurrentlyEditable && (
-            <Button type="button" onClick={addLine} size="sm" variant="outline">
-              <Plus className="h-4 w-4 ml-1" /> إضافة سطر
-            </Button>
-          )}
-        </div>
-        
-        <div className="border rounded-md overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-2 py-3 text-right text-xs font-medium text-gray-500 w-10">#</th>
-                <th className="px-2 py-3 text-right text-xs font-medium text-gray-500">الحساب</th>
-                <th className="px-2 py-3 text-right text-xs font-medium text-gray-500">الوصف</th>
-                <th className="px-2 py-3 text-right text-xs font-medium text-gray-500">مدين</th>
-                <th className="px-2 py-3 text-right text-xs font-medium text-gray-500">دائن</th>
-                {isCurrentlyEditable && (
-                  <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 w-10"></th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {lines.map((line, index) => (
-                <tr key={index}>
-                  <td className="px-2 py-3 text-right text-sm text-gray-500 align-top pt-4">{index + 1}</td>
-                  <td className="px-2 py-2">
-                    <div className="grid gap-2">
-                      {isCurrentlyEditable ? (
-                        <>
-                          <select
-                            className="w-full p-2 border rounded-md text-sm"
-                            value={line.accountId}
-                            onChange={(e) => {
-                              const selectedIndex = e.target.selectedIndex;
-                              const accountName = selectedIndex > 0 ? e.target.options[selectedIndex].text : "";
-                              handleLineChange(index, "accountId", e.target.value);
-                              handleLineChange(index, "accountName", accountName);
-                            }}
-                          >
-                            <option value="">اختر الحساب</option>
-                            <option value="101">الصندوق</option>
-                            <option value="102">البنك</option>
-                            <option value="126">معدات مكتبية</option>
-                            <option value="131">مدينون / عملاء</option>
-                            <option value="411">إيرادات المبيعات</option>
-                            <option value="511">مصاريف الرواتب</option>
-                            <option value="521">مصاريف كهرباء</option>
-                            <option value="522">مصاريف مياه</option>
-                            <option value="531">مصاريف الإيجار</option>
-                          </select>
-                        </>
-                      ) : (
-                        <div className="p-2 text-sm">
-                          {line.accountId} - {line.accountName}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-2 py-2">
-                    <Input
-                      value={line.description}
-                      onChange={(e) => handleLineChange(index, "description", e.target.value)}
-                      placeholder="وصف السطر"
-                      disabled={!isCurrentlyEditable}
-                      className="text-sm"
-                    />
-                  </td>
-                  <td className="px-2 py-2">
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={line.debit}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        handleLineChange(index, "debit", value);
-                        if (value > 0) {
-                          handleLineChange(index, "credit", 0);
-                        }
-                      }}
-                      disabled={!isCurrentlyEditable}
-                      className="text-sm"
-                    />
-                  </td>
-                  <td className="px-2 py-2">
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={line.credit}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        handleLineChange(index, "credit", value);
-                        if (value > 0) {
-                          handleLineChange(index, "debit", 0);
-                        }
-                      }}
-                      disabled={!isCurrentlyEditable}
-                      className="text-sm"
-                    />
-                  </td>
-                  {isCurrentlyEditable && (
-                    <td className="px-2 py-2 text-center">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => removeLine(index)}
-                        disabled={lines.length === 1}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-            <tfoot className="bg-gray-50">
-              <tr>
-                <td colSpan={3} className="px-4 py-3 text-left text-sm font-medium">
-                  المجموع
-                </td>
-                <td className="px-4 py-3 text-right text-sm font-medium">
-                  {totalDebit.toLocaleString('ar-SA')}
-                </td>
-                <td className="px-4 py-3 text-right text-sm font-medium">
-                  {totalCredit.toLocaleString('ar-SA')}
-                </td>
-                {isCurrentlyEditable && <td></td>}
-              </tr>
-              <tr>
-                <td colSpan={5} className="px-4 py-3 text-left text-sm">
-                  {isBalanced ? (
-                    <span className="text-green-600">القيد متوازن</span>
-                  ) : (
-                    <span className="text-red-600">القيد غير متوازن ({Math.abs(totalDebit - totalCredit).toLocaleString('ar-SA')})</span>
-                  )}
-                </td>
-                {isCurrentlyEditable && <td></td>}
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderDialogButtons = () => {
-    if (isViewDialogOpen) {
-      return (
-        <Button onClick={() => setIsViewDialogOpen(false)}>
-          إغلاق
-        </Button>
-      );
-    }
-    
-    if (isCurrentlyEditable) {
-      return (
-        <>
-          {isCreateDialogOpen && (
-            <>
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                <X className="ml-1 h-4 w-4" /> إلغاء
-              </Button>
-              <Button variant="secondary" onClick={() => handleSave("draft")}>
-                <Save className="ml-1 h-4 w-4" /> حفظ كمسودة
-              </Button>
-              <Button onClick={() => handleSave("approved")}>
-                <Check className="ml-1 h-4 w-4" /> اعتماد القيد
-              </Button>
-            </>
-          )}
-          {isEditDialogOpen && (
-            <>
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                <X className="ml-1 h-4 w-4" /> إلغاء
-              </Button>
-              <Button variant="secondary" onClick={() => handleSave(status)}>
-                <Save className="ml-1 h-4 w-4" /> حفظ التعديلات
-              </Button>
-              <Button onClick={() => handleSave("approved")}>
-                <Check className="ml-1 h-4 w-4" /> اعتماد القيد
-              </Button>
-            </>
-          )}
-        </>
-      );
-    }
-    
-    return null;
-  };
-
   return (
     <>
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
@@ -399,33 +158,102 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
           <DialogHeader>
             <DialogTitle>إنشاء قيد محاسبي جديد</DialogTitle>
           </DialogHeader>
-          {renderDialogContent()}
+          <JournalEntryForm
+            entryNumber={entryNumber}
+            entryDate={entryDate}
+            description={description}
+            status={status}
+            lines={lines}
+            totalDebit={totalDebit}
+            totalCredit={totalCredit}
+            isBalanced={isBalanced}
+            isEditable={isCurrentlyEditable}
+            isCreateMode={true}
+            onEntryNumberChange={setEntryNumber}
+            onEntryDateChange={setEntryDate}
+            onDescriptionChange={setDescription}
+            onLineChange={handleLineChange}
+            onAddLine={addLine}
+            onRemoveLine={removeLine}
+          />
           <DialogFooter className="gap-2 flex-wrap">
-            {renderDialogButtons()}
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              <X className="ml-1 h-4 w-4" /> إلغاء
+            </Button>
+            <Button variant="secondary" onClick={() => handleSave("draft")}>
+              <Save className="ml-1 h-4 w-4" /> حفظ كمسودة
+            </Button>
+            <Button onClick={() => handleSave("approved")}>
+              <Check className="ml-1 h-4 w-4" /> اعتماد القيد
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>تعديل القيد المحاسبي</DialogTitle>
           </DialogHeader>
-          {renderDialogContent()}
+          <JournalEntryForm
+            entryNumber={entryNumber}
+            entryDate={entryDate}
+            description={description}
+            status={status}
+            lines={lines}
+            totalDebit={totalDebit}
+            totalCredit={totalCredit}
+            isBalanced={isBalanced}
+            isEditable={isCurrentlyEditable}
+            isCreateMode={false}
+            onEntryNumberChange={setEntryNumber}
+            onEntryDateChange={setEntryDate}
+            onDescriptionChange={setDescription}
+            onLineChange={handleLineChange}
+            onAddLine={addLine}
+            onRemoveLine={removeLine}
+          />
           <DialogFooter className="gap-2 flex-wrap">
-            {renderDialogButtons()}
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              <X className="ml-1 h-4 w-4" /> إلغاء
+            </Button>
+            <Button variant="secondary" onClick={() => handleSave(status)}>
+              <Save className="ml-1 h-4 w-4" /> حفظ التعديلات
+            </Button>
+            <Button onClick={() => handleSave("approved")}>
+              <Check className="ml-1 h-4 w-4" /> اعتماد القيد
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>عرض تفاصيل القيد المحاسبي</DialogTitle>
           </DialogHeader>
-          {renderDialogContent()}
+          <JournalEntryForm
+            entryNumber={entryNumber}
+            entryDate={entryDate}
+            description={description}
+            status={status}
+            lines={lines}
+            totalDebit={totalDebit}
+            totalCredit={totalCredit}
+            isBalanced={isBalanced}
+            isEditable={false}
+            isCreateMode={false}
+            onEntryNumberChange={setEntryNumber}
+            onEntryDateChange={setEntryDate}
+            onDescriptionChange={setDescription}
+            onLineChange={handleLineChange}
+            onAddLine={addLine}
+            onRemoveLine={removeLine}
+          />
           <DialogFooter className="gap-2 flex-wrap">
-            {renderDialogButtons()}
+            <Button onClick={() => setIsViewDialogOpen(false)}>
+              إغلاق
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
