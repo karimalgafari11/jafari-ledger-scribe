@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -7,7 +8,7 @@ import { AccountForm } from "@/components/accounting/AccountForm";
 import { SearchBar } from "@/components/SearchBar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, FileBarChart } from "lucide-react";
+import { Plus, Filter, FileBarChart, Loader } from "lucide-react";
 import {
   Dialog,
   DialogContent,
