@@ -95,17 +95,17 @@ const AccountTreeNode: React.FC<AccountTreeNodeProps> = ({
         )}>
           <div className="flex items-center">
             {hasChildren ? (
-              <CollapsibleTrigger
-                onClick={() => setIsOpen(!isOpen)}
-                className="mr-2 p-1 hover:bg-gray-100 rounded-full"
-              >
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 text-gray-500 transition-transform duration-200",
-                    isOpen ? "transform rotate-180" : ""
-                  )}
-                />
-              </CollapsibleTrigger>
+              <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                <CollapsibleTrigger className="mr-2 p-1 hover:bg-gray-100 rounded-full">
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 text-gray-500 transition-transform duration-200",
+                      isOpen ? "transform rotate-180" : ""
+                    )}
+                  />
+                </CollapsibleTrigger>
+                {/* The CollapsibleContent is defined later in the component */}
+              </Collapsible>
             ) : (
               <div className="mr-2 w-6" />
             )}
@@ -171,6 +171,7 @@ const AccountTreeNode: React.FC<AccountTreeNodeProps> = ({
         </div>
 
         {hasChildren && (
+          // This is no longer needed, since we have the Collapsible component in place
           <Collapsible open={isOpen}>
             <CollapsibleContent>
               <div className="border-t border-gray-100 pr-4 pt-1 pb-1">
