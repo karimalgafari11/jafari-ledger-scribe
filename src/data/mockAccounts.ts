@@ -1,4 +1,3 @@
-
 import { Account } from "@/types/accounts";
 
 export const mockAccounts: Account[] = [
@@ -75,6 +74,42 @@ export const mockAccounts: Account[] = [
     updatedAt: new Date("2023-01-01")
   },
   {
+    id: "acc-11",
+    name: "حسابات الدائنين",
+    number: "2100",
+    type: "liability",
+    balance: 75000,
+    parentId: "acc-6",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-12",
+    name: "القروض",
+    number: "2200",
+    type: "liability",
+    balance: 150000,
+    parentId: "acc-6",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-13",
+    name: "الالتزامات المستحقة",
+    number: "2300",
+    type: "liability",
+    balance: 25000,
+    parentId: "acc-6",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
     id: "acc-7",
     name: "حقوق الملكية",
     number: "3000",
@@ -87,6 +122,42 @@ export const mockAccounts: Account[] = [
     updatedAt: new Date("2023-01-01")
   },
   {
+    id: "acc-14",
+    name: "رأس المال",
+    number: "3100",
+    type: "equity",
+    balance: 500000,
+    parentId: "acc-7",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-15",
+    name: "الاحتياطيات",
+    number: "3200",
+    type: "equity",
+    balance: 100000,
+    parentId: "acc-7",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-16",
+    name: "الأرباح المحتجزة",
+    number: "3300",
+    type: "equity",
+    balance: 250000,
+    parentId: "acc-7",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
     id: "acc-8",
     name: "الإيرادات",
     number: "4000",
@@ -94,6 +165,42 @@ export const mockAccounts: Account[] = [
     balance: 0,
     parentId: null,
     level: 1,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-17",
+    name: "إيرادات النشاط الرئيسي",
+    number: "4100",
+    type: "revenue",
+    balance: 450000,
+    parentId: "acc-8",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-18",
+    name: "إيرادات الاستثمار",
+    number: "4200",
+    type: "revenue",
+    balance: 75000,
+    parentId: "acc-8",
+    level: 2,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01")
+  },
+  {
+    id: "acc-19",
+    name: "إيرادات أخرى",
+    number: "4300",
+    type: "revenue",
+    balance: 25000,
+    parentId: "acc-8",
+    level: 2,
     isActive: true,
     createdAt: new Date("2023-01-01"),
     updatedAt: new Date("2023-01-01")
