@@ -2,6 +2,7 @@
 import React from "react";
 import { toast } from "sonner";
 import { JournalEntry } from "@/types/journal";
+import { JournalTable } from "@/components/accounting/journals/JournalTable";
 
 interface JournalSelectionProps {
   entries: JournalEntry[];
@@ -10,6 +11,9 @@ interface JournalSelectionProps {
   onSelectAll: (selected: boolean) => void;
   onDelete: (id: string) => void;
   onBulkDelete: () => void;
+  isLoading: boolean;
+  onView: (id: string) => void;
+  onEdit: (id: string) => void;
 }
 
 export const JournalSelection: React.FC<JournalSelectionProps> = ({
@@ -19,6 +23,9 @@ export const JournalSelection: React.FC<JournalSelectionProps> = ({
   onSelectAll,
   onDelete,
   onBulkDelete,
+  isLoading,
+  onView,
+  onEdit,
 }) => {
   const handleBulkDelete = async () => {
     if (selectedEntries.length === 0) {
@@ -33,12 +40,12 @@ export const JournalSelection: React.FC<JournalSelectionProps> = ({
   return (
     <JournalTable
       entries={entries}
-      isLoading={false}
+      isLoading={isLoading}
       selectedEntries={selectedEntries}
       onToggleSelection={onToggleSelection}
       onSelectAll={onSelectAll}
-      onView={() => {}}
-      onEdit={() => {}}
+      onView={onView}
+      onEdit={onEdit}
       onDelete={onDelete}
     />
   );

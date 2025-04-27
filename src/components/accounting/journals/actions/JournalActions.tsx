@@ -2,12 +2,15 @@
 import React from "react";
 import { toast } from "sonner";
 import { JournalEntry } from "@/types/journal";
+import { JournalHeader } from "@/components/accounting/journals/JournalHeader";
 
 interface JournalActionsProps {
   selectedEntries: string[];
   entries: JournalEntry[];
   onExport: (format: "pdf" | "excel") => Promise<void>;
   onPrintPreview: () => Promise<void>;
+  onCreateEntry: () => void;
+  onShareWhatsApp: () => void;
 }
 
 export const JournalActions: React.FC<JournalActionsProps> = ({
@@ -15,6 +18,8 @@ export const JournalActions: React.FC<JournalActionsProps> = ({
   entries,
   onExport,
   onPrintPreview,
+  onCreateEntry,
+  onShareWhatsApp,
 }) => {
   const handleShareWhatsApp = () => {
     let message = "قيود محاسبية - النظام المحاسبي";
@@ -35,7 +40,7 @@ export const JournalActions: React.FC<JournalActionsProps> = ({
 
   return (
     <JournalHeader 
-      onCreateEntry={() => {}}
+      onCreateEntry={onCreateEntry}
       onExport={onExport}
       onShareWhatsApp={handleShareWhatsApp}
       onPrintPreview={onPrintPreview}

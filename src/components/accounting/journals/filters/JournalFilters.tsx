@@ -2,6 +2,7 @@
 import React from "react";
 import { JournalStatus } from "@/types/journal";
 import { toast } from "sonner";
+import { JournalToolbar } from "@/components/accounting/journals/JournalToolbar";
 
 interface JournalFiltersProps {
   filterDate: {from?: Date; to?: Date};
@@ -15,6 +16,9 @@ interface JournalFiltersProps {
     period: "day" | "week" | "month" | ""
   ) => void;
   onResetFilters: () => void;
+  onSearch: (term: string) => void;
+  onBulkDelete: () => void;
+  selectedCount: number;
 }
 
 export const JournalFilters: React.FC<JournalFiltersProps> = ({
@@ -24,6 +28,9 @@ export const JournalFilters: React.FC<JournalFiltersProps> = ({
   filterPeriod,
   onFilterChange,
   onResetFilters,
+  onSearch,
+  onBulkDelete,
+  selectedCount
 }) => {
   const handleFilterChange = (
     dateRange: {from?: Date; to?: Date},
@@ -42,17 +49,16 @@ export const JournalFilters: React.FC<JournalFiltersProps> = ({
 
   return (
     <div>
-      {/* Pass the filter handling to JournalToolbar */}
       <JournalToolbar
-        onSearch={() => {}}
+        onSearch={onSearch}
         onFilterChange={handleFilterChange}
         onResetFilters={handleResetFilters}
         filterDate={filterDate}
         filterStatus={filterStatus}
         filterUser={filterUser}
         filterPeriod={filterPeriod}
-        onBulkDelete={() => {}}
-        selectedCount={0}
+        onBulkDelete={onBulkDelete}
+        selectedCount={selectedCount}
       />
     </div>
   );
