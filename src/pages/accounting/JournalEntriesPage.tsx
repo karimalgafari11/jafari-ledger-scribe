@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { toast } from "sonner";
-import { JournalHeader } from "@/components/accounting/journals/JournalHeader";
-import { JournalToolbar } from "@/components/accounting/journals/JournalToolbar";
-import { JournalTable } from "@/components/accounting/journals/JournalTable";
+import { JournalFilters } from "@/components/accounting/journals/filters/JournalFilters";
+import { JournalSelection } from "@/components/accounting/journals/selection/JournalSelection";
+import { JournalActions } from "@/components/accounting/journals/actions/JournalActions";
 import { JournalEntryDialog } from "@/components/accounting/journals/JournalEntryDialog";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { JournalEntry, JournalStatus } from "@/types/journal";
@@ -28,8 +27,8 @@ const JournalEntriesPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<JournalStatus | "">("");
   const [filterUser, setFilterUser] = useState("");
   const [filterPeriod, setFilterPeriod] = useState<"day" | "week" | "month" | "">("");
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = (searchTerm: string) => {
     searchEntries(searchTerm);
@@ -198,34 +197,37 @@ const JournalEntriesPage: React.FC = () => {
     <div className="container mx-auto p-6 rtl">
       <Header title="القيود اليومية" showBack={true} />
 
-      <JournalHeader 
-        onCreateEntry={handleCreate}
+      <JournalActions 
+        selectedEntries={selectedEntries}
+        entries={entries}
         onExport={handleExport}
-        onShareWhatsApp={handleShareWhatsApp}
         onPrintPreview={handlePrintPreview}
+        onCreateEntry={handleCreate}
+        onShareWhatsApp={handleShareWhatsApp}
       />
 
-      <JournalToolbar
-        onSearch={handleSearch}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetFilters}
+      <JournalFilters
         filterDate={filterDate}
         filterStatus={filterStatus}
         filterUser={filterUser}
         filterPeriod={filterPeriod}
+        onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
+        onSearch={handleSearch}
         onBulkDelete={handleBulkDelete}
         selectedCount={selectedEntries.length}
       />
 
-      <JournalTable
+      <JournalSelection
         entries={filteredEntries}
-        isLoading={isLoading}
         selectedEntries={selectedEntries}
         onToggleSelection={handleToggleSelection}
         onSelectAll={handleSelectAll}
+        onDelete={handleDelete}
+        onBulkDelete={handleBulkDelete}
+        isLoading={isLoading}
         onView={handleView}
         onEdit={handleEdit}
-        onDelete={handleDelete}
       />
 
       <JournalEntryDialog
