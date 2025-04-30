@@ -32,6 +32,7 @@ import TransferPage from "./pages/inventory-control/TransferPage";
 import LocationsPage from "./pages/inventory-control/LocationsPage";
 import DamagedItemsPage from "./pages/inventory-control/DamagedItemsPage";
 import AiAssistantPage from "./pages/ai/AiAssistantPage";
+import BasicDefinitionsPage from "./pages/definitions/BasicDefinitionsPage";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/basic-definitions" element={<BasicDefinitionsPage />} />
         
         {/* Inventory Routes */}
         <Route path="/inventory/products" element={<ProductsPage />} />
