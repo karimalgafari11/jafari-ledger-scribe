@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,16 @@ import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { ExchangeRateDialog } from "./ExchangeRateDialog";
 import { useCurrencies } from "@/hooks/useCurrencies";
 import { ExchangeRate } from "@/types/definitions";
-import { Edit, Trash2, RefreshCw, Calendar } from "lucide-react";
+import { Edit, Trash2, RefreshCw, Calendar, ChevronDown, FileCheck, PieChart } from "lucide-react";
 import { format } from "date-fns";
+import { ExchangeRateStatistics } from "./ExchangeRateStatistics";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const ExchangeRatesModule = () => {
   const {
@@ -25,9 +33,17 @@ export const ExchangeRatesModule = () => {
     updateExchangeRate,
     deleteExchangeRate,
     updateExchangeRatesAutomatically,
+    loadExchangeRateHistory,
+    historyData,
+    isHistoryLoading,
+    getRecentChanges
   } = useExchangeRates();
   
   const { currencies } = useCurrencies();
+  
+  const [showStatistics, setShowStatistics] = useState(false);
+  const [historicalPeriod, setHistoricalPeriod] = useState("30");
+  const [selectedPair, setSelectedPair] = useState<{source: string; target: string} | null>(null);
   
   const handleCreateRate = () => {
     setIsCreateDialogOpen(true);
@@ -52,8 +68,42 @@ export const ExchangeRatesModule = () => {
     return currencies.find((c) => c.id === id)?.code || id;
   };
 
+  const handleShowStatistics = (rate: ExchangeRate) => {
+    setSelectedPair({
+      source: rate.sourceCurrencyId,
+      target: rate.targetCurrencyId
+    });
+    
+    // Load historical data for the selected pair
+    loadExchangeRateHistory(
+      rate.sourceCurrencyId,
+      rate.targetCurrencyId, 
+      parseInt(historicalPeriod)
+    );
+    
+    setShowStatistics(true);
+  };
+  
+  const handlePeriodChange = (period: string) => {
+    setHistoricalPeriod(period);
+    
+    if (selectedPair) {
+      loadExchangeRateHistory(
+        selectedPair.source,
+        selectedPair.target,
+        parseInt(period)
+      );
+    }
+  };
+
+  // Get recent changes for statistics chart
+  const recentChanges = getRecentChanges().map(change => ({
+    currencyPair: change.currencyPair,
+    percentageChange: parseFloat(change.percentageChange.toFixed(2))
+  }));
+
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>أسعار الصرف</CardTitle>
         <div className="flex gap-2">
@@ -68,9 +118,46 @@ export const ExchangeRatesModule = () => {
             <RefreshCw className="h-4 w-4" />
             تحديث تلقائي
           </Button>
+          <Button
+            variant={showStatistics ? "secondary" : "outline"}
+            onClick={() => setShowStatistics(!showStatistics)}
+            className="flex items-center gap-1"
+          >
+            <PieChart className="h-4 w-4" />
+            {showStatistics ? "إخفاء الإحصائيات" : "عرض الإحصائيات"}
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
+        {showStatistics && (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">إحصائيات أسعار الصرف</h3>
+              <div className="flex items-center gap-2">
+                <span>الفترة:</span>
+                <Select value={historicalPeriod} onValueChange={handlePeriodChange}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="اختر الفترة" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7">آخر أسبوع</SelectItem>
+                    <SelectItem value="30">آخر شهر</SelectItem>
+                    <SelectItem value="90">آخر 3 أشهر</SelectItem>
+                    <SelectItem value="180">آخر 6 أشهر</SelectItem>
+                    <SelectItem value="365">آخر سنة</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <ExchangeRateStatistics 
+              historicalData={historyData}
+              recentChanges={recentChanges}
+              isLoading={isHistoryLoading}
+            />
+          </div>
+        )}
+        
         <div className="rounded-md border">
           <Table dir="rtl">
             <TableHeader>
@@ -128,6 +215,13 @@ export const ExchangeRatesModule = () => {
                           onClick={() => handleEditRate(rate)}
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleShowStatistics(rate)}
+                        >
+                          <PieChart className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"

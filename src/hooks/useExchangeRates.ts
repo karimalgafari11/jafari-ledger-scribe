@@ -1,8 +1,9 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ExchangeRate } from "@/types/definitions";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
+import { updateExchangeRatesFromAPI, getExchangeRateHistory } from "@/services/exchangeRateService";
+import { useCurrencies } from "@/hooks/useCurrencies";
 
 // بيانات تجريبية لأسعار الصرف
 const initialExchangeRates: ExchangeRate[] = [
@@ -38,6 +39,35 @@ export const useExchangeRates = () => {
   const [selectedRate, setSelectedRate] = useState<ExchangeRate | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [historyData, setHistoryData] = useState<{date: string; rate: number}[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  
+  const { currencies } = useCurrencies();
+
+  // Function to load historical data for a currency pair
+  const loadExchangeRateHistory = async (sourceCurrencyId: string, targetCurrencyId: string, days: number = 30) => {
+    setIsHistoryLoading(true);
+    
+    try {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      const history = await getExchangeRateHistory(
+        sourceCurrencyId,
+        targetCurrencyId,
+        startDate,
+        endDate
+      );
+      
+      setHistoryData(history);
+    } catch (error) {
+      console.error("Error loading exchange rate history:", error);
+      toast.error("حدث خطأ أثناء تحميل تاريخ أسعار الصرف");
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
 
   // إضافة سعر صرف جديد
   const createExchangeRate = (rate: Omit<ExchangeRate, "id">) => {
@@ -124,31 +154,65 @@ export const useExchangeRates = () => {
     return true;
   };
 
-  // تحديث أسعار الصرف تلقائيًا
-  const updateExchangeRatesAutomatically = () => {
+  // تحديث أسعار الصرف تلقائيًا من مصدر خارجي
+  const updateExchangeRatesAutomatically = async () => {
     setIsLoading(true);
     
-    // محاكاة طلب تحديث أسعار الصرف من API خارجي
-    setTimeout(() => {
-      const updatedRates = exchangeRates.map(rate => {
-        // تحديث الأسعار التلقائية فقط
-        if (!rate.isManual) {
-          // إضافة تغيير عشوائي صغير للسعر للمحاكاة
-          const randomChange = Math.random() * 0.01 - 0.005; // -0.5% to +0.5%
-          return {
-            ...rate,
-            rate: Math.max(0.001, rate.rate + rate.rate * randomChange),
-            date: new Date().toISOString(),
-          };
-        }
-        
-        return rate;
-      });
+    try {
+      // Call the exchange rate service to update rates
+      const result = await updateExchangeRatesFromAPI(currencies, exchangeRates);
+      setExchangeRates(result.updatedRates);
       
-      setExchangeRates(updatedRates);
-      toast.success("تم تحديث أسعار الصرف التلقائية بنجاح");
+      // Return rate changes for potential journal entry creation
+      return result;
+    } catch (error) {
+      console.error("Error updating exchange rates:", error);
+      toast.error("حدث خطأ أثناء تحديث أسعار الصرف");
+      return { 
+        updatedRates: exchangeRates,
+        rateChanges: []
+      };
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  // Get recent changes for statistics
+  const getRecentChanges = () => {
+    // Group by currency pair and get the latest change
+    const currencyPairs = new Map<string, { oldRate: number; newRate: number; date: string }>();
+    
+    // Simulate recent changes (in a real app, this would come from history table)
+    for (let i = 0; i < 5; i++) {
+      const randomIndex = Math.floor(Math.random() * exchangeRates.length);
+      const rate = exchangeRates[randomIndex];
+      
+      // Find source and target currencies
+      const sourceCurrency = currencies.find(c => c.id === rate.sourceCurrencyId)?.code || 
+                            rate.sourceCurrencyId;
+      const targetCurrency = currencies.find(c => c.id === rate.targetCurrencyId)?.code || 
+                            rate.targetCurrencyId;
+      
+      const pair = `${sourceCurrency}/${targetCurrency}`;
+      
+      // Generate random previous rate with small difference
+      const oldRate = rate.rate * (1 - (Math.random() * 0.02 - 0.01)); // -1% to +1%
+      
+      currencyPairs.set(pair, {
+        oldRate,
+        newRate: rate.rate,
+        date: new Date(Date.now() - Math.random() * 7 * 86400000).toISOString() // Random day in last week
+      });
+    }
+    
+    // Convert to array for display
+    return Array.from(currencyPairs.entries()).map(([currencyPair, data]) => ({
+      currencyPair,
+      oldRate: data.oldRate,
+      newRate: data.newRate,
+      percentageChange: ((data.newRate - data.oldRate) / data.oldRate) * 100,
+      date: data.date
+    }));
   };
 
   return {
@@ -164,5 +228,9 @@ export const useExchangeRates = () => {
     updateExchangeRate,
     deleteExchangeRate,
     updateExchangeRatesAutomatically,
+    loadExchangeRateHistory,
+    historyData,
+    isHistoryLoading,
+    getRecentChanges
   };
 };
