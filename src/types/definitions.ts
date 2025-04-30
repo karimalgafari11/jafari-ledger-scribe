@@ -43,10 +43,12 @@ export interface Currency {
   id: string;
   code: string; // مثل USD, SAR
   name: string;
-  country: string;
   symbol: string;
+  country: string;
   isDefault: boolean;
   isActive: boolean;
+  exchangeRate: number;
+  decimalPlaces: number;
 }
 
 export interface ExchangeRate {
@@ -54,7 +56,7 @@ export interface ExchangeRate {
   sourceCurrencyId: string;
   targetCurrencyId: string;
   rate: number;
-  date: Date;
+  date: string;
   isManual: boolean;
 }
 
