@@ -22,6 +22,7 @@ import CashRegisterPage from "./accounting/CashRegisterPage";
 import CommercialPapersPage from "./accounting/CommercialPapersPage";
 import CurrenciesPage from "./definitions/CurrenciesPage";
 import DiscountsPage from "./definitions/DiscountsPage";
+import ReportTemplatesPage from "./reports/ReportTemplatesPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -32,6 +33,8 @@ const Index = () => {
         return <Dashboard />;
       case "reports":
         return <Reports />;
+      case "reports-templates":
+        return <ReportTemplatesPage />;
       case "expenses-new":
         return <NewExpensePage />;
       case "expenses-categories":
