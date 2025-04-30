@@ -30,7 +30,7 @@ import {
 import { toast } from "sonner";
 import { 
   Settings2, 
-  Language, 
+  Languages, 
   Calendar, 
   Building2, 
   PaletteIcon, 
@@ -77,7 +77,7 @@ const SystemSettingsPage = () => {
               <span>الشركة</span>
             </TabsTrigger>
             <TabsTrigger value="localization" className="flex items-center gap-2">
-              <Language className="h-4 w-4" />
+              <Languages className="h-4 w-4" />
               <span>التخصيص</span>
             </TabsTrigger>
             <TabsTrigger value="appearance" className="flex items-center gap-2">
