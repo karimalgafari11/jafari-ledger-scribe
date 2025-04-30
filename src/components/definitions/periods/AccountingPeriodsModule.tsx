@@ -120,10 +120,16 @@ export const AccountingPeriodsModule = () => {
 
   // معالجة إضافة فترة جديدة
   const handleCreate = (values: z.infer<typeof formSchema>) => {
-    const success = createPeriod({
-      ...values,
+    // Ensure all required properties are passed
+    const periodData = {
+      name: values.name,
+      fiscalYearId: values.fiscalYearId,
+      startDate: values.startDate,
+      endDate: values.endDate,
       isClosed: false,
-    });
+    };
+    
+    const success = createPeriod(periodData);
     
     if (success) {
       createForm.reset();
@@ -587,4 +593,3 @@ export const AccountingPeriodsModule = () => {
     </Card>
   );
 };
-
