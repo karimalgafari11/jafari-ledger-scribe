@@ -1,6 +1,6 @@
 
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import AccountChartPage from "./pages/accounting/AccountChartPage";
@@ -79,6 +79,7 @@ function App() {
         
         {/* التعاريف والإعدادات */}
         <Route path="/definitions" element={<BasicDefinitionsPage />} />
+        <Route path="/basic-definitions" element={<Navigate to="/definitions" replace />} />
         <Route path="/definitions/currencies" element={<CurrenciesPage />} />
         <Route path="/settings/branches" element={<BranchesPage />} />
         <Route path="/settings/users" element={<UsersPage />} />

@@ -55,6 +55,7 @@ const Index = () => {
       case "ai-assistant":
         return <AiAssistantPage />;
       case "basic-definitions":
+      case "definitions":
         return <BasicDefinitionsPage />;
       default:
         return (

@@ -1,4 +1,3 @@
-
 import {
   LayoutDashboard,
   Box,
@@ -31,7 +30,7 @@ export const menuItems: MenuItem[] = [
   {
     section: "التعاريف الأساسية",
     icon: Building,
-    path: "/basic-definitions",
+    path: "/definitions",
     children: []
   },
   {
