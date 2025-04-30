@@ -11,6 +11,14 @@ export interface SystemSettings {
   address: string;
   phone: string;
   email: string;
+  timezone?: string;
+  dateFormat?: string;
+  numberFormat?: string;
+  fontSize?: 'small' | 'medium' | 'large';
+  density?: 'compact' | 'comfortable' | 'spacious';
+  invoicePrefix?: string;
+  invoiceStartNumber?: number;
+  lockPeriod?: 'day' | 'week' | 'month' | 'quarter';
 }
 
 export interface Branch {
