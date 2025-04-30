@@ -6,6 +6,7 @@ import { JournalSelection } from "@/components/accounting/journals/selection/Jou
 import { JournalActions } from "@/components/accounting/journals/actions/JournalActions";
 import { JournalEntryDialog } from "@/components/accounting/journals/JournalEntryDialog";
 import { useJournalPage } from "@/hooks/useJournalPage";
+import { JournalEntry } from "@/types/journal";
 
 const JournalEntriesPage: React.FC = () => {
   const {
