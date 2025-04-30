@@ -28,6 +28,7 @@ import JournalEntriesPage from "./pages/accounting/JournalEntriesPage";
 import CostCentersPage from "./pages/accounting/CostCentersPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
+import TransferPage from "./pages/inventory-control/TransferPage";
 
 const queryClient = new QueryClient();
 
@@ -66,7 +67,7 @@ const App = () => (
           <Route path="/accounting/settings" element={<NotFound />} />
           
           {/* Inventory Control Routes */}
-          <Route path="/inventory-control/transfer" element={<NotFound />} />
+          <Route path="/inventory-control/transfer" element={<TransferPage />} />
           <Route path="/inventory-control/locations" element={<NotFound />} />
           <Route path="/inventory-control/damaged" element={<NotFound />} />
           
