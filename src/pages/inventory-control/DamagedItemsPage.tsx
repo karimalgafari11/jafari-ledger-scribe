@@ -265,6 +265,8 @@ export default function DamagedItemsPage() {
         {isSettingsOpen && (
           <PageSettings
             onClose={() => setIsSettingsOpen(false)}
+            currency={selectedCurrency}
+            onCurrencyChange={setSelectedCurrency}
           />
         )}
       </div>
