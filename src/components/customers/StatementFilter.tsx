@@ -1,9 +1,9 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { FileText, CreditCard, RotateCcw } from "lucide-react";
 import { Transaction } from "@/types/transactions";
+import { Card, CardContent } from "@/components/ui/card";
 
 type TransactionType = Transaction["type"] | "all";
 
@@ -45,45 +45,47 @@ export const StatementFilter = ({ selectedTypes, onFilterChange }: StatementFilt
   const isSelected = (type: TransactionType) => selectedTypes.includes(type);
 
   return (
-    <div className="flex flex-col mb-4">
-      <h3 className="text-sm font-medium mb-2 text-right">تصفية حسب نوع المعاملة</h3>
-      <div className="flex gap-2 flex-wrap justify-end">
-        <Toggle 
-          pressed={isSelected("all")} 
-          onPressedChange={() => handleToggle("all")}
-          variant="outline"
-          className="flex flex-row-reverse"
-        >
-          <span>الكل</span>
-        </Toggle>
-        <Toggle 
-          pressed={isSelected("invoice")} 
-          onPressedChange={() => handleToggle("invoice")}
-          variant="outline"
-          className="flex flex-row-reverse"
-        >
-          <FileText size={16} className="ml-1" />
-          <span>فواتير</span>
-        </Toggle>
-        <Toggle 
-          pressed={isSelected("payment")} 
-          onPressedChange={() => handleToggle("payment")}
-          variant="outline"
-          className="flex flex-row-reverse"
-        >
-          <CreditCard size={16} className="ml-1" />
-          <span>دفعات</span>
-        </Toggle>
-        <Toggle 
-          pressed={isSelected("return")} 
-          onPressedChange={() => handleToggle("return")}
-          variant="outline"
-          className="flex flex-row-reverse"
-        >
-          <RotateCcw size={16} className="ml-1" />
-          <span>مرتجعات</span>
-        </Toggle>
-      </div>
-    </div>
+    <Card className="mb-4">
+      <CardContent className="pt-6">
+        <h3 className="text-sm font-medium mb-3 text-right">تصفية حسب نوع المعاملة</h3>
+        <div className="flex gap-2 flex-wrap justify-end">
+          <Toggle 
+            pressed={isSelected("all")} 
+            onPressedChange={() => handleToggle("all")}
+            variant="outline"
+            className="flex flex-row-reverse gap-2"
+          >
+            <span>الكل</span>
+          </Toggle>
+          <Toggle 
+            pressed={isSelected("invoice")} 
+            onPressedChange={() => handleToggle("invoice")}
+            variant="outline"
+            className="flex flex-row-reverse gap-2"
+          >
+            <FileText size={16} />
+            <span>فواتير</span>
+          </Toggle>
+          <Toggle 
+            pressed={isSelected("payment")} 
+            onPressedChange={() => handleToggle("payment")}
+            variant="outline"
+            className="flex flex-row-reverse gap-2"
+          >
+            <CreditCard size={16} />
+            <span>دفعات</span>
+          </Toggle>
+          <Toggle 
+            pressed={isSelected("return")} 
+            onPressedChange={() => handleToggle("return")}
+            variant="outline"
+            className="flex flex-row-reverse gap-2"
+          >
+            <RotateCcw size={16} />
+            <span>مرتجعات</span>
+          </Toggle>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
