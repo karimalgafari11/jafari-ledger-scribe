@@ -15,6 +15,7 @@ const initialCurrencies: Currency[] = [
     isActive: true,
     exchangeRate: 1, // سعر الصرف بالنسبة للعملة الافتراضية
     decimalPlaces: 2,
+    country: "المملكة العربية السعودية",
   },
   {
     id: "2",
@@ -25,6 +26,7 @@ const initialCurrencies: Currency[] = [
     isActive: true,
     exchangeRate: 0.2666, // سعر الصرف بالنسبة للعملة الافتراضية
     decimalPlaces: 2,
+    country: "الولايات المتحدة الأمريكية",
   },
   {
     id: "3",
@@ -35,6 +37,7 @@ const initialCurrencies: Currency[] = [
     isActive: true,
     exchangeRate: 0.2434, // سعر الصرف بالنسبة للعملة الافتراضية
     decimalPlaces: 2,
+    country: "الاتحاد الأوروبي",
   },
   {
     id: "4",
@@ -45,6 +48,7 @@ const initialCurrencies: Currency[] = [
     isActive: true,
     exchangeRate: 0.9792, // سعر الصرف بالنسبة للعملة الافتراضية
     decimalPlaces: 2,
+    country: "الإمارات العربية المتحدة",
   },
 ];
 

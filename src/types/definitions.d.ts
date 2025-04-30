@@ -11,6 +11,7 @@ interface Currency {
   isActive: boolean;
   exchangeRate: number; // سعر الصرف مقابل العملة الافتراضية
   decimalPlaces: number; // عدد الأرقام العشرية
+  country?: string; // الدولة (اختياري)
 }
 
 // تعريف سعر الصرف
@@ -19,7 +20,7 @@ interface ExchangeRate {
   sourceCurrencyId: string; // معرف العملة المصدر
   targetCurrencyId: string; // معرف العملة الهدف
   rate: number; // سعر الصرف
-  date: string; // تاريخ سعر الصرف
+  date: string; // تاريخ سعر الصرف (كسلسلة نصية)
   isManual: boolean; // هل تم إدخاله يدويًا أم تم جلبه تلقائيًا
 }
 

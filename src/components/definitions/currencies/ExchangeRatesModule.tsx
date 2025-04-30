@@ -164,7 +164,7 @@ export const ExchangeRatesModule = () => {
             targetCurrencyId: data.targetCurrencyId,
             rate: data.rate,
             isManual: true,
-            date: new Date()
+            date: new Date().toISOString()
           };
           createExchangeRate(newRate);
           setIsCreateDialogOpen(false);
