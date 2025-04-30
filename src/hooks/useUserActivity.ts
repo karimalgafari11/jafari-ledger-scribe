@@ -4,10 +4,19 @@ import { UserActivity, ActivityAction } from '@/types/permissions';
 import { mockUserActivities } from '@/data/mockPermissions';
 import { toast } from 'sonner';
 
+export type UserActivityFilters = {
+  userId: string;
+  action: ActivityAction | '';
+  module: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  status: 'success' | 'failed' | 'warning' | 'info' | '';
+};
+
 export function useUserActivity() {
   const [activities, setActivities] = useState<UserActivity[]>(mockUserActivities);
   const [isLoading, setIsLoading] = useState(false);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<UserActivityFilters>({
     userId: '',
     action: '' as ActivityAction | '',
     module: '',
@@ -111,9 +120,9 @@ export function useUserActivity() {
   };
   
   // تحديث المرشحات
-  const updateFilter = <K extends keyof typeof filters>(
+  const updateFilter = <K extends keyof UserActivityFilters>(
     key: K,
-    value: typeof filters[K]
+    value: UserActivityFilters[K]
   ) => {
     setFilters(prev => ({
       ...prev,

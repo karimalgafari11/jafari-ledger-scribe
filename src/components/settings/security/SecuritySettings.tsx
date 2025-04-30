@@ -63,9 +63,11 @@ const securitySettingsSchema = z.object({
   }),
 });
 
+type SecuritySettingsFormValues = z.infer<typeof securitySettingsSchema>;
+
 interface SecuritySettingsProps {
   settings: SecuritySettings;
-  onUpdateSettings: (settings: Partial<SecuritySettings>) => Promise<boolean>;
+  onUpdateSettings: (settings: SecuritySettingsFormValues) => Promise<boolean>;
   isLoading: boolean;
 }
 
@@ -77,7 +79,7 @@ const SecuritySettingsComponent = ({
   const [activeTab, setActiveTab] = useState("password");
   
   // إعداد نموذج react-hook-form
-  const form = useForm<z.infer<typeof securitySettingsSchema>>({
+  const form = useForm<SecuritySettingsFormValues>({
     resolver: zodResolver(securitySettingsSchema),
     defaultValues: {
       passwordPolicy: settings.passwordPolicy,
@@ -87,7 +89,7 @@ const SecuritySettingsComponent = ({
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof securitySettingsSchema>) => {
+  const onSubmit = async (data: SecuritySettingsFormValues) => {
     await onUpdateSettings(data);
   };
 

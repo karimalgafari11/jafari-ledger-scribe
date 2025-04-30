@@ -16,6 +16,42 @@ import {
 } from '@/data/mockPermissions';
 import { toast } from 'sonner';
 
+// Define the type for security settings form
+type SecuritySettingsUpdate = {
+  passwordPolicy: {
+    minimumLength: number;
+    requireUppercase: boolean;
+    requireLowercase: boolean;
+    requireNumbers: boolean;
+    requireSpecialChars: boolean;
+    passwordExpiryDays: number;
+    preventPasswordReuse: number;
+    lockoutThreshold: number;
+    lockoutDurationMinutes: number;
+  };
+  loginSettings: {
+    maxFailedAttempts: number;
+    lockoutDurationMinutes: number;
+    requireTwoFactor: boolean;
+    sessionTimeoutMinutes: number;
+    allowMultipleSessions: boolean;
+    allowRememberMe: boolean;
+  };
+  dataAccessControls: {
+    restrictBranchAccess: boolean;
+    restrictDataByDate: boolean;
+    restrictedDateRangeDays: number;
+    hideFinancialFigures: boolean;
+    restrictExports: boolean;
+    auditAllChanges: boolean;
+  };
+  encryptionSettings: {
+    encryptionEnabled: boolean;
+    encryptionType: 'standard' | 'advanced';
+    keyRotationDays: number;
+  };
+};
+
 export function usePermissions() {
   const [roles, setRoles] = useState<UserRole[]>(mockUserRoles);
   const [permissions, setPermissions] = useState<Permission[]>(mockPermissions);
@@ -123,7 +159,7 @@ export function usePermissions() {
   };
   
   // تحديث إعدادات الأمان
-  const updateSecuritySettings = async (settings: Partial<SecuritySettings>) => {
+  const updateSecuritySettings = async (settings: SecuritySettingsUpdate) => {
     setIsLoading(true);
     
     try {
@@ -152,8 +188,8 @@ export function usePermissions() {
     permissionGroups: groups,
     securitySettings,
     isLoading,
-    checkPermission,
-    checkModulePermissions,
+    checkPermission: checkPermission,
+    checkModulePermissions: checkModulePermissions,
     addRole,
     updateRole,
     deleteRole,

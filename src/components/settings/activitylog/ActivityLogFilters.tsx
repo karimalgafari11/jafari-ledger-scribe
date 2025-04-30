@@ -13,16 +13,18 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { ActivityAction } from "@/types/permissions";
 import { RefreshCw, Download, Search, Filter, X } from "lucide-react";
 
+interface FiltersType {
+  userId: string;
+  action: ActivityAction | '';
+  module: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  status: 'success' | 'failed' | 'warning' | 'info' | '';
+}
+
 interface ActivityLogFiltersProps {
-  filters: {
-    userId: string;
-    action: ActivityAction | '';
-    module: string;
-    startDate: Date | null;
-    endDate: Date | null;
-    status: 'success' | 'failed' | 'warning' | 'info' | '';
-  };
-  onUpdateFilter: <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => void;
+  filters: FiltersType;
+  onUpdateFilter: <K extends keyof FiltersType>(key: K, value: FiltersType[K]) => void;
   onResetFilters: () => void;
   onSearch: () => Promise<any>;
   onExport: (format: 'pdf' | 'excel' | 'csv') => Promise<boolean>;
