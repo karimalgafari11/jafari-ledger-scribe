@@ -10,7 +10,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui/table";
-import { mockProducts } from "@/data/mockProducts";
+import { mockAutoParts } from "@/data/mockAutoparts";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
 
@@ -30,32 +30,49 @@ interface Item {
   notes: string;
 }
 
-// استخدام منتجات وهمية بشكل مؤقت، في التطبيق الحقيقي ستأتي من API
-const tempItems: Item[] = mockProducts.map((product, index) => ({
-  id: product.id,
-  name: product.name,
-  code: product.code,
-  manufacturer: "شركة " + product.category,
-  purchasePrice: Math.round(product.price * 0.75), // سعر شراء تقديري للعرض
-  sellingPrice: product.price,
-  quantity: product.quantity,
-  reorderLevel: product.reorderLevel,
-  notes: product.quantity < 10 ? "المخزون منخفض" : ""
+// استخدام قطع غيار السيارات بشكل مؤقت، في التطبيق الحقيقي ستأتي من API
+const tempItems: Item[] = mockAutoParts.map((part) => ({
+  id: part.id,
+  name: part.name,
+  code: part.code,
+  manufacturer: part.brand,
+  purchasePrice: Math.round(part.price * 0.75), // سعر شراء تقديري للعرض
+  sellingPrice: part.price,
+  quantity: part.quantity,
+  reorderLevel: part.reorderLevel,
+  notes: part.quantity < 10 ? "المخزون منخفض" : ""
 }));
 
 // إضافة المزيد من العناصر لتجاوز 50 عنصر للعرض
 const generateMoreItems = (): Item[] => {
   const items = [...tempItems];
   
+  // قائمة الماركات
+  const brands = ["تويوتا", "فورد", "نيسان", "هوندا", "مرسيدس", "بي ام دبليو", "هيونداي", "كيا"];
+  
+  // قائمة التصنيفات
+  const categories = ["محرك", "فرامل", "تعليق", "كهرباء", "فلاتر", "زيوت", "إضاءة", "تكييف"];
+  
+  // قائمة قطع الغيار
+  const partNames = [
+    "فلتر هواء", "فلتر وقود", "طقم دفرنس", "صدام أمامي", "مرايا جانبية", "مضخة بنزين", 
+    "عمود كرنك", "كمبريسور تكييف", "ثلاجة رادياتير", "جلد فرامل", "عفريتة عجل",
+    "هوبات أمامية", "رمان بلي", "سير مروحة", "ترموستات", "طرمبة ماء", "غطاء علبة فتيس"
+  ];
+  
   // إضافة عناصر إضافية للوصول إلى 55 عنصر على الأقل
   for (let i = tempItems.length; i < 55; i++) {
     const quantity = Math.floor(Math.random() * 30);
     const reorderLevel = 5;
+    const brand = brands[Math.floor(Math.random() * brands.length)];
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const partName = partNames[Math.floor(Math.random() * partNames.length)];
+    
     items.push({
       id: `gen-${i}`,
-      name: `منتج افتراضي ${i}`,
-      code: `SKU-${i.toString().padStart(4, '0')}`,
-      manufacturer: `شركة ${i % 5 + 1}`,
+      name: `${partName} ${brand}`,
+      code: `${category.substring(0, 3).toUpperCase()}-${i.toString().padStart(4, '0')}`,
+      manufacturer: brand,
       purchasePrice: Math.round(100 + i * 5.25),
       sellingPrice: Math.round(150 + i * 7.5),
       quantity: quantity,
@@ -88,7 +105,7 @@ export function ItemsTable({ currency = "ر.س" }: ItemsTableProps) {
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="text-lg font-medium">قائمة المواد المتاحة للنقل</CardTitle>
+        <CardTitle className="text-lg font-medium">قائمة قطع الغيار المتاحة للنقل</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border overflow-x-auto">
@@ -97,8 +114,8 @@ export function ItemsTable({ currency = "ر.س" }: ItemsTableProps) {
               <TableHeader>
                 <TableRow className="bg-muted">
                   <TableHead className="border text-center font-bold w-16">#</TableHead>
-                  <TableHead className="border text-center font-bold">اسم المادة</TableHead>
-                  <TableHead className="border text-center font-bold">رقم المادة</TableHead>
+                  <TableHead className="border text-center font-bold">اسم القطعة</TableHead>
+                  <TableHead className="border text-center font-bold">رقم القطعة</TableHead>
                   <TableHead className="border text-center font-bold">الشركة المصنعة</TableHead>
                   <TableHead className="border text-center font-bold">الكمية</TableHead>
                   <TableHead className="border text-center font-bold">سعر الشراء</TableHead>
@@ -152,8 +169,8 @@ export function ItemsTable({ currency = "ر.س" }: ItemsTableProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between text-sm text-muted-foreground">
-        <div>إجمالي عدد المواد: {items.length}</div>
-        <div>إجمالي المخزون: {totals.totalQuantity} وحدة</div>
+        <div>إجمالي عدد قطع الغيار: {items.length}</div>
+        <div>إجمالي المخزون: {totals.totalQuantity} قطعة</div>
       </CardFooter>
     </Card>
   );

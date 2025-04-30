@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ export function ProductsToolbar({
           <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="البحث عن منتج..."
+            placeholder="البحث عن قطع غيار..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-8"
@@ -72,7 +73,7 @@ export function ProductsToolbar({
         <div className="flex items-center gap-2 flex-wrap">
           <Button className="bg-teal hover:bg-teal-dark text-white gap-2">
             <Plus size={18} />
-            منتج جديد
+            قطعة جديدة
           </Button>
           
           <Popover>
@@ -90,9 +91,9 @@ export function ProductsToolbar({
                     name="category"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>الفئة</FormLabel>
+                        <FormLabel>التصنيف</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="اختر الفئة" />
+                          <Input {...field} placeholder="اختر التصنيف" />
                         </FormControl>
                       </FormItem>
                     )}

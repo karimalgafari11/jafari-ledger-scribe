@@ -4,7 +4,7 @@ import { ReorderItem } from "@/types/inventory";
 export const mockReorderItems: ReorderItem[] = [
   {
     itemId: "1",
-    itemName: "قميص قطني",
+    itemName: "فلتر زيت",
     availableQuantity: 5,
     reorderThreshold: 10,
     suggestedOrderQuantity: 20,
@@ -13,7 +13,7 @@ export const mockReorderItems: ReorderItem[] = [
   },
   {
     itemId: "3",
-    itemName: "حذاء رياضي",
+    itemName: "طقم بواجي",
     availableQuantity: 2,
     reorderThreshold: 10,
     suggestedOrderQuantity: 15,
@@ -22,7 +22,7 @@ export const mockReorderItems: ReorderItem[] = [
   },
   {
     itemId: "5",
-    itemName: "نظارة شمسية",
+    itemName: "بطارية 70 أمبير",
     availableQuantity: 3,
     reorderThreshold: 8,
     suggestedOrderQuantity: 10,
@@ -31,7 +31,7 @@ export const mockReorderItems: ReorderItem[] = [
   },
   {
     itemId: "7",
-    itemName: "سماعات لاسلكية",
+    itemName: "دينامو",
     availableQuantity: 1,
     reorderThreshold: 8,
     suggestedOrderQuantity: 12,
@@ -40,7 +40,7 @@ export const mockReorderItems: ReorderItem[] = [
   },
   {
     itemId: "8",
-    itemName: "شاحن متنقل",
+    itemName: "مضخة ماء",
     availableQuantity: 0,
     reorderThreshold: 15,
     suggestedOrderQuantity: 25,

@@ -23,17 +23,17 @@ const ProductsPage = () => {
 
   const handleDelete = (id: string) => {
     deleteProduct(id);
-    toast.success("تم حذف المنتج بنجاح");
+    toast.success("تم حذف القطعة بنجاح");
   };
 
   const handleBulkDelete = () => {
     if (selectedProducts.length === 0) {
-      toast.error("الرجاء تحديد المنتجات للحذف");
+      toast.error("الرجاء تحديد قطع الغيار للحذف");
       return;
     }
     
     bulkDeleteProducts();
-    toast.success(`تم حذف ${selectedProducts.length} منتج بنجاح`);
+    toast.success(`تم حذف ${selectedProducts.length} قطعة بنجاح`);
   };
 
   const handleExport = (type: 'pdf' | 'excel') => {
@@ -45,24 +45,24 @@ const ProductsPage = () => {
   };
 
   const handleViewDetails = (id: string) => {
-    toast.info(`عرض تفاصيل المنتج: ${id}`);
+    toast.info(`عرض تفاصيل قطعة الغيار: ${id}`);
   };
 
   const handleEdit = (id: string) => {
-    toast.info(`تحرير المنتج: ${id}`);
+    toast.info(`تحرير قطعة الغيار: ${id}`);
   };
 
   const columns = [
     {
       id: "code",
-      header: "كود الصنف",
+      header: "رقم القطعة",
       accessorKey: "code",
       width: "120px",
       isSortable: true
     },
     {
       id: "name",
-      header: "اسم الصنف",
+      header: "اسم القطعة",
       accessorKey: "name",
       width: "200px",
       isSortable: true
@@ -77,7 +77,7 @@ const ProductsPage = () => {
     },
     {
       id: "category",
-      header: "الفئة",
+      header: "التصنيف",
       accessorKey: "category",
       width: "150px",
       isSortable: true
@@ -102,7 +102,7 @@ const ProductsPage = () => {
         <span className={`px-2 py-1 text-xs rounded-full ${
           value ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
         }`}>
-          {value ? 'نشط' : 'غير نشط'}
+          {value ? 'متوفر' : 'غير متوفر'}
         </span>
       )
     }
@@ -123,14 +123,14 @@ const ProductsPage = () => {
       icon: <Trash2 className="h-4 w-4" />,
       label: "حذف",
       onClick: (row: any) => handleDelete(row.id),
-      variant: "ghost" as const // Using 'as const' to specify the literal type
+      variant: "ghost" as const
     }
   ];
 
   return (
     <div className="h-screen overflow-y-auto bg-gray-50">
       <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <Header title="إدارة الأصناف" showBack={true} />
+        <Header title="إدارة قطع الغيار" showBack={true} />
       </div>
 
       <main className="p-6">

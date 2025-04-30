@@ -42,7 +42,7 @@ const ReorderPage = () => {
   const columns: ColumnDefinition[] = [
     {
       id: "itemName",
-      header: "الصنف",
+      header: "قطعة الغيار",
       accessorKey: "itemName",
       width: "200px",
       isSortable: true
@@ -88,7 +88,7 @@ const ReorderPage = () => {
   return (
     <div className="h-screen overflow-y-auto bg-gray-50">
       <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <Header title="مستويات إعادة الطلب" showBack={true} />
+        <Header title="مستويات إعادة طلب قطع الغيار" showBack={true} />
       </div>
 
       <main className="p-6">
@@ -107,7 +107,7 @@ const ReorderPage = () => {
               disabled={selectedItems.length === 0}
               className="gap-2 bg-teal hover:bg-teal-dark"
             >
-              إنشاء طلب شراء للمنتجات المحددة
+              إنشاء طلب شراء للقطع المحددة
             </Button>
           </div>
         )}
@@ -130,7 +130,7 @@ const ReorderPage = () => {
             }
           }}
           idField="itemId"
-          emptyMessage="لا توجد أصناف تحتاج لإعادة طلب"
+          emptyMessage="لا توجد قطع غيار تحتاج لإعادة طلب"
         />
       </main>
     </div>

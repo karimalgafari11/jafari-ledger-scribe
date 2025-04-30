@@ -72,7 +72,7 @@ export default function DamagedItemsPage() {
     <Layout>
       <div className="container mx-auto p-4 rtl">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">تسجيل المخزون التالف</h1>
+          <h1 className="text-2xl font-bold">تسجيل قطع الغيار التالفة</h1>
           <Button variant="outline" size="icon" onClick={() => setIsSettingsOpen(true)}>
             <Settings className="h-4 w-4" />
           </Button>
@@ -81,7 +81,7 @@ export default function DamagedItemsPage() {
         {/* Registration Form */}
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">إنشاء أمر تسجيل تالف</h2>
+            <h2 className="text-lg font-semibold">إنشاء أمر تسجيل قطع غيار تالفة</h2>
             <div className="text-sm text-gray-500">
               الرقم التسلسلي: {new Date().getTime().toString().substring(6)}
             </div>
@@ -143,7 +143,7 @@ export default function DamagedItemsPage() {
             <Input placeholder="أضف ملاحظات حول سبب التلف" />
           </div>
 
-          <Button onClick={handleAddNew}>إضافة صنف</Button>
+          <Button onClick={handleAddNew}>إضافة قطعة غيار</Button>
         </div>
 
         {/* Search and Filter */}
@@ -151,7 +151,7 @@ export default function DamagedItemsPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <Input
-                placeholder="بحث عن الأصناف التالفة..."
+                placeholder="بحث عن قطع الغيار التالفة..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full"
@@ -211,7 +211,7 @@ export default function DamagedItemsPage() {
               }
             }}
             idField="id"
-            emptyMessage="لا توجد أصناف تالفة حالياً"
+            emptyMessage="لا توجد قطع غيار تالفة حالياً"
           />
           
           {/* Totals and Actions */}
@@ -246,9 +246,9 @@ export default function DamagedItemsPage() {
           <div className="mt-6 bg-amber-50 p-4 rounded-lg border border-amber-200 flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="font-medium text-amber-800">تنبيه: منتجات بحاجة إلى إعادة طلب</h3>
+              <h3 className="font-medium text-amber-800">تنبيه: قطع غيار بحاجة إلى إعادة طلب</h3>
               <p className="text-sm text-amber-600">
-                بعض المنتجات قد تحتاج إلى إعادة طلب. يرجى مراجعة صفحة إعادة الطلب.
+                بعض قطع الغيار قد تحتاج إلى إعادة طلب. يرجى مراجعة صفحة إعادة الطلب.
               </p>
             </div>
           </div>

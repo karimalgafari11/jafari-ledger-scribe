@@ -31,7 +31,7 @@ const CountingPage = () => {
   } = useInventoryCounting();
 
   const handleExport = (id: string) => {
-    toast.info(`تصدير تقرير الجرد: ${id}`);
+    toast.info(`تصدير تقرير جرد قطع الغيار: ${id}`);
   };
 
   const handleComplete = (id: string) => {
@@ -54,17 +54,17 @@ const CountingPage = () => {
     }
     
     if (newCountItems.length === 0) {
-      toast.error("لا توجد أصناف للجرد");
+      toast.error("لا توجد قطع غيار للجرد");
       return;
     }
     
     saveNewCount(notes);
-    toast.success("تم حفظ الجرد بنجاح");
+    toast.success("تم حفظ جرد قطع الغيار بنجاح");
   };
 
   const columns = createCountingColumns({ formatDate });
   const actions = createCountingActions({
-    onViewDetails: id => toast.info(`عرض تفاصيل الجرد: ${id}`),
+    onViewDetails: id => toast.info(`عرض تفاصيل جرد قطع الغيار: ${id}`),
     onExport: handleExport,
     onComplete: handleComplete
   });
@@ -100,7 +100,7 @@ const CountingPage = () => {
           data={counts} 
           columns={columns}
           actions={actions}
-          emptyMessage="لا توجد عمليات جرد مسجلة"
+          emptyMessage="لا توجد عمليات جرد لقطع الغيار مسجلة"
         />
       </div>
     );
@@ -109,7 +109,7 @@ const CountingPage = () => {
   return (
     <div className="h-screen overflow-y-auto bg-gray-50">
       <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <Header title="الجرد الفعلي" showBack={true} />
+        <Header title="جرد قطع الغيار" showBack={true} />
       </div>
 
       <main className="p-6">

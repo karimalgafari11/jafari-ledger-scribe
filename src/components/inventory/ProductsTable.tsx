@@ -91,10 +91,10 @@ export function ProductsTable({
               <TableHead className="w-10">
                 <Checkbox />
               </TableHead>
-              <TableHead>كود الصنف</TableHead>
-              <TableHead>اسم الصنف</TableHead>
+              <TableHead>رقم القطعة</TableHead>
+              <TableHead>اسم القطعة</TableHead>
               <TableHead>السعر</TableHead>
-              <TableHead>الفئة</TableHead>
+              <TableHead>التصنيف</TableHead>
               <TableHead>الكمية المتاحة</TableHead>
               <TableHead>الحالة</TableHead>
               <TableHead className="text-left">الإجراءات</TableHead>
@@ -104,7 +104,7 @@ export function ProductsTable({
             {products.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">
-                  لا توجد منتجات متاحة
+                  لا توجد قطع غيار متاحة
                 </TableCell>
               </TableRow>
             ) : (
@@ -127,7 +127,7 @@ export function ProductsTable({
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {product.isActive ? 'نشط' : 'غير نشط'}
+                      {product.isActive ? 'متوفر' : 'غير متوفر'}
                     </span>
                   </TableCell>
                   <TableCell>
