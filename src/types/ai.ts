@@ -2,6 +2,7 @@
 export interface Message {
   role: "user" | "assistant" | "system";
   content: string;
+  timestamp?: Date;
 }
 
 export interface ApiResponse {
@@ -26,4 +27,28 @@ export interface DeepseekConfig {
   model: string;
   temperature: number;
   maxTokens: number;
+}
+
+export interface SystemAlert {
+  type: "inventory" | "expenses" | "invoices" | "customers";
+  message: string;
+  priority: "high" | "medium" | "low";
+  data?: any;
+  timestamp: Date;
+}
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AiAssistantContext {
+  lowStockItems: number;
+  unpaidInvoices: number;
+  pendingExpenses: number;
+  pendingApprovals: number;
+  recentAlerts: SystemAlert[];
 }
