@@ -29,6 +29,7 @@ import CostCentersPage from "./pages/accounting/CostCentersPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
 import TransferPage from "./pages/inventory-control/TransferPage";
+import LocationsPage from "./pages/inventory-control/LocationsPage";
 
 const queryClient = new QueryClient();
 
@@ -68,7 +69,7 @@ const App = () => (
           
           {/* Inventory Control Routes */}
           <Route path="/inventory-control/transfer" element={<TransferPage />} />
-          <Route path="/inventory-control/locations" element={<NotFound />} />
+          <Route path="/inventory-control/locations" element={<LocationsPage />} />
           <Route path="/inventory-control/damaged" element={<NotFound />} />
           
           {/* Customer Routes */}
