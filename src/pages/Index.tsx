@@ -14,6 +14,8 @@ import ReturnsPage from "./invoices/ReturnsPage";
 import AccountChartPage from "./accounting/AccountChartPage";
 import JournalEntriesPage from "./accounting/JournalEntriesPage";
 import CostCentersPage from "./accounting/CostCentersPage";
+import CustomersPage from "./customers/CustomersPage";
+import CustomerStatementPage from "./customers/CustomerStatementPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -44,6 +46,10 @@ const Index = () => {
         return <JournalEntriesPage />;
       case "accounting-cost-centers":
         return <CostCentersPage />;
+      case "customers-manage":
+        return <CustomersPage />;
+      case "customers-statement":
+        return <CustomerStatementPage />;
       default:
         return (
           <div className="h-screen flex items-center justify-center bg-gray-100 rtl">

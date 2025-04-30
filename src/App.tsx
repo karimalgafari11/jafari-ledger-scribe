@@ -26,6 +26,8 @@ import ReturnsPage from "./pages/invoices/ReturnsPage";
 import AccountChartPage from "./pages/accounting/AccountChartPage";
 import JournalEntriesPage from "./pages/accounting/JournalEntriesPage";
 import CostCentersPage from "./pages/accounting/CostCentersPage";
+import CustomersPage from "./pages/customers/CustomersPage";
+import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
 
 const queryClient = new QueryClient();
 
@@ -69,8 +71,8 @@ const App = () => (
           <Route path="/inventory-control/damaged" element={<NotFound />} />
           
           {/* Customer Routes */}
-          <Route path="/customers/manage" element={<NotFound />} />
-          <Route path="/customers/statement" element={<NotFound />} />
+          <Route path="/customers/manage" element={<CustomersPage />} />
+          <Route path="/customers/statement/:id" element={<CustomerStatementPage />} />
           
           {/* Settings Routes */}
           <Route path="/settings/system" element={<SystemSettingsPage />} />
