@@ -157,7 +157,15 @@ export const ExchangeRatesModule = () => {
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onSubmit={(data) => {
-          createExchangeRate({ ...data, isManual: true, date: new Date() });
+          // Ensure all required fields are provided
+          const newRate: Omit<ExchangeRate, "id"> = {
+            sourceCurrencyId: data.sourceCurrencyId || currencies[0]?.id || "",
+            targetCurrencyId: data.targetCurrencyId || currencies[1]?.id || "",
+            rate: data.rate || 1.0,
+            isManual: true,
+            date: new Date()
+          };
+          createExchangeRate(newRate);
           setIsCreateDialogOpen(false);
         }}
         currencies={currencies}

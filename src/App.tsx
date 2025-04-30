@@ -1,3 +1,4 @@
+
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -10,9 +11,9 @@ import ProductsPage from "./pages/inventory/ProductsPage";
 import StockMovementsPage from "./pages/inventory/StockMovementsPage";
 import CountingPage from "./pages/inventory/CountingPage";
 import ReorderPage from "./pages/inventory/ReorderPage";
-import TransferPage from "./pages/inventoryControl/TransferPage";
-import LocationsPage from "./pages/inventoryControl/LocationsPage";
-import DamagedItemsPage from "./pages/inventoryControl/DamagedItemsPage";
+import TransferPage from "./pages/inventory-control/TransferPage";
+import LocationsPage from "./pages/inventory-control/LocationsPage";
+import DamagedItemsPage from "./pages/inventory-control/DamagedItemsPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
 import InvoicesPage from "./pages/invoices/InvoicesPage";
@@ -22,13 +23,13 @@ import ReturnsPage from "./pages/invoices/ReturnsPage";
 import NewExpensePage from "./pages/expenses/NewExpensePage";
 import ExpenseCategoriesPage from "./pages/expenses/ExpenseCategoriesPage";
 import ExpenseReportsPage from "./pages/expenses/ExpenseReportsPage";
-import Reports from "./pages/reports/Reports";
+import Reports from "./pages/Reports";
 import BasicDefinitionsPage from "./pages/definitions/BasicDefinitionsPage";
 import BranchesPage from "./pages/settings/BranchesPage";
 import UsersPage from "./pages/settings/UsersPage";
 import BackupPage from "./pages/settings/BackupPage";
 import SystemSettingsPage from "./pages/settings/SystemSettingsPage";
-import AiAssistantPage from "./pages/aiAssistant/AiAssistantPage";
+import AiAssistantPage from "./pages/ai/AiAssistantPage";
 import NotFound from "./pages/NotFound";
 
 // استيراد الصفحة الجديدة للعملات
