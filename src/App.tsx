@@ -24,6 +24,7 @@ import NewExpensePage from "./pages/expenses/NewExpensePage";
 import ExpenseCategoriesPage from "./pages/expenses/ExpenseCategoriesPage";
 import ExpenseReportsPage from "./pages/expenses/ExpenseReportsPage";
 import Reports from "./pages/Reports";
+import ReportTemplatesPage from "./pages/reports/ReportTemplatesPage";
 import BasicDefinitionsPage from "./pages/definitions/BasicDefinitionsPage";
 import BranchesPage from "./pages/settings/BranchesPage";
 import UsersPage from "./pages/settings/UsersPage";
@@ -67,10 +68,12 @@ function App() {
         
         {/* العملاء */}
         <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/customers/manage" element={<CustomersPage />} />
         <Route path="/customers/:id/statement" element={<CustomerStatementPage />} />
         
         {/* الفواتير */}
         <Route path="/invoices" element={<InvoicesPage />} />
+        <Route path="/invoices/outgoing" element={<InvoicesPage />} />
         <Route path="/invoices/quotes" element={<QuotesPage />} />
         <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
         <Route path="/invoices/returns" element={<ReturnsPage />} />
@@ -82,6 +85,7 @@ function App() {
         
         {/* التقارير */}
         <Route path="/reports" element={<Reports />} />
+        <Route path="/reports/templates" element={<ReportTemplatesPage />} />
         
         {/* التعاريف والإعدادات */}
         <Route path="/definitions" element={<BasicDefinitionsPage />} />
@@ -95,6 +99,7 @@ function App() {
         
         {/* مساعد الذكاء الاصطناعي */}
         <Route path="/ai-assistant" element={<AiAssistantPage />} />
+        <Route path="/ai/assistant" element={<AiAssistantPage />} />
         
         {/* صفحة 404 */}
         <Route path="*" element={<NotFound />} />

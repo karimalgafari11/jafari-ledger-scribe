@@ -103,7 +103,7 @@ export const menuItems: MenuItem[] = [
   {
     section: "المساعد الذكي",
     icon: Bot,
-    path: "/ai/assistant",
+    path: "/ai-assistant",
     children: []
   },
   {
