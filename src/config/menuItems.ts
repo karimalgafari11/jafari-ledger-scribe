@@ -10,7 +10,8 @@ import {
   Settings,
   DollarSign,
   Wrench,
-  Bot
+  Bot,
+  Building
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
@@ -25,6 +26,12 @@ export const menuItems: MenuItem[] = [
     section: "التقارير",
     icon: ChartBar,
     path: "/reports",
+    children: []
+  },
+  {
+    section: "التعاريف الأساسية",
+    icon: Building,
+    path: "/basic-definitions",
     children: []
   },
   {

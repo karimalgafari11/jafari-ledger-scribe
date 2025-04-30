@@ -17,6 +17,7 @@ import CostCentersPage from "./accounting/CostCentersPage";
 import CustomersPage from "./customers/CustomersPage";
 import CustomerStatementPage from "./customers/CustomerStatementPage";
 import AiAssistantPage from "./ai/AiAssistantPage";
+import BasicDefinitionsPage from "./definitions/BasicDefinitionsPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -53,6 +54,8 @@ const Index = () => {
         return <CustomerStatementPage />;
       case "ai-assistant":
         return <AiAssistantPage />;
+      case "basic-definitions":
+        return <BasicDefinitionsPage />;
       default:
         return (
           <div className="h-screen flex items-center justify-center bg-gray-100 rtl">

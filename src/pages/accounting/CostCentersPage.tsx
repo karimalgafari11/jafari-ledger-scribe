@@ -6,8 +6,13 @@ import { CostCenterTree } from '@/components/accounting/costcenters/CostCenterTr
 import { CostCenterDialog } from '@/components/accounting/costcenters/CostCenterDialog';
 import { DeleteCostCenterDialog } from '@/components/accounting/costcenters/DeleteCostCenterDialog';
 import { CostCenterActions } from '@/components/accounting/costcenters/CostCenterActions';
+import { Layout } from '@/components/Layout';
 
-const CostCentersPage: React.FC = () => {
+interface CostCentersPageProps {
+  embedded?: boolean;
+}
+
+const CostCentersPage: React.FC<CostCentersPageProps> = ({ embedded = false }) => {
   const {
     costCenters,
     selectedCostCenter,
@@ -76,9 +81,9 @@ const CostCentersPage: React.FC = () => {
     parentId: selectedCostCenter?.id || null
   };
 
-  return (
-    <div className="container mx-auto p-6 rtl">
-      <Header title="مراكز الكلفة" showBack={true} />
+  const content = (
+    <>
+      {!embedded && <Header title="مراكز الكلفة" showBack={true} />}
       
       <CostCenterActions onCreateCostCenter={handleCreate} />
       
@@ -119,7 +124,19 @@ const CostCentersPage: React.FC = () => {
         onConfirm={handleDeleteConfirm}
         name={selectedCostCenter?.name || ''}
       />
-    </div>
+    </>
+  );
+  
+  if (embedded) {
+    return content;
+  }
+
+  return (
+    <Layout>
+      <div className="container mx-auto p-6 rtl">
+        {content}
+      </div>
+    </Layout>
   );
 };
 
