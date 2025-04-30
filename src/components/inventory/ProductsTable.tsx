@@ -41,83 +41,126 @@ export function ProductsTable({
     return "";
   };
 
+  // Table configuration options
+  const [tableConfig, setTableConfig] = useState({
+    gridLines: "both" as "none" | "horizontal" | "vertical" | "both",
+    striped: true,
+    dense: false,
+    bordered: true
+  });
+
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden rtl">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-10">
-              <Checkbox />
-            </TableHead>
-            <TableHead>كود الصنف</TableHead>
-            <TableHead>اسم الصنف</TableHead>
-            <TableHead>السعر</TableHead>
-            <TableHead>الفئة</TableHead>
-            <TableHead>الكمية المتاحة</TableHead>
-            <TableHead>الحالة</TableHead>
-            <TableHead className="text-left">الإجراءات</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products.length === 0 ? (
+    <div className="space-y-4">
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setTableConfig(prev => ({...prev, gridLines: prev.gridLines === "both" ? "horizontal" : "both"}))}
+          className="text-xs"
+        >
+          {tableConfig.gridLines === "both" ? "خطوط أفقية فقط" : "خطوط أفقية وعمودية"}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setTableConfig(prev => ({...prev, striped: !prev.striped}))}
+          className="text-xs"
+        >
+          {tableConfig.striped ? "إيقاف التظليل" : "تفعيل التظليل"}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setTableConfig(prev => ({...prev, dense: !prev.dense}))}
+          className="text-xs"
+        >
+          {tableConfig.dense ? "عرض موسع" : "عرض مضغوط"}
+        </Button>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow overflow-hidden rtl">
+        <Table 
+          gridLines={tableConfig.gridLines} 
+          striped={tableConfig.striped}
+          dense={tableConfig.dense}
+          bordered={tableConfig.bordered}
+          stickyHeader={true}
+        >
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
-                لا توجد منتجات متاحة
-              </TableCell>
+              <TableHead className="w-10">
+                <Checkbox />
+              </TableHead>
+              <TableHead>كود الصنف</TableHead>
+              <TableHead>اسم الصنف</TableHead>
+              <TableHead>السعر</TableHead>
+              <TableHead>الفئة</TableHead>
+              <TableHead>الكمية المتاحة</TableHead>
+              <TableHead>الحالة</TableHead>
+              <TableHead className="text-left">الإجراءات</TableHead>
             </TableRow>
-          ) : (
-            products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Checkbox 
-                    checked={selectedProducts.includes(product.id)}
-                    onCheckedChange={() => onToggleSelection(product.id)}
-                  />
-                </TableCell>
-                <TableCell>{product.code}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price.toFixed(2)}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell className={getStockLevelClass(product.quantity, product.reorderLevel)}>
-                  {product.quantity}
-                </TableCell>
-                <TableCell>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {product.isActive ? 'نشط' : 'غير نشط'}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onViewDetails(product.id)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(product.id)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onDelete(product.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+          </TableHeader>
+          <TableBody>
+            {products.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center">
+                  لا توجد منتجات متاحة
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedProducts.includes(product.id)}
+                      onCheckedChange={() => onToggleSelection(product.id)}
+                    />
+                  </TableCell>
+                  <TableCell>{product.code}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.price.toFixed(2)}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell className={getStockLevelClass(product.quantity, product.reorderLevel)}>
+                    {product.quantity}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {product.isActive ? 'نشط' : 'غير نشط'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onViewDetails(product.id)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEdit(product.id)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onDelete(product.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ interface HeaderProps {
   children?: React.ReactNode;
 }
 
-export function Header({ title, showBack = false, onBackClick, children }: HeaderProps) {
+export function Header({ title, showBack = true, onBackClick, children }: HeaderProps) {
   const { handleItemClick } = useSidebarNavigation();
 
   const handleBack = () => {
