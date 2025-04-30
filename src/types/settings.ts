@@ -48,9 +48,37 @@ export interface User {
 
 export interface BackupSettings {
   id: string;
-  frequency: 'daily' | 'weekly' | 'monthly';
+  frequency: 'daily' | 'weekly' | 'monthly' | 'manual';
   time: string;
   keepBackups: number;
   lastBackup?: Date;
   location: string;
+  destinationType: 'local' | 'cloud' | 'ftp' | 'email';
+  ftpHost?: string;
+  ftpUsername?: string;
+  ftpPassword?: string;
+  ftpPort?: number;
+  ftpPath?: string;
+  emailRecipients?: string[];
+  cloudProvider?: 'google-drive' | 'dropbox' | 'onedrive';
+  cloudAuthToken?: string;
+  cloudFolderId?: string;
+  encryptBackup: boolean;
+  encryptionPassword?: string;
+  compressionLevel: 'none' | 'low' | 'medium' | 'high';
+  includeAttachments: boolean;
+  includeSettings: boolean;
+  backupHistory: BackupHistoryItem[];
+  autoRestore: boolean;
+  restorePoint?: Date;
+}
+
+export interface BackupHistoryItem {
+  id: string;
+  createdAt: Date;
+  size: string;
+  path: string;
+  status: 'success' | 'failed' | 'in-progress';
+  type: 'auto' | 'manual';
+  destination: string;
 }

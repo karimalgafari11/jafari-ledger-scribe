@@ -1,5 +1,4 @@
-
-import { SystemSettings, Branch, User, BackupSettings } from "@/types/settings";
+import { SystemSettings, Branch, User, BackupSettings, BackupHistoryItem } from "@/types/settings";
 
 export const mockSystemSettings: SystemSettings = {
   id: "1",
@@ -88,11 +87,48 @@ export const mockUsers: User[] = [
   }
 ];
 
+const backupHistoryItems: BackupHistoryItem[] = [
+  {
+    id: "bk1",
+    createdAt: new Date(2025, 3, 25, 23, 0),
+    size: "42.5 MB",
+    path: "/backups/backup-2025-04-25.zip",
+    status: "success",
+    type: "auto",
+    destination: "local"
+  },
+  {
+    id: "bk2",
+    createdAt: new Date(2025, 3, 18, 23, 0),
+    size: "41.2 MB",
+    path: "/backups/backup-2025-04-18.zip",
+    status: "success",
+    type: "auto",
+    destination: "local"
+  },
+  {
+    id: "bk3",
+    createdAt: new Date(2025, 3, 10, 12, 30),
+    size: "40.7 MB",
+    path: "/backups/backup-2025-04-10.zip", 
+    status: "success",
+    type: "manual",
+    destination: "local"
+  }
+];
+
 export const mockBackupSettings: BackupSettings = {
   id: "1",
   frequency: "daily",
   time: "23:00",
   keepBackups: 30,
   lastBackup: new Date(2025, 3, 25, 23, 0),
-  location: "/backups/"
+  location: "/backups/",
+  destinationType: "local",
+  encryptBackup: false,
+  compressionLevel: "medium",
+  includeAttachments: true,
+  includeSettings: true,
+  backupHistory: backupHistoryItems,
+  autoRestore: false
 };

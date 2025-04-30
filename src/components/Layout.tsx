@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export function Layout({ children, className = "" }: LayoutProps) {
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className={`min-h-screen bg-gray-50 ${className} dir-rtl`}>
       {children}
     </div>
   );
