@@ -85,8 +85,8 @@ export function useDamagedItems() {
   const [filteredItems, setFilteredItems] = useState<DamagedItem[]>(initialDamagedItems);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOptions, setFilterOptions] = useState<DamagedItemFilterOptions>({
-    reason: "",
-    warehouseId: "",
+    reason: "all",
+    warehouseId: "all",
     startDate: null,
     endDate: null
   });
@@ -109,12 +109,12 @@ export function useDamagedItems() {
     }
     
     // Apply reason filter
-    if (filterOptions.reason) {
+    if (filterOptions.reason && filterOptions.reason !== "all") {
       result = result.filter(item => item.reason === filterOptions.reason);
     }
     
     // Apply warehouse filter
-    if (filterOptions.warehouseId) {
+    if (filterOptions.warehouseId && filterOptions.warehouseId !== "all") {
       result = result.filter(item => item.warehouseId === filterOptions.warehouseId);
     }
     

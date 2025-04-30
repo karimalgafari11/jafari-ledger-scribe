@@ -166,7 +166,7 @@ export default function DamagedItemsPage() {
                   <SelectValue placeholder="سبب التلف" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">الكل</SelectItem>
+                  <SelectItem value="all">الكل</SelectItem>
                   <SelectItem value="expired">منتهي الصلاحية</SelectItem>
                   <SelectItem value="damaged">تلف أثناء التخزين</SelectItem>
                   <SelectItem value="broken">كسر</SelectItem>
@@ -184,7 +184,7 @@ export default function DamagedItemsPage() {
                   <SelectValue placeholder="المستودع" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">الكل</SelectItem>
+                  <SelectItem value="all">الكل</SelectItem>
                   <SelectItem value="w1">المستودع الرئيسي</SelectItem>
                   <SelectItem value="w2">مستودع جدة</SelectItem>
                   <SelectItem value="w3">مستودع الدمام</SelectItem>
