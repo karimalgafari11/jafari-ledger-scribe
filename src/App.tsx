@@ -26,6 +26,7 @@ import ReturnsPage from "./pages/invoices/ReturnsPage";
 import AccountChartPage from "./pages/accounting/AccountChartPage";
 import JournalEntriesPage from "./pages/accounting/JournalEntriesPage";
 import CostCentersPage from "./pages/accounting/CostCentersPage";
+import AccountingSettingsPage from "./pages/accounting/AccountingSettingsPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
 import TransferPage from "./pages/inventory-control/TransferPage";
@@ -66,7 +67,7 @@ const App = () => (
           <Route path="/accounting/chart" element={<AccountChartPage />} />
           <Route path="/accounting/journals" element={<JournalEntriesPage />} />
           <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
-          <Route path="/accounting/settings" element={<NotFound />} />
+          <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
           
           {/* Inventory Control Routes */}
           <Route path="/inventory-control/transfer" element={<TransferPage />} />
