@@ -2,6 +2,12 @@ import React from 'react';
 import { Layout } from '@/components/Layout';
 import { useAccountingSettings } from '@/hooks/useAccountingSettings';
 import { 
+  AccountingSettings, 
+  TaxSettings, 
+  ClosingMethod, 
+  SettingsTabType 
+} from '@/types/accountingSettings';
+import { 
   Tabs, 
   TabsContent, 
   TabsList, 
@@ -164,8 +170,8 @@ const AccountingSettingsPage: React.FC = () => {
   
   // Handle tax settings submission
   const onTaxSubmit = (data: z.infer<typeof taxFormSchema>) => {
-    // Ensure all required fields are present before updating
-    const updatedTaxSettings: z.infer<typeof taxFormSchema> = {
+    // Create a properly typed TaxSettings object with all required properties
+    const updatedTaxSettings: TaxSettings = {
       enableTax: data.enableTax,
       defaultTaxRate: data.defaultTaxRate,
       taxNumber: data.taxNumber,
@@ -177,7 +183,7 @@ const AccountingSettingsPage: React.FC = () => {
   
   // Handle new closing method submission
   const onClosingMethodSubmit = (data: z.infer<typeof closingMethodSchema>) => {
-    // Ensure all required fields are present before adding
+    // Create a properly typed Omit<ClosingMethod, "id"> object with all required properties
     const newClosingMethod: Omit<ClosingMethod, 'id'> = {
       name: data.name,
       description: data.description,
