@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { ReportTemplate } from '@/components/reports/ReportTemplateEditor';
+import { ReportTemplate } from '@/types/reportTemplate';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 

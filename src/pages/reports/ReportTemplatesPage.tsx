@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { ReportTemplatesList } from "@/components/reports/ReportTemplatesList";
-import { ReportTemplateEditor } from "@/components/reports/ReportTemplateEditor";
+import { ReportTemplateEditor } from "@/components/reports/editor/ReportTemplateEditor";
 import { useReportTemplates } from "@/hooks/useReportTemplates";
 import { Download, FileUp, Plus } from "lucide-react";
 import { toast } from "sonner";

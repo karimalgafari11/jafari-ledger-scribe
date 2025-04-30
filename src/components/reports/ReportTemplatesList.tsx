@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/utils/formatters";
 import { Edit, FileText, Trash, Copy, Download } from "lucide-react";
-import { ReportTemplate } from './ReportTemplateEditor';
+import { ReportTemplate } from '@/types/reportTemplate';
 
 interface ReportTemplatesListProps {
   templates: ReportTemplate[];
