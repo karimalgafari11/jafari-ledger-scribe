@@ -6,7 +6,10 @@ import { CustomerInfo } from "@/components/customers/CustomerInfo";
 import { TransactionsTable } from "@/components/customers/TransactionsTable";
 import { StatementActions } from "@/components/customers/StatementActions";
 import { StatementFilter } from "@/components/customers/StatementFilter";
+import { DateRangeSelector } from "@/components/customers/DateRangeSelector";
 import { useCustomerStatement } from "@/hooks/useCustomerStatement";
+import { format } from "date-fns";
+import { ar } from "date-fns/locale";
 
 const CustomerStatementPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +19,9 @@ const CustomerStatementPage = () => {
     transactions, 
     isLoading,
     selectedTypes,
+    dateRange,
     handleTypeFilterChange,
+    handleDateRangeChange,
     handlePrint, 
     handleDownload, 
     handleSendEmail 
@@ -53,11 +58,19 @@ const CustomerStatementPage = () => {
         <Card>
           <CardHeader className="rtl">
             <CardTitle>كشف الحساب</CardTitle>
-            <p className="text-gray-500">الفترة: 01/10/2023 - 01/11/2023</p>
-            <StatementFilter 
-              selectedTypes={selectedTypes}
-              onFilterChange={handleTypeFilterChange}
-            />
+            <p className="text-gray-500">
+              الفترة: {format(dateRange.from, "dd/MM/yyyy", { locale: ar })} - {format(dateRange.to, "dd/MM/yyyy", { locale: ar })}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <DateRangeSelector 
+                dateRange={dateRange}
+                onDateRangeChange={handleDateRangeChange}
+              />
+              <StatementFilter 
+                selectedTypes={selectedTypes}
+                onFilterChange={handleTypeFilterChange}
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <TransactionsTable 

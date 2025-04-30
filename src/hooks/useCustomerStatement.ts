@@ -65,6 +65,10 @@ export const useCustomerStatement = (customerId: string | undefined) => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<TransactionType[]>(["all", "invoice", "payment", "return"]);
+  const [dateRange, setDateRange] = useState<{from: Date; to: Date}>({
+    from: new Date('2023-10-01'),
+    to: new Date('2023-11-01')
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -79,19 +83,34 @@ export const useCustomerStatement = (customerId: string | undefined) => {
   }, [customerId]);
 
   useEffect(() => {
-    // Apply filters based on selected transaction types
-    if (selectedTypes.includes("all") || selectedTypes.length === 0) {
-      setFilteredTransactions(allTransactions);
-    } else {
-      const filtered = allTransactions.filter(transaction => 
+    // Apply filters based on selected transaction types and date range
+    let filtered = allTransactions;
+    
+    // Filter by date range
+    filtered = filtered.filter(transaction => 
+      transaction.date >= dateRange.from && 
+      transaction.date <= dateRange.to
+    );
+    
+    // Filter by transaction types
+    if (!selectedTypes.includes("all") && selectedTypes.length > 0) {
+      filtered = filtered.filter(transaction => 
         selectedTypes.includes(transaction.type)
       );
-      setFilteredTransactions(filtered);
+    } else if (selectedTypes.length === 0) {
+      // If no filters selected, show no results
+      filtered = [];
     }
-  }, [selectedTypes, allTransactions]);
+    
+    setFilteredTransactions(filtered);
+  }, [selectedTypes, dateRange, allTransactions]);
 
   const handleTypeFilterChange = (types: TransactionType[]) => {
     setSelectedTypes(types);
+  };
+  
+  const handleDateRangeChange = (range: {from: Date; to: Date}) => {
+    setDateRange(range);
   };
 
   const handlePrint = () => {
@@ -113,7 +132,9 @@ export const useCustomerStatement = (customerId: string | undefined) => {
     transactions: filteredTransactions,
     isLoading,
     selectedTypes,
+    dateRange,
     handleTypeFilterChange,
+    handleDateRangeChange,
     handlePrint,
     handleDownload,
     handleSendEmail

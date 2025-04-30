@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
-import { Invoice, Payment, RotateCcw } from "lucide-react";
+import { FileText, CreditCard, RotateCcw } from "lucide-react";
 import { Transaction } from "@/types/transactions";
 
 type TransactionType = Transaction["type"] | "all";
@@ -62,7 +62,7 @@ export const StatementFilter = ({ selectedTypes, onFilterChange }: StatementFilt
           onPressedChange={() => handleToggle("invoice")}
           variant="outline"
         >
-          <Invoice size={16} className="ml-1" />
+          <FileText size={16} className="ml-1" />
           فواتير
         </Toggle>
         <Toggle 
@@ -70,7 +70,7 @@ export const StatementFilter = ({ selectedTypes, onFilterChange }: StatementFilt
           onPressedChange={() => handleToggle("payment")}
           variant="outline"
         >
-          <Payment size={16} className="ml-1" />
+          <CreditCard size={16} className="ml-1" />
           دفعات
         </Toggle>
         <Toggle 
