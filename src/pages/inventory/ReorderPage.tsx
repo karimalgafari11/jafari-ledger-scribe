@@ -7,6 +7,7 @@ import { useReorderLevels } from "@/hooks/useReorderLevels";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ColumnDefinition } from "@/components/inventory/DataGrid";
+import { Layout } from "@/components/Layout";
 
 const ReorderPage = () => {
   const {
@@ -86,54 +87,56 @@ const ReorderPage = () => {
   ];
 
   return (
-    <div className="h-screen overflow-y-auto bg-gray-50">
-      <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <Header title="مستويات إعادة طلب قطع الغيار" showBack={true} />
-      </div>
+    <Layout>
+      <div className="h-screen overflow-y-auto bg-gray-50">
+        <div className="sticky top-0 z-10 bg-white shadow-sm">
+          <Header title="مستويات إعادة طلب قطع الغيار" showBack={true} />
+        </div>
 
-      <main className="p-6">
-        <ReorderToolbar 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery}
-          onFilterChange={handleFilterChange}
-          onExport={handleExport}
-          onShare={handleShare}
-        />
-        
-        {reorderItems.length > 0 && (
-          <div className="mb-4 flex justify-end">
-            <Button 
-              onClick={handleCreateOrder}
-              disabled={selectedItems.length === 0}
-              className="gap-2 bg-teal hover:bg-teal-dark"
-            >
-              إنشاء طلب شراء للقطع المحددة
-            </Button>
-          </div>
-        )}
-        
-        <DataGrid
-          data={reorderItems}
-          columns={columns}
-          selectable={true}
-          selectedRows={selectedItems}
-          onToggleSelection={toggleItemSelection}
-          onSelectAll={(selected) => {
-            if (selected) {
-              reorderItems.forEach(item => {
-                if (!selectedItems.includes(item.itemId)) {
-                  toggleItemSelection(item.itemId);
-                }
-              });
-            } else {
-              clearSelectedItems();
-            }
-          }}
-          idField="itemId"
-          emptyMessage="لا توجد قطع غيار تحتاج لإعادة طلب"
-        />
-      </main>
-    </div>
+        <main className="p-6">
+          <ReorderToolbar 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+            onFilterChange={handleFilterChange}
+            onExport={handleExport}
+            onShare={handleShare}
+          />
+          
+          {reorderItems.length > 0 && (
+            <div className="mb-4 flex justify-end">
+              <Button 
+                onClick={handleCreateOrder}
+                disabled={selectedItems.length === 0}
+                className="gap-2 bg-teal hover:bg-teal-dark"
+              >
+                إنشاء طلب شراء للقطع المحددة
+              </Button>
+            </div>
+          )}
+          
+          <DataGrid
+            data={reorderItems}
+            columns={columns}
+            selectable={true}
+            selectedRows={selectedItems}
+            onToggleSelection={toggleItemSelection}
+            onSelectAll={(selected) => {
+              if (selected) {
+                reorderItems.forEach(item => {
+                  if (!selectedItems.includes(item.itemId)) {
+                    toggleItemSelection(item.itemId);
+                  }
+                });
+              } else {
+                clearSelectedItems();
+              }
+            }}
+            idField="itemId"
+            emptyMessage="لا توجد قطع غيار تحتاج لإعادة طلب"
+          />
+        </main>
+      </div>
+    </Layout>
   );
 };
 

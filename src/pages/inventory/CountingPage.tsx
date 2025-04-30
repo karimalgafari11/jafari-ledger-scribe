@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { createCountingActions } from "@/components/inventory/CountingActions";
 import { createCountingColumns } from "@/components/inventory/CountingColumns";
 import { CountingToolbar } from "@/components/inventory/CountingToolbar";
+import { Layout } from "@/components/Layout";
 
 const CountingPage = () => {
   const {
@@ -107,15 +108,17 @@ const CountingPage = () => {
   };
 
   return (
-    <div className="h-screen overflow-y-auto bg-gray-50">
-      <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <Header title="جرد قطع الغيار" showBack={true} />
-      </div>
+    <Layout>
+      <div className="h-screen overflow-y-auto bg-gray-50">
+        <div className="sticky top-0 z-10 bg-white shadow-sm">
+          <Header title="جرد قطع الغيار" showBack={true} />
+        </div>
 
-      <main className="p-6">
-        {renderContent()}
-      </main>
-    </div>
+        <main className="p-6">
+          {renderContent()}
+        </main>
+      </div>
+    </Layout>
   );
 };
 
