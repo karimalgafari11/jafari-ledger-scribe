@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -152,16 +152,17 @@ export const ExchangeRatesModule = () => {
           </Table>
         </div>
       </CardContent>
-      
+
+      {/* Dialog for creating new exchange rates */}
       <ExchangeRateDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onSubmit={(data) => {
           // Ensure all required fields are provided
           const newRate: Omit<ExchangeRate, "id"> = {
-            sourceCurrencyId: data.sourceCurrencyId || currencies[0]?.id || "",
-            targetCurrencyId: data.targetCurrencyId || currencies[1]?.id || "",
-            rate: data.rate || 1.0,
+            sourceCurrencyId: data.sourceCurrencyId,
+            targetCurrencyId: data.targetCurrencyId,
+            rate: data.rate,
             isManual: true,
             date: new Date()
           };
@@ -169,23 +170,28 @@ export const ExchangeRatesModule = () => {
           setIsCreateDialogOpen(false);
         }}
         currencies={currencies}
-        rate={null}
-        title="إضافة سعر صرف جديد"
       />
-      
-      <ExchangeRateDialog
-        isOpen={isEditDialogOpen}
-        onClose={() => setIsEditDialogOpen(false)}
-        onSubmit={(data) => {
-          if (selectedRate) {
-            updateExchangeRate(selectedRate.id, { ...data, date: new Date() });
-            setIsEditDialogOpen(false);
-          }
-        }}
-        currencies={currencies}
-        rate={selectedRate}
-        title="تعديل سعر الصرف"
-      />
+
+      {/* Dialog for editing exchange rates */}
+      {selectedRate && (
+        <ExchangeRateDialog
+          isOpen={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          onSubmit={(data) => {
+            if (selectedRate) {
+              updateExchangeRate(selectedRate.id, {
+                sourceCurrencyId: data.sourceCurrencyId,
+                targetCurrencyId: data.targetCurrencyId,
+                rate: data.rate,
+              });
+              setIsEditDialogOpen(false);
+            }
+          }}
+          currencies={currencies}
+          initialData={selectedRate}
+          title="تعديل سعر الصرف"
+        />
+      )}
     </Card>
   );
 };

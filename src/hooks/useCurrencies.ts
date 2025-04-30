@@ -1,46 +1,50 @@
 
 import { useState } from "react";
-import { Currency } from "@/types/definitions";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
+import { Currency } from "@/types/definitions";
 
 // بيانات تجريبية للعملات
 const initialCurrencies: Currency[] = [
   {
-    id: uuid(),
+    id: "1",
     code: "SAR",
     name: "ريال سعودي",
-    country: "المملكة العربية السعودية",
-    symbol: "﷼",
+    symbol: "ر.س",
     isDefault: true,
     isActive: true,
+    exchangeRate: 1, // سعر الصرف بالنسبة للعملة الافتراضية
+    decimalPlaces: 2,
   },
   {
-    id: uuid(),
+    id: "2",
     code: "USD",
     name: "دولار أمريكي",
-    country: "الولايات المتحدة الأمريكية",
     symbol: "$",
     isDefault: false,
     isActive: true,
+    exchangeRate: 0.2666, // سعر الصرف بالنسبة للعملة الافتراضية
+    decimalPlaces: 2,
   },
   {
-    id: uuid(),
+    id: "3",
     code: "EUR",
     name: "يورو",
-    country: "الاتحاد الأوروبي",
     symbol: "€",
     isDefault: false,
     isActive: true,
+    exchangeRate: 0.2434, // سعر الصرف بالنسبة للعملة الافتراضية
+    decimalPlaces: 2,
   },
   {
-    id: uuid(),
+    id: "4",
     code: "AED",
     name: "درهم إماراتي",
-    country: "الإمارات العربية المتحدة",
     symbol: "د.إ",
     isDefault: false,
     isActive: true,
+    exchangeRate: 0.9792, // سعر الصرف بالنسبة للعملة الافتراضية
+    decimalPlaces: 2,
   },
 ];
 
@@ -56,109 +60,147 @@ export const useCurrencies = () => {
   // البحث في العملات
   const filteredCurrencies = currencies.filter(
     (currency) =>
-      currency.code.includes(searchTerm.toUpperCase()) ||
       currency.name.includes(searchTerm) ||
-      currency.country.includes(searchTerm)
+      currency.code.includes(searchTerm)
   );
 
   // إضافة عملة جديدة
   const createCurrency = (currency: Omit<Currency, "id">) => {
+    // التحقق من تكرار الرمز
+    if (currencies.some(c => c.code === currency.code)) {
+      toast.error("رمز العملة موجود مسبقاً");
+      return false;
+    }
+    
     setIsLoading(true);
     setTimeout(() => {
+      // إذا كانت العملة الجديدة افتراضية، نزيل الإفتراضية من العملة الحالية الإفتراضية
+      let updatedCurrencies = [...currencies];
+      
+      if (currency.isDefault) {
+        updatedCurrencies = currencies.map(c => ({
+          ...c,
+          isDefault: false,
+        }));
+      }
+      
       const newCurrency: Currency = {
         ...currency,
         id: uuid(),
       };
       
-      // إذا كانت العملة الجديدة هي العملة الافتراضية، نقوم بإلغاء الافتراضي من العملات الأخرى
-      if (newCurrency.isDefault) {
-        setCurrencies(
-          currencies.map((c) => ({
-            ...c,
-            isDefault: false,
-          }))
-        );
-      }
-      
-      setCurrencies([...currencies, newCurrency]);
+      setCurrencies([...updatedCurrencies, newCurrency]);
       setIsLoading(false);
       toast.success("تم إضافة العملة بنجاح");
     }, 500);
+    
+    return true;
   };
 
   // تعديل عملة موجودة
   const updateCurrency = (id: string, updates: Partial<Currency>) => {
+    // التحقق من تكرار الرمز
+    if (updates.code && currencies.some(c => c.code === updates.code && c.id !== id)) {
+      toast.error("رمز العملة موجود مسبقاً");
+      return false;
+    }
+    
     setIsLoading(true);
     setTimeout(() => {
-      // إذا تم جعل العملة افتراضية، نلغي الافتراضي من باقي العملات
+      // إذا كانت التحديثات تتضمن جعل العملة افتراضية، نزيل الإفتراضية من العملات الأخرى
+      let updatedCurrencies = [...currencies];
+      
       if (updates.isDefault) {
+        updatedCurrencies = currencies.map(c => ({
+          ...c,
+          isDefault: c.id === id,
+        }));
+        
+        setCurrencies(updatedCurrencies);
+      } else {
+        const currentCurrency = currencies.find(c => c.id === id);
+        
+        // لا يمكن إلغاء افتراضية العملة الافتراضية الحالية
+        if (currentCurrency?.isDefault && updates.isDefault === false) {
+          setIsLoading(false);
+          toast.error("يجب أن تكون هناك عملة افتراضية واحدة على الأقل");
+          return false;
+        }
+        
         setCurrencies(
-          currencies.map((currency) => ({
-            ...currency,
-            isDefault: false,
-          }))
+          currencies.map(c => (c.id === id ? { ...c, ...updates } : c))
         );
       }
       
-      setCurrencies(
-        currencies.map((currency) =>
-          currency.id === id
-            ? { ...currency, ...updates }
-            : currency
-        )
-      );
       setIsLoading(false);
       toast.success("تم تحديث بيانات العملة بنجاح");
     }, 500);
+    
+    return true;
   };
 
   // حذف عملة
   const deleteCurrency = (id: string) => {
-    const currencyToDelete = currencies.find((c) => c.id === id);
+    // التحقق من أن العملة ليست افتراضية
+    const currencyToDelete = currencies.find(c => c.id === id);
     
-    // لا يمكن حذف العملة الافتراضية
     if (currencyToDelete?.isDefault) {
       toast.error("لا يمكن حذف العملة الافتراضية");
-      return;
+      return false;
     }
     
     setIsLoading(true);
     setTimeout(() => {
-      setCurrencies(currencies.filter((currency) => currency.id !== id));
+      setCurrencies(currencies.filter(c => c.id !== id));
       setIsLoading(false);
       toast.success("تم حذف العملة بنجاح");
     }, 500);
+    
+    return true;
+  };
+
+  // تغيير العملة الافتراضية
+  const setDefaultCurrency = (id: string) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setCurrencies(
+        currencies.map(c => ({
+          ...c,
+          isDefault: c.id === id,
+        }))
+      );
+      setIsLoading(false);
+      toast.success("تم تغيير العملة الافتراضية بنجاح");
+    }, 500);
+    
+    return true;
   };
 
   // تفعيل/تعطيل عملة
   const toggleCurrencyStatus = (id: string) => {
-    const currencyToToggle = currencies.find((c) => c.id === id);
+    const currency = currencies.find(c => c.id === id);
     
     // لا يمكن تعطيل العملة الافتراضية
-    if (currencyToToggle?.isDefault && currencyToToggle.isActive) {
+    if (currency?.isDefault) {
       toast.error("لا يمكن تعطيل العملة الافتراضية");
-      return;
+      return false;
     }
     
     setCurrencies(
-      currencies.map((currency) =>
-        currency.id === id
-          ? { ...currency, isActive: !currency.isActive }
-          : currency
+      currencies.map(c =>
+        c.id === id
+          ? { ...c, isActive: !c.isActive }
+          : c
       )
     );
+    
     toast.success("تم تغيير حالة العملة بنجاح");
+    return true;
   };
 
-  // جعل عملة هي الافتراضية
-  const setDefaultCurrency = (id: string) => {
-    setCurrencies(
-      currencies.map((currency) => ({
-        ...currency,
-        isDefault: currency.id === id,
-      }))
-    );
-    toast.success("تم تحديد العملة الافتراضية بنجاح");
+  // الحصول على العملة الافتراضية
+  const getDefaultCurrency = () => {
+    return currencies.find(c => c.isDefault) || currencies[0];
   };
 
   return {
@@ -178,7 +220,8 @@ export const useCurrencies = () => {
     createCurrency,
     updateCurrency,
     deleteCurrency,
-    toggleCurrencyStatus,
     setDefaultCurrency,
+    toggleCurrencyStatus,
+    getDefaultCurrency,
   };
 };
