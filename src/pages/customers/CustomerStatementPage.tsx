@@ -40,7 +40,7 @@ const CustomerStatementPage = () => {
   }
 
   return (
-    <div className="h-screen overflow-y-auto bg-gray-50">
+    <div className="h-screen overflow-y-auto bg-gray-50" dir="rtl">
       <div className="sticky top-0 z-10 bg-white shadow-sm">
         <Header title="كشف حساب العميل" showBack={true} onBackClick={handleBack}>
           <StatementActions 
@@ -56,7 +56,7 @@ const CustomerStatementPage = () => {
         <CustomerInfo customer={customer} />
 
         <Card>
-          <CardHeader className="rtl">
+          <CardHeader>
             <CardTitle>كشف الحساب</CardTitle>
             <p className="text-gray-500">
               الفترة: {format(dateRange.from, "dd/MM/yyyy", { locale: ar })} - {format(dateRange.to, "dd/MM/yyyy", { locale: ar })}

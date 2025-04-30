@@ -17,19 +17,19 @@ interface DateRangeSelectorProps {
 
 export const DateRangeSelector = ({ dateRange, onDateRangeChange }: DateRangeSelectorProps) => {
   return (
-    <div className="flex flex-col mb-4 rtl">
-      <h3 className="text-sm font-medium mb-2">تصفية حسب التاريخ</h3>
-      <div className="flex gap-2">
+    <div className="flex flex-col mb-4">
+      <h3 className="text-sm font-medium mb-2 text-right">تصفية حسب التاريخ</h3>
+      <div className="flex gap-2 flex-row-reverse">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="flex flex-row-reverse justify-between">
               <CalendarIcon className="ml-2 h-4 w-4" />
               {dateRange.from
                 ? format(dateRange.from, "dd/MM/yyyy", { locale: ar })
                 : "تاريخ البداية"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="end">
             <Calendar
               mode="single"
               selected={dateRange.from}
@@ -37,6 +37,7 @@ export const DateRangeSelector = ({ dateRange, onDateRangeChange }: DateRangeSel
                 date && onDateRangeChange({ ...dateRange, from: date })
               }
               initialFocus
+              locale={ar}
               className="p-3 pointer-events-auto"
             />
           </PopoverContent>
@@ -44,14 +45,14 @@ export const DateRangeSelector = ({ dateRange, onDateRangeChange }: DateRangeSel
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="flex flex-row-reverse justify-between">
               <CalendarIcon className="ml-2 h-4 w-4" />
               {dateRange.to
                 ? format(dateRange.to, "dd/MM/yyyy", { locale: ar })
                 : "تاريخ النهاية"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="end">
             <Calendar
               mode="single"
               selected={dateRange.to}
@@ -59,6 +60,7 @@ export const DateRangeSelector = ({ dateRange, onDateRangeChange }: DateRangeSel
                 date && onDateRangeChange({ ...dateRange, to: date })
               }
               initialFocus
+              locale={ar}
               className="p-3 pointer-events-auto"
             />
           </PopoverContent>

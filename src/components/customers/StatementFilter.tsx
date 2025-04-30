@@ -15,7 +15,7 @@ interface StatementFilterProps {
 export const StatementFilter = ({ selectedTypes, onFilterChange }: StatementFilterProps) => {
   const handleToggle = (type: TransactionType) => {
     if (type === "all") {
-      // If "all" is clicked, either select all or clear all
+      // إذا تم النقر على "الكل"، إما تحديد الكل أو مسح الكل
       if (selectedTypes.includes("all")) {
         onFilterChange([]);
       } else {
@@ -25,13 +25,13 @@ export const StatementFilter = ({ selectedTypes, onFilterChange }: StatementFilt
       let newTypes: TransactionType[];
       
       if (selectedTypes.includes(type)) {
-        // Remove the type if it's already selected
+        // إزالة النوع إذا كان محددًا بالفعل
         newTypes = selectedTypes.filter(t => t !== type && t !== "all");
       } else {
-        // Add the type if it's not selected
+        // إضافة النوع إذا لم يكن محددًا
         newTypes = [...selectedTypes.filter(t => t !== "all"), type];
         
-        // Check if all individual types are selected to also add "all"
+        // التحقق مما إذا كانت جميع الأنواع الفردية محددة لإضافة "الكل" أيضًا
         if (["invoice", "payment", "return"].every(t => 
           newTypes.includes(t as TransactionType))) {
           newTypes.push("all");
@@ -45,41 +45,43 @@ export const StatementFilter = ({ selectedTypes, onFilterChange }: StatementFilt
   const isSelected = (type: TransactionType) => selectedTypes.includes(type);
 
   return (
-    <div className="flex flex-col mb-4 rtl">
-      <h3 className="text-sm font-medium mb-2">تصفية حسب نوع المعاملة</h3>
-      <div className="flex gap-2">
+    <div className="flex flex-col mb-4">
+      <h3 className="text-sm font-medium mb-2 text-right">تصفية حسب نوع المعاملة</h3>
+      <div className="flex gap-2 flex-wrap justify-end">
         <Toggle 
           pressed={isSelected("all")} 
           onPressedChange={() => handleToggle("all")}
           variant="outline"
+          className="flex flex-row-reverse"
         >
-          <Button variant="ghost" size="sm" className="p-0 m-0">
-            الكل
-          </Button>
+          <span>الكل</span>
         </Toggle>
         <Toggle 
           pressed={isSelected("invoice")} 
           onPressedChange={() => handleToggle("invoice")}
           variant="outline"
+          className="flex flex-row-reverse"
         >
           <FileText size={16} className="ml-1" />
-          فواتير
+          <span>فواتير</span>
         </Toggle>
         <Toggle 
           pressed={isSelected("payment")} 
           onPressedChange={() => handleToggle("payment")}
           variant="outline"
+          className="flex flex-row-reverse"
         >
           <CreditCard size={16} className="ml-1" />
-          دفعات
+          <span>دفعات</span>
         </Toggle>
         <Toggle 
           pressed={isSelected("return")} 
           onPressedChange={() => handleToggle("return")}
           variant="outline"
+          className="flex flex-row-reverse"
         >
           <RotateCcw size={16} className="ml-1" />
-          مرتجعات
+          <span>مرتجعات</span>
         </Toggle>
       </div>
     </div>
