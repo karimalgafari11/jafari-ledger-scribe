@@ -238,7 +238,7 @@ export const SalesRepsModule = () => {
               <SelectValue placeholder="كل الفروع" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">كل الفروع</SelectItem>
+              <SelectItem value="all">كل الفروع</SelectItem>
               {activeBranches.map((branch) => (
                 <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
               ))}

@@ -54,7 +54,7 @@ export const WarehousesToolbar = ({
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">كل الفروع</SelectItem>
+              <SelectItem value="all">كل الفروع</SelectItem>
               {branches.map((branch) => (
                 <SelectItem key={branch.id} value={branch.id}>
                   {branch.name}
