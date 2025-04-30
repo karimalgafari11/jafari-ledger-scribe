@@ -2,274 +2,184 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { CashRegister } from "@/types/definitions";
-import { useCashRegister } from "@/hooks/useCashRegister";
-import { ArrowDownToLine, ArrowUpFromLine, Receipt, } from "lucide-react";
-import { formatCurrency } from "@/utils/formatters";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowUpRight, ArrowDownLeft, Search, Filter, Plus, FileText } from "lucide-react";
 
-// نموذج للمعاملات النقدية
-const formSchema = z.object({
-  registerId: z.string().min(1, "الصندوق مطلوب"),
-  amount: z.coerce.number().min(0.01, "المبلغ يجب أن يكون أكبر من صفر"),
-  notes: z.string().optional(),
-  type: z.enum(["deposit", "withdraw"]),
-});
+interface Transaction {
+  id: string;
+  date: string;
+  type: "deposit" | "withdrawal";
+  amount: number;
+  register: string;
+  description: string;
+  reference: string;
+  account: string;
+}
 
 export const CashTransactionsModule = () => {
-  const { cashRegisters, registerTransaction } = useCashRegister();
-  const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
-  const [transactionType, setTransactionType] = useState<"deposit" | "withdraw">("deposit");
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      registerId: "",
-      amount: 0,
-      notes: "",
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Mock transactions data
+  const transactions: Transaction[] = [
+    {
+      id: "1",
+      date: "2025-04-29",
       type: "deposit",
+      amount: 5000,
+      register: "الصندوق الرئيسي",
+      description: "إيداع مبيعات نقدية",
+      reference: "INV-2025-042",
+      account: "المبيعات النقدية"
     },
-  });
+    {
+      id: "2",
+      date: "2025-04-28",
+      type: "withdrawal",
+      amount: 1200,
+      register: "الصندوق الرئيسي",
+      description: "سحب لدفع فواتير",
+      reference: "EXP-2025-118",
+      account: "مصاريف تشغيلية"
+    },
+    {
+      id: "3",
+      date: "2025-04-27",
+      type: "deposit",
+      amount: 3500,
+      register: "صندوق المعرض",
+      description: "إيداع من العميل أحمد",
+      reference: "CUST-2025-073",
+      account: "حسابات العملاء"
+    },
+    {
+      id: "4",
+      date: "2025-04-25",
+      type: "withdrawal",
+      amount: 800,
+      register: "صندوق المعرض",
+      description: "مصاريف نثرية",
+      reference: "EXP-2025-115",
+      account: "مصاريف نثرية"
+    },
+  ];
 
-  const handleOpenTransactionDialog = (type: "deposit" | "withdraw") => {
-    setTransactionType(type);
-    form.setValue("type", type);
-    form.setValue("registerId", cashRegisters[0]?.id || "");
-    form.setValue("amount", 0);
-    form.setValue("notes", "");
-    setIsTransactionDialogOpen(true);
+  // Filter transactions based on search term
+  const filteredTransactions = transactions.filter(
+    (transaction) =>
+      transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.register.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
   };
 
-  const handleTransactionSubmit = (values: z.infer<typeof formSchema>) => {
-    const { registerId, amount, type } = values;
-    registerTransaction(registerId, amount, type === "deposit");
-    setIsTransactionDialogOpen(false);
+  const handleAddTransaction = () => {
+    // To be implemented: open add transaction dialog
+    console.log("Add transaction clicked");
   };
 
-  // الحصول على مرجع الصندوق المحدد
-  const getSelectedRegister = (id: string): CashRegister | undefined => {
-    return cashRegisters.find(register => register.id === id);
+  const handleViewTransaction = (transaction: Transaction) => {
+    // To be implemented: open view transaction dialog
+    console.log("View transaction:", transaction);
   };
 
   return (
-    <>
-      <Card className="mt-6">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>حركات الصندوق</CardTitle>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
-              onClick={() => handleOpenTransactionDialog("deposit")}
-            >
-              <ArrowDownToLine className="ml-2 h-4 w-4" />
-              إيداع نقدي
+    <Card className="shadow-sm mt-6">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-bold">حركات النقدية</CardTitle>
+          <div className="flex space-x-2 gap-2">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Filter className="h-4 w-4" />
+              تصفية
             </Button>
-            <Button
-              variant="outline"
-              className="bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100"
-              onClick={() => handleOpenTransactionDialog("withdraw")}
+            <Button 
+              className="bg-teal hover:bg-teal-dark text-white flex items-center gap-2"
+              onClick={handleAddTransaction}
             >
-              <ArrowUpFromLine className="ml-2 h-4 w-4" />
-              سحب نقدي
-            </Button>
-            <Button
-              variant="outline"
-              className="bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
-            >
-              <Receipt className="ml-2 h-4 w-4" />
-              سجل الحركات
+              <Plus className="h-4 w-4" />
+              تسجيل حركة جديدة
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {cashRegisters.map(register => (
-              <div
-                key={register.id}
-                className="border rounded-lg p-4 bg-white shadow-sm"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold text-lg">{register.name}</h3>
-                  <Badge className={register.isActive ? "bg-green-100 text-green-800" : "bg-gray-100"}>
-                    {register.isActive ? "نشط" : "غير نشط"}
-                  </Badge>
-                </div>
-                <div className="text-sm text-gray-500 mb-3">
-                  {register.branchName} • {register.currencyCode}
-                </div>
-                <div className="text-2xl font-bold mb-2">
-                  {formatCurrency(register.balance, register.currencyCode)}
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100 flex-1"
-                    onClick={() => {
-                      form.setValue("registerId", register.id);
-                      handleOpenTransactionDialog("deposit");
-                    }}
-                  >
-                    <ArrowDownToLine className="ml-1 h-3 w-3" />
-                    إيداع
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100 flex-1"
-                    onClick={() => {
-                      form.setValue("registerId", register.id);
-                      handleOpenTransactionDialog("withdraw");
-                    }}
-                  >
-                    <ArrowUpFromLine className="ml-1 h-3 w-3" />
-                    سحب
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="relative w-full md:w-1/3 mb-4">
+          <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="بحث في الحركات..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pr-10"
+          />
+        </div>
 
-      <Dialog open={isTransactionDialogOpen} onOpenChange={setIsTransactionDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              {transactionType === "deposit" ? "إيداع نقدي" : "سحب نقدي"}
-            </DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleTransactionSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="registerId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>الصندوق</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="اختر الصندوق" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {cashRegisters.map((register) => (
-                          <SelectItem key={register.id} value={register.id} disabled={!register.isActive}>
-                            {register.name} - {register.currencyCode}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => {
-                  const selectedRegister = getSelectedRegister(form.getValues().registerId);
-                  const currencySymbol = selectedRegister?.currencyCode || "";
-                  
-                  return (
-                    <FormItem>
-                      <FormLabel>المبلغ</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...field}
-                            placeholder="0.00"
-                          />
-                          <div className="absolute inset-y-0 left-0 flex items-center pr-3 pointer-events-none text-gray-500">
-                            {currencySymbol}
-                          </div>
-                        </div>
-                      </FormControl>
-                      {transactionType === "withdraw" && selectedRegister && (
-                        <p className="text-sm text-gray-500">
-                          الرصيد المتاح: {formatCurrency(selectedRegister.balance, selectedRegister.currencyCode)}
-                        </p>
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>التاريخ</TableHead>
+                <TableHead>النوع</TableHead>
+                <TableHead>المبلغ</TableHead>
+                <TableHead>الصندوق</TableHead>
+                <TableHead>الوصف</TableHead>
+                <TableHead>المرجع</TableHead>
+                <TableHead>الحساب</TableHead>
+                <TableHead>الإجراءات</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredTransactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell>{transaction.date}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {transaction.type === "deposit" ? (
+                        <>
+                          <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                          <span>إيداع</span>
+                        </>
+                      ) : (
+                        <>
+                          <ArrowUpRight className="h-4 w-4 text-red-600" />
+                          <span>سحب</span>
+                        </>
                       )}
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ملاحظات</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="ملاحظات اختيارية" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsTransactionDialogOpen(false)}
-                  className="ml-2"
-                >
-                  إلغاء
-                </Button>
-                <Button
-                  type="submit"
-                  className={
-                    transactionType === "deposit"
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-amber-600 hover:bg-amber-700"
-                  }
-                >
-                  {transactionType === "deposit" ? "إيداع" : "سحب"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={
+                        transaction.type === "deposit"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {transaction.amount.toLocaleString()} ر.س
+                    </span>
+                  </TableCell>
+                  <TableCell>{transaction.register}</TableCell>
+                  <TableCell>{transaction.description}</TableCell>
+                  <TableCell>{transaction.reference}</TableCell>
+                  <TableCell>{transaction.account}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewTransaction(transaction)}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
-
-import { Badge } from "@/components/ui/badge";
