@@ -27,15 +27,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { 
-  Calendar, 
-  CalendarIcon, 
+  Calendar as CalendarIcon, 
   Check, 
   Delete, 
   Edit, 
   Lock, 
   LockOpen, 
   Plus, 
-  Search 
+  Search,
+  Calendar as CalendarLucideIcon
 } from "lucide-react";
 import { useAccountingPeriods } from "@/hooks/useAccountingPeriods";
 import { format } from "date-fns";
@@ -47,6 +47,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 
 export const AccountingPeriodsModule = () => {
   const {
@@ -270,7 +271,7 @@ export const AccountingPeriodsModule = () => {
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
-                    <Calendar className="h-10 w-10 mb-2" />
+                    <CalendarLucideIcon className="h-10 w-10 mb-2" />
                     <h3 className="text-lg font-medium mb-1">لا توجد فترات محاسبية</h3>
                     <p className="text-sm">قم بإضافة فترة محاسبية جديدة للبدء</p>
                   </div>
@@ -586,3 +587,4 @@ export const AccountingPeriodsModule = () => {
     </Card>
   );
 };
+
