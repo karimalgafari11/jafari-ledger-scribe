@@ -8,6 +8,7 @@ import { AccountsContent } from "@/components/accounting/AccountsContent";
 import { AccountDialogs } from "@/components/accounting/AccountDialogs";
 import { Account } from "@/types/accounts";
 import { Loader } from "lucide-react";
+import { Layout } from "@/components/Layout";
 
 const AccountChartPage: React.FC = () => {
   const {
@@ -156,44 +157,46 @@ const AccountChartPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 rtl">
-      <Header title="دليل الحسابات" showBack={true} />
+    <Layout>
+      <div className="container mx-auto p-6 rtl">
+        <Header title="دليل الحسابات" showBack={true} />
 
-      <AccountPageHeader
-        onSearch={handleSearch}
-        onAddAccount={() => setIsAddDialogOpen(true)}
-        filterType={filterType}
-        minBalance={minBalance}
-        maxBalance={maxBalance}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetFilters}
-        accounts={filteredAccounts}
-        onGenerateReport={handleGenerateReport}
-      />
+        <AccountPageHeader
+          onSearch={handleSearch}
+          onAddAccount={() => setIsAddDialogOpen(true)}
+          filterType={filterType}
+          minBalance={minBalance}
+          maxBalance={maxBalance}
+          onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
+          accounts={filteredAccounts}
+          onGenerateReport={handleGenerateReport}
+        />
 
-      <AccountsContent
-        isLoading={isLoading}
-        filteredAccounts={filteredAccounts}
-        filterType={filterType}
-        minBalance={minBalance}
-        maxBalance={maxBalance}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onShare={handleShare}
-      />
+        <AccountsContent
+          isLoading={isLoading}
+          filteredAccounts={filteredAccounts}
+          filterType={filterType}
+          minBalance={minBalance}
+          maxBalance={maxBalance}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onShare={handleShare}
+        />
 
-      <AccountDialogs
-        isAddDialogOpen={isAddDialogOpen}
-        setIsAddDialogOpen={setIsAddDialogOpen}
-        isEditDialogOpen={isEditDialogOpen}
-        setIsEditDialogOpen={setIsEditDialogOpen}
-        selectedAccount={selectedAccount}
-        parentOptions={getParentAccountOptions()}
-        onAddSubmit={handleAddSubmit}
-        onEditSubmit={handleEditSubmit}
-        onSuggestNumber={suggestAccountNumber}
-      />
-    </div>
+        <AccountDialogs
+          isAddDialogOpen={isAddDialogOpen}
+          setIsAddDialogOpen={setIsAddDialogOpen}
+          isEditDialogOpen={isEditDialogOpen}
+          setIsEditDialogOpen={setIsEditDialogOpen}
+          selectedAccount={selectedAccount}
+          parentOptions={getParentAccountOptions()}
+          onAddSubmit={handleAddSubmit}
+          onEditSubmit={handleEditSubmit}
+          onSuggestNumber={suggestAccountNumber}
+        />
+      </div>
+    </Layout>
   );
 };
 
