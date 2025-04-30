@@ -13,10 +13,10 @@ import {
 import { Eye, FileText, Warehouse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { mockStockMovements } from "@/data/mockStockMovements";
+import { useInventoryTransfer } from "@/hooks/useInventoryTransfer";
 
 export function TransferHistory() {
-  const transfers = mockStockMovements.filter((m) => m.type === "transfer");
+  const { transfers } = useInventoryTransfer();
 
   // Helper function to format the date
   const formatDate = (date: Date) => {

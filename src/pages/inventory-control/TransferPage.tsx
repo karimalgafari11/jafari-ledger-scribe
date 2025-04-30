@@ -2,7 +2,8 @@
 import { Header } from "@/components/Header";
 import { TransferForm } from "@/components/inventory-control/TransferForm";
 import { TransferHistory } from "@/components/inventory-control/TransferHistory";
-import { Warehouse } from "lucide-react";
+import { ItemsTable } from "@/components/inventory-control/ItemsTable";
+import { Warehouse, Table2 } from "lucide-react";
 import { useInventoryTransfer } from "@/hooks/useInventoryTransfer";
 
 export default function TransferPage() {
@@ -26,6 +27,14 @@ export default function TransferPage() {
             </p>
           </div>
         </div>
+
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <Table2 className="h-5 w-5 text-blue-600" />
+            <h2 className="text-xl font-medium">جدول المواد</h2>
+          </div>
+          <ItemsTable />
+        </section>
 
         <section>
           <h2 className="text-xl font-medium mb-4">إنشاء أمر نقل جديد</h2>
