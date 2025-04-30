@@ -40,6 +40,10 @@ import CashRegisterPage from "./pages/accounting/CashRegisterPage";
 import DiscountsPage from "./pages/definitions/DiscountsPage";
 import CommercialPapersPage from "./pages/accounting/CommercialPapersPage";
 
+// استيراد صفحات الأمان والصلاحيات الجديدة
+import UserRolesPage from "./pages/settings/UserRolesPage";
+import ActivityLogPage from "./pages/settings/ActivityLogPage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -94,6 +98,8 @@ function App() {
         <Route path="/definitions/discounts" element={<DiscountsPage />} />
         <Route path="/settings/branches" element={<BranchesPage />} />
         <Route path="/settings/users" element={<UsersPage />} />
+        <Route path="/settings/roles" element={<UserRolesPage />} />
+        <Route path="/settings/activity-log" element={<ActivityLogPage />} />
         <Route path="/settings/backup" element={<BackupPage />} />
         <Route path="/settings/system" element={<SystemSettingsPage />} />
         

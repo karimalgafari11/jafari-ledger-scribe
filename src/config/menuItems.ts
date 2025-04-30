@@ -18,7 +18,10 @@ import {
   PiggyBank,
   Banknote,
   WalletCards,
-  PercentCircle
+  PercentCircle,
+  Shield,
+  FileStack,
+  UserCog
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
@@ -101,6 +104,14 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
+    section: "الأمان والصلاحيات",
+    icon: Shield,
+    children: [
+      { label: "إدارة الصلاحيات", path: "/settings/roles", icon: UserCog },
+      { label: "سجل الأحداث", path: "/settings/activity-log", icon: FileStack }
+    ]
+  },
+  {
     section: "المساعد الذكي",
     icon: Bot,
     path: "/ai-assistant",
@@ -111,7 +122,7 @@ export const menuItems: MenuItem[] = [
     icon: Settings,
     children: [
       { label: "إعدادات النظام", path: "/settings/system", icon: Settings },
-      { label: "إدارة الفروع", path: "/settings/branch", icon: Settings },
+      { label: "إدارة الفروع", path: "/settings/branches", icon: Building },
       { label: "إدارة المستخدمين", path: "/settings/users", icon: Users },
       { label: "النسخ الاحتياطي", path: "/settings/backup", icon: Settings }
     ]
