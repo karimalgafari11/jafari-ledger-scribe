@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerInfo } from "@/components/customers/CustomerInfo";
 import { TransactionsTable } from "@/components/customers/TransactionsTable";
 import { StatementActions } from "@/components/customers/StatementActions";
+import { StatementFilter } from "@/components/customers/StatementFilter";
 import { useCustomerStatement } from "@/hooks/useCustomerStatement";
 
 const CustomerStatementPage = () => {
@@ -14,6 +15,8 @@ const CustomerStatementPage = () => {
     customer, 
     transactions, 
     isLoading,
+    selectedTypes,
+    handleTypeFilterChange,
     handlePrint, 
     handleDownload, 
     handleSendEmail 
@@ -51,6 +54,10 @@ const CustomerStatementPage = () => {
           <CardHeader className="rtl">
             <CardTitle>كشف الحساب</CardTitle>
             <p className="text-gray-500">الفترة: 01/10/2023 - 01/11/2023</p>
+            <StatementFilter 
+              selectedTypes={selectedTypes}
+              onFilterChange={handleTypeFilterChange}
+            />
           </CardHeader>
           <CardContent>
             <TransactionsTable 

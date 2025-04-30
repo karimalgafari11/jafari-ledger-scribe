@@ -58,9 +58,13 @@ const mockTransactions: Transaction[] = [
   }
 ];
 
+type TransactionType = Transaction["type"] | "all";
+
 export const useCustomerStatement = (customerId: string | undefined) => {
   const [customer, setCustomer] = useState<Customer | undefined>(undefined);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<TransactionType[]>(["all", "invoice", "payment", "return"]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -68,10 +72,27 @@ export const useCustomerStatement = (customerId: string | undefined) => {
     const foundCustomer = mockCustomers.find(c => c.id === customerId);
     if (foundCustomer) {
       setCustomer(foundCustomer);
-      setTransactions(mockTransactions);
+      setAllTransactions(mockTransactions);
+      setFilteredTransactions(mockTransactions);
     }
     setIsLoading(false);
   }, [customerId]);
+
+  useEffect(() => {
+    // Apply filters based on selected transaction types
+    if (selectedTypes.includes("all") || selectedTypes.length === 0) {
+      setFilteredTransactions(allTransactions);
+    } else {
+      const filtered = allTransactions.filter(transaction => 
+        selectedTypes.includes(transaction.type)
+      );
+      setFilteredTransactions(filtered);
+    }
+  }, [selectedTypes, allTransactions]);
+
+  const handleTypeFilterChange = (types: TransactionType[]) => {
+    setSelectedTypes(types);
+  };
 
   const handlePrint = () => {
     window.print();
@@ -89,8 +110,10 @@ export const useCustomerStatement = (customerId: string | undefined) => {
 
   return {
     customer,
-    transactions,
+    transactions: filteredTransactions,
     isLoading,
+    selectedTypes,
+    handleTypeFilterChange,
     handlePrint,
     handleDownload,
     handleSendEmail
