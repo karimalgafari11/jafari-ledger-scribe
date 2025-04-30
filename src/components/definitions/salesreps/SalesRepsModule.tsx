@@ -25,9 +25,11 @@ import {
   Users, 
   Plus, 
   Search,
-  Toggle,
+  ToggleRight,
   Building,
-  Percent
+  Percent,
+  X,
+  Check
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useSalesReps } from "@/hooks/useSalesReps";
@@ -47,10 +49,8 @@ import {
 import {
   Popover,
   PopoverTrigger,
-  PopoverContent,
-  PopoverClose
+  PopoverContent
 } from "@/components/ui/popover";
-import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const SalesRepsModule = () => {
@@ -129,7 +129,15 @@ export const SalesRepsModule = () => {
 
   // معالجة إضافة مندوب جديد
   const handleCreate = (values: z.infer<typeof formSchema>) => {
-    const success = createSalesRep(values);
+    const success = createSalesRep({
+      code: values.code,
+      name: values.name,
+      phone: values.phone,
+      email: values.email,
+      commissionRate: values.commissionRate,
+      isActive: values.isActive,
+      branchIds: values.branchIds,
+    });
     
     if (success) {
       createForm.reset({
@@ -148,7 +156,15 @@ export const SalesRepsModule = () => {
   // معالجة تعديل مندوب
   const handleEdit = (values: z.infer<typeof formSchema>) => {
     if (selectedSalesRep) {
-      const success = updateSalesRep(selectedSalesRep.id, values);
+      const success = updateSalesRep(selectedSalesRep.id, {
+        code: values.code,
+        name: values.name,
+        phone: values.phone,
+        email: values.email,
+        commissionRate: values.commissionRate,
+        isActive: values.isActive,
+        branchIds: values.branchIds,
+      });
       
       if (success) {
         setIsEditDialogOpen(false);
@@ -277,7 +293,7 @@ export const SalesRepsModule = () => {
                       onClick={() => toggleSalesRepStatus(salesRep.id)}
                       title={salesRep.isActive ? "تعطيل" : "تفعيل"}
                     >
-                      <Toggle className="h-4 w-4" />
+                      <ToggleRight className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
@@ -475,11 +491,13 @@ export const SalesRepsModule = () => {
                               ))}
                             </div>
                             <div className="p-2 border-t">
-                              <PopoverClose asChild>
-                                <Button size="sm" className="w-full">
-                                  تم
-                                </Button>
-                              </PopoverClose>
+                              <Button size="sm" className="w-full" onClick={(e) => {
+                                e.preventDefault();
+                                // This is a hack to close the popover since we don't have PopoverClose
+                                document.body.click();
+                              }}>
+                                تم
+                              </Button>
                             </div>
                           </PopoverContent>
                         </Popover>
@@ -688,11 +706,13 @@ export const SalesRepsModule = () => {
                               ))}
                             </div>
                             <div className="p-2 border-t">
-                              <PopoverClose asChild>
-                                <Button size="sm" className="w-full">
-                                  تم
-                                </Button>
-                              </PopoverClose>
+                              <Button size="sm" className="w-full" onClick={(e) => {
+                                e.preventDefault();
+                                // This is a hack to close the popover since we don't have PopoverClose
+                                document.body.click();
+                              }}>
+                                تم
+                              </Button>
                             </div>
                           </PopoverContent>
                         </Popover>

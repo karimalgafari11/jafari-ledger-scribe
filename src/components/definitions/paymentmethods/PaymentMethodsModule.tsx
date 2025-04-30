@@ -27,7 +27,7 @@ import {
   ListCheck, 
   Plus, 
   Search,
-  Toggle
+  ToggleRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { usePaymentMethods } from "@/hooks/usePaymentMethods";
@@ -99,7 +99,13 @@ export const PaymentMethodsModule = () => {
 
   // معالجة إضافة طريقة دفع جديدة
   const handleCreate = (values: z.infer<typeof formSchema>) => {
-    const success = createPaymentMethod(values);
+    const success = createPaymentMethod({
+      code: values.code,
+      name: values.name,
+      description: values.description,
+      isActive: values.isActive,
+      requiresDetails: values.requiresDetails,
+    });
     
     if (success) {
       createForm.reset();
@@ -110,7 +116,13 @@ export const PaymentMethodsModule = () => {
   // معالجة تعديل طريقة دفع
   const handleEdit = (values: z.infer<typeof formSchema>) => {
     if (selectedPaymentMethod) {
-      const success = updatePaymentMethod(selectedPaymentMethod.id, values);
+      const success = updatePaymentMethod(selectedPaymentMethod.id, {
+        code: values.code,
+        name: values.name,
+        description: values.description,
+        isActive: values.isActive,
+        requiresDetails: values.requiresDetails,
+      });
       
       if (success) {
         setIsEditDialogOpen(false);
@@ -210,7 +222,7 @@ export const PaymentMethodsModule = () => {
                       onClick={() => togglePaymentMethodStatus(method.id)}
                       title={method.isActive ? "تعطيل" : "تفعيل"}
                     >
-                      <Toggle className="h-4 w-4" />
+                      <ToggleRight className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
