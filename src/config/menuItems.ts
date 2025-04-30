@@ -78,8 +78,8 @@ export const menuItems: MenuItem[] = [
     section: "العملاء",
     icon: Users,
     children: [
-      { label: "إدارة العملاء", path: "/customers/manage", icon: Users },
-      { label: "كشف حساب العميل", path: "/customers/statement", icon: FileText }
+      { label: "إدارة العملاء", path: "/customers/manage", icon: Users }
+      // "كشف حساب العميل" option removed
     ]
   },
   {
