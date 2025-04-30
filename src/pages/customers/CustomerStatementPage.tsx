@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -191,7 +190,7 @@ const CustomerStatementPage = () => {
                   </tr>
                   {transactions.map((transaction) => (
                     <tr key={transaction.id} className="hover:bg-gray-50">
-                      <td className="border p-2">{formatDate(transaction.date)}</td>
+                      <td className="border p-2">{formatDate(transaction.date.toISOString())}</td>
                       <td className="border p-2">{transaction.reference}</td>
                       <td className="border p-2">{transaction.description}</td>
                       <td className="border p-2 text-red-600">

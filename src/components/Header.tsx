@@ -7,11 +7,20 @@ import { useSidebarNavigation } from "@/hooks/useSidebarNavigation";
 interface HeaderProps {
   title: string;
   showBack?: boolean;
-  children?: React.ReactNode; // Added children prop
+  onBackClick?: () => void;
+  children?: React.ReactNode;
 }
 
-export function Header({ title, showBack = false, children }: HeaderProps) {
+export function Header({ title, showBack = false, onBackClick, children }: HeaderProps) {
   const { handleItemClick } = useSidebarNavigation();
+
+  const handleBack = () => {
+    if (onBackClick) {
+      onBackClick();
+    } else {
+      handleItemClick("/");
+    }
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between rtl">
@@ -20,7 +29,7 @@ export function Header({ title, showBack = false, children }: HeaderProps) {
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => handleItemClick("/")}
+            onClick={handleBack}
             className="ml-2"
           >
             <ArrowLeft className="h-5 w-5" />
