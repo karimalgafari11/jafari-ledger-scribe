@@ -66,7 +66,7 @@ export const CustomersToolbar = ({
                     <SelectValue placeholder="جميع الحالات" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">جميع الحالات</SelectItem>
+                    <SelectItem value="all">جميع الحالات</SelectItem>
                     <SelectItem value="active">نشط</SelectItem>
                     <SelectItem value="inactive">غير نشط</SelectItem>
                   </SelectContent>
@@ -84,7 +84,7 @@ export const CustomersToolbar = ({
                     <SelectValue placeholder="جميع الأنواع" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">جميع الأنواع</SelectItem>
+                    <SelectItem value="all">جميع الأنواع</SelectItem>
                     <SelectItem value="individual">فرد</SelectItem>
                     <SelectItem value="company">شركة</SelectItem>
                   </SelectContent>
