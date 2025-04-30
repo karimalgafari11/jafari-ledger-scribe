@@ -75,8 +75,8 @@ export const CashRegistersModule = () => {
         <CashRegisterTable
           registers={filteredRegisters}
           isLoading={isLoading}
-          onEdit={handleOpenEditDialog}
-          onDelete={handleOpenDeleteDialog}
+          onEditRegister={handleOpenEditDialog}
+          onDeleteRegister={handleOpenDeleteDialog}
         />
         
         <CashRegisterDialog
