@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { useAccountingSettings } from '@/hooks/useAccountingSettings';
@@ -92,7 +91,7 @@ const generalFormSchema = z.object({
   retainDataYears: z.number().min(1).max(10)
 });
 
-// Form schema for tax settings
+// Form schema for tax settings - ensure all fields are required
 const taxFormSchema = z.object({
   enableTax: z.boolean(),
   defaultTaxRate: z.number().min(0).max(100),
@@ -100,7 +99,7 @@ const taxFormSchema = z.object({
   taxAuthority: z.string()
 });
 
-// Form schema for new closing method
+// Form schema for new closing method - ensure all fields are required
 const closingMethodSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
@@ -165,12 +164,27 @@ const AccountingSettingsPage: React.FC = () => {
   
   // Handle tax settings submission
   const onTaxSubmit = (data: z.infer<typeof taxFormSchema>) => {
-    updateTaxSettings(data);
+    // Ensure all required fields are present before updating
+    const updatedTaxSettings: z.infer<typeof taxFormSchema> = {
+      enableTax: data.enableTax,
+      defaultTaxRate: data.defaultTaxRate,
+      taxNumber: data.taxNumber,
+      taxAuthority: data.taxAuthority
+    };
+    
+    updateTaxSettings(updatedTaxSettings);
   };
   
   // Handle new closing method submission
   const onClosingMethodSubmit = (data: z.infer<typeof closingMethodSchema>) => {
-    addClosingMethod(data);
+    // Ensure all required fields are present before adding
+    const newClosingMethod: Omit<ClosingMethod, 'id'> = {
+      name: data.name,
+      description: data.description,
+      isActive: data.isActive
+    };
+    
+    addClosingMethod(newClosingMethod);
     closingMethodForm.reset();
     setIsAddMethodDialogOpen(false);
   };
