@@ -31,6 +31,7 @@ import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
 import TransferPage from "./pages/inventory-control/TransferPage";
 import LocationsPage from "./pages/inventory-control/LocationsPage";
 import DamagedItemsPage from "./pages/inventory-control/DamagedItemsPage";
+import AiAssistantPage from "./pages/ai/AiAssistantPage";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,9 @@ const App = () => (
         <Route path="/settings/branch" element={<BranchesPage />} />
         <Route path="/settings/users" element={<UsersPage />} />
         <Route path="/settings/backup" element={<BackupPage />} />
+        
+        {/* AI Assistant Route */}
+        <Route path="/ai/assistant" element={<AiAssistantPage />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>

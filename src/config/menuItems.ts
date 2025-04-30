@@ -9,7 +9,8 @@ import {
   Users,
   Settings,
   DollarSign,
-  Wrench
+  Wrench,
+  Bot
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
@@ -79,8 +80,13 @@ export const menuItems: MenuItem[] = [
     icon: Users,
     children: [
       { label: "إدارة العملاء", path: "/customers/manage", icon: Users }
-      // "كشف حساب العميل" option removed
     ]
+  },
+  {
+    section: "المساعد الذكي",
+    icon: Bot,
+    path: "/ai/assistant",
+    children: []
   },
   {
     section: "الإعدادات",
