@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
 import { BranchesModule } from "@/components/definitions/branches/BranchesModule";
 import { WarehousesModule } from "@/components/definitions/warehouses/WarehousesModule";
 import { CostCentersTab } from "@/components/definitions/costcenters/CostCentersTab";
@@ -21,8 +22,10 @@ import {
   FileText, 
   Banknote, 
   Users, 
-  ListCheck 
+  ListCheck,
+  ArrowUpRight 
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const BasicDefinitionsPage = () => {
   const [activeTab, setActiveTab] = useState("branches");
@@ -85,6 +88,14 @@ const BasicDefinitionsPage = () => {
             <BanksModule />
           </TabsContent>
           <TabsContent value="currencies">
+            <div className="mb-4">
+              <Button asChild variant="outline" className="flex gap-1 items-center">
+                <Link to="/definitions/currencies">
+                  <span>الإدارة المتقدمة للعملات وأسعار الصرف</span>
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
             <CurrenciesModule />
           </TabsContent>
           <TabsContent value="periods">

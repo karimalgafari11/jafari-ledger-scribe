@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Currency } from "@/types/definitions";
-import { Edit, Trash2, CheckCircle } from "lucide-react";
+import { Edit, Trash2, CheckCircle, Star } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface CurrenciesTableProps {
@@ -13,6 +13,7 @@ interface CurrenciesTableProps {
   onEdit: (currency: Currency) => void;
   onDelete: (currency: Currency) => void;
   onToggleStatus: (id: string) => void;
+  onSetDefault: (id: string) => void;
 }
 
 export const CurrenciesTable = ({
@@ -21,6 +22,7 @@ export const CurrenciesTable = ({
   onEdit,
   onDelete,
   onToggleStatus,
+  onSetDefault,
 }: CurrenciesTableProps) => {
   return (
     <div>
@@ -52,8 +54,18 @@ export const CurrenciesTable = ({
                   <TableCell>{currency.country}</TableCell>
                   <TableCell>{currency.symbol}</TableCell>
                   <TableCell>
-                    {currency.isDefault && (
+                    {currency.isDefault ? (
                       <CheckCircle className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onSetDefault(currency.id)}
+                        disabled={!currency.isActive}
+                        className="p-0"
+                      >
+                        <Star className="h-5 w-5 text-gray-300 hover:text-amber-400" />
+                      </Button>
                     )}
                   </TableCell>
                   <TableCell>
@@ -61,6 +73,7 @@ export const CurrenciesTable = ({
                       <Switch
                         checked={currency.isActive}
                         onCheckedChange={() => onToggleStatus(currency.id)}
+                        disabled={currency.isDefault}
                       />
                       <Badge 
                         variant={currency.isActive ? "outline" : "secondary"}

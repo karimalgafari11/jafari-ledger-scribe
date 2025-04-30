@@ -1,97 +1,97 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
-import Reports from "./pages/Reports";
-import ProductsPage from "./pages/inventory/ProductsPage";
-import StockMovementsPage from "./pages/inventory/StockMovementsPage";
-import CountingPage from "./pages/inventory/CountingPage";
-import ReorderPage from "./pages/inventory/ReorderPage";
-import SystemSettingsPage from "./pages/settings/SystemSettingsPage";
-import BranchesPage from "./pages/settings/BranchesPage";
-import UsersPage from "./pages/settings/UsersPage";
-import BackupPage from "./pages/settings/BackupPage";
-import NewExpensePage from "./pages/expenses/NewExpensePage";
-import ExpenseCategoriesPage from "./pages/expenses/ExpenseCategoriesPage";
-import ExpenseReportsPage from "./pages/expenses/ExpenseReportsPage";
-import InvoicesPage from "./pages/invoices/InvoicesPage";
-import QuotesPage from "./pages/invoices/QuotesPage";
-import SalesOrdersPage from "./pages/invoices/SalesOrdersPage";
-import ReturnsPage from "./pages/invoices/ReturnsPage";
 import AccountChartPage from "./pages/accounting/AccountChartPage";
 import JournalEntriesPage from "./pages/accounting/JournalEntriesPage";
 import CostCentersPage from "./pages/accounting/CostCentersPage";
 import AccountingSettingsPage from "./pages/accounting/AccountingSettingsPage";
+import ProductsPage from "./pages/inventory/ProductsPage";
+import StockMovementsPage from "./pages/inventory/StockMovementsPage";
+import CountingPage from "./pages/inventory/CountingPage";
+import ReorderPage from "./pages/inventory/ReorderPage";
+import TransferPage from "./pages/inventoryControl/TransferPage";
+import LocationsPage from "./pages/inventoryControl/LocationsPage";
+import DamagedItemsPage from "./pages/inventoryControl/DamagedItemsPage";
 import CustomersPage from "./pages/customers/CustomersPage";
 import CustomerStatementPage from "./pages/customers/CustomerStatementPage";
-import TransferPage from "./pages/inventory-control/TransferPage";
-import LocationsPage from "./pages/inventory-control/LocationsPage";
-import DamagedItemsPage from "./pages/inventory-control/DamagedItemsPage";
-import AiAssistantPage from "./pages/ai/AiAssistantPage";
+import InvoicesPage from "./pages/invoices/InvoicesPage";
+import QuotesPage from "./pages/invoices/QuotesPage";
+import SalesOrdersPage from "./pages/invoices/SalesOrdersPage";
+import ReturnsPage from "./pages/invoices/ReturnsPage";
+import NewExpensePage from "./pages/expenses/NewExpensePage";
+import ExpenseCategoriesPage from "./pages/expenses/ExpenseCategoriesPage";
+import ExpenseReportsPage from "./pages/expenses/ExpenseReportsPage";
+import Reports from "./pages/reports/Reports";
 import BasicDefinitionsPage from "./pages/definitions/BasicDefinitionsPage";
+import BranchesPage from "./pages/settings/BranchesPage";
+import UsersPage from "./pages/settings/UsersPage";
+import BackupPage from "./pages/settings/BackupPage";
+import SystemSettingsPage from "./pages/settings/SystemSettingsPage";
+import AiAssistantPage from "./pages/aiAssistant/AiAssistantPage";
+import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// استيراد الصفحة الجديدة للعملات
+import CurrenciesPage from "./pages/definitions/CurrenciesPage";
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <Toaster />
-    <Sonner />
+function App() {
+  return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/basic-definitions" element={<BasicDefinitionsPage />} />
         
-        {/* Inventory Routes */}
+        {/* المحاسبة */}
+        <Route path="/accounting/chart" element={<AccountChartPage />} />
+        <Route path="/accounting/journals" element={<JournalEntriesPage />} />
+        <Route path="/accounting/costcenters" element={<CostCentersPage />} />
+        <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
+        
+        {/* المخزون */}
         <Route path="/inventory/products" element={<ProductsPage />} />
         <Route path="/inventory/movements" element={<StockMovementsPage />} />
         <Route path="/inventory/counting" element={<CountingPage />} />
         <Route path="/inventory/reorder" element={<ReorderPage />} />
         
-        {/* Expenses Routes */}
-        <Route path="/expenses/new" element={<NewExpensePage />} />
-        <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
-        <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
-        
-        {/* Invoices Routes */}
-        <Route path="/invoices/outgoing" element={<InvoicesPage />} />
-        <Route path="/invoices/quotes" element={<QuotesPage />} />
-        <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
-        <Route path="/invoices/returns" element={<ReturnsPage />} />
-        
-        {/* Accounting Routes */}
-        <Route path="/accounting/chart" element={<AccountChartPage />} />
-        <Route path="/accounting/journals" element={<JournalEntriesPage />} />
-        <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
-        <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
-        
-        {/* Inventory Control Routes */}
+        {/* التحكم بالمخزون */}
         <Route path="/inventory-control/transfer" element={<TransferPage />} />
         <Route path="/inventory-control/locations" element={<LocationsPage />} />
         <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
         
-        {/* Customer Routes */}
-        <Route path="/customers/manage" element={<CustomersPage />} />
-        <Route path="/customers/statement/:id" element={<CustomerStatementPage />} />
+        {/* العملاء */}
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/customers/:id/statement" element={<CustomerStatementPage />} />
         
-        {/* Settings Routes */}
-        <Route path="/settings/system" element={<SystemSettingsPage />} />
-        <Route path="/settings/branch" element={<BranchesPage />} />
+        {/* الفواتير */}
+        <Route path="/invoices" element={<InvoicesPage />} />
+        <Route path="/invoices/quotes" element={<QuotesPage />} />
+        <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
+        <Route path="/invoices/returns" element={<ReturnsPage />} />
+        
+        {/* المصاريف */}
+        <Route path="/expenses/new" element={<NewExpensePage />} />
+        <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
+        <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
+        
+        {/* التقارير */}
+        <Route path="/reports" element={<Reports />} />
+        
+        {/* التعاريف والإعدادات */}
+        <Route path="/definitions" element={<BasicDefinitionsPage />} />
+        <Route path="/definitions/currencies" element={<CurrenciesPage />} />
+        <Route path="/settings/branches" element={<BranchesPage />} />
         <Route path="/settings/users" element={<UsersPage />} />
         <Route path="/settings/backup" element={<BackupPage />} />
+        <Route path="/settings/system" element={<SystemSettingsPage />} />
         
-        {/* AI Assistant Route */}
-        <Route path="/ai/assistant" element={<AiAssistantPage />} />
+        {/* مساعد الذكاء الاصطناعي */}
+        <Route path="/ai-assistant" element={<AiAssistantPage />} />
         
+        {/* صفحة 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
-  </QueryClientProvider>
-);
+  );
+}
 
 export default App;
