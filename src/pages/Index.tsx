@@ -18,6 +18,10 @@ import CustomersPage from "./customers/CustomersPage";
 import CustomerStatementPage from "./customers/CustomerStatementPage";
 import AiAssistantPage from "./ai/AiAssistantPage";
 import BasicDefinitionsPage from "./definitions/BasicDefinitionsPage";
+import CashRegisterPage from "./accounting/CashRegisterPage";
+import CommercialPapersPage from "./accounting/CommercialPapersPage";
+import CurrenciesPage from "./definitions/CurrenciesPage";
+import DiscountsPage from "./definitions/DiscountsPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -46,6 +50,10 @@ const Index = () => {
         return <AccountChartPage />;
       case "accounting-journals":
         return <JournalEntriesPage />;
+      case "accounting-cashregister":
+        return <CashRegisterPage />;
+      case "accounting-commercialpapers":
+        return <CommercialPapersPage />;
       case "accounting-cost-centers":
         return <CostCentersPage />;
       case "customers-manage":
@@ -57,6 +65,10 @@ const Index = () => {
       case "basic-definitions":
       case "definitions":
         return <BasicDefinitionsPage />;
+      case "definitions-currencies":
+        return <CurrenciesPage />;
+      case "definitions-discounts":
+        return <DiscountsPage />;
       default:
         return (
           <div className="h-screen flex items-center justify-center bg-gray-100 rtl">

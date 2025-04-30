@@ -1,4 +1,3 @@
-
 export interface Branch {
   id: string;
   code: string;
@@ -49,6 +48,8 @@ export interface Currency {
   isActive: boolean;
   exchangeRate: number;
   decimalPlaces: number;
+  roundingMethod?: 'up' | 'down' | 'nearest'; // طريقة التقريب
+  lastUpdated?: Date; // تاريخ آخر تحديث
 }
 
 export interface ExchangeRate {
@@ -58,6 +59,9 @@ export interface ExchangeRate {
   rate: number;
   date: string;
   isManual: boolean;
+  provider?: string; // مزود بيانات سعر الصرف
+  effectiveDate?: Date; // تاريخ بداية سريان السعر
+  expiryDate?: Date; // تاريخ انتهاء سريان السعر
 }
 
 export interface AccountingPeriod {
@@ -97,4 +101,72 @@ export interface SalesRepresentative {
   commissionRate: number;
   isActive: boolean;
   branchIds: string[]; // الفروع التي يعمل بها
+}
+
+// إضافة مكون صندوق النقدية
+export interface CashRegister {
+  id: string;
+  code: string;
+  name: string;
+  branchId: string;
+  branchName: string;
+  currencyId: string;
+  currencyCode: string;
+  balance: number;
+  isActive: boolean;
+  userId?: string; // المستخدم المسؤول
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// إضافة مكون الخصومات
+export interface Discount {
+  id: string;
+  code: string;
+  name: string;
+  type: 'percentage' | 'fixed'; // نوع الخصم (نسبة مئوية أو قيمة ثابتة)
+  value: number; // قيمة الخصم
+  startDate: Date; // تاريخ بداية سريان الخصم
+  endDate?: Date; // تاريخ انتهاء سريان الخصم
+  minimumAmount?: number; // الحد الأدنى للطلب لتطبيق الخصم
+  maximumAmount?: number; // الحد الأقصى للخصم
+  isActive: boolean;
+  applicableItems?: string[]; // الأصناف التي ينطبق عليها الخصم
+  applicableCategories?: string[]; // فئات الأصناف التي ينطبق عليها الخصم
+}
+
+// إضافة مكون الأوراق التجارية
+export interface CommercialPaper {
+  id: string;
+  referenceNumber: string;
+  type: 'cheque' | 'promissory_note' | 'bill_of_exchange'; // نوع الورقة التجارية
+  customerId?: string;
+  customerName?: string;
+  vendorId?: string;
+  vendorName?: string;
+  amount: number;
+  currencyId: string;
+  currencyCode: string;
+  issueDate: Date;
+  dueDate: Date;
+  bankId?: string;
+  bankName?: string;
+  status: 'draft' | 'active' | 'completed' | 'cancelled' | 'dishonored';
+  notes?: string;
+}
+
+// إضافة مكون تنبيهات الاستحقاق
+export interface DueNotification {
+  id: string;
+  entityId: string; // معرف الكيان (مثل الورقة التجارية)
+  entityType: 'commercial_paper' | 'invoice' | 'expense'; // نوع الكيان
+  dueDate: Date;
+  amount: number;
+  currencyId: string;
+  title: string;
+  message: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'pending' | 'processed' | 'dismissed';
+  notificationDate: Date; // تاريخ إرسال التنبيه
+  userId?: string; // المستخدم المسؤول
 }

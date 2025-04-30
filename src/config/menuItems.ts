@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   Box,
@@ -10,7 +11,14 @@ import {
   DollarSign,
   Wrench,
   Bot,
-  Building
+  Building,
+  Receipt,
+  Coins,
+  BadgeDollarSign,
+  PiggyBank,
+  Banknote,
+  Cash,
+  Discount
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
@@ -59,7 +67,8 @@ export const menuItems: MenuItem[] = [
       { label: "الفواتير الصادرة", path: "/invoices/outgoing", icon: FileText },
       { label: "عروض الأسعار", path: "/invoices/quotes", icon: FileText },
       { label: "أوامر البيع", path: "/invoices/sales-orders", icon: ShoppingCart },
-      { label: "مرتجعات المبيعات", path: "/invoices/returns", icon: FileText }
+      { label: "مرتجعات المبيعات", path: "/invoices/returns", icon: FileText },
+      { label: "إدارة الخصومات", path: "/definitions/discounts", icon: Discount }
     ]
   },
   {
@@ -77,6 +86,9 @@ export const menuItems: MenuItem[] = [
     children: [
       { label: "شجرة الحسابات", path: "/accounting/chart", icon: ChartBar },
       { label: "القيود اليومية", path: "/accounting/journals", icon: FileText },
+      { label: "صناديق النقدية", path: "/accounting/cashregister", icon: Cash },
+      { label: "الأوراق التجارية", path: "/accounting/commercialpapers", icon: Receipt },
+      { label: "العملات وأسعار الصرف", path: "/definitions/currencies", icon: Coins },
       { label: "مراكز الكلفة", path: "/accounting/cost-centers", icon: ChartBar },
       { label: "الإعدادات المحاسبية", path: "/accounting/settings", icon: Settings }
     ]

@@ -34,6 +34,10 @@ import NotFound from "./pages/NotFound";
 
 // استيراد الصفحة الجديدة للعملات
 import CurrenciesPage from "./pages/definitions/CurrenciesPage";
+// استيراد الصفحات الجديدة
+import CashRegisterPage from "./pages/accounting/CashRegisterPage";
+import DiscountsPage from "./pages/definitions/DiscountsPage";
+import CommercialPapersPage from "./pages/accounting/CommercialPapersPage";
 
 function App() {
   return (
@@ -47,6 +51,8 @@ function App() {
         <Route path="/accounting/journals" element={<JournalEntriesPage />} />
         <Route path="/accounting/costcenters" element={<CostCentersPage />} />
         <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
+        <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
+        <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
         
         {/* المخزون */}
         <Route path="/inventory/products" element={<ProductsPage />} />
@@ -81,6 +87,7 @@ function App() {
         <Route path="/definitions" element={<BasicDefinitionsPage />} />
         <Route path="/basic-definitions" element={<Navigate to="/definitions" replace />} />
         <Route path="/definitions/currencies" element={<CurrenciesPage />} />
+        <Route path="/definitions/discounts" element={<DiscountsPage />} />
         <Route path="/settings/branches" element={<BranchesPage />} />
         <Route path="/settings/users" element={<UsersPage />} />
         <Route path="/settings/backup" element={<BackupPage />} />
