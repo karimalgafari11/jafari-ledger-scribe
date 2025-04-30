@@ -25,6 +25,7 @@ import SalesOrdersPage from "./pages/invoices/SalesOrdersPage";
 import ReturnsPage from "./pages/invoices/ReturnsPage";
 import AccountChartPage from "./pages/accounting/AccountChartPage";
 import JournalEntriesPage from "./pages/accounting/JournalEntriesPage";
+import CostCentersPage from "./pages/accounting/CostCentersPage";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +60,7 @@ const App = () => (
           {/* Accounting Routes */}
           <Route path="/accounting/chart" element={<AccountChartPage />} />
           <Route path="/accounting/journals" element={<JournalEntriesPage />} />
-          <Route path="/accounting/cost-centers" element={<NotFound />} />
+          <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
           <Route path="/accounting/settings" element={<NotFound />} />
           
           {/* Inventory Control Routes */}
