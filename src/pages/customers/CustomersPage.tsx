@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { CustomersTable } from "@/components/customers/CustomersTable";
 import { CustomersToolbar } from "@/components/customers/CustomersToolbar";
@@ -12,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CustomerFilters } from "@/types/customers";
 
 const CustomersPage = () => {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -104,7 +106,9 @@ const CustomersPage = () => {
   };
 
   const handleViewStatement = (customer: Customer) => {
-    toast.info(`سيتم عرض كشف حساب العميل ${customer.name} قريباً`);
+    // تعديل الوظيفة لتوجيه المستخدم إلى صفحة كشف الحساب مع معرف العميل
+    navigate(`/customers/statement/${customer.id}`);
+    toast.info(`جاري فتح كشف حساب العميل ${customer.name}`);
   };
 
   const handleFilterChange = (newFilters: CustomerFilters) => {
