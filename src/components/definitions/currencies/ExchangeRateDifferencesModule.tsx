@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { toast } from "sonner";
+import { JournalEntry } from "@/types/journal";
 
 export const ExchangeRateDifferencesModule = () => {
   const { 
@@ -38,13 +39,13 @@ export const ExchangeRateDifferencesModule = () => {
     setIsGeneratingJournalEntry(true);
     
     try {
-      const journalEntry = await createJournalEntry(difference);
+      const journalEntryData = await createJournalEntry(difference);
       
-      // Add the journal entry
-      addEntry(journalEntry);
+      // Add the journal entry and get the complete entry with ID
+      const completeJournalEntry = addEntry(journalEntryData);
       
-      // Mark difference as processed
-      processDifference(difference.id, journalEntry.id);
+      // Mark difference as processed with the journal entry ID
+      processDifference(difference.id, completeJournalEntry.id);
       
       toast.success("تم إنشاء قيد محاسبي بفرق سعر الصرف بنجاح");
     } catch (error) {
@@ -73,9 +74,9 @@ export const ExchangeRateDifferencesModule = () => {
       // Process each difference
       for (const difference of unprocessedDifferences) {
         try {
-          const journalEntry = await createJournalEntry(difference);
-          addEntry(journalEntry);
-          processDifference(difference.id, journalEntry.id);
+          const journalEntryData = await createJournalEntry(difference);
+          const completeJournalEntry = addEntry(journalEntryData);
+          processDifference(difference.id, completeJournalEntry.id);
           successCount++;
         } catch (error) {
           console.error(`Error processing difference ${difference.id}:`, error);
