@@ -43,11 +43,14 @@ const Reports = () => {
   };
 
   const handleReportClick = (reportId: number) => {
-    toast.info("جاري فتح التقرير...");
+    toast.success("جاري فتح التقرير...");
     console.log(`Opening report: ${reportId}`);
+    // هنا يمكن إضافة منطق لفتح التقرير أو تحويل المستخدم إلى صفحة التقرير
   };
 
   const handleApplyFilters = () => {
+    setSearchQuery(searchQuery);
+    setActiveCategory(selectedCategory);
     toast.success("تم تطبيق الفلترة");
   };
 
@@ -58,7 +61,8 @@ const Reports = () => {
     });
     setSelectedCategory("all");
     setSearchQuery("");
-    toast.info("تم إعادة ضبط الفلترة");
+    setActiveCategory("all");
+    toast.success("تم إعادة ضبط الفلترة");
   };
 
   return (

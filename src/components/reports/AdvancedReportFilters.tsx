@@ -31,6 +31,16 @@ export const AdvancedReportFilters: React.FC<AdvancedReportFiltersProps> = ({
   onApplyFilters,
   onResetFilters
 }) => {
+  // معالج تغيير البحث
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // معالج تغيير التصنيف
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+  };
+
   return (
     <Card className="mb-6">
       <CardContent className="pt-6">
@@ -48,7 +58,7 @@ export const AdvancedReportFilters: React.FC<AdvancedReportFiltersProps> = ({
             <Label htmlFor="category" className="mb-2 block">التصنيف</Label>
             <Select 
               value={category} 
-              onValueChange={setCategory}
+              onValueChange={handleCategoryChange}
             >
               <SelectTrigger id="category">
                 <SelectValue placeholder="جميع التصنيفات" />
@@ -70,7 +80,7 @@ export const AdvancedReportFilters: React.FC<AdvancedReportFiltersProps> = ({
               <Input
                 id="search"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 className="pl-4 pr-10"
                 placeholder="ابحث في التقارير..."
               />
@@ -82,11 +92,20 @@ export const AdvancedReportFilters: React.FC<AdvancedReportFiltersProps> = ({
           )}
           
           <div className="md:col-span-3 lg:col-span-4 flex justify-end gap-2 mt-2">
-            <Button variant="outline" onClick={onResetFilters} size="sm">
+            <Button 
+              variant="outline" 
+              onClick={onResetFilters} 
+              size="sm"
+              type="button"
+            >
               <X className="ml-1 h-4 w-4" />
               إعادة ضبط
             </Button>
-            <Button onClick={onApplyFilters} size="sm">
+            <Button 
+              onClick={onApplyFilters} 
+              size="sm"
+              type="button"
+            >
               <Search className="ml-1 h-4 w-4" />
               تطبيق الفلترة
             </Button>

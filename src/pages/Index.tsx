@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Route, Routes } from "react-router-dom";
 import AccountingSidebar from "@/components/AccountingSidebar";
 import Dashboard from "./Dashboard";
 import Reports from "./Reports";
@@ -27,68 +28,41 @@ import ReportTemplatesPage from "./reports/ReportTemplatesPage";
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
 
-  const renderContent = () => {
-    switch (activePage) {
-      case "dashboard":
-        return <Dashboard />;
-      case "reports":
-        return <Reports />;
-      case "reports-templates":
-        return <ReportTemplatesPage />;
-      case "expenses-new":
-        return <NewExpensePage />;
-      case "expenses-categories":
-        return <ExpenseCategoriesPage />;
-      case "expenses-reports":
-        return <ExpenseReportsPage />;
-      case "invoices-outgoing":
-        return <InvoicesPage />;
-      case "invoices-quotes":
-        return <QuotesPage />;
-      case "invoices-sales-orders":
-        return <SalesOrdersPage />;
-      case "invoices-returns":
-        return <ReturnsPage />;
-      case "accounting-chart":
-        return <AccountChartPage />;
-      case "accounting-journals":
-        return <JournalEntriesPage />;
-      case "accounting-cashregister":
-        return <CashRegisterPage />;
-      case "accounting-commercialpapers":
-        return <CommercialPapersPage />;
-      case "accounting-cost-centers":
-        return <CostCentersPage />;
-      case "customers-manage":
-        return <CustomersPage />;
-      case "customers-statement":
-        return <CustomerStatementPage />;
-      case "ai-assistant":
-        return <AiAssistantPage />;
-      case "basic-definitions":
-      case "definitions":
-        return <BasicDefinitionsPage />;
-      case "definitions-currencies":
-        return <CurrenciesPage />;
-      case "definitions-discounts":
-        return <DiscountsPage />;
-      default:
-        return (
-          <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-teal mb-2">قريباً</h1>
-              <p className="text-gray-600">هذه الصفحة قيد التطوير</p>
-            </div>
-          </div>
-        );
-    }
-  };
-
   return (
     <div className="flex h-screen overflow-hidden">
       <AccountingSidebar autoClose={true} />
       <div className={cn("flex-1 overflow-auto")}>
-        {renderContent()}
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/reports/templates" element={<ReportTemplatesPage />} />
+          <Route path="/expenses/new" element={<NewExpensePage />} />
+          <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
+          <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
+          <Route path="/invoices/outgoing" element={<InvoicesPage />} />
+          <Route path="/invoices/quotes" element={<QuotesPage />} />
+          <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
+          <Route path="/invoices/returns" element={<ReturnsPage />} />
+          <Route path="/accounting/chart" element={<AccountChartPage />} />
+          <Route path="/accounting/journals" element={<JournalEntriesPage />} />
+          <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
+          <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
+          <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
+          <Route path="/customers/manage" element={<CustomersPage />} />
+          <Route path="/customers/statement" element={<CustomerStatementPage />} />
+          <Route path="/ai-assistant" element={<AiAssistantPage />} />
+          <Route path="/definitions" element={<BasicDefinitionsPage />} />
+          <Route path="/definitions/currencies" element={<CurrenciesPage />} />
+          <Route path="/definitions/discounts" element={<DiscountsPage />} />
+          <Route path="*" element={
+            <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
+              <div className="text-center">
+                <h1 className="text-2xl font-bold text-teal mb-2">قريباً</h1>
+                <p className="text-gray-600">هذه الصفحة قيد التطوير</p>
+              </div>
+            </div>
+          } />
+        </Routes>
       </div>
     </div>
   );
