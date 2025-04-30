@@ -6,6 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BranchesModule } from "@/components/definitions/branches/BranchesModule";
 import { WarehousesModule } from "@/components/definitions/warehouses/WarehousesModule";
 import { CostCentersTab } from "@/components/definitions/costcenters/CostCentersTab";
+import { BanksModule } from "@/components/definitions/banks/BanksModule";
+import { CurrenciesModule } from "@/components/definitions/currencies/CurrenciesModule";
+import { AccountingPeriodsModule } from "@/components/definitions/periods/AccountingPeriodsModule";
+import { VoucherTypesModule } from "@/components/definitions/vouchertypes/VoucherTypesModule";
+import { PaymentMethodsModule } from "@/components/definitions/paymentmethods/PaymentMethodsModule";
+import { SalesRepsModule } from "@/components/definitions/salesreps/SalesRepsModule";
 import { 
   Building, 
   Database, 
@@ -76,40 +82,22 @@ const BasicDefinitionsPage = () => {
             <CostCentersTab />
           </TabsContent>
           <TabsContent value="banks">
-            <div className="text-center py-12 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-medium mb-2">إدارة البنوك</h3>
-              <p className="text-gray-500">هذه الوحدة قيد التطوير</p>
-            </div>
+            <BanksModule />
           </TabsContent>
           <TabsContent value="currencies">
-            <div className="text-center py-12 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-medium mb-2">إدارة العملات</h3>
-              <p className="text-gray-500">هذه الوحدة قيد التطوير</p>
-            </div>
+            <CurrenciesModule />
           </TabsContent>
           <TabsContent value="periods">
-            <div className="text-center py-12 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-medium mb-2">إدارة الفترات المحاسبية</h3>
-              <p className="text-gray-500">هذه الوحدة قيد التطوير</p>
-            </div>
+            <AccountingPeriodsModule />
           </TabsContent>
           <TabsContent value="voucher-types">
-            <div className="text-center py-12 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-medium mb-2">أنواع القيود</h3>
-              <p className="text-gray-500">هذه الوحدة قيد التطوير</p>
-            </div>
+            <VoucherTypesModule />
           </TabsContent>
           <TabsContent value="payment-methods">
-            <div className="text-center py-12 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-medium mb-2">طرق الدفع</h3>
-              <p className="text-gray-500">هذه الوحدة قيد التطوير</p>
-            </div>
+            <PaymentMethodsModule />
           </TabsContent>
           <TabsContent value="sales-reps">
-            <div className="text-center py-12 bg-gray-100 rounded-md">
-              <h3 className="text-xl font-medium mb-2">مندوبي المبيعات</h3>
-              <p className="text-gray-500">هذه الوحدة قيد التطوير</p>
-            </div>
+            <SalesRepsModule />
           </TabsContent>
         </Tabs>
       </div>
