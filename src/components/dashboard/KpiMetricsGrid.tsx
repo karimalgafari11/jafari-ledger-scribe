@@ -1,12 +1,12 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface KpiMetric {
   title: string;
   value: string;
-  status: "up" | "down";
+  status: "up" | "down" | "neutral";
   description: string;
 }
 
@@ -29,7 +29,8 @@ const KpiMetricsGrid: React.FC<KpiMetricsGridProps> = ({ metrics }) => {
               <div className="text-3xl font-bold flex items-center gap-2">
                 {kpi.value}
                 {kpi.status === 'up' && <TrendingUp className="h-5 w-5 text-green-500" />}
-                {kpi.status === 'down' && <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />}
+                {kpi.status === 'down' && <TrendingDown className="h-5 w-5 text-red-500" />}
+                {/* No icon for neutral status */}
               </div>
               <p className="text-xs text-muted-foreground mt-1">{kpi.description}</p>
             </CardContent>

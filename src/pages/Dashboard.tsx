@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { DateRange } from "react-day-picker";
@@ -90,10 +89,10 @@ const Dashboard = () => {
   
   // مؤشرات الأداء الرئيسية
   const kpis = [
-    { title: "نمو المبيعات", value: "+12.4%", status: "up", description: "مقارنة بالفترة السابقة" },
-    { title: "نسبة الربح الإجمالي", value: `${profitMargin}%`, status: "up", description: "من إجمالي المبيعات" },
-    { title: "متوسط قيمة الفاتورة", value: "645 ريال", status: "down", description: "انخفاض 3.2% عن الشهر السابق" },
-    { title: "معدل تكرار الشراء", value: "2.8", status: "up", description: "متوسط عدد المشتريات لكل عميل" },
+    { title: "نمو المبيعات", value: "+12.4%", status: "up" as const, description: "مقارنة بالفترة السابقة" },
+    { title: "نسبة الربح الإجمالي", value: `${profitMargin}%`, status: "up" as const, description: "من إجمالي المبيعات" },
+    { title: "متوسط قيمة الفاتورة", value: "645 ريال", status: "down" as const, description: "انخفاض 3.2% عن الشهر السابق" },
+    { title: "معدل تكرار الشراء", value: "2.8", status: "up" as const, description: "متوسط عدد المشتريات لكل عميل" },
   ];
 
   return (
