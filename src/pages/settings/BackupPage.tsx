@@ -705,7 +705,7 @@ const BackupPage = () => {
                   disabled={isLoading}
                 >
                   <Save className="ml-2 h-4 w-4" />
-                  حفظ الإعد����دات المتقدمة
+                  حفظ الإعد����دات المت��دمة
                 </Button>
               </CardFooter>
             </Card>
