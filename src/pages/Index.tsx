@@ -31,6 +31,7 @@ import AiEngineSettingsPage from "./settings/AiEngineSettingsPage";
 import FinancialDecisionsPage from "./ai/FinancialDecisionsPage";
 import LoginPage from "./auth/LoginPage";
 import AboutPage from "./about/AboutPage";
+import ProductsPage from "./inventory/ProductsPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -68,6 +69,8 @@ const Index = () => {
           <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
           <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
           <Route path="/about" element={<AboutPage />} />
+          {/* إضافة مسار صفحة المنتجات */}
+          <Route path="/inventory/products" element={<ProductsPage />} />
           <Route path="*" element={
             <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
               <div className="text-center">
