@@ -30,6 +30,6 @@ export interface BackupActions {
   connectGoogleDrive: () => Promise<boolean>;
   disconnectGoogleDrive: () => Promise<boolean>;
   uploadToGoogleDrive: (backupId: string) => Promise<boolean>;
-  downloadFromGoogleDrive: (backupId: string) => Promise<boolean>;
+  downloadFromGoogleDrive: (backupId?: string) => Promise<boolean>;
   uploadBackupFromFile: (file: File) => Promise<boolean>;
 }
