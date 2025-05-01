@@ -6,6 +6,7 @@ import KpiMetricsGrid from "@/components/dashboard/KpiMetricsGrid";
 import ChartsGrid from "@/components/dashboard/ChartsGrid";
 import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
+import InteractiveLayout from "@/components/interactive/InteractiveLayout";
 
 interface DashboardContentProps {
   totalSales: number;
@@ -27,6 +28,7 @@ interface DashboardContentProps {
   costCenterData: any[];
   dailySalesData: any[];
   systemAlerts: SystemAlert[];
+  interactiveMode?: boolean;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -43,12 +45,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   supplierCreditData,
   costCenterData,
   dailySalesData,
-  systemAlerts
+  systemAlerts,
+  interactiveMode = false
 }) => {
   const isMobile = useIsMobile();
 
-  return (
-    <div className={`flex-1 overflow-auto w-full ${isMobile ? 'px-2' : ''}`}>
+  const dashboardContent = (
+    <>
       {/* بطاقات الإحصائيات الرئيسية */}
       <StatsCards 
         totalSales={totalSales} 
@@ -72,12 +75,30 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         dailySalesData={dailySalesData} 
         profitMargin={profitMargin} 
         systemAlerts={systemAlerts} 
+        interactiveMode={interactiveMode}
       />
       
       {/* FinancialDecisionsWidget من النظام الذكي */}
       <div className="mt-6 mb-6">
         <FinancialDecisionsWidget />
       </div>
+    </>
+  );
+
+  return (
+    <div className={`flex-1 overflow-auto w-full ${isMobile ? 'px-2' : ''}`}>
+      {interactiveMode ? (
+        <InteractiveLayout 
+          enableDrag={true} 
+          enableZoom={true}
+          showControls={false}
+          className="h-full w-full"
+        >
+          {dashboardContent}
+        </InteractiveLayout>
+      ) : (
+        dashboardContent
+      )}
     </div>
   );
 };

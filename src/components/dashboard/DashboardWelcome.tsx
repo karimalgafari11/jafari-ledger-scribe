@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import DashboardFilters from "@/components/dashboard/DashboardFilters";
 import { DateRange } from "react-day-picker";
@@ -12,6 +12,7 @@ interface DashboardWelcomeProps {
   onPeriodChange: (value: any) => void;
   branch: string;
   onBranchChange: (value: string) => void;
+  children?: ReactNode;
 }
 
 const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
@@ -20,13 +21,16 @@ const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
   period,
   onPeriodChange,
   branch,
-  onBranchChange
+  onBranchChange,
+  children
 }) => {
   const isMobile = useIsMobile();
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between bg-blue-500 w-full">
-      <Header title="لوحة التحكم الرئيسية" />
+      <Header title="لوحة التحكم الرئيسية">
+        {children}
+      </Header>
       <div className={`w-full ${isMobile ? 'px-2 py-2' : ''}`}>
         <DashboardFilters 
           date={date} 

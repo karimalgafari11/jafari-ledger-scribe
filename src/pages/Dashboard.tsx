@@ -1,63 +1,111 @@
 
 import React, { useState } from "react";
-import { DateRange } from "react-day-picker";
 import { Layout } from "@/components/Layout";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAiAssistant } from "@/hooks/useAiAssistant";
-import { useInventoryProducts } from "@/hooks/useInventoryProducts";
-import { useJournalEntries } from "@/hooks/useJournalEntries";
+import { DateRange } from "react-day-picker";
+import { addDays } from "date-fns";
 import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
-import DashboardContent from "@/components/dashboard/DashboardContent";
 import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
+import DashboardContent from "@/components/dashboard/DashboardContent";
+import { ZoomProvider } from "@/components/interactive/ZoomControl";
+import ZoomControl from "@/components/interactive/ZoomControl";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
-  const { systemAlerts } = useAiAssistant();
-  const { products } = useInventoryProducts();
-  const { entries } = useJournalEntries();
-  const metrics = useDashboardMetrics();
-  const isMobile = useIsMobile();
-  
-  // State for filters
-  const [date, setDate] = useState<DateRange>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date()
-  });
-  const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('monthly');
-  const [branch, setBranch] = useState<string>('all');
-  const [department, setDepartment] = useState<string>('all');
+  // استدعاء بيانات لوحة التحكم
+  const { 
+    totalSales, 
+    totalExpenses, 
+    netProfit, 
+    profitMargin, 
+    overdueInvoices, 
+    overdueTotalAmount,
+    kpis,
+    salesData,
+    profitData,
+    customerDebtData,
+    supplierCreditData,
+    costCenterData,
+    dailySalesData,
+    systemAlerts
+  } = useDashboardMetrics();
 
-  // حساب معلومات التقارير
-  const lowStockItems = products.filter(p => p.quantity <= p.reorderLevel);
-  const activeProducts = products.filter(p => p.isActive);
+  // حالة التاريخ والفترة والفرع
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: addDays(new Date(), -7),
+    to: new Date(),
+  });
+
+  const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('weekly');
+  const [branch, setBranch] = useState<string>("all");
+  const [interactiveMode, setInteractiveMode] = useState<boolean>(false);
 
   return (
     <Layout>
-      <div className={`flex flex-col w-full h-full ${isMobile ? 'px-0 py-0' : 'p-6'}`}>
-        <DashboardWelcome
-          date={date}
-          onDateChange={setDate}
-          period={period}
-          onPeriodChange={setPeriod}
-          branch={branch}
-          onBranchChange={setBranch}
-        />
-        
-        <DashboardContent
-          totalSales={metrics.totalSales}
-          totalExpenses={metrics.totalExpenses}
-          netProfit={metrics.netProfit}
-          profitMargin={metrics.profitMargin}
-          overdueInvoices={metrics.overdueInvoices}
-          overdueTotalAmount={metrics.overdueTotalAmount}
-          kpis={metrics.kpis}
-          salesData={metrics.salesData}
-          profitData={metrics.profitData}
-          customerDebtData={metrics.customerDebtData}
-          supplierCreditData={metrics.supplierCreditData}
-          costCenterData={metrics.costCenterData}
-          dailySalesData={metrics.dailySalesData}
-          systemAlerts={systemAlerts}
-        />
+      <div className="flex flex-col h-full">
+        <div className="flex flex-col md:flex-row items-center justify-between bg-blue-500">
+          <DashboardWelcome 
+            date={date} 
+            onDateChange={setDate} 
+            period={period} 
+            onPeriodChange={setPeriod} 
+            branch={branch} 
+            onBranchChange={setBranch}
+          >
+            <Button 
+              variant="outline" 
+              onClick={() => setInteractiveMode(!interactiveMode)}
+              className="mr-2 bg-white/90 text-blue-600 hover:bg-white hover:text-blue-700"
+            >
+              {interactiveMode ? "العرض العادي" : "العرض التفاعلي"}
+            </Button>
+            
+            {interactiveMode && (
+              <ZoomControl compact />
+            )}
+          </DashboardWelcome>
+        </div>
+
+        {interactiveMode ? (
+          <ZoomProvider>
+            <div className="flex-1 overflow-auto">
+              <DashboardContent
+                totalSales={totalSales}
+                totalExpenses={totalExpenses}
+                netProfit={netProfit}
+                profitMargin={profitMargin}
+                overdueInvoices={overdueInvoices}
+                overdueTotalAmount={overdueTotalAmount}
+                kpis={kpis}
+                salesData={salesData}
+                profitData={profitData}
+                customerDebtData={customerDebtData}
+                supplierCreditData={supplierCreditData}
+                costCenterData={costCenterData}
+                dailySalesData={dailySalesData}
+                systemAlerts={systemAlerts}
+                interactiveMode={interactiveMode}
+              />
+            </div>
+          </ZoomProvider>
+        ) : (
+          <DashboardContent
+            totalSales={totalSales}
+            totalExpenses={totalExpenses}
+            netProfit={netProfit}
+            profitMargin={profitMargin}
+            overdueInvoices={overdueInvoices}
+            overdueTotalAmount={overdueTotalAmount}
+            kpis={kpis}
+            salesData={salesData}
+            profitData={profitData}
+            customerDebtData={customerDebtData}
+            supplierCreditData={supplierCreditData}
+            costCenterData={costCenterData}
+            dailySalesData={dailySalesData}
+            systemAlerts={systemAlerts}
+            interactiveMode={interactiveMode}
+          />
+        )}
       </div>
     </Layout>
   );
