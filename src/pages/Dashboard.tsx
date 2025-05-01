@@ -97,7 +97,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6 rtl">
+    <div className="w-full p-6 rtl">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
         <Header title="لوحة التحكم الرئيسية" />
         <DashboardFilters

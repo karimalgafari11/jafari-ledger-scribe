@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Route, Routes } from "react-router-dom";
@@ -45,6 +46,7 @@ import BranchesPage from "./settings/BranchesPage";
 import UsersPage from "./settings/UsersPage";
 import BackupPage from "./settings/BackupPage";
 import BackupTestPage from "./settings/BackupTestPage";
+import NotFound from "./NotFound";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -98,14 +100,7 @@ const Index = () => {
           <Route path="/inventory-control/transfer" element={<TransferPage />} />
           <Route path="/inventory-control/locations" element={<LocationsPage />} />
           <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
-          <Route path="*" element={
-            <div className="h-screen w-full flex items-center justify-center bg-gray-100 rtl">
-              <div className="text-center">
-                <h1 className="text-2xl font-bold text-teal mb-2">قريباً</h1>
-                <p className="text-gray-600">هذه الصفحة قيد التطوير</p>
-              </div>
-            </div>
-          } />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </div>

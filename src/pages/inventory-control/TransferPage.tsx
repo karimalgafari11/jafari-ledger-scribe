@@ -32,7 +32,7 @@ export default function TransferPage() {
   };
 
   return (
-    <div className="min-h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50 w-full">
+    <div className="min-h-screen flex flex-col overflow-hidden bg-gray-50 w-full">
       <div className="sticky top-0 z-10 bg-white shadow-sm w-full">
         <Header title="نقل داخلي بين المستودعات" showBack={true} />
         <div className="w-full px-4 md:px-6 py-2 flex items-center justify-between">

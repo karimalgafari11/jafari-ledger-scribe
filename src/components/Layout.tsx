@@ -13,7 +13,7 @@ export function Layout({ children, className = "", showWatermark = true }: Layou
   const isMobile = useIsMobile();
   
   return (
-    <div className={`min-h-screen min-w-full bg-gray-50 ${className} dir-rtl relative overflow-x-hidden`}>
+    <div className={`min-h-screen w-full bg-gray-50 ${className} dir-rtl relative overflow-hidden`}>
       {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
           <img 

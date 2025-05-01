@@ -66,8 +66,8 @@ const Reports = () => {
   };
 
   return (
-    <div className="h-screen overflow-y-auto bg-gray-50">
-      <div className="sticky top-0 z-10 bg-white shadow-sm">
+    <div className="h-screen w-full overflow-y-auto bg-gray-50">
+      <div className="sticky top-0 z-10 bg-white shadow-sm w-full">
         <Header title="التقارير" showBack={true}>
           <div className="flex items-center gap-4 rtl">
             <FilterPopover 
@@ -91,8 +91,8 @@ const Reports = () => {
         </Header>
       </div>
 
-      <main className="p-6">
-        <Tabs defaultValue="list" className="mb-6">
+      <main className="p-6 w-full">
+        <Tabs defaultValue="list" className="mb-6 w-full">
           <div className="flex justify-between items-center mb-4">
             <TabsList>
               <TabsTrigger value="list">قائمة التقارير</TabsTrigger>
@@ -105,7 +105,7 @@ const Reports = () => {
             )}
           </div>
 
-          <TabsContent value="list">
+          <TabsContent value="list" className="w-full">
             {/* Search Bar */}
             <div className="mb-6 max-w-md mx-auto">
               <div className="relative rtl">
@@ -124,7 +124,7 @@ const Reports = () => {
               onCategoryChange={setActiveCategory}
             />
 
-            <div ref={reportRef}>
+            <div ref={reportRef} className="w-full">
               <ReportsList 
                 reports={filteredReports}
                 activeCategory={activeCategory}
@@ -134,7 +134,7 @@ const Reports = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="search">
+          <TabsContent value="search" className="w-full">
             <AdvancedReportFilters
               dateRange={dateRange}
               setDateRange={setDateRange}
@@ -146,15 +146,15 @@ const Reports = () => {
               onResetFilters={handleResetFilters}
             />
 
-            <div className="bg-white p-6 rounded-md shadow mb-6">
+            <div className="bg-white p-6 rounded-md shadow mb-6 w-full">
               <h3 className="text-lg font-medium mb-4 rtl">نتائج البحث</h3>
               
               {filteredReports.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-4 w-full">
                   {filteredReports.map((report) => (
                     <div 
                       key={report.id}
-                      className="p-4 border rounded-md hover:bg-gray-50 transition-colors flex justify-between items-center rtl"
+                      className="p-4 border rounded-md hover:bg-gray-50 transition-colors flex justify-between items-center rtl w-full"
                     >
                       <div className="flex items-center">
                         <FileText className="h-5 w-5 text-gray-500 ml-2" />
@@ -170,7 +170,7 @@ const Reports = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 bg-gray-50 rounded-md border border-dashed">
+                <div className="text-center py-8 bg-gray-50 rounded-md border border-dashed w-full">
                   <p className="text-gray-500">لا توجد نتائج مطابقة لمعايير البحث</p>
                 </div>
               )}

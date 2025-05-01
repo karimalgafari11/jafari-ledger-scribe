@@ -20,7 +20,7 @@ function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
   return (
-    <div className="w-full h-full overflow-hidden">
+    <div className="w-full h-screen overflow-hidden">
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
