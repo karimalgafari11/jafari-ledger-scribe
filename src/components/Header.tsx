@@ -5,6 +5,7 @@ import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeaderProps {
   title?: string;
@@ -21,6 +22,7 @@ const Header = ({
   children
 }: HeaderProps) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   const handleBackClick = () => {
     if (onBackClick) {
@@ -31,7 +33,7 @@ const Header = ({
   };
   
   return (
-    <header className="border-b border-gray-200 flex items-center justify-between bg-blue-500 my-0 mx-0 px-[17px] py-[24px]">
+    <header className={`border-b border-gray-200 flex items-center justify-between bg-blue-500 ${isMobile ? 'px-2 py-3 w-full' : 'px-[17px] py-[24px]'} my-0 mx-0`}>
       <div className="flex items-center">
         {showBack && (
           <Button 
@@ -43,13 +45,13 @@ const Header = ({
             <ArrowLeft className="rotate-180" />
           </Button>
         )}
-        <h1 className="text-xl font-bold">{title || "نظام إدارة الأعمال"}</h1>
+        <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>{title || "نظام إدارة الأعمال"}</h1>
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         {children}
         <NotificationsDropdown />
-        <Logo size="small" />
+        <Logo size={isMobile ? "xsmall" : "small"} />
       </div>
     </header>
   );

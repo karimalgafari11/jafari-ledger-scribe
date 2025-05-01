@@ -3,6 +3,7 @@ import React from "react";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardFiltersProps {
   date: DateRange;
@@ -25,16 +26,18 @@ const DashboardFilters: React.FC<DashboardFiltersProps> = ({
   department,
   onDepartmentChange
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0">
+    <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-col sm:flex-row gap-4'} mt-4 md:mt-0`}>
       <DatePickerWithRange
         value={date}
         onChange={onDateChange}
-        className="min-w-[260px]"
+        className={`${isMobile ? 'w-full' : 'min-w-[260px]'}`}
       />
-      <div className="flex gap-2">
+      <div className={`flex ${isMobile ? 'gap-1 w-full' : 'gap-2'}`}>
         <Select value={branch} onValueChange={onBranchChange}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className={`${isMobile ? 'w-full text-sm' : 'w-[150px]'}`}>
             <SelectValue placeholder="كل الفروع" />
           </SelectTrigger>
           <SelectContent>
@@ -45,7 +48,7 @@ const DashboardFilters: React.FC<DashboardFiltersProps> = ({
           </SelectContent>
         </Select>
         <Select value={period} onValueChange={onPeriodChange}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className={`${isMobile ? 'w-full text-sm' : 'w-[150px]'}`}>
             <SelectValue placeholder="فترة" />
           </SelectTrigger>
           <SelectContent>
