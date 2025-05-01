@@ -33,7 +33,10 @@ export function useBackupSettings(): BackupState & BackupActions {
       includeSettings: mockBackupSettings.includeSettings || true,
       autoRestore: mockBackupSettings.autoRestore || false,
       destinationType: mockBackupSettings.destinationType || 'local',
-      googleDriveAuth: mockBackupSettings.googleDriveAuth || { isAuthenticated: false }
+      googleDriveAuth: mockBackupSettings.googleDriveAuth || { isAuthenticated: false },
+      autoCloudBackup: mockBackupSettings.autoCloudBackup || false,
+      cloudBackupFormat: mockBackupSettings.cloudBackupFormat || 'compressed',
+      cloudPath: mockBackupSettings.cloudPath || '/backups/'
     },
     isLoading: false,
     restoreProgress: 0,

@@ -63,6 +63,7 @@ export interface BackupSettings {
   cloudProvider?: 'google-drive' | 'dropbox' | 'onedrive';
   cloudAuthToken?: string;
   cloudFolderId?: string;
+  cloudPath?: string;
   encryptBackup: boolean;
   encryptionPassword?: string;
   compressionLevel: 'none' | 'low' | 'medium' | 'high';
@@ -78,6 +79,8 @@ export interface BackupSettings {
     expiresAt?: Date;
     email?: string;
   };
+  autoCloudBackup?: boolean;
+  cloudBackupFormat?: 'compressed' | 'sql' | 'json';
 }
 
 export interface BackupHistoryItem {

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Cloud, File, CloudDownload } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Cloud, CloudDownload, File, LogIn } from "lucide-react";
 import { BackupSettings } from "@/types/settings";
 
 interface CloudStorageTabProps {
@@ -33,6 +35,26 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
   disconnectGoogleDrive
 }) => {
   const isGoogleDriveConnected = settings.googleDriveAuth?.isAuthenticated || false;
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [googleEmail, setGoogleEmail] = useState("");
+  const [googlePassword, setGooglePassword] = useState("");
+
+  const handleGoogleDriveConnect = async () => {
+    if (googleEmail.trim() === "") {
+      toast.error("يرجى إدخال البريد الإلكتروني لحساب Google");
+      return;
+    }
+    
+    setShowAuthDialog(false);
+    const result = await connectGoogleDrive();
+    if (result) {
+      toast.success(`تم الاتصال بحساب Google Drive: ${googleEmail}`);
+    }
+  };
+  
+  const handleAutoBackupToggle = (checked: boolean) => {
+    updateSetting("autoCloudBackup", checked);
+  };
 
   return (
     <>
@@ -69,6 +91,19 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                     اترك هذا الحقل فارغًا لاستخدام المجلد الرئيسي
                   </p>
                 </div>
+                
+                <div className="space-y-2">
+                  <Label>مسار التخزين السحابي</Label>
+                  <Input 
+                    type="text"
+                    placeholder="مسار التخزين في Google Drive"
+                    value={settings.cloudPath || ""}
+                    onChange={e => updateSetting("cloudPath", e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    على سبيل المثال: /نسخ-احتياطي/اسم-الشركة/
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -78,6 +113,21 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                     لم يتم الاتصال بحساب Google Drive بعد. اضغط على زر "اتصال بـ Google Drive" أدناه لإجراء الاتصال.
                   </AlertDescription>
                 </Alert>
+                
+                <div className="rounded-lg border p-4">
+                  <h4 className="mb-2 font-medium">إعدادات السحابة</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    قم بربط حساب Google Drive للاستفادة من خدمات النسخ الاحتياطي السحابي، مما يوفر لك مساحة تخزين آمنة ويتيح لك الوصول إلى بياناتك من أي مكان.
+                  </p>
+                  <Button 
+                    onClick={() => setShowAuthDialog(true)}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <LogIn className="ml-2 h-4 w-4" />
+                    تسجيل الدخول إلى Google Drive
+                  </Button>
+                </div>
               </div>
             )}
             
@@ -102,7 +152,7 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
               </Button>
             ) : (
               <Button 
-                onClick={connectGoogleDrive}
+                onClick={() => setShowAuthDialog(true)}
                 className="w-full"
                 variant="default"
                 disabled={isConnectingGoogleDrive}
@@ -126,13 +176,19 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
               <Label htmlFor="auto-cloud-backup">نسخ احتياطي تلقائي إلى السحابة</Label>
               <Switch 
                 id="auto-cloud-backup"
+                checked={settings.autoCloudBackup || false}
+                onCheckedChange={handleAutoBackupToggle}
                 disabled={!isGoogleDriveConnected}
               />
             </div>
             
             <div className="space-y-2">
               <Label>تنسيق النسخ الاحتياطي</Label>
-              <Select defaultValue="compressed" disabled={!isGoogleDriveConnected}>
+              <Select 
+                defaultValue={settings.cloudBackupFormat || "compressed"} 
+                onValueChange={(value) => updateSetting("cloudBackupFormat", value as any)}
+                disabled={!isGoogleDriveConnected}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="اختر التنسيق" />
                 </SelectTrigger>
@@ -140,6 +196,24 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                   <SelectItem value="compressed">ملف مضغوط (ZIP)</SelectItem>
                   <SelectItem value="sql">SQL</SelectItem>
                   <SelectItem value="json">JSON</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>وجهة النسخ الاحتياطي</Label>
+              <Select 
+                defaultValue={settings.destinationType} 
+                onValueChange={(value) => updateSetting("destinationType", value as "local" | "cloud" | "ftp" | "email")}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر الوجهة" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="local">محلي</SelectItem>
+                  <SelectItem value="cloud">سحابي (Google Drive)</SelectItem>
+                  <SelectItem value="ftp">FTP</SelectItem>
+                  <SelectItem value="email">بريد إلكتروني</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -153,11 +227,10 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
           </CardContent>
           <CardFooter>
             <Button 
-              disabled={!isGoogleDriveConnected}
+              disabled={!isGoogleDriveConnected && settings.destinationType === "cloud"}
               className="w-full"
               onClick={saveSettings}
             >
-              <Save className="ml-2 h-4 w-4" />
               حفظ إعدادات السحابة
             </Button>
           </CardFooter>
@@ -204,6 +277,62 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Google Drive Authentication Dialog */}
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent className="max-w-md rtl">
+          <DialogHeader>
+            <DialogTitle>تسجيل الدخول إلى Google Drive</DialogTitle>
+            <DialogDescription>
+              قم بإدخال بيانات حساب Google Drive للربط مع النظام
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="google-email">البريد الإلكتروني</Label>
+              <Input
+                id="google-email"
+                placeholder="أدخل بريدك الإلكتروني"
+                value={googleEmail}
+                onChange={(e) => setGoogleEmail(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="google-password">كلمة المرور</Label>
+              <Input
+                id="google-password"
+                type="password"
+                placeholder="أدخل كلمة المرور"
+                value={googlePassword}
+                onChange={(e) => setGooglePassword(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                لن يتم تخزين كلمة المرور الخاصة بك، سيتم استخدامها فقط للحصول على رمز الوصول.
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-start">
+            <Button
+              type="button"
+              variant="default"
+              onClick={handleGoogleDriveConnect}
+              disabled={isConnectingGoogleDrive}
+            >
+              {isConnectingGoogleDrive ? "جاري التسجيل..." : "تسجيل الدخول"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowAuthDialog(false)}
+            >
+              إلغاء
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
