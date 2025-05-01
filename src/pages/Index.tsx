@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Route, Routes } from "react-router-dom";
-import AccountingSidebar from "@/components/AccountingSidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AccountingSidebar from "@/components/AccountingSidebar";
 import Dashboard from "./Dashboard";
 import Reports from "./Reports";
 import NewExpensePage from "./expenses/NewExpensePage";
@@ -54,58 +54,60 @@ const Index = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <AccountingSidebar autoClose={isMobile} />
-      <div className={cn("flex-1 overflow-auto w-full")}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/reports/templates" element={<ReportTemplatesPage />} />
-          <Route path="/expenses/new" element={<NewExpensePage />} />
-          <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
-          <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
-          <Route path="/invoices/outgoing" element={<InvoicesPage />} />
-          <Route path="/invoices/quotes" element={<QuotesPage />} />
-          <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
-          <Route path="/invoices/returns" element={<ReturnsPage />} />
-          <Route path="/accounting/chart" element={<AccountChartPage />} />
-          <Route path="/accounting/journals" element={<JournalEntriesPage />} />
-          <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
-          <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
-          <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
-          <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
-          <Route path="/customers/manage" element={<CustomersPage />} />
-          <Route path="/customers/statement" element={<CustomerStatementPage />} />
-          <Route path="/ai-assistant" element={<AiAssistantPage />} />
-          <Route path="/ai-financial-decisions" element={<FinancialDecisionsPage />} />
-          <Route path="/definitions" element={<BasicDefinitionsPage />} />
-          <Route path="/definitions/currencies" element={<CurrenciesPage />} />
-          <Route path="/definitions/discounts" element={<DiscountsPage />} />
-          <Route path="/settings/activity-log" element={<ActivityLogPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
-          <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
-          <Route path="/settings/roles" element={<UserRolesPage />} />
-          <Route path="/settings/system" element={<SystemSettingsPage />} />
-          <Route path="/settings/page-management" element={<PageManagementPage />} />
-          <Route path="/settings/branches" element={<BranchesPage />} />
-          <Route path="/settings/users" element={<UsersPage />} />
-          <Route path="/settings/backup" element={<BackupPage />} />
-          <Route path="/settings/backup-test" element={<BackupTestPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/inventory/products" element={<ProductsPage />} />
-          <Route path="/inventory/movements" element={<StockMovementsPage />} />
-          <Route path="/inventory/counting" element={<CountingPage />} />
-          <Route path="/inventory/reorder" element={<ReorderPage />} />
-          <Route path="/inventory-control/transfer" element={<TransferPage />} />
-          <Route path="/inventory-control/locations" element={<LocationsPage />} />
-          <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+    <SidebarProvider defaultOpen={!isMobile}>
+      <div className="flex h-screen w-full overflow-hidden">
+        <AccountingSidebar />
+        <div className={cn("flex-1 overflow-auto w-full")}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/reports/templates" element={<ReportTemplatesPage />} />
+            <Route path="/expenses/new" element={<NewExpensePage />} />
+            <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
+            <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
+            <Route path="/invoices/outgoing" element={<InvoicesPage />} />
+            <Route path="/invoices/quotes" element={<QuotesPage />} />
+            <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
+            <Route path="/invoices/returns" element={<ReturnsPage />} />
+            <Route path="/accounting/chart" element={<AccountChartPage />} />
+            <Route path="/accounting/journals" element={<JournalEntriesPage />} />
+            <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
+            <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
+            <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
+            <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
+            <Route path="/customers/manage" element={<CustomersPage />} />
+            <Route path="/customers/statement" element={<CustomerStatementPage />} />
+            <Route path="/ai-assistant" element={<AiAssistantPage />} />
+            <Route path="/ai-financial-decisions" element={<FinancialDecisionsPage />} />
+            <Route path="/definitions" element={<BasicDefinitionsPage />} />
+            <Route path="/definitions/currencies" element={<CurrenciesPage />} />
+            <Route path="/definitions/discounts" element={<DiscountsPage />} />
+            <Route path="/settings/activity-log" element={<ActivityLogPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
+            <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
+            <Route path="/settings/roles" element={<UserRolesPage />} />
+            <Route path="/settings/system" element={<SystemSettingsPage />} />
+            <Route path="/settings/page-management" element={<PageManagementPage />} />
+            <Route path="/settings/branches" element={<BranchesPage />} />
+            <Route path="/settings/users" element={<UsersPage />} />
+            <Route path="/settings/backup" element={<BackupPage />} />
+            <Route path="/settings/backup-test" element={<BackupTestPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/inventory/products" element={<ProductsPage />} />
+            <Route path="/inventory/movements" element={<StockMovementsPage />} />
+            <Route path="/inventory/counting" element={<CountingPage />} />
+            <Route path="/inventory/reorder" element={<ReorderPage />} />
+            <Route path="/inventory-control/transfer" element={<TransferPage />} />
+            <Route path="/inventory-control/locations" element={<LocationsPage />} />
+            <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
