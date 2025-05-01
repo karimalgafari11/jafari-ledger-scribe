@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -428,25 +427,27 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Print-only styles */}
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden;
+      <style>
+        {`
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            .print-section, .print-section * {
+              visibility: visible;
+            }
+            .print-hide {
+              display: none !important;
+            }
+            .print-section {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+            }
           }
-          .print-section, .print-section * {
-            visibility: visible;
-          }
-          .print-hide {
-            display: none !important;
-          }
-          .print-section {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
