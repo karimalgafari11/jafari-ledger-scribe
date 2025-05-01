@@ -48,7 +48,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
   };
   return <div className="h-screen bg-sidebar overflow-y-auto flex-shrink-0 w-64">
       <div className="p-4 flex justify-between items-center border-b border-sidebar-border bg-orange-600 py-[22px] my-px rounded-full px-[44px]">
-        <div className="text-sidebar-foreground font-bold text-xl px-[6px] py-px my-0 mx-0 bg-black">الجعفري</div>
+        <div className="text-sidebar-foreground font-bold text-xl px-[6px] py-px my-0 mx-0 rounded-lg bg-pink-950">الجعفري</div>
       </div>
 
       <div className="p-2 space-y-1 rtl">
