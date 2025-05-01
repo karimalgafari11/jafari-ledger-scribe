@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Invoice, InvoiceItem } from "@/types/invoices";
 import { v4 as uuid } from "uuid";
@@ -15,7 +14,8 @@ export const useSalesInvoice = () => {
     date: new Date().toISOString(),
     items: [],
     totalAmount: 0,
-    status: "draft"
+    status: "draft",
+    paymentMethod: "cash"
   });
   const [isLoading, setIsLoading] = useState(false);
   const { calculateDiscount } = useDiscounts();
@@ -35,15 +35,27 @@ export const useSalesInvoice = () => {
       date: date.toISOString(),
       items: [],
       totalAmount: 0,
-      status: "draft"
+      status: "draft",
+      paymentMethod: "cash"
     });
   };
 
   const updateInvoiceField = (field: string, value: any) => {
-    setInvoice(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setInvoice(prev => {
+      // إذا تم تغيير طريقة الدفع إلى نقد، قم بإزالة تاريخ الاستحقاق وشروط الدفع
+      if (field === 'paymentMethod' && value === 'cash') {
+        return {
+          ...prev,
+          [field]: value,
+          dueDate: undefined,
+          paymentTerms: undefined
+        };
+      }
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
   };
 
   const addInvoiceItem = (item: Partial<InvoiceItem>) => {
@@ -143,7 +155,8 @@ export const useSalesInvoice = () => {
       // تحديث حالة الفاتورة
       setInvoice(prev => ({
         ...prev,
-        status: "pending"
+        status: prev.paymentMethod === 'cash' ? "paid" : "pending",
+        updatedAt: new Date().toISOString()
       }));
       
       setIsLoading(false);

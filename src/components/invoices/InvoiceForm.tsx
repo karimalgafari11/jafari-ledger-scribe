@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,11 +10,14 @@ import { InvoiceItemForm } from "./InvoiceItemForm";
 import { InvoiceDiscountForm } from "./InvoiceDiscountForm";
 import { InvoiceSummary } from "./InvoiceSummary";
 import { Invoice, InvoiceItem } from "@/types/invoices";
-import { Trash2, Plus, Pencil, Calculator } from "lucide-react";
+import { Trash2, Plus, Pencil, Calculator, Share, Printer } from "lucide-react";
 import { mockCustomers } from "@/data/mockCustomers";
 import { mockProducts } from "@/data/mockProducts";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -38,6 +41,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
   const [isDiscountFormOpen, setIsDiscountFormOpen] = useState(false);
+  const [tableWidth, setTableWidth] = useState(100); // Default width in percent
+  const tableRef = useRef<HTMLDivElement>(null);
+  const isResizing = useRef(false);
+  const startWidth = useRef<number>(0);
+  const startX = useRef<number>(0);
 
   const handleAddItem = (item: Partial<InvoiceItem>) => {
     onAddItem(item);
@@ -64,8 +72,55 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     setIsDiscountFormOpen(false);
   };
 
+  // Start table resize
+  const handleResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isResizing.current = true;
+    startWidth.current = tableRef.current?.offsetWidth || 0;
+    startX.current = e.clientX;
+    document.addEventListener('mousemove', handleResizeMove);
+    document.addEventListener('mouseup', handleResizeEnd);
+  };
+
+  // Handle table resize move
+  const handleResizeMove = (e: MouseEvent) => {
+    if (!isResizing.current) return;
+    const parentWidth = tableRef.current?.parentElement?.offsetWidth || 1;
+    const delta = e.clientX - startX.current;
+    const newWidth = Math.max(50, Math.min(100, (startWidth.current + delta) / parentWidth * 100));
+    setTableWidth(newWidth);
+  };
+
+  // End table resize
+  const handleResizeEnd = () => {
+    isResizing.current = false;
+    document.removeEventListener('mousemove', handleResizeMove);
+    document.removeEventListener('mouseup', handleResizeEnd);
+  };
+
+  // Handle share button click
+  const handleShare = () => {
+    // Check if Web Share API is supported
+    if (navigator.share) {
+      navigator.share({
+        title: `فاتورة رقم ${invoice.invoiceNumber}`,
+        text: `تفاصيل فاتورة مبيعات رقم ${invoice.invoiceNumber} للعميل ${invoice.customerName}`,
+      }).catch(err => {
+        toast.error("حدث خطأ أثناء مشاركة الفاتورة");
+      });
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      toast.info("مشاركة الفاتورة غير متاحة على هذا المتصفح");
+    }
+  };
+
+  // Handle print button click
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:p-4">
       {/* معلومات العميل والفاتورة */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
@@ -90,12 +145,31 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
 
           <div>
+            <label htmlFor="paymentMethod" className="block text-sm font-medium mb-1">طريقة الدفع</label>
+            <RadioGroup 
+              defaultValue={invoice.paymentMethod || "cash"} 
+              className="flex space-x-4 rtl space-x-reverse"
+              onValueChange={(value) => onFieldChange('paymentMethod', value)}
+            >
+              <div className="flex items-center space-x-2 rtl space-x-reverse">
+                <RadioGroupItem value="cash" id="payment-cash" />
+                <Label htmlFor="payment-cash">نقد</Label>
+              </div>
+              <div className="flex items-center space-x-2 rtl space-x-reverse">
+                <RadioGroupItem value="credit" id="payment-credit" />
+                <Label htmlFor="payment-credit">آجل</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div>
             <label htmlFor="dueDate" className="block text-sm font-medium mb-1">تاريخ الاستحقاق</label>
             <Input
               id="dueDate"
               type="date"
               value={invoice.dueDate ? format(new Date(invoice.dueDate), 'yyyy-MM-dd') : ''}
               onChange={(e) => onFieldChange('dueDate', e.target.value)}
+              disabled={invoice.paymentMethod === 'cash'}
             />
           </div>
         </div>
@@ -131,6 +205,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             <Select
               value={invoice.paymentTerms || ""}
               onValueChange={(value) => onFieldChange('paymentTerms', value)}
+              disabled={invoice.paymentMethod === 'cash'}
             >
               <SelectTrigger>
                 <SelectValue placeholder="اختر شروط الدفع" />
@@ -160,6 +235,25 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <SelectItem value="overdue">متأخرة</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex space-x-2 rtl space-x-reverse">
+            <Button 
+              variant="outline" 
+              className="flex-1" 
+              onClick={handleShare}
+            >
+              <Share className="ml-2 h-4 w-4" />
+              مشاركة
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={handlePrint}
+            >
+              <Printer className="ml-2 h-4 w-4" />
+              طباعة
+            </Button>
           </div>
         </div>
       </div>
@@ -203,53 +297,63 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </Card>
         )}
 
-        <div className="border rounded-md overflow-x-auto">
-          <Table>
+        <div 
+          ref={tableRef} 
+          className="border rounded-md overflow-x-auto relative" 
+          style={{ width: `${tableWidth}%` }}
+        >
+          {/* Resize handle */}
+          <div 
+            className="absolute top-0 bottom-0 right-0 w-2 cursor-ew-resize bg-primary/10 hover:bg-primary/20 transition-colors"
+            onMouseDown={handleResizeStart}
+          />
+          
+          <Table className="w-full">
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">#</TableHead>
-                <TableHead>الصنف</TableHead>
-                <TableHead>الوصف</TableHead>
-                <TableHead>الكمية</TableHead>
-                <TableHead>السعر</TableHead>
-                <TableHead>الخصم</TableHead>
-                <TableHead>الضريبة</TableHead>
-                <TableHead>الإجمالي</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+              <TableRow className="bg-muted">
+                <TableHead className="w-12 border-r">#</TableHead>
+                <TableHead className="border-r">الصنف</TableHead>
+                <TableHead className="border-r">الوصف</TableHead>
+                <TableHead className="border-r">الكمية</TableHead>
+                <TableHead className="border-r">السعر</TableHead>
+                <TableHead className="border-r">الخصم</TableHead>
+                <TableHead className="border-r">الضريبة</TableHead>
+                <TableHead className="border-r">الإجمالي</TableHead>
+                <TableHead className="text-left border-r">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {invoice.items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-4 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-4 text-muted-foreground border">
                     لا توجد أصناف في الفاتورة. قم بإضافة صنف باستخدام زر "إضافة صنف".
                   </TableCell>
                 </TableRow>
               ) : (
                 invoice.items.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.description || '-'}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{item.price.toFixed(2)} ر.س</TableCell>
-                    <TableCell>
+                  <TableRow key={index} className="border-b">
+                    <TableCell className="border-r">{index + 1}</TableCell>
+                    <TableCell className="border-r">{item.name}</TableCell>
+                    <TableCell className="border-r">{item.description || '-'}</TableCell>
+                    <TableCell className="border-r">{item.quantity}</TableCell>
+                    <TableCell className="border-r">{item.price.toFixed(2)} ر.س</TableCell>
+                    <TableCell className="border-r">
                       {item.discount > 0 && (
                         <Badge variant="outline">
                           {item.discountType === 'percentage' ? `${item.discount}%` : `${item.discount} ر.س`}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r">
                       {item.tax > 0 && (
                         <Badge variant="outline">
                           {item.tax}%
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>{item.total.toFixed(2)} ر.س</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2 rtl">
+                    <TableCell className="border-r">{item.total.toFixed(2)} ر.س</TableCell>
+                    <TableCell className="border-r">
+                      <div className="flex space-x-2 rtl space-x-reverse">
                         <Button variant="ghost" size="sm" onClick={() => handleEditItem(index)}>
                           <Pencil size={16} />
                         </Button>
@@ -264,6 +368,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </TableBody>
           </Table>
         </div>
+        <div className="text-xs text-muted-foreground mt-2">* اسحب من الجانب الأيمن لتغيير حجم الجدول</div>
       </div>
 
       {/* ملخص الفاتورة والخصومات */}
@@ -321,6 +426,27 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           )}
         </div>
       </div>
+
+      {/* Print-only styles */}
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print-section, .print-section * {
+            visibility: visible;
+          }
+          .print-hide {
+            display: none !important;
+          }
+          .print-section {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+        }
+      `}</style>
     </div>
   );
 };

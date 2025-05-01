@@ -15,6 +15,7 @@ export interface Invoice {
   status: 'draft' | 'pending' | 'paid' | 'overdue';
   notes?: string;
   paymentTerms?: string;
+  paymentMethod: 'cash' | 'credit';
   paymentInstructions?: string;
   createdAt?: string;
   updatedAt?: string;
