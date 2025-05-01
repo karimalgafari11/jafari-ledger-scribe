@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -445,8 +444,8 @@ const Dashboard = () => {
                 <Calculator className="h-5 w-5" />
                 مراكز التكلفة
               </CardTitle>
-              <Select defaultValue="expenses" className="w-32">
-                <SelectTrigger className="h-8">
+              <Select defaultValue="expenses">
+                <SelectTrigger className="h-8 w-32">
                   <SelectValue placeholder="عرض" />
                 </SelectTrigger>
                 <SelectContent>
