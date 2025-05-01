@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
-  RefreshCw, Download, Trash2, Mail, File, CloudUpload, CloudDownload, Cloud 
+  RefreshCw, Download, Trash2, Mail, File, CloudUpload, CloudDownload, Cloud, Upload
 } from "lucide-react";
 import { format } from "date-fns";
 import { BackupSettings, BackupHistoryItem } from "@/types/settings";
@@ -27,6 +27,7 @@ interface BackupHistoryTabProps {
   sendBackupByEmail: (backupId: string, email: string) => Promise<boolean>;
   uploadToGoogleDrive: (backupId: string) => Promise<boolean>;
   downloadFromGoogleDrive: (backupId: string) => Promise<boolean>;
+  uploadBackupFromFile: (file: File) => Promise<boolean>;
 }
 
 export const BackupHistoryTab: React.FC<BackupHistoryTabProps> = ({
@@ -41,17 +42,57 @@ export const BackupHistoryTab: React.FC<BackupHistoryTabProps> = ({
   downloadOriginalBackup,
   sendBackupByEmail,
   uploadToGoogleDrive,
-  downloadFromGoogleDrive
+  downloadFromGoogleDrive,
+  uploadBackupFromFile
 }) => {
   const isGoogleDriveConnected = settings.googleDriveAuth?.isAuthenticated || false;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      uploadBackupFromFile(file);
+      // Reset the input value after upload
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const triggerFileUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>سجل النسخ الاحتياطية</CardTitle>
-        <CardDescription>
-          عرض وإدارة النسخ الاحتياطية المتوفرة
-        </CardDescription>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle>سجل النسخ الاحتياطية</CardTitle>
+            <CardDescription>
+              عرض وإدارة النسخ الاحتياطية المتوفرة
+            </CardDescription>
+          </div>
+          <div>
+            <Button
+              onClick={triggerFileUpload}
+              variant="outline"
+              className="flex items-center gap-1"
+            >
+              <Upload className="h-4 w-4" />
+              تحميل نسخة احتياطية
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".zip,.sql,.json"
+              style={{ display: 'none' }}
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

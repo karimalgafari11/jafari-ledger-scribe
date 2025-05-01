@@ -18,7 +18,8 @@ import {
 import {
   downloadBackup as downloadBackupOperation,
   downloadOriginalBackup as downloadOriginalBackupOperation,
-  sendBackupByEmail as sendBackupByEmailOperation
+  sendBackupByEmail as sendBackupByEmailOperation,
+  uploadBackupFromFile as uploadBackupFromFileOperation
 } from './downloadOperations';
 
 export function useBackupSettings(): BackupState & BackupActions {
@@ -197,6 +198,11 @@ export function useBackupSettings(): BackupState & BackupActions {
     setState(prev => ({ ...prev, downloadFormat: format }));
   };
 
+  // Upload backup from file
+  const uploadBackupFromFile = async (file: File): Promise<boolean> => {
+    return uploadBackupFromFileOperation(file, updateSettings, state.settings);
+  };
+
   return {
     ...state,
     setDownloadFormat,
@@ -212,6 +218,7 @@ export function useBackupSettings(): BackupState & BackupActions {
     connectGoogleDrive,
     disconnectGoogleDrive,
     uploadToGoogleDrive,
-    downloadFromGoogleDrive
+    downloadFromGoogleDrive,
+    uploadBackupFromFile
   };
 }

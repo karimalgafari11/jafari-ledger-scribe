@@ -67,3 +67,57 @@ export const sendBackupByEmail = async (
     return false;
   }
 };
+
+// Upload backup from local file
+export const uploadBackupFromFile = async (
+  file: File,
+  updateSettings: (settings: Partial<BackupSettings>) => void,
+  settings: BackupSettings
+): Promise<boolean> => {
+  try {
+    // Check if file is valid
+    if (!file) {
+      toast.error('لم يتم تحديد ملف');
+      return false;
+    }
+
+    // Check file extension (can be .zip, .sql, .json, etc)
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    let fileFormat: BackupFormat = 'compressed';
+    
+    if (fileExtension === 'sql') fileFormat = 'sql';
+    else if (fileExtension === 'json') fileFormat = 'json';
+    else if (fileExtension !== 'zip') {
+      toast.error('تنسيق الملف غير مدعوم. الملفات المدعومة هي: ZIP, SQL, JSON');
+      return false;
+    }
+    
+    // Simulate file upload and processing
+    toast.loading('جاري تحميل النسخة الاحتياطية...');
+    await simulateDelay(2000);
+
+    // Create new backup history entry
+    const now = new Date();
+    const newBackup = {
+      id: `backup-${Date.now()}`,
+      createdAt: now,
+      size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+      path: `/backups/${now.getFullYear()}/${now.getMonth() + 1}/${file.name}`,
+      status: 'success' as 'success' | 'failed' | 'in-progress',
+      type: 'manual' as 'auto' | 'manual',
+      destination: 'local',
+      fileFormat
+    };
+
+    // Update backup history
+    updateSettings({
+      backupHistory: [newBackup, ...(settings.backupHistory || [])]
+    });
+
+    toast.success(`تم تحميل الملف "${file.name}" بنجاح`);
+    return true;
+  } catch (error) {
+    toast.error('فشل تحميل النسخة الاحتياطية');
+    return false;
+  }
+};

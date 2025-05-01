@@ -32,7 +32,8 @@ const BackupPage = () => {
     connectGoogleDrive,
     disconnectGoogleDrive,
     uploadToGoogleDrive,
-    downloadFromGoogleDrive
+    downloadFromGoogleDrive,
+    uploadBackupFromFile
   } = useBackupSettings();
   
   return (
@@ -73,6 +74,7 @@ const BackupPage = () => {
             sendBackupByEmail={sendBackupByEmail}
             uploadToGoogleDrive={uploadToGoogleDrive}
             downloadFromGoogleDrive={downloadFromGoogleDrive}
+            uploadBackupFromFile={uploadBackupFromFile}
           />
         </TabsContent>
 
