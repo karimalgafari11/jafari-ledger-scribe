@@ -13,6 +13,12 @@ import DiscountsPage from '@/pages/definitions/DiscountsPage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AccountingSidebar from '@/components/AccountingSidebar';
 
+// Inventory Pages
+import ProductsPage from '@/pages/inventory/ProductsPage';
+import StockMovementsPage from '@/pages/inventory/StockMovementsPage';
+import CountingPage from '@/pages/inventory/CountingPage';
+import ReorderPage from '@/pages/inventory/ReorderPage';
+
 function App() {
   return (
     <Router>
@@ -23,12 +29,28 @@ function App() {
             <AccountingSidebar />
             <div className="flex-1 overflow-auto w-full">
               <Routes>
+                {/* Dashboard */}
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                
+                {/* Reports */}
                 <Route path="/reports" element={<ReportsPage />} />
+                
+                {/* Invoices and Orders */}
                 <Route path="/invoices/outgoing" element={<InvoicesPage />} />
                 <Route path="/invoices/new" element={<SalesInvoicePage />} />
                 <Route path="/invoices/orders" element={<SalesOrdersPage />} />
+                
+                {/* Definitions */}
                 <Route path="/definitions/discounts" element={<DiscountsPage />} />
+                
+                {/* Inventory Management */}
+                <Route path="/inventory/products" element={<ProductsPage />} />
+                <Route path="/inventory/movements" element={<StockMovementsPage />} />
+                <Route path="/inventory/counting" element={<CountingPage />} />
+                <Route path="/inventory/reorder" element={<ReorderPage />} />
+                
+                {/* 404 Page */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
