@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, FilePlus, FileText, Check, X } from "lucide-react";
+import { Search, FilePlus, FileText, Check, X, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // بيانات تجريبية لمرتجعات المبيعات
 const mockReturns = [
@@ -59,6 +60,7 @@ const mockReturns = [
 ];
 
 const ReturnsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [returns, setReturns] = useState(mockReturns);
 
@@ -98,27 +100,31 @@ const ReturnsPage: React.FC = () => {
     toast.info("إنشاء مرتجع جديد");
     // في التطبيق الحقيقي، سيتم توجيه المستخدم إلى صفحة إنشاء مرتجع جديد
   };
+  
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge className="bg-yellow-500">قيد المراجعة</Badge>;
+        return <Badge variant="warning">قيد المراجعة</Badge>;
       case "approved":
-        return <Badge className="bg-green-500">تمت الموافقة</Badge>;
+        return <Badge variant="success">تمت الموافقة</Badge>;
       case "rejected":
-        return <Badge className="bg-red-500">مرفوض</Badge>;
+        return <Badge variant="destructive">مرفوض</Badge>;
       case "completed":
-        return <Badge className="bg-blue-500">مكتمل</Badge>;
+        return <Badge variant="info">مكتمل</Badge>;
       default:
-        return <Badge className="bg-gray-500">{status}</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
   return (
-    <div className="container mx-auto p-6 rtl">
-      <Header title="مرتجعات المبيعات" showBack={true} />
+    <div className="h-full w-full flex flex-col overflow-hidden">
+      <Header title="مرتجعات المبيعات" showBack={true} onBackClick={handleBack} />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 px-6 pt-6">
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -136,74 +142,76 @@ const ReturnsPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>رقم المرتجع</TableHead>
-                  <TableHead>التاريخ</TableHead>
-                  <TableHead>الفاتورة</TableHead>
-                  <TableHead>العميل</TableHead>
-                  <TableHead>السبب</TableHead>
-                  <TableHead>الإجمالي</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>إجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredReturns.map((returnItem) => (
-                  <TableRow key={returnItem.id}>
-                    <TableCell className="font-medium">{returnItem.id}</TableCell>
-                    <TableCell>
-                      {returnItem.date.toLocaleDateString("ar-SA")}
-                    </TableCell>
-                    <TableCell>{returnItem.invoiceId}</TableCell>
-                    <TableCell>{returnItem.customer}</TableCell>
-                    <TableCell>{returnItem.reason}</TableCell>
-                    <TableCell>
-                      {returnItem.total.toLocaleString("ar-SA")} ريال
-                    </TableCell>
-                    <TableCell>{getStatusBadge(returnItem.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewReturn(returnItem.id)}
-                        >
-                          <FileText size={16} />
-                        </Button>
-                        {returnItem.status === "pending" && (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-green-600"
-                              onClick={() => handleApproveReturn(returnItem.id)}
-                            >
-                              <Check size={16} />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600"
-                              onClick={() => handleRejectReturn(returnItem.id)}
-                            >
-                              <X size={16} />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
+      <div className="flex-1 overflow-hidden px-6 pb-6">
+        <Card className="h-full flex flex-col">
+          <CardContent className="p-0 flex-1 overflow-auto">
+            <div className="h-full overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>رقم المرتجع</TableHead>
+                    <TableHead>التاريخ</TableHead>
+                    <TableHead>الفاتورة</TableHead>
+                    <TableHead>العميل</TableHead>
+                    <TableHead>السبب</TableHead>
+                    <TableHead>الإجمالي</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead>إجراءات</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredReturns.map((returnItem) => (
+                    <TableRow key={returnItem.id}>
+                      <TableCell className="font-medium">{returnItem.id}</TableCell>
+                      <TableCell>
+                        {returnItem.date.toLocaleDateString("ar-SA")}
+                      </TableCell>
+                      <TableCell>{returnItem.invoiceId}</TableCell>
+                      <TableCell>{returnItem.customer}</TableCell>
+                      <TableCell>{returnItem.reason}</TableCell>
+                      <TableCell>
+                        {returnItem.total.toLocaleString("ar-SA")} ريال
+                      </TableCell>
+                      <TableCell>{getStatusBadge(returnItem.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewReturn(returnItem.id)}
+                          >
+                            <FileText size={16} />
+                          </Button>
+                          {returnItem.status === "pending" && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-green-600"
+                                onClick={() => handleApproveReturn(returnItem.id)}
+                              >
+                                <Check size={16} />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600"
+                                onClick={() => handleRejectReturn(returnItem.id)}
+                              >
+                                <X size={16} />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, FilePlus, FileText, Send, Download } from "lucide-react";
+import { Search, FilePlus, FileText, Send, Download, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // بيانات تجريبية لعروض الأسعار
 const mockQuotes = [
@@ -54,6 +55,7 @@ const mockQuotes = [
 ];
 
 const QuotesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [quotes, setQuotes] = useState(mockQuotes);
 
@@ -77,29 +79,33 @@ const QuotesPage: React.FC = () => {
     toast.info("إنشاء عرض سعر جديد");
     // في التطبيق الحقيقي، سيتم توجيه المستخدم إلى صفحة إنشاء عرض سعر جديد
   };
+  
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "sent":
-        return <Badge className="bg-blue-500">مرسل</Badge>;
+        return <Badge variant="info">مرسل</Badge>;
       case "accepted":
-        return <Badge className="bg-green-500">مقبول</Badge>;
+        return <Badge variant="success">مقبول</Badge>;
       case "rejected":
-        return <Badge className="bg-red-500">مرفوض</Badge>;
+        return <Badge variant="destructive">مرفوض</Badge>;
       case "draft":
-        return <Badge className="bg-gray-500">مسودة</Badge>;
+        return <Badge variant="secondary">مسودة</Badge>;
       case "expired":
-        return <Badge className="bg-yellow-500">منتهي الصلاحية</Badge>;
+        return <Badge variant="warning">منتهي الصلاحية</Badge>;
       default:
-        return <Badge className="bg-gray-500">{status}</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
   return (
-    <div className="container mx-auto p-6 rtl">
-      <Header title="عروض الأسعار" showBack={true} />
+    <div className="h-full w-full flex flex-col overflow-hidden">
+      <Header title="عروض الأسعار" showBack={true} onBackClick={handleBack} />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 px-6 pt-6">
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -117,69 +123,71 @@ const QuotesPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>رقم العرض</TableHead>
-                  <TableHead>التاريخ</TableHead>
-                  <TableHead>العميل</TableHead>
-                  <TableHead>الإجمالي</TableHead>
-                  <TableHead>صالح حتى</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>إجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredQuotes.map((quote) => (
-                  <TableRow key={quote.id}>
-                    <TableCell className="font-medium">{quote.id}</TableCell>
-                    <TableCell>
-                      {quote.date.toLocaleDateString("ar-SA")}
-                    </TableCell>
-                    <TableCell>{quote.customer}</TableCell>
-                    <TableCell>
-                      {quote.total.toLocaleString("ar-SA")} ريال
-                    </TableCell>
-                    <TableCell>
-                      {quote.validUntil.toLocaleDateString("ar-SA")}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(quote.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewQuote(quote.id)}
-                        >
-                          <FileText size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleSendQuote(quote.id)}
-                          disabled={quote.status === "expired" || quote.status === "rejected"}
-                        >
-                          <Send size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toast.info(`تنزيل العرض ${quote.id}`)}
-                        >
-                          <Download size={16} />
-                        </Button>
-                      </div>
-                    </TableCell>
+      <div className="flex-1 overflow-hidden px-6 pb-6">
+        <Card className="h-full flex flex-col">
+          <CardContent className="p-0 flex-1 overflow-auto">
+            <div className="h-full overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>رقم العرض</TableHead>
+                    <TableHead>التاريخ</TableHead>
+                    <TableHead>العميل</TableHead>
+                    <TableHead>الإجمالي</TableHead>
+                    <TableHead>صالح حتى</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead>إجراءات</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredQuotes.map((quote) => (
+                    <TableRow key={quote.id}>
+                      <TableCell className="font-medium">{quote.id}</TableCell>
+                      <TableCell>
+                        {quote.date.toLocaleDateString("ar-SA")}
+                      </TableCell>
+                      <TableCell>{quote.customer}</TableCell>
+                      <TableCell>
+                        {quote.total.toLocaleString("ar-SA")} ريال
+                      </TableCell>
+                      <TableCell>
+                        {quote.validUntil.toLocaleDateString("ar-SA")}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(quote.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewQuote(quote.id)}
+                          >
+                            <FileText size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSendQuote(quote.id)}
+                            disabled={quote.status === "expired" || quote.status === "rejected"}
+                          >
+                            <Send size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toast.info(`تنزيل العرض ${quote.id}`)}
+                          >
+                            <Download size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

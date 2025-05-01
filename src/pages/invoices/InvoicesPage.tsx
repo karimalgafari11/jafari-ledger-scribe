@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, FilePlus, FileText, Printer, Download } from "lucide-react";
+import { Search, FilePlus, FileText, Printer, Download, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // بيانات تجريبية للفواتير
 const mockInvoices = [
@@ -54,6 +55,7 @@ const mockInvoices = [
 ];
 
 const InvoicesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [invoices, setInvoices] = useState(mockInvoices);
 
@@ -77,27 +79,31 @@ const InvoicesPage: React.FC = () => {
     toast.info("إنشاء فاتورة جديدة");
     // في التطبيق الحقيقي، سيتم توجيه المستخدم إلى صفحة إنشاء فاتورة جديدة
   };
+  
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return <Badge className="bg-green-500">مدفوعة</Badge>;
+        return <Badge variant="success">مدفوعة</Badge>;
       case "pending":
-        return <Badge className="bg-yellow-500">قيد الانتظار</Badge>;
+        return <Badge variant="warning">قيد الانتظار</Badge>;
       case "overdue":
-        return <Badge className="bg-red-500">متأخرة</Badge>;
+        return <Badge variant="destructive">متأخرة</Badge>;
       case "draft":
-        return <Badge className="bg-gray-500">مسودة</Badge>;
+        return <Badge variant="secondary">مسودة</Badge>;
       default:
-        return <Badge className="bg-gray-500">{status}</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
   return (
-    <div className="container mx-auto p-6 rtl">
-      <Header title="الفواتير" showBack={true} />
+    <div className="h-full w-full flex flex-col overflow-hidden">
+      <Header title="الفواتير" showBack={true} onBackClick={handleBack} />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 px-6 pt-6">
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -115,66 +121,68 @@ const InvoicesPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>رقم الفاتورة</TableHead>
-                  <TableHead>التاريخ</TableHead>
-                  <TableHead>العميل</TableHead>
-                  <TableHead>عدد الأصناف</TableHead>
-                  <TableHead>الإجمالي</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>إجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredInvoices.map((invoice) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium">{invoice.id}</TableCell>
-                    <TableCell>
-                      {invoice.date.toLocaleDateString("ar-SA")}
-                    </TableCell>
-                    <TableCell>{invoice.customer}</TableCell>
-                    <TableCell>{invoice.items}</TableCell>
-                    <TableCell>
-                      {invoice.total.toLocaleString("ar-SA")} ريال
-                    </TableCell>
-                    <TableCell>{getStatusBadge(invoice.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewInvoice(invoice.id)}
-                        >
-                          <FileText size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handlePrintInvoice(invoice.id)}
-                        >
-                          <Printer size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toast.info(`تنزيل الفاتورة ${invoice.id}`)}
-                        >
-                          <Download size={16} />
-                        </Button>
-                      </div>
-                    </TableCell>
+      <div className="flex-1 overflow-hidden px-6 pb-6">
+        <Card className="h-full flex flex-col">
+          <CardContent className="p-0 flex-1 overflow-auto">
+            <div className="h-full overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>رقم الفاتورة</TableHead>
+                    <TableHead>التاريخ</TableHead>
+                    <TableHead>العميل</TableHead>
+                    <TableHead>عدد الأصناف</TableHead>
+                    <TableHead>الإجمالي</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead>إجراءات</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredInvoices.map((invoice) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="font-medium">{invoice.id}</TableCell>
+                      <TableCell>
+                        {invoice.date.toLocaleDateString("ar-SA")}
+                      </TableCell>
+                      <TableCell>{invoice.customer}</TableCell>
+                      <TableCell>{invoice.items}</TableCell>
+                      <TableCell>
+                        {invoice.total.toLocaleString("ar-SA")} ريال
+                      </TableCell>
+                      <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewInvoice(invoice.id)}
+                          >
+                            <FileText size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handlePrintInvoice(invoice.id)}
+                          >
+                            <Printer size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toast.info(`تنزيل الفاتورة ${invoice.id}`)}
+                          >
+                            <Download size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
