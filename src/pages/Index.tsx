@@ -42,6 +42,7 @@ import DamagedItemsPage from "./inventory-control/DamagedItemsPage";
 import AccountingSettingsPage from "./accounting/AccountingSettingsPage";
 import UserRolesPage from "./settings/UserRolesPage";
 import SystemSettingsPage from "./settings/SystemSettingsPage";
+import PageManagementPage from "./settings/PageManagementPage";
 import BranchesPage from "./settings/BranchesPage";
 import UsersPage from "./settings/UsersPage";
 import BackupPage from "./settings/BackupPage";
@@ -88,6 +89,7 @@ const Index = () => {
           <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
           <Route path="/settings/roles" element={<UserRolesPage />} />
           <Route path="/settings/system" element={<SystemSettingsPage />} />
+          <Route path="/settings/page-management" element={<PageManagementPage />} />
           <Route path="/settings/branches" element={<BranchesPage />} />
           <Route path="/settings/users" element={<UsersPage />} />
           <Route path="/settings/backup" element={<BackupPage />} />

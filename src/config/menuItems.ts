@@ -21,7 +21,8 @@ import {
   PercentCircle,
   Shield,
   FileStack,
-  UserCog
+  UserCog,
+  List
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
@@ -122,6 +123,7 @@ export const menuItems: MenuItem[] = [
     icon: Settings,
     children: [
       { label: "إعدادات النظام", path: "/settings/system", icon: Settings },
+      { label: "إدارة الصفحات", path: "/settings/page-management", icon: List },
       { label: "إدارة الفروع", path: "/settings/branches", icon: Building },
       { label: "إدارة المستخدمين", path: "/settings/users", icon: Users },
       { label: "النسخ الاحتياطي", path: "/settings/backup", icon: Settings }
