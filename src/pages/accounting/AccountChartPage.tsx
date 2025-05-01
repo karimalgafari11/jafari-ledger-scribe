@@ -158,43 +158,45 @@ const AccountChartPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto p-6 rtl">
+      <div className="flex flex-col h-screen w-full overflow-hidden">
         <Header title="دليل الحسابات" showBack={true} />
 
-        <AccountPageHeader
-          onSearch={handleSearch}
-          onAddAccount={() => setIsAddDialogOpen(true)}
-          filterType={filterType}
-          minBalance={minBalance}
-          maxBalance={maxBalance}
-          onFilterChange={handleFilterChange}
-          onResetFilters={handleResetFilters}
-          accounts={filteredAccounts}
-          onGenerateReport={handleGenerateReport}
-        />
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <AccountPageHeader
+            onSearch={handleSearch}
+            onAddAccount={() => setIsAddDialogOpen(true)}
+            filterType={filterType}
+            minBalance={minBalance}
+            maxBalance={maxBalance}
+            onFilterChange={handleFilterChange}
+            onResetFilters={handleResetFilters}
+            accounts={filteredAccounts}
+            onGenerateReport={handleGenerateReport}
+          />
 
-        <AccountsContent
-          isLoading={isLoading}
-          filteredAccounts={filteredAccounts}
-          filterType={filterType}
-          minBalance={minBalance}
-          maxBalance={maxBalance}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onShare={handleShare}
-        />
+          <AccountsContent
+            isLoading={isLoading}
+            filteredAccounts={filteredAccounts}
+            filterType={filterType}
+            minBalance={minBalance}
+            maxBalance={maxBalance}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onShare={handleShare}
+          />
 
-        <AccountDialogs
-          isAddDialogOpen={isAddDialogOpen}
-          setIsAddDialogOpen={setIsAddDialogOpen}
-          isEditDialogOpen={isEditDialogOpen}
-          setIsEditDialogOpen={setIsEditDialogOpen}
-          selectedAccount={selectedAccount}
-          parentOptions={getParentAccountOptions()}
-          onAddSubmit={handleAddSubmit}
-          onEditSubmit={handleEditSubmit}
-          onSuggestNumber={suggestAccountNumber}
-        />
+          <AccountDialogs
+            isAddDialogOpen={isAddDialogOpen}
+            setIsAddDialogOpen={setIsAddDialogOpen}
+            isEditDialogOpen={isEditDialogOpen}
+            setIsEditDialogOpen={setIsEditDialogOpen}
+            selectedAccount={selectedAccount}
+            parentOptions={getParentAccountOptions()}
+            onAddSubmit={handleAddSubmit}
+            onEditSubmit={handleEditSubmit}
+            onSuggestNumber={suggestAccountNumber}
+          />
+        </div>
       </div>
     </Layout>
   );

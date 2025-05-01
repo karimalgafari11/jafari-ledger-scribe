@@ -85,45 +85,47 @@ const CostCentersPage: React.FC<CostCentersPageProps> = ({ embedded = false }) =
     <>
       {!embedded && <Header title="مراكز الكلفة" showBack={true} />}
       
-      <CostCenterActions onCreateCostCenter={handleCreate} />
-      
-      <div className="bg-white rounded-md shadow p-6">
-        <h2 className="text-xl font-bold mb-4">شجرة مراكز الكلفة</h2>
+      <div className="flex-1 overflow-auto p-4">
+        <CostCenterActions onCreateCostCenter={handleCreate} />
         
-        <CostCenterTree
-          costCenters={costCenters}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onAddChild={handleAddChild}
+        <div className="bg-white rounded-md shadow p-6 mt-4">
+          <h2 className="text-xl font-bold mb-4">شجرة مراكز الكلفة</h2>
+          
+          <CostCenterTree
+            costCenters={costCenters}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onAddChild={handleAddChild}
+          />
+        </div>
+        
+        <CostCenterDialog
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          onSubmit={handleCreateSubmit}
+          defaultValues={createDefaultValues}
+          title={selectedCostCenter ? `إضافة مركز كلفة فرعي لـ ${selectedCostCenter.name}` : "إنشاء مركز كلفة جديد"}
+          description={selectedCostCenter ? `إضافة مركز كلفة فرعي ضمن ${selectedCostCenter.name}` : "إضافة مركز كلفة جديد للنظام"}
+          isCreating={true}
+        />
+        
+        <CostCenterDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSubmit={handleEditSubmit}
+          defaultValues={selectedCostCenter || {}}
+          title="تعديل مركز الكلفة"
+          description="تعديل بيانات مركز الكلفة"
+          isCreating={false}
+        />
+        
+        <DeleteCostCenterDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onConfirm={handleDeleteConfirm}
+          name={selectedCostCenter?.name || ''}
         />
       </div>
-      
-      <CostCenterDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-        onSubmit={handleCreateSubmit}
-        defaultValues={createDefaultValues}
-        title={selectedCostCenter ? `إضافة مركز كلفة فرعي لـ ${selectedCostCenter.name}` : "إنشاء مركز كلفة جديد"}
-        description={selectedCostCenter ? `إضافة مركز كلفة فرعي ضمن ${selectedCostCenter.name}` : "إضافة مركز كلفة جديد للنظام"}
-        isCreating={true}
-      />
-      
-      <CostCenterDialog
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onSubmit={handleEditSubmit}
-        defaultValues={selectedCostCenter || {}}
-        title="تعديل مركز الكلفة"
-        description="تعديل بيانات مركز الكلفة"
-        isCreating={false}
-      />
-      
-      <DeleteCostCenterDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirm={handleDeleteConfirm}
-        name={selectedCostCenter?.name || ''}
-      />
     </>
   );
   
@@ -133,7 +135,7 @@ const CostCentersPage: React.FC<CostCentersPageProps> = ({ embedded = false }) =
 
   return (
     <Layout>
-      <div className="container mx-auto p-6 rtl">
+      <div className="flex flex-col h-screen w-full overflow-hidden">
         {content}
       </div>
     </Layout>

@@ -54,7 +54,10 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
         )}
       </div>
 
-      <AccountAnalysisCharts accounts={filteredAccounts} />
+      <div className="bg-white rounded-lg shadow p-4">
+        <h3 className="text-lg font-medium mb-4">تحليل الحسابات</h3>
+        <AccountAnalysisCharts accounts={filteredAccounts} />
+      </div>
     </div>
   );
 };

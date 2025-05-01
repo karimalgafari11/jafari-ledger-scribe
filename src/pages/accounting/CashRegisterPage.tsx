@@ -8,10 +8,13 @@ import { CashTransactionsModule } from "@/components/accounting/cashregisters/Ca
 const CashRegisterPage = () => {
   return (
     <Layout>
-      <div className="container mx-auto p-6 rtl">
+      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
         <Header title="إدارة صناديق النقدية" showBack={true} />
-        <CashRegistersModule />
-        <CashTransactionsModule />
+        
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <CashRegistersModule />
+          <CashTransactionsModule />
+        </div>
       </div>
     </Layout>
   );

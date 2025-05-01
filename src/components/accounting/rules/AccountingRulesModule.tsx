@@ -59,13 +59,13 @@ export const AccountingRulesModule = () => {
   ];
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="border-blue-100 shadow-md">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
         <CardTitle>قوانين وقواعد المحاسبة الأساسية</CardTitle>
         <CardDescription>القواعد الأساسية المطبقة في النظام المحاسبي</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[500px] rounded-md">
+      <CardContent className="p-0">
+        <ScrollArea className="h-[calc(100vh-280px)]">
           <Table>
             <TableHeader>
               <TableRow>

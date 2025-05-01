@@ -8,10 +8,13 @@ import { DueNotificationsModule } from "@/components/accounting/commercialpapers
 const CommercialPapersPage = () => {
   return (
     <Layout>
-      <div className="container mx-auto p-6 rtl">
+      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
         <Header title="إدارة الأوراق التجارية" showBack={true} />
-        <CommercialPapersModule />
-        <DueNotificationsModule />
+        
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <CommercialPapersModule />
+          <DueNotificationsModule />
+        </div>
       </div>
     </Layout>
   );

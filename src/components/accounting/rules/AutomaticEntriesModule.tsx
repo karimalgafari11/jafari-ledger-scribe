@@ -62,8 +62,8 @@ export const AutomaticEntriesModule = () => {
   ];
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="border-blue-100 shadow-md">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 flex flex-row items-center justify-between">
         <div>
           <CardTitle>القيود التلقائية</CardTitle>
           <CardDescription>القيود المحاسبية التي يتم إنشاؤها تلقائياً بناءً على أحداث محددة</CardDescription>
@@ -72,8 +72,8 @@ export const AutomaticEntriesModule = () => {
           <Plus className="h-4 w-4 ml-2" /> إضافة قيد تلقائي
         </Button>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[500px] rounded-md">
+      <CardContent className="p-0">
+        <ScrollArea className="h-[calc(100vh-280px)]">
           <Table>
             <TableHeader>
               <TableRow>

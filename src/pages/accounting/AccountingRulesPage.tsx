@@ -12,28 +12,30 @@ const AccountingRulesPage = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto p-6 rtl py-0 px-[3px]">
+      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
         <Header title="قوانين وأوامر المحاسبة" showBack={true} />
         
-        <Tabs defaultValue="basic-rules" value={activeTab} onValueChange={setActiveTab} className="mt-6">
-          <TabsList className="mb-4">
-            <TabsTrigger value="basic-rules">القواعد الأساسية</TabsTrigger>
-            <TabsTrigger value="automatic-entries">القيود التلقائية</TabsTrigger>
-            <TabsTrigger value="validation-rules">قواعد التحقق</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="basic-rules">
-            <AccountingRulesModule />
-          </TabsContent>
-          
-          <TabsContent value="automatic-entries">
-            <AutomaticEntriesModule />
-          </TabsContent>
-          
-          <TabsContent value="validation-rules">
-            <ValidationRulesModule />
-          </TabsContent>
-        </Tabs>
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <Tabs defaultValue="basic-rules" value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <TabsList className="mb-4">
+              <TabsTrigger value="basic-rules">القواعد الأساسية</TabsTrigger>
+              <TabsTrigger value="automatic-entries">القيود التلقائية</TabsTrigger>
+              <TabsTrigger value="validation-rules">قواعد التحقق</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="basic-rules">
+              <AccountingRulesModule />
+            </TabsContent>
+            
+            <TabsContent value="automatic-entries">
+              <AutomaticEntriesModule />
+            </TabsContent>
+            
+            <TabsContent value="validation-rules">
+              <ValidationRulesModule />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </Layout>
   );

@@ -7,6 +7,7 @@ import { JournalActions } from "@/components/accounting/journals/actions/Journal
 import { JournalEntryDialog } from "@/components/accounting/journals/JournalEntryDialog";
 import { useJournalPage } from "@/hooks/useJournalPage";
 import { JournalEntry } from "@/types/journal";
+import { Layout } from "@/components/Layout";
 
 const JournalEntriesPage: React.FC = () => {
   const {
@@ -67,56 +68,60 @@ const JournalEntriesPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 rtl">
-      <Header title="القيود اليومية" showBack={true} />
+    <Layout>
+      <div className="flex flex-col h-screen w-full overflow-hidden">
+        <Header title="القيود اليومية" showBack={true} />
 
-      <JournalActions 
-        selectedEntries={selectedEntries}
-        entries={filteredEntries}
-        onExport={handleExport}
-        onPrintPreview={handlePrintPreview}
-        onCreateEntry={handleCreate}
-        onShareWhatsApp={handleShareWhatsApp}
-      />
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <JournalActions 
+            selectedEntries={selectedEntries}
+            entries={filteredEntries}
+            onExport={handleExport}
+            onPrintPreview={handlePrintPreview}
+            onCreateEntry={handleCreate}
+            onShareWhatsApp={handleShareWhatsApp}
+          />
 
-      <JournalFilters
-        filterDate={filterDate}
-        filterStatus={filterStatus}
-        filterUser={filterUser}
-        filterPeriod={filterPeriod}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetFilters}
-        onSearch={handleSearch}
-        onBulkDelete={handleBulkDelete}
-        selectedCount={selectedEntries.length}
-      />
+          <JournalFilters
+            filterDate={filterDate}
+            filterStatus={filterStatus}
+            filterUser={filterUser}
+            filterPeriod={filterPeriod}
+            onFilterChange={handleFilterChange}
+            onResetFilters={handleResetFilters}
+            onSearch={handleSearch}
+            onBulkDelete={handleBulkDelete}
+            selectedCount={selectedEntries.length}
+          />
 
-      <JournalSelection
-        entries={filteredEntries}
-        selectedEntries={selectedEntries}
-        onToggleSelection={handleToggleSelection}
-        onSelectAll={handleSelectAllEntries}
-        onDelete={handleDelete}
-        onBulkDelete={handleBulkDelete}
-        isLoading={isLoading}
-        onView={handleViewEntry}
-        onEdit={handleEditEntry}
-      />
+          <JournalSelection
+            entries={filteredEntries}
+            selectedEntries={selectedEntries}
+            onToggleSelection={handleToggleSelection}
+            onSelectAll={handleSelectAllEntries}
+            onDelete={handleDelete}
+            onBulkDelete={handleBulkDelete}
+            isLoading={isLoading}
+            onView={handleViewEntry}
+            onEdit={handleEditEntry}
+          />
 
-      <JournalEntryDialog
-        isCreateDialogOpen={isCreateDialogOpen}
-        setIsCreateDialogOpen={setIsCreateDialogOpen}
-        isEditDialogOpen={isEditDialogOpen}
-        setIsEditDialogOpen={setIsEditDialogOpen}
-        isViewDialogOpen={isViewDialogOpen}
-        setIsViewDialogOpen={setIsViewDialogOpen}
-        selectedEntry={selectedEntry}
-        onCreateSubmit={handleCreateSubmit}
-        onEditSubmit={handleEditSubmit}
-        generateEntryNumber={generateEntryNumber}
-        viewOnly={false}
-      />
-    </div>
+          <JournalEntryDialog
+            isCreateDialogOpen={isCreateDialogOpen}
+            setIsCreateDialogOpen={setIsCreateDialogOpen}
+            isEditDialogOpen={isEditDialogOpen}
+            setIsEditDialogOpen={setIsEditDialogOpen}
+            isViewDialogOpen={isViewDialogOpen}
+            setIsViewDialogOpen={setIsViewDialogOpen}
+            selectedEntry={selectedEntry}
+            onCreateSubmit={handleCreateSubmit}
+            onEditSubmit={handleEditSubmit}
+            generateEntryNumber={generateEntryNumber}
+            viewOnly={false}
+          />
+        </div>
+      </div>
+    </Layout>
   );
 };
 
