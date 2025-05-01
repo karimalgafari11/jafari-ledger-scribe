@@ -1,7 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserActivity, ActivityAction } from '@/types/permissions';
 import { mockUserActivities } from '@/data/mockPermissions';
+import { useNotifications } from '@/hooks/useNotifications';
 import { toast } from 'sonner';
 
 export type UserActivityFilters = {
@@ -25,6 +26,9 @@ export function useUserActivity() {
     status: '' as 'success' | 'failed' | 'warning' | 'info' | '',
   });
   
+  // استخدام نظام الإشعارات للأنشطة المهمة
+  const { sendNotification } = useNotifications();
+  
   // إضافة نشاط جديد
   const logActivity = async (
     activity: Omit<UserActivity, 'id' | 'timestamp' | 'ipAddress'>
@@ -38,6 +42,24 @@ export function useUserActivity() {
       };
       
       setActivities(prev => [newActivity, ...prev]);
+      
+      // إرسال إشعار للأنشطة المهمة (الفاشلة أو التحذيرات)
+      if (activity.status === 'failed' || activity.status === 'warning') {
+        const priority = activity.status === 'failed' ? 'high' : 'medium';
+        
+        await sendNotification(
+          'user1', // المستخدم الحالي
+          'system.suspicious_activity', 
+          priority,
+          {
+            title: `نشاط ${activity.status === 'failed' ? 'فاشل' : 'مشبوه'}: ${activity.action}`,
+            message: activity.details,
+            entityId: newActivity.id,
+            entityType: 'activity',
+          }
+        );
+      }
+      
       return newActivity;
     } catch (error) {
       console.error('فشل تسجيل النشاط:', error);
@@ -101,6 +123,36 @@ export function useUserActivity() {
     }
   };
   
+  // تحليل الأنشطة للكشف عن أنماط مشبوهة
+  const analyzeActivities = (): { suspiciousActivities: UserActivity[], patterns: string[] } => {
+    // هنا يمكن إضافة خوارزميات تحليلية متقدمة للكشف عن أنماط مشبوهة
+    // مثل عمليات تسجيل الدخول المتكررة الفاشلة، أو الوصول غير المعتاد، الخ
+    
+    // مثال بسيط: البحث عن عمليات فاشلة متتالية
+    const failedActivities = activities.filter(a => a.status === 'failed');
+    const suspiciousPatterns: string[] = [];
+    
+    // فحص عمليات تسجيل الدخول الفاشلة
+    const failedLogins = failedActivities.filter(a => a.action === 'login');
+    if (failedLogins.length >= 3) {
+      suspiciousPatterns.push(`تم اكتشاف ${failedLogins.length} محاولات تسجيل دخول فاشلة`);
+    }
+    
+    // فحص عمليات الوصول غير المصرح بها
+    const unauthorizedAccess = failedActivities.filter(a => 
+      a.details.includes('غير مصرح') || a.details.includes('unauthorized')
+    );
+    
+    if (unauthorizedAccess.length > 0) {
+      suspiciousPatterns.push(`تم اكتشاف ${unauthorizedAccess.length} محاولات وصول غير مصرح بها`);
+    }
+    
+    return {
+      suspiciousActivities: [...failedLogins, ...unauthorizedAccess],
+      patterns: suspiciousPatterns
+    };
+  };
+  
   // تصدير سجل الأنشطة
   const exportActivities = async (format: 'pdf' | 'excel' | 'csv') => {
     setIsLoading(true);
@@ -154,5 +206,6 @@ export function useUserActivity() {
     exportActivities,
     updateFilter,
     resetFilters,
+    analyzeActivities,
   };
 }
