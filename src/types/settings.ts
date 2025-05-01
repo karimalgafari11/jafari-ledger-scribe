@@ -71,6 +71,13 @@ export interface BackupSettings {
   backupHistory: BackupHistoryItem[];
   autoRestore: boolean;
   restorePoint?: Date;
+  googleDriveAuth?: {
+    isAuthenticated: boolean;
+    token?: string;
+    refreshToken?: string;
+    expiresAt?: Date;
+    email?: string;
+  };
 }
 
 export interface BackupHistoryItem {
@@ -81,4 +88,6 @@ export interface BackupHistoryItem {
   status: 'success' | 'failed' | 'in-progress';
   type: 'auto' | 'manual';
   destination: string;
+  fileFormat?: 'compressed' | 'original' | 'sql' | 'json';
+  googleDriveFileId?: string;
 }

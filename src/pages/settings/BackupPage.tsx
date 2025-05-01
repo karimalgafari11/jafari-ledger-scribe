@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, RefreshCw, Save, UploadCloud, FileUp, Download, Trash2, Mail } from "lucide-react";
+import { 
+  RefreshCw, Save, UploadCloud, FileUp, Download, Trash2, Mail, 
+  File, Google, CloudDownload, CloudUpload
+} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { useBackupSettings } from "@/hooks/useBackupSettings";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const BackupPage = () => {
   const {
@@ -20,18 +26,30 @@ const BackupPage = () => {
     isLoading,
     isBackingUp,
     isRestoring,
+    isConnectingGoogleDrive,
+    isUploadingToGoogleDrive,
     backupProgress,
     restoreProgress,
+    uploadProgress,
+    downloadFormat,
+    setDownloadFormat,
     updateSetting,
     saveSettings,
     createManualBackup,
     restoreBackup,
     deleteBackup,
     downloadBackup,
-    sendBackupByEmail
+    downloadOriginalBackup,
+    sendBackupByEmail,
+    connectGoogleDrive,
+    disconnectGoogleDrive,
+    uploadToGoogleDrive,
+    downloadFromGoogleDrive
   } = useBackupSettings();
 
-  const [sendEmailTo, setSendEmailTo] = React.useState("");
+  const [sendEmailTo, setSendEmailTo] = useState("");
+  const [selectedBackupFormat, setSelectedBackupFormat] = useState<'compressed' | 'original' | 'sql' | 'json'>('compressed');
+  const isGoogleDriveConnected = settings.googleDriveAuth?.isAuthenticated || false;
   
   return (
     <div className="container mx-auto p-6 rtl">
@@ -41,6 +59,7 @@ const BackupPage = () => {
         <TabsList className="mb-6">
           <TabsTrigger value="schedule">جدولة النسخ الاحتياطي</TabsTrigger>
           <TabsTrigger value="backups">النسخ الاحتياطية</TabsTrigger>
+          <TabsTrigger value="cloud">تخزين سحابي</TabsTrigger>
           <TabsTrigger value="settings">إعدادات متقدمة</TabsTrigger>
         </TabsList>
 
@@ -149,6 +168,24 @@ const BackupPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="backupFormat">تنسيق النسخة الاحتياطية</Label>
+                  <Select 
+                    defaultValue={selectedBackupFormat}
+                    onValueChange={(value) => setSelectedBackupFormat(value as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="اختر تنسيق النسخة الاحتياطية" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="compressed">ملف مضغوط (ZIP)</SelectItem>
+                      <SelectItem value="original">ملف أصلي (غير مضغوط)</SelectItem>
+                      <SelectItem value="sql">SQL</SelectItem>
+                      <SelectItem value="json">JSON</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 
                 {settings.destinationType === "email" && (
                   <div className="space-y-2">
@@ -175,7 +212,7 @@ const BackupPage = () => {
               </CardContent>
               <CardFooter>
                 <Button 
-                  onClick={createManualBackup} 
+                  onClick={() => createManualBackup(selectedBackupFormat)} 
                   disabled={isBackingUp}
                   className="w-full"
                   variant="default"
@@ -205,6 +242,7 @@ const BackupPage = () => {
                       <TableHead>النوع</TableHead>
                       <TableHead>الحجم</TableHead>
                       <TableHead>الوجهة</TableHead>
+                      <TableHead>التنسيق</TableHead>
                       <TableHead>الحالة</TableHead>
                       <TableHead className="text-left">الإجراءات</TableHead>
                     </TableRow>
@@ -218,11 +256,24 @@ const BackupPage = () => {
                             {backup.type === 'auto' ? 'تلقائي' : 'يدوي'}
                           </TableCell>
                           <TableCell>{backup.size}</TableCell>
-                          <TableCell>{
-                            backup.destination === 'local' ? 'محلي' :
-                            backup.destination === 'cloud' ? 'سحابي' : 
-                            backup.destination === 'email' ? 'بريد إلكتروني' : 'FTP'
-                          }</TableCell>
+                          <TableCell>
+                            {backup.destination === 'local' ? 'محلي' :
+                             backup.destination === 'cloud' ? (
+                               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
+                                 <Google className="h-3 w-3" /> سحابي
+                               </Badge>
+                             ) : 
+                             backup.destination === 'email' ? 'بريد إلكتروني' : 'FTP'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={backup.fileFormat === 'compressed' ? 'default' : 
+                                         backup.fileFormat === 'original' ? 'outline' :
+                                         backup.fileFormat === 'sql' ? 'secondary' : 'destructive'}>
+                              {backup.fileFormat === 'compressed' ? 'مضغوط' : 
+                               backup.fileFormat === 'original' ? 'أصلي' : 
+                               backup.fileFormat === 'sql' ? 'SQL' : 'JSON'}
+                            </Badge>
+                          </TableCell>
                           <TableCell>
                             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs ${
                               backup.status === 'success' ? 'bg-green-100 text-green-800' : 
@@ -236,46 +287,141 @@ const BackupPage = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => restoreBackup(backup.id)}
-                                disabled={isRestoring || backup.status !== 'success'}
-                              >
-                                <RefreshCw className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => downloadBackup(backup.id)}
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => {
-                                  const email = window.prompt("أدخل البريد الإلكتروني:");
-                                  if (email) sendBackupByEmail(backup.id, email);
-                                }}
-                              >
-                                <Mail className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => deleteBackup(backup.id)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => restoreBackup(backup.id)}
+                                      disabled={isRestoring || backup.status !== 'success'}
+                                    >
+                                      <RefreshCw className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>استعادة النسخة الاحتياطية</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => downloadBackup(backup.id, backup.fileFormat || 'compressed')}
+                                    >
+                                      <Download className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>تنزيل النسخة الاحتياطية</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => downloadOriginalBackup(backup.id)}
+                                    >
+                                      <File className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>تنزيل النسخة الأصلية</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                              {isGoogleDriveConnected && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        onClick={() => uploadToGoogleDrive(backup.id)}
+                                        disabled={isUploadingToGoogleDrive || backup.destination === 'cloud'}
+                                      >
+                                        <CloudUpload className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>تحميل إلى Google Drive</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+
+                              {backup.googleDriveFileId && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        onClick={() => downloadFromGoogleDrive(backup.id)}
+                                      >
+                                        <CloudDownload className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>تنزيل من Google Drive</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => {
+                                        const email = window.prompt("أدخل البريد الإلكتروني:");
+                                        if (email) sendBackupByEmail(backup.id, email);
+                                      }}
+                                    >
+                                      <Mail className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>إرسال بالبريد الإلكتروني</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => deleteBackup(backup.id)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>حذف النسخة الاحتياطية</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                           </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-6">
+                        <TableCell colSpan={7} className="text-center py-6">
                           لا توجد نسخ احتياطية متوفرة.
                         </TableCell>
                       </TableRow>
@@ -293,6 +439,196 @@ const BackupPage = () => {
                   <Progress value={restoreProgress} className="w-full" />
                 </div>
               )}
+
+              {isUploadingToGoogleDrive && (
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>جاري التحميل إلى Google Drive...</Label>
+                    <span className="text-xs">{uploadProgress}%</span>
+                  </div>
+                  <Progress value={uploadProgress} className="w-full" />
+                </div>
+              )}
+              
+              <div className="mt-6">
+                <Alert>
+                  <AlertTitle>تنزيل النسخ الاحتياطية</AlertTitle>
+                  <AlertDescription>
+                    يمكنك تنزيل النسخ الاحتياطية بأكثر من تنسيق. استخدم أيقونة التنزيل للملفات المضغوطة وأيقونة الملف للنسخ الأصلية.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="cloud">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>ربط حساب Google Drive</CardTitle>
+                <CardDescription>
+                  استخدم حساب Google Drive لتخزين النسخ الاحتياطية وتنزيلها
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isGoogleDriveConnected ? (
+                  <div className="space-y-4">
+                    <div className="bg-green-50 border border-green-200 rounded-md p-4 flex items-center gap-3">
+                      <div className="bg-green-100 p-2 rounded-full">
+                        <Google className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-green-900">متصل بحساب Google Drive</h4>
+                        <p className="text-sm text-green-700">{settings.googleDriveAuth?.email}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>المجلد المستهدف</Label>
+                      <Input 
+                        type="text"
+                        placeholder="معرف مجلد Google Drive"
+                        value={settings.cloudFolderId || ""}
+                        onChange={e => updateSetting("cloudFolderId", e.target.value)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        اترك هذا الحقل فارغًا لاستخدام المجلد الرئيسي
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Alert variant="outline" className="border-amber-200 bg-amber-50">
+                      <AlertTitle className="text-amber-800">غير متصل</AlertTitle>
+                      <AlertDescription className="text-amber-700">
+                        لم يتم الاتصال بحساب Google Drive بعد. اضغط على زر "اتصال بـ Google Drive" أدناه لإجراء الاتصال.
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                )}
+                
+                {isConnectingGoogleDrive && (
+                  <div className="mt-4">
+                    <Progress value={70} className="w-full mb-2" />
+                    <p className="text-center text-sm text-muted-foreground">
+                      جاري الاتصال بـ Google Drive...
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter>
+                {isGoogleDriveConnected ? (
+                  <Button 
+                    onClick={disconnectGoogleDrive}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Google className="ml-2 h-4 w-4" />
+                    قطع الاتصال بـ Google Drive
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={connectGoogleDrive}
+                    className="w-full"
+                    variant="default"
+                    disabled={isConnectingGoogleDrive}
+                  >
+                    <Google className="ml-2 h-4 w-4" />
+                    {isConnectingGoogleDrive ? "جاري الاتصال..." : "اتصال بـ Google Drive"}
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>النسخ الاحتياطي التلقائي إلى السحابة</CardTitle>
+                <CardDescription>
+                  إعداد نسخ احتياطي تلقائي إلى حساب Google Drive الخاص بك
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="auto-cloud-backup">نسخ احتياطي تلقائي إلى السحابة</Label>
+                  <Switch 
+                    id="auto-cloud-backup"
+                    disabled={!isGoogleDriveConnected}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>تنسيق النسخ الاحتياطي</Label>
+                  <Select defaultValue="compressed" disabled={!isGoogleDriveConnected}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="اختر التنسيق" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="compressed">ملف مضغوط (ZIP)</SelectItem>
+                      <SelectItem value="sql">SQL</SelectItem>
+                      <SelectItem value="json">JSON</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Alert>
+                  <AlertTitle>معلومات مهمة</AlertTitle>
+                  <AlertDescription>
+                    سيتم نسخ البيانات احتياطيًا إلى Google Drive تلقائيًا بعد كل نسخ احتياطي محلي إذا تم تفعيل هذه الميزة.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  disabled={!isGoogleDriveConnected}
+                  className="w-full"
+                  onClick={saveSettings}
+                >
+                  <Save className="ml-2 h-4 w-4" />
+                  حفظ إعدادات السحابة
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+          
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>تفضيلات تنزيل النسخ الاحتياطية</CardTitle>
+              <CardDescription>
+                اختر التنسيق المفضل لتنزيل الملفات
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>تنسيق التنزيل الافتراضي</Label>
+                  <Select 
+                    defaultValue={downloadFormat}
+                    onValueChange={(value) => setDownloadFormat(value as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="اختر التنسيق" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="compressed">ملف مضغوط (ZIP)</SelectItem>
+                      <SelectItem value="original">ملف أصلي (غير مضغوط)</SelectItem>
+                      <SelectItem value="sql">SQL</SelectItem>
+                      <SelectItem value="json">JSON</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-center space-x-2 space-x-reverse gap-2">
+                  <Button className="flex-1" variant="outline">
+                    <File className="ml-2 h-4 w-4" />
+                    تنزيل أحدث نسخة احتياطية
+                  </Button>
+                  <Button className="flex-1" variant="outline" disabled={!isGoogleDriveConnected}>
+                    <CloudDownload className="ml-2 h-4 w-4" />
+                    تنزيل من السحابة
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -461,9 +797,13 @@ const BackupPage = () => {
                     <Button
                       variant="outline"
                       className="w-full"
+                      onClick={connectGoogleDrive}
+                      disabled={isConnectingGoogleDrive || isGoogleDriveConnected}
                     >
                       <FileUp className="ml-2 h-4 w-4" />
-                      تكوين الاتصال بالخدمة السحابية
+                      {isGoogleDriveConnected ? 
+                        'تم الاتصال بالخدمة السحابية' : 
+                        'تكوين الاتصال بالخدمة السحابية'}
                     </Button>
                   </>
                 )}

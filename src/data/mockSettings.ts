@@ -1,3 +1,4 @@
+
 import { SystemSettings, Branch, User, BackupSettings, BackupHistoryItem } from "@/types/settings";
 
 export const mockSystemSettings: SystemSettings = {
@@ -95,7 +96,8 @@ const backupHistoryItems: BackupHistoryItem[] = [
     path: "/backups/backup-2025-04-25.zip",
     status: "success",
     type: "auto",
-    destination: "local"
+    destination: "local",
+    fileFormat: "compressed"
   },
   {
     id: "bk2",
@@ -104,7 +106,8 @@ const backupHistoryItems: BackupHistoryItem[] = [
     path: "/backups/backup-2025-04-18.zip",
     status: "success",
     type: "auto",
-    destination: "local"
+    destination: "local",
+    fileFormat: "compressed"
   },
   {
     id: "bk3",
@@ -113,7 +116,29 @@ const backupHistoryItems: BackupHistoryItem[] = [
     path: "/backups/backup-2025-04-10.zip", 
     status: "success",
     type: "manual",
-    destination: "local"
+    destination: "local",
+    fileFormat: "compressed"
+  },
+  {
+    id: "bk4",
+    createdAt: new Date(2025, 3, 5, 14, 15),
+    size: "85.3 MB",
+    path: "/backups/backup-2025-04-05.sql",
+    status: "success",
+    type: "manual",
+    destination: "local",
+    fileFormat: "sql"
+  },
+  {
+    id: "bk5",
+    createdAt: new Date(2025, 3, 1, 9, 0),
+    size: "36.8 MB",
+    path: "/backups/backup-2025-04-01.json",
+    status: "success",
+    type: "manual",
+    destination: "cloud",
+    fileFormat: "json",
+    googleDriveFileId: "1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9"
   }
 ];
 
@@ -130,5 +155,10 @@ export const mockBackupSettings: BackupSettings = {
   includeAttachments: true,
   includeSettings: true,
   backupHistory: backupHistoryItems,
-  autoRestore: false
+  autoRestore: false,
+  cloudProvider: "google-drive",
+  googleDriveAuth: {
+    isAuthenticated: false,
+    email: ''
+  }
 };

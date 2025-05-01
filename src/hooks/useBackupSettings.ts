@@ -14,13 +14,18 @@ export function useBackupSettings() {
     includeAttachments: mockBackupSettings.includeAttachments || true,
     includeSettings: mockBackupSettings.includeSettings || true,
     autoRestore: mockBackupSettings.autoRestore || false,
-    destinationType: mockBackupSettings.destinationType || 'local'
+    destinationType: mockBackupSettings.destinationType || 'local',
+    googleDriveAuth: mockBackupSettings.googleDriveAuth || { isAuthenticated: false }
   });
   const [isLoading, setIsLoading] = useState(false);
   const [restoreProgress, setRestoreProgress] = useState(0);
   const [backupProgress, setBackupProgress] = useState(0);
   const [isRestoring, setIsRestoring] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isConnectingGoogleDrive, setIsConnectingGoogleDrive] = useState(false);
+  const [isUploadingToGoogleDrive, setIsUploadingToGoogleDrive] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [downloadFormat, setDownloadFormat] = useState<'compressed' | 'original' | 'sql' | 'json'>('compressed');
 
   // تحديث إعداد محدد
   const updateSetting = <K extends keyof BackupSettings>(
@@ -59,7 +64,7 @@ export function useBackupSettings() {
   };
 
   // إنشاء نسخة احتياطية يدوية
-  const createManualBackup = async () => {
+  const createManualBackup = async (fileFormat: 'compressed' | 'original' | 'sql' | 'json' = 'compressed') => {
     setIsBackingUp(true);
     setBackupProgress(0);
 
@@ -70,14 +75,29 @@ export function useBackupSettings() {
         setBackupProgress(i * 10);
       }
 
+      // تحديد حجم الملف بناءً على نوع التنسيق
+      const fileSize = fileFormat === 'original' ? 
+        `${Math.floor(Math.random() * 200) + 70} MB` : 
+        fileFormat === 'sql' ? 
+        `${Math.floor(Math.random() * 100) + 60} MB` : 
+        fileFormat === 'json' ? 
+        `${Math.floor(Math.random() * 80) + 30} MB` : 
+        `${Math.floor(Math.random() * 100) + 10} MB`;
+
+      // تحديد امتداد الملف بناءً على نوع التنسيق
+      const fileExtension = fileFormat === 'compressed' ? '.zip' : 
+                           fileFormat === 'sql' ? '.sql' : 
+                           fileFormat === 'json' ? '.json' : '.tar';
+
       const newBackup: BackupHistoryItem = {
         id: uuid(),
         createdAt: new Date(),
-        size: `${Math.floor(Math.random() * 100) + 10} MB`,
-        path: `/backups/backup-${new Date().toISOString().split('T')[0]}.zip`,
+        size: fileSize,
+        path: `/backups/backup-${new Date().toISOString().split('T')[0]}${fileExtension}`,
         status: 'success',
         type: 'manual',
-        destination: settings.destinationType
+        destination: settings.destinationType,
+        fileFormat: fileFormat
       };
 
       setSettings(prev => ({
@@ -143,7 +163,7 @@ export function useBackupSettings() {
   };
 
   // تنزيل نسخة احتياطية
-  const downloadBackup = (backupId: string) => {
+  const downloadBackup = (backupId: string, format: 'compressed' | 'original' | 'sql' | 'json' = 'compressed') => {
     const backup = settings.backupHistory.find(b => b.id === backupId);
     if (!backup) {
       toast.error('لم يتم العثور على النسخة الاحتياطية');
@@ -151,10 +171,29 @@ export function useBackupSettings() {
     }
 
     // محاكاة التنزيل
-    toast.success('جاري تنزيل النسخة الاحتياطية...');
+    toast.success(`جاري تنزيل النسخة الاحتياطية بتنسيق ${
+      format === 'compressed' ? 'مضغوط' : 
+      format === 'original' ? 'أصلي' : 
+      format === 'sql' ? 'SQL' : 'JSON'
+    }...`);
+    
     setTimeout(() => {
       toast.success('تم تنزيل النسخة الاحتياطية بنجاح');
     }, 2000);
+  };
+
+  // تنزيل النسخة الاحتياطية الأصلية
+  const downloadOriginalBackup = (backupId: string) => {
+    const backup = settings.backupHistory.find(b => b.id === backupId);
+    if (!backup) {
+      toast.error('لم يتم العثور على النسخة الاحتياطية');
+      return;
+    }
+
+    toast.success('جاري تنزيل النسخة الاحتياطية الأصلية...');
+    setTimeout(() => {
+      toast.success('تم تنزيل النسخة الاحتياطية الأصلية بنجاح');
+    }, 2500);
   };
 
   // إرسال النسخة الاحتياطية بالبريد الإلكتروني
@@ -176,13 +215,140 @@ export function useBackupSettings() {
     }
   };
 
+  // الاتصال بـ Google Drive
+  const connectGoogleDrive = async () => {
+    setIsConnectingGoogleDrive(true);
+    try {
+      // محاكاة عملية الاتصال بـ Google Drive
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // تحديث حالة الاتصال
+      setSettings(prev => ({
+        ...prev,
+        googleDriveAuth: {
+          isAuthenticated: true,
+          token: "google-auth-token-example",
+          refreshToken: "google-refresh-token-example",
+          expiresAt: new Date(Date.now() + 3600000), // تنتهي بعد ساعة
+          email: "user@example.com"
+        }
+      }));
+      
+      toast.success('تم الاتصال بحساب Google Drive بنجاح');
+      return true;
+    } catch (error) {
+      toast.error('فشل الاتصال بـ Google Drive');
+      return false;
+    } finally {
+      setIsConnectingGoogleDrive(false);
+    }
+  };
+
+  // قطع الاتصال بـ Google Drive
+  const disconnectGoogleDrive = async () => {
+    try {
+      // محاكاة قطع الاتصال
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // إعادة تعيين حالة الاتصال
+      setSettings(prev => ({
+        ...prev,
+        googleDriveAuth: {
+          isAuthenticated: false
+        }
+      }));
+      
+      toast.success('تم قطع الاتصال بـ Google Drive بنجاح');
+      return true;
+    } catch (error) {
+      toast.error('فشل قطع الاتصال بـ Google Drive');
+      return false;
+    }
+  };
+
+  // تحميل النسخة الاحتياطية إلى Google Drive
+  const uploadToGoogleDrive = async (backupId: string) => {
+    if (!settings.googleDriveAuth?.isAuthenticated) {
+      toast.error('يرجى الاتصال بـ Google Drive أولاً');
+      return false;
+    }
+    
+    setIsUploadingToGoogleDrive(true);
+    setUploadProgress(0);
+    
+    try {
+      const backup = settings.backupHistory.find(b => b.id === backupId);
+      if (!backup) {
+        throw new Error('لم يتم العثور على النسخة الاحتياطية');
+      }
+      
+      // محاكاة عملية التحميل
+      for (let i = 1; i <= 10; i++) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setUploadProgress(i * 10);
+      }
+      
+      // تحديث سجل النسخ الاحتياطية بمعرف ملف Google Drive
+      const googleDriveFileId = `gdrive-${uuid().substring(0, 8)}`;
+      
+      setSettings(prev => ({
+        ...prev,
+        backupHistory: prev.backupHistory.map(b => 
+          b.id === backupId 
+            ? { ...b, destination: 'cloud', googleDriveFileId } 
+            : b
+        )
+      }));
+      
+      toast.success('تم تحميل النسخة الاحتياطية إلى Google Drive بنجاح');
+      return true;
+    } catch (error) {
+      toast.error('فشل تحميل النسخة الاحتياطية إلى Google Drive');
+      return false;
+    } finally {
+      setIsUploadingToGoogleDrive(false);
+      setUploadProgress(0);
+    }
+  };
+
+  // تنزيل النسخة الاحتياطية من Google Drive
+  const downloadFromGoogleDrive = async (backupId: string) => {
+    if (!settings.googleDriveAuth?.isAuthenticated) {
+      toast.error('يرجى الاتصال بـ Google Drive أولاً');
+      return false;
+    }
+    
+    try {
+      const backup = settings.backupHistory.find(b => b.id === backupId && b.googleDriveFileId);
+      if (!backup) {
+        throw new Error('لم يتم العثور على النسخة الاحتياطية في Google Drive');
+      }
+      
+      toast.success('جاري تنزيل النسخة الاحتياطية من Google Drive...');
+      
+      // محاكاة عملية التنزيل
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('تم تنزيل النسخة الاحتياطية من Google Drive بنجاح');
+      return true;
+    } catch (error) {
+      toast.error('فشل تنزيل النسخة الاحتياطية من Google Drive');
+      return false;
+    }
+  };
+
   return {
     settings,
     isLoading,
     isRestoring,
     isBackingUp,
+    isConnectingGoogleDrive,
+    isUploadingToGoogleDrive,
     restoreProgress,
     backupProgress,
+    uploadProgress,
+    downloadFormat,
+    setDownloadFormat,
     updateSetting,
     updateSettings,
     saveSettings,
@@ -190,6 +356,11 @@ export function useBackupSettings() {
     restoreBackup,
     deleteBackup,
     downloadBackup,
-    sendBackupByEmail
+    downloadOriginalBackup,
+    sendBackupByEmail,
+    connectGoogleDrive,
+    disconnectGoogleDrive,
+    uploadToGoogleDrive,
+    downloadFromGoogleDrive
   };
 }
