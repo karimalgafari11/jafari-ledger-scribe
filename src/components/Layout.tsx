@@ -12,7 +12,7 @@ export function Layout({
   showWatermark = true
 }: LayoutProps) {
   const isMobile = useIsMobile();
-  return <div className="py-px px-0 bg-orange-100">
+  return <div className="py-px px-0 bg-cyan-50">
       {showWatermark && !isMobile && <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
           <img src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" alt="الجعفري للمحاسبة" className="w-96 h-96 opacity-[0.07]" />
         </div>}

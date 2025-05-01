@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { ChatInterface } from "@/components/ai/ChatInterface";
@@ -8,51 +7,60 @@ import { MessageSquare, Settings, Bot, AlertCircle, BarChart } from "lucide-reac
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import {
-  BarChart as ReBarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
+import { BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 // بيانات افتراضية للرسوم البيانية
-const performanceData = [
-  { name: 'السبت', sales: 4000 },
-  { name: 'الأحد', sales: 3000 },
-  { name: 'الإثنين', sales: 5000 },
-  { name: 'الثلاثاء', sales: 2780 },
-  { name: 'الأربعاء', sales: 1890 },
-  { name: 'الخميس', sales: 2390 },
-  { name: 'الجمعة', sales: 3490 },
-];
-
-const categoryData = [
-  { name: 'ملابس', value: 35 },
-  { name: 'إلكترونيات', value: 25 },
-  { name: 'أحذية', value: 20 },
-  { name: 'إكسسوارات', value: 15 },
-  { name: 'حقائب', value: 5 },
-];
-
+const performanceData = [{
+  name: 'السبت',
+  sales: 4000
+}, {
+  name: 'الأحد',
+  sales: 3000
+}, {
+  name: 'الإثنين',
+  sales: 5000
+}, {
+  name: 'الثلاثاء',
+  sales: 2780
+}, {
+  name: 'الأربعاء',
+  sales: 1890
+}, {
+  name: 'الخميس',
+  sales: 2390
+}, {
+  name: 'الجمعة',
+  sales: 3490
+}];
+const categoryData = [{
+  name: 'ملابس',
+  value: 35
+}, {
+  name: 'إلكترونيات',
+  value: 25
+}, {
+  name: 'أحذية',
+  value: 20
+}, {
+  name: 'إكسسوارات',
+  value: 15
+}, {
+  name: 'حقائب',
+  value: 5
+}];
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
-
 const AiAssistantPage = () => {
   const [activeTab, setActiveTab] = useState("chat");
-  const { systemAlerts, getLowStockProducts, getPendingExpenses } = useAiAssistant();
-  
+  const {
+    systemAlerts,
+    getLowStockProducts,
+    getPendingExpenses
+  } = useAiAssistant();
   const lowStockItems = getLowStockProducts();
   const pendingExpenses = getPendingExpenses();
-
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 bg-sky-200">
           <div>
             <h1 className="text-2xl font-bold">المساعد الذكي</h1>
             <p className="text-gray-500 text-sm mt-1">
@@ -115,9 +123,7 @@ const AiAssistantPage = () => {
             <CardContent>
               <div className="text-2xl font-bold flex items-center">
                 {systemAlerts.length}
-                {systemAlerts.some(a => a.priority === "high") && (
-                  <AlertCircle className="h-4 w-4 text-red-500 mr-1" />
-                )}
+                {systemAlerts.some(a => a.priority === "high") && <AlertCircle className="h-4 w-4 text-red-500 mr-1" />}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {systemAlerts.filter(a => a.priority === "high").length} تنبيهات عالية الأولوية
@@ -163,8 +169,7 @@ const AiAssistantPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {lowStockItems.length > 0 && (
-                      <div className="p-4 rounded-md bg-yellow-50 border border-yellow-200">
+                    {lowStockItems.length > 0 && <div className="p-4 rounded-md bg-yellow-50 border border-yellow-200">
                         <h3 className="font-medium text-amber-800 mb-2 flex items-center">
                           <AlertCircle className="h-4 w-4 mr-2" />
                           توصية: إعادة طلب المنتجات منخفضة المخزون
@@ -174,21 +179,17 @@ const AiAssistantPage = () => {
                         </p>
                         <ScrollArea className="h-24 w-full">
                           <ul className="space-y-1 text-xs">
-                            {lowStockItems.map(item => (
-                              <li key={item.id} className="flex justify-between">
+                            {lowStockItems.map(item => <li key={item.id} className="flex justify-between">
                                 <span>{item.name}</span>
                                 <span className={`${item.quantity === 0 ? 'text-red-500 font-bold' : 'text-amber-700'}`}>
                                   {item.quantity} / {item.reorderLevel}
                                 </span>
-                              </li>
-                            ))}
+                              </li>)}
                           </ul>
                         </ScrollArea>
-                      </div>
-                    )}
+                      </div>}
                     
-                    {pendingExpenses.length > 0 && (
-                      <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
+                    {pendingExpenses.length > 0 && <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
                         <h3 className="font-medium text-blue-800 mb-2 flex items-center">
                           <AlertCircle className="h-4 w-4 mr-2" />
                           توصية: مراجعة المصروفات المعلقة
@@ -196,8 +197,7 @@ const AiAssistantPage = () => {
                         <p className="text-sm text-blue-700 mb-2">
                           هناك {pendingExpenses.length} مصروفات تنتظر الموافقة منذ أكثر من 3 أيام.
                         </p>
-                      </div>
-                    )}
+                      </div>}
                     
                     <div className="p-4 rounded-md bg-green-50 border border-green-200">
                       <h3 className="font-medium text-green-800 mb-2 flex items-center">
@@ -236,19 +236,11 @@ const AiAssistantPage = () => {
                 <CardContent className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie
-                        data={categoryData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {categoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                      <Pie data={categoryData} cx="50%" cy="50%" labelLine={false} label={({
+                      name,
+                      percent
+                    }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                        {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                       </Pie>
                       <Tooltip />
                     </PieChart>
@@ -295,8 +287,6 @@ const AiAssistantPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default AiAssistantPage;
