@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -14,10 +13,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Trash, Edit, Save, Plus } from "lucide-react";
-
 const ExpenseCategoriesPage: React.FC = () => {
-  const { categories, addCategory, updateCategory, deleteCategory } = useExpenses();
-
+  const {
+    categories,
+    addCategory,
+    updateCategory,
+    deleteCategory
+  } = useExpenses();
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [budgetLimit, setBudgetLimit] = useState<string>("");
@@ -26,7 +28,6 @@ const ExpenseCategoriesPage: React.FC = () => {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-
   const handleReset = () => {
     setName("");
     setDescription("");
@@ -35,35 +36,29 @@ const ExpenseCategoriesPage: React.FC = () => {
     setIsEditing(false);
     setEditingCategoryId(null);
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!name) {
       toast.error("الرجاء إدخال اسم التصنيف");
       return;
     }
-
     const categoryData: Omit<ExpenseCategory, "id"> = {
       name,
       description: description || undefined,
       budgetLimit: budgetLimit ? parseFloat(budgetLimit) : undefined,
-      isActive,
+      isActive
     };
-
     if (isEditing && editingCategoryId) {
       updateCategory({
         id: editingCategoryId,
-        ...categoryData,
+        ...categoryData
       });
     } else {
       addCategory(categoryData);
     }
-
     handleReset();
     setDialogOpen(false);
   };
-
   const handleEdit = (category: ExpenseCategory) => {
     setName(category.name);
     setDescription(category.description || "");
@@ -73,31 +68,19 @@ const ExpenseCategoriesPage: React.FC = () => {
     setEditingCategoryId(category.id);
     setDialogOpen(true);
   };
-
   const handleDelete = (id: string) => {
     const result = deleteCategory(id);
     if (result) {
       handleReset();
     }
   };
-
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.includes(searchQuery) ||
-      (category.description && category.description.includes(searchQuery))
-  );
-
-  return (
-    <div className="container mx-auto p-6 rtl">
+  const filteredCategories = categories.filter(category => category.name.includes(searchQuery) || category.description && category.description.includes(searchQuery));
+  return <div className="container mx-auto p-6 rtl px-0 py-[2px] bg-cyan-100 rounded-lg">
       <Header title="تصنيفات المصروفات" showBack={true} />
 
       <div className="flex justify-between items-center mb-6">
         <div className="w-72">
-          <Input
-            placeholder="بحث عن تصنيف..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <Input placeholder="بحث عن تصنيف..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -117,42 +100,21 @@ const ExpenseCategoriesPage: React.FC = () => {
               <div className="space-y-4 py-4">
                 <div>
                   <Label htmlFor="name">اسم التصنيف</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="أدخل اسم التصنيف"
-                  />
+                  <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="أدخل اسم التصنيف" />
                 </div>
 
                 <div>
                   <Label htmlFor="description">الوصف</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="أدخل وصف التصنيف (اختياري)"
-                    className="resize-none"
-                  />
+                  <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} placeholder="أدخل وصف التصنيف (اختياري)" className="resize-none" />
                 </div>
 
                 <div>
                   <Label htmlFor="budgetLimit">حد الميزانية</Label>
-                  <Input
-                    id="budgetLimit"
-                    type="number"
-                    value={budgetLimit}
-                    onChange={(e) => setBudgetLimit(e.target.value)}
-                    placeholder="أدخل حد الميزانية (اختياري)"
-                  />
+                  <Input id="budgetLimit" type="number" value={budgetLimit} onChange={e => setBudgetLimit(e.target.value)} placeholder="أدخل حد الميزانية (اختياري)" />
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isActive"
-                    checked={isActive}
-                    onCheckedChange={setIsActive}
-                  />
+                  <Switch id="isActive" checked={isActive} onCheckedChange={setIsActive} />
                   <Label htmlFor="isActive" className="mr-2">نشط</Label>
                 </div>
               </div>
@@ -183,33 +145,20 @@ const ExpenseCategoriesPage: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCategories.map((category) => (
-                <TableRow key={category.id}>
+              {filteredCategories.map(category => <TableRow key={category.id}>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>{category.description || "-"}</TableCell>
                   <TableCell>
-                    {category.budgetLimit
-                      ? `${category.budgetLimit.toLocaleString("ar-SA")} ريال`
-                      : "-"}
+                    {category.budgetLimit ? `${category.budgetLimit.toLocaleString("ar-SA")} ريال` : "-"}
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        category.isActive
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
+                    <span className={`px-2 py-1 rounded-full text-xs ${category.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                       {category.isActive ? "نشط" : "غير نشط"}
                     </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(category)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(category)}>
                         <Edit size={16} />
                       </Button>
                       <AlertDialog>
@@ -235,14 +184,11 @@ const ExpenseCategoriesPage: React.FC = () => {
                       </AlertDialog>
                     </div>
                   </TableCell>
-                </TableRow>
-              ))}
+                </TableRow>)}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default ExpenseCategoriesPage;
