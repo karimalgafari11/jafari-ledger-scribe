@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { toast } from 'sonner';
 import { menuItems as initialMenuItems } from '@/config/menuItems';
@@ -40,13 +41,23 @@ export const PageManagementProvider: React.FC<{ children: ReactNode }> = ({ chil
       const id = uuidv4();
       const pageItem: PageItem = {
         id,
-        section: item.label || item.section, // Handle both label and section
+        section: item.section,
         path: item.path,
         icon: item.icon,
         parentId,
         isEnabled: true,
         isMinimized: false,
-        children: item.children ? convertMenuItems(item.children, id) : []
+        children: item.children ? 
+          item.children.map(child => ({
+            id: uuidv4(),
+            section: child.label, // Convert label to section
+            path: child.path,
+            icon: child.icon,
+            parentId: id,
+            isEnabled: true,
+            isMinimized: false,
+            children: []
+          })) : []
       };
       return pageItem;
     });
