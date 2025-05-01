@@ -11,8 +11,12 @@ import ZoomControl from "@/components/interactive/ZoomControl";
 import { Button } from "@/components/ui/button";
 import { DashboardSettings } from "@/components/dashboard/DashboardSettings";
 import { FileText, Receipt, FileDown, FileUp } from "lucide-react";
+import { useAiAssistant } from "@/hooks/useAiAssistant";
 
 const Dashboard = () => {
+  // استدعاء بيانات المساعد الذكي للحصول على التنبيهات النظامية
+  const { systemAlerts } = useAiAssistant();
+  
   // استدعاء بيانات لوحة التحكم
   const { 
     totalSales, 
@@ -28,7 +32,6 @@ const Dashboard = () => {
     supplierCreditData,
     costCenterData,
     dailySalesData,
-    systemAlerts
   } = useDashboardMetrics();
 
   // حالة التاريخ والفترة والفرع
@@ -55,29 +58,37 @@ const Dashboard = () => {
       id: "sales-invoice",
       name: "فاتورة مبيعات",
       icon: <FileText size={20} />,
-      route: "/invoices",
-      enabled: true
+      route: "/invoices/outgoing",
+      enabled: true,
+      badge: {
+        text: "جديد",
+        variant: "success"
+      },
+      description: "إنشاء وإدارة فواتير المبيعات للعملاء"
     },
     {
       id: "purchase-invoice",
       name: "فاتورة مشتريات",
       icon: <Receipt size={20} />,
       route: "/purchases",
-      enabled: true
+      enabled: true,
+      description: "إنشاء وإدارة فواتير المشتريات من الموردين"
     },
     {
       id: "payment-voucher",
       name: "سند دفع",
       icon: <FileDown size={20} />,
       route: "/payment-vouchers",
-      enabled: true
+      enabled: true,
+      description: "إنشاء وإدارة سندات الدفع للموردين"
     },
     {
       id: "receipt-voucher",
       name: "سند قبض",
       icon: <FileUp size={20} />,
       route: "/receipt-vouchers",
-      enabled: true
+      enabled: true,
+      description: "إنشاء وإدارة سندات القبض من العملاء"
     }
   ]);
   
