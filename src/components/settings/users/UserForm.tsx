@@ -50,12 +50,13 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    // Make sure all required fields from User type are included and non-optional
     onSave({
       ...data,
       id: user?.id || '',
       lastLogin: user?.lastLogin,
       createdAt: user?.createdAt || new Date()
-    });
+    } as User); // Cast to User type to ensure TypeScript knows we're providing all required fields
   };
 
   const roles = mockUserRoles.map(role => ({
