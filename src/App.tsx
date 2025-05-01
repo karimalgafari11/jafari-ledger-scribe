@@ -11,6 +11,7 @@ import SalesOrdersPage from '@/pages/invoices/SalesOrdersPage';
 import SalesInvoicePage from '@/pages/invoices/SalesInvoicePage';
 import DiscountsPage from '@/pages/definitions/DiscountsPage';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import AccountingSidebar from '@/components/AccountingSidebar';
 
 function App() {
   return (
@@ -18,15 +19,20 @@ function App() {
       <div className="App h-screen w-full">
         <Toaster position="top-center" richColors />
         <SidebarProvider>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/invoices/outgoing" element={<InvoicesPage />} />
-            <Route path="/invoices/new" element={<SalesInvoicePage />} />
-            <Route path="/invoices/orders" element={<SalesOrdersPage />} />
-            <Route path="/definitions/discounts" element={<DiscountsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="flex h-screen w-full overflow-hidden">
+            <AccountingSidebar />
+            <div className="flex-1 overflow-auto w-full">
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/invoices/outgoing" element={<InvoicesPage />} />
+                <Route path="/invoices/new" element={<SalesInvoicePage />} />
+                <Route path="/invoices/orders" element={<SalesOrdersPage />} />
+                <Route path="/definitions/discounts" element={<DiscountsPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </div>
         </SidebarProvider>
       </div>
     </Router>
