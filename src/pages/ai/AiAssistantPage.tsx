@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { ChatInterface } from "@/components/ai/ChatInterface";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Settings, Bot, AlertCircle, BarChart } from "lucide-react";
+import { MessageSquare, Settings, Bot, AlertCircle, BarChart, Calculator } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +49,29 @@ const categoryData = [{
   value: 5
 }];
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+const accountingRules = [
+  {
+    title: "القيد المزدوج",
+    description: "مجموع المدين يساوي مجموع الدائن في كل قيد محاسبي",
+    isActive: true
+  },
+  {
+    title: "توثيق القيود",
+    description: "كل قيد محاسبي يجب أن يكون له مستند مؤيد ووصف واضح",
+    isActive: true
+  },
+  {
+    title: "الفترات المحاسبية",
+    description: "يتم إقفال الفترات المحاسبية شهرياً وترحيل الأرصدة للفترة التالية",
+    isActive: true
+  },
+  {
+    title: "تدقيق المدخلات",
+    description: "التحقق من صحة البيانات المدخلة وعدم تكرارها",
+    isActive: true
+  }
+];
+
 const AiAssistantPage = () => {
   const [activeTab, setActiveTab] = useState("chat");
   const {
@@ -141,6 +164,10 @@ const AiAssistantPage = () => {
             <TabsTrigger value="insights">
               <BarChart className="ml-2 h-4 w-4" />
               التحليلات والتوصيات
+            </TabsTrigger>
+            <TabsTrigger value="accounting-rules">
+              <Calculator className="ml-2 h-4 w-4" />
+              قوانين المحاسبة
             </TabsTrigger>
             <TabsTrigger value="settings">
               <Settings className="ml-2 h-4 w-4" />
@@ -248,6 +275,45 @@ const AiAssistantPage = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+          
+          <TabsContent value="accounting-rules" className="w-full">
+            <Card>
+              <CardHeader>
+                <CardTitle>قوانين المحاسبة المطبقة</CardTitle>
+                <CardDescription>القوانين والقواعد المحاسبية المعتمدة في النظام والتي يستخدمها المساعد الذكي</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {accountingRules.map((rule, index) => (
+                    <Card key={index} className="border border-gray-200">
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-md">{rule.title}</CardTitle>
+                          <Badge variant={rule.isActive ? "default" : "outline"}>
+                            {rule.isActive ? "مفعّل" : "معطل"}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-600">{rule.description}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="mt-6 p-4 bg-blue-50 rounded-md border border-blue-100">
+                  <h3 className="font-medium text-blue-800 mb-2 flex items-center">
+                    <Bot className="h-4 w-4 mr-2" />
+                    دور المساعد الذكي في تطبيق قوانين المحاسبة
+                  </h3>
+                  <p className="text-sm text-blue-700">
+                    يقوم المساعد الذكي بمراقبة الامتثال لقوانين المحاسبة وإرسال التنبيهات عند اكتشاف أي مخالفات.
+                    كما يقدم اقتراحات للتصحيح ويساعد في فهم القيود المحاسبية المعقدة وتأثيرها على المركز المالي للمنشأة.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="settings">
