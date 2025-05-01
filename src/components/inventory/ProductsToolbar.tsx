@@ -1,31 +1,11 @@
-
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  Search, 
-  Plus, 
-  File, 
-  FileSpreadsheet, 
-  Share2, 
-  Trash2,
-  Filter,
-} from "lucide-react";
-import { 
-  Popover,
-  PopoverTrigger,
-  PopoverContent, 
-} from "@/components/ui/popover";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Search, Plus, File, FileSpreadsheet, Share2, Trash2, Filter } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { FilterOptions } from "@/types/inventory";
-
 interface ProductsToolbarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -36,7 +16,6 @@ interface ProductsToolbarProps {
   onExport: (type: 'pdf' | 'excel') => void;
   onShare: () => void;
 }
-
 export function ProductsToolbar({
   searchQuery,
   setSearchQuery,
@@ -50,24 +29,15 @@ export function ProductsToolbar({
   const form = useForm({
     defaultValues: filterOptions
   });
-
   const handleFilterSubmit = (data: FilterOptions) => {
     setFilterOptions(data);
   };
-
-  return (
-    <div className="mb-6 space-y-4 rtl">
+  return <div className="mb-6 space-y-4 rtl">
       {/* Search and Actions Row */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between">
+      <div className="flex flex-col md:flex-row gap-4 justify-between bg-cyan-200 px-[2px]">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="البحث عن قطع غيار..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8"
-          />
+          <Input type="text" placeholder="البحث عن قطع غيار..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-8" />
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -86,58 +56,42 @@ export function ProductsToolbar({
             <PopoverContent className="w-80" align="end">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleFilterSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
+                  <FormField control={form.control} name="category" render={({
+                  field
+                }) => <FormItem>
                         <FormLabel>التصنيف</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="اختر التصنيف" />
                         </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                      </FormItem>} />
                   
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
+                  <FormField control={form.control} name="status" render={({
+                  field
+                }) => <FormItem>
                         <FormLabel>الحالة</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="الحالة" />
                         </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                      </FormItem>} />
                   
                   <div className="flex gap-2">
-                    <FormField
-                      control={form.control}
-                      name="minPrice"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
+                    <FormField control={form.control} name="minPrice" render={({
+                    field
+                  }) => <FormItem className="flex-1">
                           <FormLabel>السعر من</FormLabel>
                           <FormControl>
                             <Input {...field} type="number" placeholder="0" />
                           </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                     
-                    <FormField
-                      control={form.control}
-                      name="maxPrice"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
+                    <FormField control={form.control} name="maxPrice" render={({
+                    field
+                  }) => <FormItem className="flex-1">
                           <FormLabel>إلى</FormLabel>
                           <FormControl>
                             <Input {...field} type="number" placeholder="10000" />
                           </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                   </div>
                   
                   <div className="flex justify-end pt-2">
@@ -163,17 +117,11 @@ export function ProductsToolbar({
             مشاركة
           </Button>
           
-          <Button 
-            variant="destructive" 
-            onClick={onBulkDelete}
-            disabled={selectedCount === 0}
-            className="gap-2"
-          >
+          <Button variant="destructive" onClick={onBulkDelete} disabled={selectedCount === 0} className="gap-2">
             <Trash2 size={18} />
             حذف ({selectedCount})
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
