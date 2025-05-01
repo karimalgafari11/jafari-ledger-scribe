@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import { InvoiceItemForm } from "./InvoiceItemForm";
 import { InvoiceDiscountForm } from "./InvoiceDiscountForm";
 import { InvoiceSummary } from "./InvoiceSummary";
