@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { usePageManagement, PageItem } from '@/hooks/usePageManagement';
+import { type PageItem, usePageManagement } from '@/hooks/usePageManagement';
 import { 
   Select,
   SelectContent,

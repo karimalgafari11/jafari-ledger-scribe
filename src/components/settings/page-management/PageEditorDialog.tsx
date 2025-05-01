@@ -11,22 +11,18 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { usePageManagement, PageItem } from '@/hooks/usePageManagement';
+import { type PageItem, usePageManagement } from '@/hooks/usePageManagement';
 import { 
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { HexColorPicker } from 'react-colorful';
-
-// We need to install react-colorful
-<lov-add-dependency>react-colorful@5.6.1</lov-add-dependency>
 
 const PageEditorDialog = () => {
   const { selectedPage, setSelectedPage, pages, setPages } = usePageManagement();
@@ -85,9 +81,9 @@ const PageEditorDialog = () => {
   const handleSubmit = () => {
     if (!selectedPage) return;
     
-    const updatePageInTree = (items: PageItem[], pageId: string): PageItem[] => {
+    const updatePageInTree = (items: PageItem[]): PageItem[] => {
       return items.map(item => {
-        if (item.id === pageId) {
+        if (item.id === selectedPage.id) {
           return {
             ...item,
             section: formData.section,
@@ -100,14 +96,14 @@ const PageEditorDialog = () => {
         if (item.children) {
           return {
             ...item,
-            children: updatePageInTree(item.children, pageId)
+            children: updatePageInTree(item.children)
           };
         }
         return item;
       });
     };
     
-    setPages(updatePageInTree(pages, selectedPage.id));
+    setPages(updatePageInTree(pages));
     toast.success(`تم تحديث الصفحة: ${formData.section}`);
     setSelectedPage(null);
   };

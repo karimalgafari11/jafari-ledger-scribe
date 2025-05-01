@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { usePageManagement, PageItem } from '@/hooks/usePageManagement';
+import { type PageItem, usePageManagement } from '@/hooks/usePageManagement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -16,10 +16,13 @@ import {
   ChevronRight 
 } from 'lucide-react';
 
-// We need to install react-beautiful-dnd
-<lov-add-dependency>react-beautiful-dnd@13.1.1</lov-add-dependency>
+interface PageItemProps {
+  page: PageItem;
+  index: number;
+  depth?: number;
+}
 
-const PageItem = ({ page, index, depth = 0 }: { page: PageItem, index: number, depth?: number }) => {
+const PageItemComponent = ({ page, index, depth = 0 }: PageItemProps) => {
   const { handlePageAction } = usePageManagement();
   const [expanded, setExpanded] = useState(false);
   const hasChildren = page.children && page.children.length > 0;
@@ -126,7 +129,13 @@ const PageItem = ({ page, index, depth = 0 }: { page: PageItem, index: number, d
   );
 };
 
-const ChildrenList = ({ pages, parentId, depth }: { pages?: PageItem[], parentId: string, depth: number }) => {
+interface ChildrenListProps {
+  pages?: PageItem[];
+  parentId: string;
+  depth: number;
+}
+
+const ChildrenList = ({ pages, parentId, depth }: ChildrenListProps) => {
   const { reorderPages } = usePageManagement();
   
   if (!pages || pages.length === 0) return null;
@@ -151,7 +160,7 @@ const ChildrenList = ({ pages, parentId, depth }: { pages?: PageItem[], parentId
             className="space-y-2"
           >
             {pages.map((page, index) => (
-              <PageItem
+              <PageItemComponent
                 key={page.id}
                 page={page}
                 index={index}
@@ -196,7 +205,7 @@ const PageManagementVisual = () => {
               className="space-y-2"
             >
               {pages.map((page, index) => (
-                <PageItem
+                <PageItemComponent
                   key={page.id}
                   page={page}
                   index={index}
