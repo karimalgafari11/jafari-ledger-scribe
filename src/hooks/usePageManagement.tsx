@@ -1,33 +1,18 @@
-
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { toast } from 'sonner';
 import { menuItems as initialMenuItems } from '@/config/menuItems';
-import { MenuItem } from '@/types/sidebar';
+import { type MenuItem } from '@/types/sidebar';
 import { v4 as uuidv4 } from 'uuid';
+import { PageManagementItem } from '@/types/page-management';
 
 type PageAction = 'edit' | 'delete' | 'merge' | 'duplicate' | 'move' | 'minimize' | 'enable';
 
-export type PageItem = MenuItem & {
-  id: string;
-  parentId?: string;
-  isEnabled?: boolean;
-  isMinimized?: boolean;
-  permissions?: string[];
-  color?: string;
-};
+// Use the PageManagementItem as the base for our PageItem type
+export type PageItem = PageManagementItem;
 
-export type FlatPageItem = {
-  id: string;
-  section: string;
-  path?: string;
-  icon: any;
-  parentId?: string;
-  isEnabled: boolean;
-  isMinimized: boolean;
-  permissions?: string[];
-  color?: string;
-  children?: never;
+export type FlatPageItem = PageManagementItem & {
   depth: number;
+  children?: never;
 };
 
 interface PageManagementContextType {
@@ -54,8 +39,10 @@ export const PageManagementProvider: React.FC<{ children: ReactNode }> = ({ chil
     return items.map(item => {
       const id = uuidv4();
       const pageItem: PageItem = {
-        ...item,
         id,
+        section: item.label || item.section, // Handle both label and section
+        path: item.path,
+        icon: item.icon,
         parentId,
         isEnabled: true,
         isMinimized: false,
