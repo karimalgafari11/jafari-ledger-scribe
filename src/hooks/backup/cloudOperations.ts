@@ -197,7 +197,7 @@ export const listGoogleDriveFiles = async (
 export const checkAndAutoDownloadFromCloud = async (
   settings: BackupSettings
 ): Promise<boolean> => {
-  if (!settings.googleDriveAuth?.isAuthenticated || !settings.autoDownloadFromCloud) {
+  if (!settings.googleDriveAuth?.isAuthenticated || !(settings.autoDownloadFromCloud === true)) {
     return false;
   }
   
