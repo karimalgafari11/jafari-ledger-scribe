@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,11 +27,11 @@ const FinancialDecisionsPage: React.FC = () => {
   // تصنيف القرارات حسب مستوى الثقة
   const getConfidenceBadge = (confidence: number) => {
     if (confidence >= 90) {
-      return <Badge variant="success" className="bg-green-100 text-green-800 border-green-300">ثقة عالية ({confidence}%)</Badge>;
+      return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">ثقة عالية ({confidence}%)</Badge>;
     } else if (confidence >= 70) {
-      return <Badge variant="warning" className="bg-amber-100 text-amber-800 border-amber-300">ثقة متوسطة ({confidence}%)</Badge>;
+      return <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300">ثقة متوسطة ({confidence}%)</Badge>;
     } else {
-      return <Badge variant="danger" className="bg-blue-100 text-blue-800 border-blue-300">تقديري ({confidence}%)</Badge>;
+      return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">تقديري ({confidence}%)</Badge>;
     }
   };
 

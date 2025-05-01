@@ -1,4 +1,6 @@
 
+import { NotificationChannel, NotificationPriority } from '@/types/notifications';
+
 export interface FinancialDecision {
   id: string;
   type: 'journal_entry' | 'pricing' | 'provision' | 'variance';
