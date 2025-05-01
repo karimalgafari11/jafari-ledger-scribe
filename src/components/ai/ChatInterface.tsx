@@ -24,6 +24,64 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { ar } from "date-fns/locale";
 
+// Add type declarations for the Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+  onnomatch: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+interface SpeechRecognitionConstructor {
+  new(): SpeechRecognition;
+  prototype: SpeechRecognition;
+}
+
+// Extend the Window interface to include both standard and webkit prefixed SpeechRecognition
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 export const ChatInterface = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -48,7 +106,7 @@ export const ChatInterface = () => {
   const { sendMessage, isLoading, systemAlerts } = useAiAssistant();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
-  const speechRecognition = useRef<any>(null);
+  const speechRecognition = useRef<SpeechRecognition | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -152,8 +210,14 @@ export const ChatInterface = () => {
     }
     
     try {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      speechRecognition.current = new SpeechRecognition();
+      // Use the properly typed SpeechRecognition constructor
+      const SpeechRecognitionConstructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      if (!SpeechRecognitionConstructor) {
+        throw new Error("Speech recognition not supported");
+      }
+      
+      speechRecognition.current = new SpeechRecognitionConstructor();
       
       speechRecognition.current.lang = 'ar-SA';
       speechRecognition.current.continuous = false;
@@ -163,12 +227,12 @@ export const ChatInterface = () => {
         setListening(true);
       };
       
-      speechRecognition.current.onresult = (event: any) => {
+      speechRecognition.current.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
       };
       
-      speechRecognition.current.onerror = (event: any) => {
+      speechRecognition.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error);
         setListening(false);
         toast({
