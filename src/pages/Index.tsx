@@ -32,6 +32,18 @@ import FinancialDecisionsPage from "./ai/FinancialDecisionsPage";
 import LoginPage from "./auth/LoginPage";
 import AboutPage from "./about/AboutPage";
 import ProductsPage from "./inventory/ProductsPage";
+import StockMovementsPage from "./inventory/StockMovementsPage";
+import CountingPage from "./inventory/CountingPage";
+import ReorderPage from "./inventory/ReorderPage";
+import TransferPage from "./inventory-control/TransferPage";
+import LocationsPage from "./inventory-control/LocationsPage";
+import DamagedItemsPage from "./inventory-control/DamagedItemsPage";
+import AccountingSettingsPage from "./accounting/AccountingSettingsPage";
+import UserRolesPage from "./settings/UserRolesPage";
+import SystemSettingsPage from "./settings/SystemSettingsPage";
+import BranchesPage from "./settings/BranchesPage";
+import UsersPage from "./settings/UsersPage";
+import BackupPage from "./settings/BackupPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -57,6 +69,7 @@ const Index = () => {
           <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
           <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
           <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
+          <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
           <Route path="/customers/manage" element={<CustomersPage />} />
           <Route path="/customers/statement" element={<CustomerStatementPage />} />
           <Route path="/ai-assistant" element={<AiAssistantPage />} />
@@ -68,9 +81,19 @@ const Index = () => {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
           <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
+          <Route path="/settings/roles" element={<UserRolesPage />} />
+          <Route path="/settings/system" element={<SystemSettingsPage />} />
+          <Route path="/settings/branches" element={<BranchesPage />} />
+          <Route path="/settings/users" element={<UsersPage />} />
+          <Route path="/settings/backup" element={<BackupPage />} />
           <Route path="/about" element={<AboutPage />} />
-          {/* إضافة مسار صفحة المنتجات */}
           <Route path="/inventory/products" element={<ProductsPage />} />
+          <Route path="/inventory/movements" element={<StockMovementsPage />} />
+          <Route path="/inventory/counting" element={<CountingPage />} />
+          <Route path="/inventory/reorder" element={<ReorderPage />} />
+          <Route path="/inventory-control/transfer" element={<TransferPage />} />
+          <Route path="/inventory-control/locations" element={<LocationsPage />} />
+          <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
           <Route path="*" element={
             <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
               <div className="text-center">
