@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -13,6 +14,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Trash, Edit, Save, Plus } from "lucide-react";
+import InteractiveLayout from "@/components/interactive/InteractiveLayout";
+import { ZoomProvider } from "@/components/interactive/ZoomControl";
+import ZoomControl from "@/components/interactive/ZoomControl";
+
 const ExpenseCategoriesPage: React.FC = () => {
   const {
     categories,
@@ -28,6 +33,8 @@ const ExpenseCategoriesPage: React.FC = () => {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [interactiveMode, setInteractiveMode] = useState(false);
+
   const handleReset = () => {
     setName("");
     setDescription("");
@@ -36,6 +43,7 @@ const ExpenseCategoriesPage: React.FC = () => {
     setIsEditing(false);
     setEditingCategoryId(null);
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) {
@@ -59,6 +67,7 @@ const ExpenseCategoriesPage: React.FC = () => {
     handleReset();
     setDialogOpen(false);
   };
+
   const handleEdit = (category: ExpenseCategory) => {
     setName(category.name);
     setDescription(category.description || "");
@@ -68,15 +77,92 @@ const ExpenseCategoriesPage: React.FC = () => {
     setEditingCategoryId(category.id);
     setDialogOpen(true);
   };
+
   const handleDelete = (id: string) => {
     const result = deleteCategory(id);
     if (result) {
       handleReset();
     }
   };
-  const filteredCategories = categories.filter(category => category.name.includes(searchQuery) || category.description && category.description.includes(searchQuery));
-  return <div className="container mx-auto p-6 rtl px-0 py-[2px] bg-cyan-100 rounded-lg">
-      <Header title="تصنيفات المصروفات" showBack={true} />
+
+  const filteredCategories = categories.filter(category => 
+    category.name.includes(searchQuery) || 
+    category.description && category.description.includes(searchQuery)
+  );
+
+  const categoriesTable = (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>اسم التصنيف</TableHead>
+          <TableHead>الوصف</TableHead>
+          <TableHead>حد الميزانية</TableHead>
+          <TableHead>الحالة</TableHead>
+          <TableHead>إجراءات</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {filteredCategories.map(category => (
+          <TableRow key={category.id}>
+            <TableCell>{category.name}</TableCell>
+            <TableCell>{category.description || "-"}</TableCell>
+            <TableCell>
+              {category.budgetLimit ? `${category.budgetLimit.toLocaleString("ar-SA")} ريال` : "-"}
+            </TableCell>
+            <TableCell>
+              <span className={`px-2 py-1 rounded-full text-xs ${category.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                {category.isActive ? "نشط" : "غير نشط"}
+              </span>
+            </TableCell>
+            <TableCell>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" onClick={() => handleEdit(category)}>
+                  <Edit size={16} />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Trash size={16} />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        سيتم حذف هذا التصنيف بشكل نهائي. لا يمكن حذف التصنيفات المرتبطة بمصروفات.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(category.id)}>
+                        حذف
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
+  return (
+    <div className="container mx-auto p-6 rtl px-0 py-[2px] bg-cyan-100 rounded-lg">
+      <Header title="تصنيفات المصروفات" showBack={true}>
+        <Button 
+          variant="outline" 
+          onClick={() => setInteractiveMode(!interactiveMode)}
+          className="ml-2"
+        >
+          {interactiveMode ? "العرض العادي" : "العرض التفاعلي"}
+        </Button>
+        
+        {interactiveMode && (
+          <ZoomControl compact />
+        )}
+      </Header>
 
       <div className="flex justify-between items-center mb-6">
         <div className="w-72">
@@ -132,63 +218,25 @@ const ExpenseCategoriesPage: React.FC = () => {
         </Dialog>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>اسم التصنيف</TableHead>
-                <TableHead>الوصف</TableHead>
-                <TableHead>حد الميزانية</TableHead>
-                <TableHead>الحالة</TableHead>
-                <TableHead>إجراءات</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCategories.map(category => <TableRow key={category.id}>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell>{category.description || "-"}</TableCell>
-                  <TableCell>
-                    {category.budgetLimit ? `${category.budgetLimit.toLocaleString("ar-SA")} ريال` : "-"}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${category.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                      {category.isActive ? "نشط" : "غير نشط"}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(category)}>
-                        <Edit size={16} />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <Trash size={16} />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              سيتم حذف هذا التصنيف بشكل نهائي. لا يمكن حذف التصنيفات المرتبطة بمصروفات.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(category.id)}>
-                              حذف
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>)}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>;
+      {interactiveMode ? (
+        <ZoomProvider>
+          <InteractiveLayout>
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                {categoriesTable}
+              </CardContent>
+            </Card>
+          </InteractiveLayout>
+        </ZoomProvider>
+      ) : (
+        <Card>
+          <CardContent className="p-6">
+            {categoriesTable}
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
 };
+
 export default ExpenseCategoriesPage;
