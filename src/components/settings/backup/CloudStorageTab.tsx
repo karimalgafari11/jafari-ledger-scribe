@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Cloud, CloudDownload, Download, Folder, Search } from "lucide-react";
+import { Cloud, CloudDownload, Download, Folder, Search, Info } from "lucide-react";
 import { BackupSettings } from "@/types/settings";
 import { BackupFormat } from "@/hooks/backup/backupTypes";
 
@@ -35,7 +35,7 @@ export function CloudStorageTab({
   disconnectGoogleDrive,
   downloadFromGoogleDrive
 }: CloudStorageTabProps) {
-  const isAuthenticated = settings.googleDriveAuth?.isAuthenticated;
+  const isAuthenticated = settings?.googleDriveAuth?.isAuthenticated || false;
   const [isViewingFiles, setIsViewingFiles] = useState(false);
   
   const handleFormatChange = (value: string) => {
@@ -44,21 +44,48 @@ export function CloudStorageTab({
   
   const handleAutoDownloadChange = (checked: boolean) => {
     updateSetting("autoDownloadFromCloud", checked);
-    saveSettings();
+    saveSettings().then(success => {
+      if (success) {
+        toast.success(checked ? "تم تفعيل التنزيل التلقائي بنجاح" : "تم إيقاف التنزيل التلقائي بنجاح");
+      }
+    });
   };
 
   const handleConnect = async () => {
-    await connectGoogleDrive();
+    try {
+      const success = await connectGoogleDrive();
+      if (success) {
+        toast.success("تم الاتصال بنجاح بـ Google Drive");
+      }
+    } catch (error) {
+      console.error("خطأ في الاتصال:", error);
+      toast.error("حدث خطأ أثناء الاتصال بـ Google Drive");
+    }
   };
 
   const handleDisconnect = async () => {
-    await disconnectGoogleDrive();
+    try {
+      const success = await disconnectGoogleDrive();
+      if (success) {
+        toast.success("تم قطع الاتصال بنجاح");
+      }
+    } catch (error) {
+      console.error("خطأ في قطع الاتصال:", error);
+      toast.error("حدث خطأ أثناء قطع الاتصال بـ Google Drive");
+    }
   };
   
   const handleBrowseGoogleDrive = async () => {
+    if (isViewingFiles) {
+      return; // تجنب تشغيل العملية مرة أخرى إذا كانت قيد التنفيذ
+    }
+    
     setIsViewingFiles(true);
     try {
       await downloadFromGoogleDrive();
+    } catch (error) {
+      console.error("خطأ في تصفح الملفات:", error);
+      toast.error("حدث خطأ أثناء محاولة تصفح الملفات");
     } finally {
       setIsViewingFiles(false);
     }
@@ -159,6 +186,11 @@ export function CloudStorageTab({
                 <Cloud className="ml-2 h-4 w-4" />
                 {isConnectingGoogleDrive ? "جاري الاتصال..." : "الاتصال بـ Google Drive"}
               </Button>
+              
+              <div className="flex items-center text-sm bg-blue-50 p-3 rounded-md text-blue-700">
+                <Info className="h-4 w-4 ml-2" />
+                <span>اتصال Google Drive يتيح لك تخزين واسترجاع النسخ الاحتياطية بشكل آمن من السحابة</span>
+              </div>
             </div>
           )}
         </div>
