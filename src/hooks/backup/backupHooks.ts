@@ -1,4 +1,3 @@
-
 import { BackupState, BackupFormat } from './backupTypes';
 import { BackupSettings } from '@/types/settings';
 import { 
@@ -104,6 +103,11 @@ export const useBackupActions = (
 
   // Connect to Google Drive
   const connectGoogleDrive = async (): Promise<boolean> => {
+    // Store email temporarily in localStorage in case we need it during the authentication process
+    if (settings.googleDriveAuth?.email) {
+      localStorage.setItem('tempGoogleEmail', settings.googleDriveAuth.email);
+    }
+    
     return connectGoogleDriveOperation(setIsConnectingGoogleDrive, updateSettings);
   };
 

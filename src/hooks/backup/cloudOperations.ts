@@ -11,22 +11,31 @@ export const connectGoogleDrive = async (
 ): Promise<boolean> => {
   setIsConnecting(true);
   try {
-    // Simulate connection process
+    // Simulate OAuth authentication flow with Google
+    // In a real implementation, this would redirect to Google's auth page
     await simulateDelay(2000);
     
+    // Get the email from current settings (should have been set before calling this function)
+    const tempEmail = localStorage.getItem('tempGoogleEmail') || "user@example.com";
+    
+    // Update auth settings with successful authentication
     updateSettings({
       googleDriveAuth: {
         isAuthenticated: true,
-        token: "google-auth-token-example",
-        refreshToken: "google-refresh-token-example",
+        token: "google-auth-token-example-" + uuid().substring(0, 8),
+        refreshToken: "google-refresh-token-example-" + uuid().substring(0, 8),
         expiresAt: new Date(Date.now() + 3600000), // Expires after an hour
-        email: "user@example.com"
+        email: tempEmail
       }
     });
+    
+    // Remove temporary storage
+    localStorage.removeItem('tempGoogleEmail');
     
     toast.success('تم الاتصال بحساب Google Drive بنجاح');
     return true;
   } catch (error) {
+    console.error("Google Drive connection error:", error);
     toast.error('فشل الاتصال بـ Google Drive');
     return false;
   } finally {

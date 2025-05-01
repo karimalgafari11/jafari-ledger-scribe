@@ -38,17 +38,27 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
   const [googlePassword, setGooglePassword] = useState("");
+  const [authError, setAuthError] = useState("");
 
   const handleGoogleDriveConnect = async () => {
     if (googleEmail.trim() === "") {
-      toast.error("يرجى إدخال البريد الإلكتروني لحساب Google");
+      setAuthError("يرجى إدخال البريد الإلكتروني لحساب Google");
       return;
     }
     
+    // Store email in settings before connecting
+    updateSetting("googleDriveAuth", {
+      ...(settings.googleDriveAuth || {}),
+      email: googleEmail
+    });
+    
     setShowAuthDialog(false);
     const result = await connectGoogleDrive();
+    
     if (result) {
       toast.success(`تم الاتصال بحساب Google Drive: ${googleEmail}`);
+    } else {
+      toast.error("فشل الاتصال بـ Google Drive، يرجى المحاولة مرة أخرى");
     }
   };
   
@@ -120,7 +130,10 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                     قم بربط حساب Google Drive للاستفادة من خدمات النسخ الاحتياطي السحابي، مما يوفر لك مساحة تخزين آمنة ويتيح لك الوصول إلى بياناتك من أي مكان.
                   </p>
                   <Button 
-                    onClick={() => setShowAuthDialog(true)}
+                    onClick={() => {
+                      setAuthError("");
+                      setShowAuthDialog(true);
+                    }}
                     className="w-full"
                     variant="outline"
                   >
@@ -152,7 +165,10 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
               </Button>
             ) : (
               <Button 
-                onClick={() => setShowAuthDialog(true)}
+                onClick={() => {
+                  setAuthError("");
+                  setShowAuthDialog(true);
+                }}
                 className="w-full"
                 variant="default"
                 disabled={isConnectingGoogleDrive}
@@ -284,7 +300,7 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
           <DialogHeader>
             <DialogTitle>تسجيل الدخول إلى Google Drive</DialogTitle>
             <DialogDescription>
-              قم بإدخال بيانات حساب Google Drive للربط مع النظام
+              قم بإدخال بريدك الإلكتروني لربط حسابك مع Google Drive
             </DialogDescription>
           </DialogHeader>
           
@@ -297,19 +313,13 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                 value={googleEmail}
                 onChange={(e) => setGoogleEmail(e.target.value)}
               />
+              {authError && <p className="text-xs text-red-500">{authError}</p>}
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="google-password">كلمة المرور</Label>
-              <Input
-                id="google-password"
-                type="password"
-                placeholder="أدخل كلمة المرور"
-                value={googlePassword}
-                onChange={(e) => setGooglePassword(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                لن يتم تخزين كلمة المرور الخاصة بك، سيتم استخدامها فقط للحصول على رمز الوصول.
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm">
+              <p className="text-blue-800">
+                عند النقر على "متابعة" سيتم فتح نافذة جديدة للمصادقة مع Google Drive. 
+                يرجى السماح للتطبيق بالوصول إلى ملفاتك للتمكن من إجراء النسخ الاحتياطي.
               </p>
             </div>
           </div>
@@ -321,7 +331,7 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
               onClick={handleGoogleDriveConnect}
               disabled={isConnectingGoogleDrive}
             >
-              {isConnectingGoogleDrive ? "جاري التسجيل..." : "تسجيل الدخول"}
+              {isConnectingGoogleDrive ? "جاري التسجيل..." : "متابعة"}
             </Button>
             <Button
               type="button"
