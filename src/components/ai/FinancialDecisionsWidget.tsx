@@ -1,130 +1,164 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useFinancialDecisions } from "@/hooks/useFinancialDecisions";
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useFinancialDecisions } from '@/hooks/useFinancialDecisions';
+import { Button } from '@/components/ui/button';
+import { Calculator, DollarSign, AlertCircle, FileText } from 'lucide-react';
+import { FinancialDecision } from '@/types/ai-finance';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FinancialDecision } from "@/types/ai-finance";
-import { useNavigate } from "react-router-dom";
-import { Calculator, DollarSign, AlertCircle, FileText, ArrowUp } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
-const FinancialDecisionsWidget = () => {
-  const { decisions, implementDecision } = useFinancialDecisions();
+const FinancialDecisionsWidget: React.FC = () => {
+  const { decisions } = useFinancialDecisions();
+  const [activeType, setActiveType] = useState<'all' | 'journal_entry' | 'pricing' | 'provision' | 'variance'>('all');
   const navigate = useNavigate();
-
-  // عرض أحدث 3 قرارات فقط
-  const latestDecisions = decisions
-    .filter(decision => decision.status === 'pending')
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .slice(0, 3);
-
-  // استخراج إجمالي التأثير المالي الإيجابي والسلبي
-  const positiveImpact = decisions
-    .filter(d => d.impact > 0 && d.status === 'pending')
-    .reduce((sum, d) => sum + d.impact, 0);
-
-  const negativeImpact = decisions
-    .filter(d => d.impact < 0 && d.status === 'pending')
-    .reduce((sum, d) => sum + d.impact, 0);
-
-  // تحديد أيقونة لكل نوع قرار
-  const getDecisionIcon = (type: string) => {
-    switch(type) {
-      case 'journal_entry':
-        return <Calculator className="h-4 w-4 text-indigo-500" />;
-      case 'pricing':
-        return <DollarSign className="h-4 w-4 text-green-500" />;
-      case 'provision':
-        return <AlertCircle className="h-4 w-4 text-amber-500" />;
-      case 'variance':
-        return <FileText className="h-4 w-4 text-blue-500" />;
-      default:
-        return null;
-    }
-  };
   
-  // تنسيق مستوى الثقة
+  // تصفية القرارات حسب النوع المحدد
+  const filteredDecisions = activeType === 'all' 
+    ? decisions.slice(0, 3) 
+    : decisions.filter(d => d.type === activeType).slice(0, 3);
+  
+  // الحصول على عدد القرارات حسب نوعها
+  const journalCount = decisions.filter(d => d.type === 'journal_entry').length;
+  const pricingCount = decisions.filter(d => d.type === 'pricing').length;
+  const provisionCount = decisions.filter(d => d.type === 'provision').length;
+  const varianceCount = decisions.filter(d => d.type === 'variance').length;
+
+  // تصنيف القرارات حسب مستوى الثقة
   const getConfidenceBadge = (confidence: number) => {
     if (confidence >= 90) {
-      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">{confidence}%</Badge>;
+      return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">ثقة عالية ({confidence}%)</Badge>;
     } else if (confidence >= 70) {
-      return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">{confidence}%</Badge>;
+      return <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300">ثقة متوسطة ({confidence}%)</Badge>;
     } else {
-      return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">{confidence}%</Badge>;
+      return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">تقديري ({confidence}%)</Badge>;
     }
   };
 
-  // التنقل إلى صفحة القرارات المالية
-  const handleViewAll = () => {
-    navigate('/ai-financial-decisions');
+  // عرض بطاقة قرار مختصرة
+  const renderDecisionCard = (decision: FinancialDecision) => {
+    // الأيقونة حسب نوع القرار
+    let decisionIcon;
+    let decisionType;
+    
+    switch(decision.type) {
+      case 'journal_entry':
+        decisionIcon = <Calculator className="h-5 w-5 text-indigo-500" />;
+        decisionType = "قيد محاسبي";
+        break;
+      case 'pricing':
+        decisionIcon = <DollarSign className="h-5 w-5 text-green-500" />;
+        decisionType = "تعديل سعر";
+        break;
+      case 'provision':
+        decisionIcon = <AlertCircle className="h-5 w-5 text-amber-500" />;
+        decisionType = "مخصص";
+        break;
+      case 'variance':
+        decisionIcon = <FileText className="h-5 w-5 text-blue-500" />;
+        decisionType = "تحليل فروقات";
+        break;
+    }
+
+    return (
+      <div key={decision.id} className="p-3 border rounded-lg mb-2 bg-card hover:bg-accent/5 cursor-pointer transition-colors" onClick={() => navigate('/ai-financial-decisions')}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {decisionIcon}
+            <div className="font-medium">{decision.title}</div>
+          </div>
+          <Badge variant="outline" className="text-xs">{decisionType}</Badge>
+        </div>
+        <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{decision.description}</p>
+        <div className="flex justify-between items-center mt-2">
+          <div className="text-sm">
+            التأثير: <span className={decision.impact > 0 ? "text-green-600" : "text-red-600"}>
+              {decision.impact.toLocaleString()} ريال
+            </span>
+          </div>
+          {getConfidenceBadge(decision.confidence)}
+        </div>
+      </div>
+    );
   };
 
-  // عرض قرار فردي
-  const renderDecision = (decision: FinancialDecision) => (
-    <div key={decision.id} className="py-3 border-b last:border-0">
-      <div className="flex justify-between items-start">
-        <div className="flex items-center">
-          {getDecisionIcon(decision.type)}
-          <h4 className="font-medium text-sm mr-2 truncate max-w-[200px]">{decision.title}</h4>
-        </div>
-        <div className="flex items-center gap-2">
-          {getConfidenceBadge(decision.confidence)}
-          <span className={`text-sm font-semibold ${decision.impact >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {decision.impact >= 0 ? '+' : ''}{decision.impact.toLocaleString()} ريال
-          </span>
-        </div>
-      </div>
-      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{decision.description}</p>
-      <div className="flex justify-end mt-2">
-        <Button 
-          size="sm" 
-          variant="outline" 
-          className="h-7 text-xs"
-          onClick={() => implementDecision(decision.id)}
-        >
-          تنفيذ القرار
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg">قرارات وتوصيات مالية</CardTitle>
-          <Button variant="ghost" size="sm" onClick={handleViewAll} className="h-8">
-            عرض الكل
-            <ArrowUp className="h-4 w-4 mr-1 rotate-45" />
-          </Button>
+          <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5 text-primary" />
+            محرك القرارات المالي الذكي
+          </CardTitle>
+          <Badge>{decisions.length} قرار</Badge>
         </div>
+        <CardDescription>
+          اقتراحات وتوصيات مالية ذكية مبنية على تحليل البيانات
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-green-50 p-3 rounded border border-green-200">
-            <div className="text-sm text-gray-600">التأثير الإيجابي المحتمل</div>
-            <div className="text-xl font-bold text-green-600 mt-1">
-              +{positiveImpact.toLocaleString()} ريال
-            </div>
-          </div>
-          <div className="bg-red-50 p-3 rounded border border-red-200">
-            <div className="text-sm text-gray-600">التأثير السلبي المحتمل</div>
-            <div className="text-xl font-bold text-red-600 mt-1">
-              {negativeImpact.toLocaleString()} ريال
-            </div>
-          </div>
+        <div className="mb-4 flex overflow-x-auto space-x-2 rtl:space-x-reverse">
+          <Button 
+            variant={activeType === 'all' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setActiveType('all')}
+          >
+            الكل ({decisions.length})
+          </Button>
+          <Button 
+            variant={activeType === 'journal_entry' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setActiveType('journal_entry')}
+            className="flex items-center gap-1"
+          >
+            <Calculator className="h-4 w-4" />
+            قيود محاسبية ({journalCount})
+          </Button>
+          <Button 
+            variant={activeType === 'pricing' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setActiveType('pricing')}
+            className="flex items-center gap-1"
+          >
+            <DollarSign className="h-4 w-4" />
+            تسعير ({pricingCount})
+          </Button>
+          <Button 
+            variant={activeType === 'provision' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setActiveType('provision')}
+            className="flex items-center gap-1"
+          >
+            <AlertCircle className="h-4 w-4" />
+            مخصصات ({provisionCount})
+          </Button>
+          <Button 
+            variant={activeType === 'variance' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setActiveType('variance')}
+            className="flex items-center gap-1"
+          >
+            <FileText className="h-4 w-4" />
+            فروقات ({varianceCount})
+          </Button>
         </div>
 
-        <ScrollArea className="h-[260px]">
-          {latestDecisions.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">
-              لا توجد قرارات أو توصيات جديدة
+        <ScrollArea className="h-[280px] w-full">
+          {filteredDecisions.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              لا توجد قرارات أو اقتراحات في هذا القسم
             </div>
           ) : (
-            latestDecisions.map(renderDecision)
+            filteredDecisions.map(renderDecisionCard)
           )}
         </ScrollArea>
+        
+        <div className="mt-4 flex justify-center">
+          <Button onClick={() => navigate('/ai-financial-decisions')} size="sm">
+            عرض جميع القرارات والاقتراحات
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
