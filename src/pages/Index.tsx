@@ -29,6 +29,8 @@ import NotificationsPage from "./settings/NotificationsPage";
 import NotificationSettingsPage from "./settings/NotificationSettingsPage";
 import AiEngineSettingsPage from "./settings/AiEngineSettingsPage";
 import FinancialDecisionsPage from "./ai/FinancialDecisionsPage";
+import LoginPage from "./auth/LoginPage";
+import AboutPage from "./about/AboutPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -38,6 +40,7 @@ const Index = () => {
       <AccountingSidebar autoClose={true} />
       <div className={cn("flex-1 overflow-auto")}>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Dashboard />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/reports/templates" element={<ReportTemplatesPage />} />
@@ -64,6 +67,7 @@ const Index = () => {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
           <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="*" element={
             <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
               <div className="text-center">

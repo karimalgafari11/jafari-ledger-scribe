@@ -1,6 +1,7 @@
 
 import React from 'react';
 import NotificationsDropdown from './notifications/NotificationsDropdown';
+import { Logo } from './Logo';
 
 interface HeaderProps {
   title?: string;
@@ -26,9 +27,10 @@ const Header = ({ title, showBack = false, onBackClick, children }: HeaderProps)
         <h1 className="text-xl font-bold">{title || "نظام إدارة الأعمال"}</h1>
       </div>
       
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
         {children}
         <NotificationsDropdown />
+        <Logo size="small" />
       </div>
     </header>
   );
