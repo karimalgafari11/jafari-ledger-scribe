@@ -7,6 +7,7 @@ import ChartsGrid from "@/components/dashboard/ChartsGrid";
 import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
+import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 
 interface DashboardContentProps {
   totalSales: number;
@@ -29,6 +30,19 @@ interface DashboardContentProps {
   dailySalesData: any[];
   systemAlerts: SystemAlert[];
   interactiveMode?: boolean;
+  displayOptions: {
+    showStats: boolean;
+    showKpis: boolean;
+    showCharts: boolean;
+    showAiWidget: boolean;
+  };
+  shortcuts: Array<{
+    id: string;
+    name: string;
+    icon: React.ReactNode;
+    route: string;
+    enabled: boolean;
+  }>;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -46,42 +60,55 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   costCenterData,
   dailySalesData,
   systemAlerts,
-  interactiveMode = false
+  interactiveMode = false,
+  displayOptions,
+  shortcuts
 }) => {
   const isMobile = useIsMobile();
 
   const dashboardContent = (
     <>
+      {/* اختصارات سريعة */}
+      <DashboardShortcuts shortcuts={shortcuts} />
+
       {/* بطاقات الإحصائيات الرئيسية */}
-      <StatsCards 
-        totalSales={totalSales} 
-        totalExpenses={totalExpenses} 
-        netProfit={netProfit} 
-        profitMargin={profitMargin} 
-        overdueInvoices={overdueInvoices} 
-        overdueTotalAmount={overdueTotalAmount} 
-      />
+      {displayOptions.showStats && (
+        <StatsCards 
+          totalSales={totalSales} 
+          totalExpenses={totalExpenses} 
+          netProfit={netProfit} 
+          profitMargin={profitMargin} 
+          overdueInvoices={overdueInvoices} 
+          overdueTotalAmount={overdueTotalAmount} 
+        />
+      )}
 
       {/* مؤشرات الأداء الرئيسية */}
-      <KpiMetricsGrid metrics={kpis} />
+      {displayOptions.showKpis && (
+        <KpiMetricsGrid metrics={kpis} />
+      )}
 
       {/* المخططات والرسوم البيانية */}
-      <ChartsGrid 
-        salesData={salesData} 
-        profitData={profitData} 
-        customerDebtData={customerDebtData} 
-        supplierCreditData={supplierCreditData} 
-        costCenterData={costCenterData} 
-        dailySalesData={dailySalesData} 
-        profitMargin={profitMargin} 
-        systemAlerts={systemAlerts} 
-        interactiveMode={interactiveMode}
-      />
+      {displayOptions.showCharts && (
+        <ChartsGrid 
+          salesData={salesData} 
+          profitData={profitData} 
+          customerDebtData={customerDebtData} 
+          supplierCreditData={supplierCreditData} 
+          costCenterData={costCenterData} 
+          dailySalesData={dailySalesData} 
+          profitMargin={profitMargin} 
+          systemAlerts={systemAlerts} 
+          interactiveMode={interactiveMode}
+        />
+      )}
       
       {/* FinancialDecisionsWidget من النظام الذكي */}
-      <div className="mt-6 mb-6">
-        <FinancialDecisionsWidget />
-      </div>
+      {displayOptions.showAiWidget && (
+        <div className="mt-6 mb-6">
+          <FinancialDecisionsWidget />
+        </div>
+      )}
     </>
   );
 
