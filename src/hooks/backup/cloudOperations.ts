@@ -4,38 +4,39 @@ import { v4 as uuid } from 'uuid';
 import { BackupSettings } from '@/types/settings';
 import { simulateDelay, simulateProgressUpdate } from './backupUtils';
 
-// Connect to Google Drive
+// الاتصال بـ Google Drive
 export const connectGoogleDrive = async (
   setIsConnecting: (value: boolean) => void,
   updateSettings: (settings: Partial<BackupSettings>) => void
 ): Promise<boolean> => {
   setIsConnecting(true);
   try {
-    // Simulate OAuth authentication flow with Google
-    // In a real implementation, this would redirect to Google's auth page
+    // محاكاة عملية المصادقة مع Google
+    // في التنفيذ الحقيقي، سيتم إعادة التوجيه إلى صفحة المصادقة الخاصة بـ Google
     await simulateDelay(2000);
     
-    // Get the email from current settings (should have been set before calling this function)
+    // الحصول على البريد الإلكتروني من الإعدادات الحالية
     const tempEmail = localStorage.getItem('tempGoogleEmail') || "user@example.com";
     
-    // Update auth settings with successful authentication
+    // تحديث إعدادات المصادقة بعد نجاح المصادقة
     updateSettings({
       googleDriveAuth: {
         isAuthenticated: true,
-        token: "google-auth-token-example-" + uuid().substring(0, 8),
-        refreshToken: "google-refresh-token-example-" + uuid().substring(0, 8),
-        expiresAt: new Date(Date.now() + 3600000), // Expires after an hour
+        token: "google-auth-token-" + uuid().substring(0, 8),
+        refreshToken: "google-refresh-token-" + uuid().substring(0, 8),
+        expiresAt: new Date(Date.now() + 3600000), // تنتهي بعد ساعة
         email: tempEmail
-      }
+      },
+      autoDownloadFromCloud: false // تعيين القيمة الافتراضية عند الاتصال لأول مرة
     });
     
-    // Remove temporary storage
+    // إزالة التخزين المؤقت
     localStorage.removeItem('tempGoogleEmail');
     
     toast.success('تم الاتصال بحساب Google Drive بنجاح');
     return true;
   } catch (error) {
-    console.error("Google Drive connection error:", error);
+    console.error("خطأ في الاتصال بـ Google Drive:", error);
     toast.error('فشل الاتصال بـ Google Drive');
     return false;
   } finally {
@@ -43,18 +44,19 @@ export const connectGoogleDrive = async (
   }
 };
 
-// Disconnect from Google Drive
+// قطع الاتصال بـ Google Drive
 export const disconnectGoogleDrive = async (
   updateSettings: (settings: Partial<BackupSettings>) => void
 ): Promise<boolean> => {
   try {
-    // Simulate disconnection
+    // محاكاة قطع الاتصال
     await simulateDelay(1000);
     
     updateSettings({
       googleDriveAuth: {
         isAuthenticated: false
-      }
+      },
+      autoDownloadFromCloud: false // إلغاء التنزيل التلقائي عند قطع الاتصال
     });
     
     toast.success('تم قطع الاتصال بـ Google Drive بنجاح');
@@ -65,7 +67,7 @@ export const disconnectGoogleDrive = async (
   }
 };
 
-// Upload to Google Drive
+// تحميل إلى Google Drive
 export const uploadToGoogleDrive = async (
   backupId: string,
   settings: BackupSettings,
@@ -87,10 +89,10 @@ export const uploadToGoogleDrive = async (
       throw new Error('لم يتم العثور على النسخة الاحتياطية');
     }
     
-    // Simulate upload process
+    // محاكاة عملية التحميل مع عرض التقدم
     await simulateProgressUpdate(setUploadProgress);
     
-    // Generate a Google Drive file ID
+    // إنشاء معرف ملف Google Drive
     const googleDriveFileId = `gdrive-${uuid().substring(0, 8)}`;
     
     updateSettings({
@@ -112,18 +114,18 @@ export const uploadToGoogleDrive = async (
   }
 };
 
-// Download from Google Drive - enhanced to support both specific backup ID and arbitrary file browsing
+// التنزيل من Google Drive - تم تحسينه لدعم معرف النسخة الاحتياطية المحدد وتصفح الملفات العشوائية
 export const downloadFromGoogleDrive = async (
-  backupId: string | undefined,
-  settings: BackupSettings
+  backupId?: string,
+  settings?: BackupSettings
 ): Promise<boolean> => {
-  if (!settings.googleDriveAuth?.isAuthenticated) {
+  if (!settings || !settings.googleDriveAuth?.isAuthenticated) {
     toast.error('يرجى الاتصال بـ Google Drive أولاً');
     return false;
   }
   
   try {
-    // If a specific backup ID is provided, download that backup
+    // إذا تم توفير معرف نسخة احتياطية محدد، قم بتنزيل هذه النسخة الاحتياطية
     if (backupId) {
       const backup = settings.backupHistory.find(b => b.id === backupId && b.googleDriveFileId);
       if (!backup) {
@@ -132,20 +134,24 @@ export const downloadFromGoogleDrive = async (
       
       toast.success('جاري تنزيل النسخة الاحتياطية من Google Drive...');
       
-      // Simulate download process
+      // محاكاة عملية التنزيل
       await simulateDelay(2000);
       
       toast.success('تم تنزيل النسخة الاحتياطية من Google Drive بنجاح');
       return true;
     } 
-    // If no specific backup ID is provided, it means we're browsing and downloading a file
+    // إذا لم يتم توفير معرف نسخة احتياطية محدد، فهذا يعني أننا نتصفح ونقوم بتنزيل ملف
     else {
-      toast.success('جاري تنزيل الملف من Google Drive...');
+      // محاكاة عملية التصفح والاختيار
+      await simulateDelay(1500);
       
-      // Simulate download process
+      // عرض واجهة مستخدم وهمية لاختيار الملفات (في التنفيذ الحقيقي سيتم عرض مربع حوار)
+      toast.success('تم اختيار نسخة احتياطية للتنزيل');
+      
+      // محاكاة عملية التنزيل
       await simulateDelay(2000);
       
-      toast.success('تم تنزيل الملف من Google Drive بنجاح');
+      toast.success('تم تنزيل النسخة الاحتياطية من Google Drive بنجاح');
       return true;
     }
   } catch (error) {
@@ -154,66 +160,27 @@ export const downloadFromGoogleDrive = async (
   }
 };
 
-// List files in a Google Drive folder (simulated)
-export const listGoogleDriveFiles = async (
-  folderId: string | null,
-  settings: BackupSettings
-): Promise<{id: string, name: string, type: string, size?: string, mimeType?: string}[]> => {
-  if (!settings.googleDriveAuth?.isAuthenticated) {
-    toast.error('يرجى الاتصال بـ Google Drive أولاً');
-    return [];
-  }
-  
-  try {
-    // Simulate API call delay
-    await simulateDelay(1000);
-    
-    // Mock data based on folder ID
-    if (folderId === null) {
-      return [
-        { id: 'folder1', name: 'النسخ الاحتياطية', type: 'folder' },
-        { id: 'folder2', name: 'إعدادات النظام', type: 'folder' },
-        { id: 'file1', name: 'backup_2023-05-01.zip', type: 'file', size: '15.2 MB', mimeType: 'application/zip' },
-        { id: 'file2', name: 'backup_2023-06-15.sql', type: 'file', size: '8.7 MB', mimeType: 'application/sql' }
-      ];
-    } else if (folderId === 'folder1') {
-      return [
-        { id: 'file3', name: 'weekly_backup_2023-07-01.zip', type: 'file', size: '24.5 MB', mimeType: 'application/zip' },
-        { id: 'file4', name: 'monthly_backup_2023-08-01.json', type: 'file', size: '32.1 MB', mimeType: 'application/json' },
-        { id: 'folder3', name: 'نسخ قديمة', type: 'folder' }
-      ];
-    } else {
-      return [
-        { id: 'file5', name: 'system_settings.json', type: 'file', size: '1.2 MB', mimeType: 'application/json' }
-      ];
-    }
-  } catch (error) {
-    toast.error('فشل جلب محتويات المجلد من Google Drive');
-    return [];
-  }
-};
-
-// Check for new backups on Google Drive and download them if auto-download is enabled
+// التحقق من وجود نسخ احتياطية جديدة على Google Drive وتنزيلها إذا كان التنزيل التلقائي مفعلاً
 export const checkAndAutoDownloadFromCloud = async (
   settings: BackupSettings
 ): Promise<boolean> => {
-  if (!settings.googleDriveAuth?.isAuthenticated || !(settings.autoDownloadFromCloud === true)) {
+  if (!settings.googleDriveAuth?.isAuthenticated || settings.autoDownloadFromCloud !== true) {
     return false;
   }
   
   try {
     toast.loading('جاري التحقق من وجود نسخ احتياطية جديدة...');
     
-    // Simulate checking for new backups
+    // محاكاة التحقق من وجود نسخ احتياطية جديدة
     await simulateDelay(1500);
     
-    // Simulate finding a new backup
+    // محاكاة العثور على نسخة احتياطية جديدة
     const hasNewBackup = Math.random() > 0.5;
     
     if (hasNewBackup) {
       toast.success('تم العثور على نسخة احتياطية جديدة. جاري التنزيل...');
       
-      // Simulate download
+      // محاكاة التنزيل
       await simulateDelay(2000);
       toast.success('تم تنزيل النسخة الاحتياطية الجديدة بنجاح');
       return true;

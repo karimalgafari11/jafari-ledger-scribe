@@ -1,13 +1,14 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Cloud, CloudDownload, Download, Folder } from "lucide-react";
+import { Cloud, CloudDownload, Download, Folder, Search } from "lucide-react";
 import { BackupSettings } from "@/types/settings";
 import { BackupFormat } from "@/hooks/backup/backupTypes";
 
@@ -35,6 +36,7 @@ export function CloudStorageTab({
   downloadFromGoogleDrive
 }: CloudStorageTabProps) {
   const isAuthenticated = settings.googleDriveAuth?.isAuthenticated;
+  const [isViewingFiles, setIsViewingFiles] = useState(false);
   
   const handleFormatChange = (value: string) => {
     setDownloadFormat(value as BackupFormat);
@@ -53,13 +55,18 @@ export function CloudStorageTab({
     await disconnectGoogleDrive();
   };
   
-  const handleDownloadFromCloud = async () => {
-    await downloadFromGoogleDrive();
+  const handleBrowseGoogleDrive = async () => {
+    setIsViewingFiles(true);
+    try {
+      await downloadFromGoogleDrive();
+    } finally {
+      setIsViewingFiles(false);
+    }
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm">
+      <CardHeader className="pb-3">
         <CardTitle>تخزين سحابي</CardTitle>
         <CardDescription>
           إعدادات التخزين السحابي والاتصال بخدمات التخزين السحابي مثل Google Drive
@@ -67,14 +74,19 @@ export function CloudStorageTab({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">حساب Google Drive</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">حساب Google Drive</h3>
+            {isAuthenticated && (
+              <Badge variant="success" className="py-1">متصل</Badge>
+            )}
+          </div>
           
           {isAuthenticated ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border p-3 rounded-md bg-slate-50">
                 <div>
                   <p className="font-medium">{settings.googleDriveAuth?.email}</p>
-                  <p className="text-sm text-muted-foreground">متصل</p>
+                  <p className="text-sm text-muted-foreground">متصل بنجاح</p>
                 </div>
                 <Button 
                   variant="outline" 
@@ -84,7 +96,7 @@ export function CloudStorageTab({
                 </Button>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-4 border-t pt-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>تنزيل النسخ الاحتياطية تلقائيًا</Label>
@@ -117,10 +129,20 @@ export function CloudStorageTab({
                 <div className="pt-2">
                   <Button 
                     className="w-full" 
-                    onClick={handleDownloadFromCloud}
+                    onClick={handleBrowseGoogleDrive}
+                    disabled={isViewingFiles}
                   >
-                    <Cloud className="ml-2 h-4 w-4" />
-                    تصفح ملفات Google Drive
+                    {isViewingFiles ? (
+                      <>
+                        <Search className="ml-2 h-4 w-4 animate-spin" />
+                        جاري تصفح الملفات...
+                      </>
+                    ) : (
+                      <>
+                        <Cloud className="ml-2 h-4 w-4" />
+                        تصفح ملفات Google Drive
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBackupSettings } from "@/hooks/useBackupSettings";
@@ -7,8 +7,12 @@ import { ScheduleBackupTab } from "@/components/settings/backup/ScheduleBackupTa
 import { BackupHistoryTab } from "@/components/settings/backup/BackupHistoryTab";
 import { CloudStorageTab } from "@/components/settings/backup/CloudStorageTab";
 import { AdvancedSettingsTab } from "@/components/settings/backup/AdvancedSettingsTab";
+import { Card, CardContent, CardDescription } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const BackupPage = () => {
+  const [activeTab, setActiveTab] = useState("schedule");
   const {
     settings,
     isLoading,
@@ -36,12 +40,28 @@ const BackupPage = () => {
     uploadBackupFromFile
   } = useBackupSettings();
   
+  // تتبع ما إذا كانت هناك عمليات قيد التنفيذ
+  const isOperationInProgress = isBackingUp || isRestoring || isConnectingGoogleDrive || isUploadingToGoogleDrive;
+  
   return (
     <div className="container mx-auto p-6 rtl">
       <Header title="النسخ الاحتياطي واستعادة البيانات" />
 
-      <Tabs defaultValue="schedule" className="mt-6">
-        <TabsList className="mb-6">
+      {isOperationInProgress && (
+        <Alert variant="default" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>معلومات</AlertTitle>
+          <AlertDescription>
+            {isBackingUp && "جاري إنشاء نسخة احتياطية..."}
+            {isRestoring && "جاري استعادة النسخة الاحتياطية..."}
+            {isConnectingGoogleDrive && "جاري الاتصال بـ Google Drive..."}
+            {isUploadingToGoogleDrive && "جاري التحميل إلى Google Drive..."}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+        <TabsList className="mb-6 grid grid-cols-4 md:w-auto w-full">
           <TabsTrigger value="schedule">جدولة النسخ الاحتياطي</TabsTrigger>
           <TabsTrigger value="backups">النسخ الاحتياطية</TabsTrigger>
           <TabsTrigger value="cloud">تخزين سحابي</TabsTrigger>
@@ -102,6 +122,17 @@ const BackupPage = () => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* عرض تنبيه إذا كانت هناك مشكلة في التطبيق */}
+      {!settings && (
+        <Card className="mt-6">
+          <CardContent className="py-4">
+            <CardDescription className="text-center text-red-500">
+              لا يمكن تحميل إعدادات النسخ الاحتياطي. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.
+            </CardDescription>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

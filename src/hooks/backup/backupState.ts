@@ -4,7 +4,7 @@ import { BackupSettings } from '@/types/settings';
 import { mockBackupSettings } from '@/data/mockSettings';
 import { BackupFormat, BackupState } from './backupTypes';
 
-// Initialize backup state with defaults from mock data
+// تهيئة حالة النسخ الاحتياطي بالقيم الافتراضية من البيانات الوهمية
 export const useBackupState = (): [
   BackupState,
   {
@@ -22,7 +22,7 @@ export const useBackupState = (): [
     setDownloadFormat: (format: BackupFormat) => void
   }
 ] => {
-  // Initialize state with default values
+  // تهيئة الحالة بالقيم الافتراضية
   const [state, setState] = useState<BackupState>({
     settings: {
       ...mockBackupSettings,
@@ -36,7 +36,9 @@ export const useBackupState = (): [
       googleDriveAuth: mockBackupSettings.googleDriveAuth || { isAuthenticated: false },
       autoCloudBackup: mockBackupSettings.autoCloudBackup || false,
       cloudBackupFormat: mockBackupSettings.cloudBackupFormat || 'compressed',
-      cloudPath: mockBackupSettings.cloudPath || '/backups/'
+      cloudPath: mockBackupSettings.cloudPath || '/backups/',
+      // إضافة صراحة لمنع أخطاء التحقق من النوع
+      autoDownloadFromCloud: mockBackupSettings.autoDownloadFromCloud || false
     },
     isLoading: false,
     restoreProgress: 0,
@@ -49,7 +51,7 @@ export const useBackupState = (): [
     downloadFormat: 'compressed'
   });
 
-  // Update a single setting
+  // تحديث إعداد واحد
   const updateSetting = <K extends keyof BackupSettings>(
     key: K,
     value: BackupSettings[K]
@@ -63,7 +65,7 @@ export const useBackupState = (): [
     }));
   };
 
-  // Update multiple settings at once
+  // تحديث عدة إعدادات دفعة واحدة
   const updateSettings = (updatedSettings: Partial<BackupSettings>) => {
     setState(prev => ({
       ...prev,
@@ -74,7 +76,7 @@ export const useBackupState = (): [
     }));
   };
 
-  // Set state loading flag
+  // ضبط علامة التحميل
   const setLoading = (loading: boolean) => {
     setState(prev => ({
       ...prev,
@@ -82,42 +84,42 @@ export const useBackupState = (): [
     }));
   };
 
-  // Update state based on backup progress
+  // تحديث تقدم النسخ الاحتياطي
   const setBackupProgress = (progress: number) => {
     setState(prev => ({ ...prev, backupProgress: progress }));
   };
 
-  // Update backup progress flag
+  // تحديث علامة عملية النسخ الاحتياطي
   const setIsBackingUp = (isBackingUp: boolean) => {
     setState(prev => ({ ...prev, isBackingUp }));
   };
 
-  // Update restore progress
+  // تحديث تقدم الاستعادة
   const setRestoreProgress = (progress: number) => {
     setState(prev => ({ ...prev, restoreProgress: progress }));
   };
 
-  // Update restoring flag
+  // تحديث علامة الاستعادة
   const setIsRestoring = (isRestoring: boolean) => {
     setState(prev => ({ ...prev, isRestoring }));
   };
 
-  // Update Google Drive connection flag
+  // تحديث علامة الاتصال بـ Google Drive
   const setIsConnectingGoogleDrive = (isConnecting: boolean) => {
     setState(prev => ({ ...prev, isConnectingGoogleDrive: isConnecting }));
   };
 
-  // Update upload progress
+  // تحديث تقدم التحميل
   const setUploadProgress = (progress: number) => {
     setState(prev => ({ ...prev, uploadProgress: progress }));
   };
 
-  // Update uploading flag
+  // تحديث علامة التحميل
   const setIsUploadingToGoogleDrive = (isUploading: boolean) => {
     setState(prev => ({ ...prev, isUploadingToGoogleDrive: isUploading }));
   };
 
-  // Set download format
+  // ضبط تنسيق التنزيل
   const setDownloadFormat = (format: BackupFormat) => {
     setState(prev => ({ ...prev, downloadFormat: format }));
   };
