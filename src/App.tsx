@@ -20,20 +20,22 @@ function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/*"
-          element={
-            <Index />
-            // يمكن استخدام هذا الجزء للتحقق من تسجيل الدخول في تطبيق حقيقي
-            // isAuthenticated ? <Index /> : <Navigate to="/login" replace />
-          }
-        />
-      </Routes>
-      <Toaster position="top-center" richColors />
-    </Router>
+    <div className="w-full h-full overflow-hidden">
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/*"
+            element={
+              <Index />
+              // يمكن استخدام هذا الجزء للتحقق من تسجيل الدخول في تطبيق حقيقي
+              // isAuthenticated ? <Index /> : <Navigate to="/login" replace />
+            }
+          />
+        </Routes>
+        <Toaster position="top-center" richColors />
+      </Router>
+    </div>
   );
 }
 

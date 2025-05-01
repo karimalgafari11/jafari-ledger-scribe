@@ -1,6 +1,7 @@
 
 import React, { ReactNode } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,9 +10,11 @@ interface LayoutProps {
 }
 
 export function Layout({ children, className = "", showWatermark = true }: LayoutProps) {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className={`min-h-screen bg-gray-50 ${className} dir-rtl relative`}>
-      {showWatermark && (
+    <div className={`min-h-screen min-w-full bg-gray-50 ${className} dir-rtl relative overflow-x-hidden`}>
+      {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
           <img 
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
@@ -20,6 +23,18 @@ export function Layout({ children, className = "", showWatermark = true }: Layou
           />
         </div>
       )}
+      
+      {/* العلامة المائية للجوال (أصغر حجماً) */}
+      {showWatermark && isMobile && (
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+          <img 
+            src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
+            alt="الجعفري للمحاسبة" 
+            className="w-48 h-48 opacity-[0.07]" 
+          />
+        </div>
+      )}
+      
       <TooltipProvider>
         {children}
       </TooltipProvider>

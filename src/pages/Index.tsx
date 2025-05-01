@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Route, Routes } from "react-router-dom";
 import AccountingSidebar from "@/components/AccountingSidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Dashboard from "./Dashboard";
 import Reports from "./Reports";
 import NewExpensePage from "./expenses/NewExpensePage";
@@ -48,11 +48,12 @@ import BackupTestPage from "./settings/BackupTestPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
+  const isMobile = useIsMobile();
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <AccountingSidebar autoClose={true} />
-      <div className={cn("flex-1 overflow-auto")}>
+    <div className="flex h-screen w-full overflow-hidden">
+      <AccountingSidebar autoClose={isMobile} />
+      <div className={cn("flex-1 overflow-auto w-full")}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Dashboard />} />
@@ -98,7 +99,7 @@ const Index = () => {
           <Route path="/inventory-control/locations" element={<LocationsPage />} />
           <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
           <Route path="*" element={
-            <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
+            <div className="h-screen w-full flex items-center justify-center bg-gray-100 rtl">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-teal mb-2">قريباً</h1>
                 <p className="text-gray-600">هذه الصفحة قيد التطوير</p>
