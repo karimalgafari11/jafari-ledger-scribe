@@ -2,7 +2,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { CardTitle, CardDescription } from "@/components/ui/card";
-import { Upload } from "lucide-react";
+import { Upload, Bug } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface BackupHistoryHeaderProps {
   onTriggerFileUpload: () => void;
@@ -17,7 +18,19 @@ export const BackupHistoryHeader: React.FC<BackupHistoryHeaderProps> = ({ onTrig
           عرض وإدارة النسخ الاحتياطية المتوفرة
         </CardDescription>
       </div>
-      <div>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="flex items-center gap-1"
+        >
+          <Link to="/settings/backup-test">
+            <Bug className="h-4 w-4" />
+            اختبار النظام
+          </Link>
+        </Button>
+        
         <Button
           onClick={onTriggerFileUpload}
           variant="outline"

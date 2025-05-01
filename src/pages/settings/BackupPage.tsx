@@ -8,9 +8,11 @@ import { BackupHistoryTab } from "@/components/settings/backup/BackupHistoryTab"
 import { CloudStorageTab } from "@/components/settings/backup/CloudStorageTab";
 import { AdvancedSettingsTab } from "@/components/settings/backup/AdvancedSettingsTab";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, Bug } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const BackupPage = () => {
   const [activeTab, setActiveTab] = useState("schedule");
@@ -72,18 +74,29 @@ const BackupPage = () => {
     <div className="container mx-auto p-6 rtl">
       <Header title="النسخ الاحتياطي واستعادة البيانات" />
 
-      {isOperationInProgress && (
-        <Alert variant="default" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>معلومات</AlertTitle>
-          <AlertDescription>
-            {isBackingUp && `جاري إنشاء نسخة احتياطية... ${backupProgress}%`}
-            {isRestoring && `جاري استعادة النسخة الاحتياطية... ${restoreProgress}%`}
-            {isConnectingGoogleDrive && "جاري الاتصال بـ Google Drive..."}
-            {isUploadingToGoogleDrive && `جاري التحميل إلى Google Drive... ${uploadProgress}%`}
-          </AlertDescription>
-        </Alert>
-      )}
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          {isOperationInProgress && (
+            <Alert variant="default" className="max-w-lg">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>معلومات</AlertTitle>
+              <AlertDescription>
+                {isBackingUp && `جاري إنشاء نسخة احتياطية... ${backupProgress}%`}
+                {isRestoring && `جاري استعادة النسخة الاحتياطية... ${restoreProgress}%`}
+                {isConnectingGoogleDrive && "جاري الاتصال بـ Google Drive..."}
+                {isUploadingToGoogleDrive && `جاري التحميل إلى Google Drive... ${uploadProgress}%`}
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+        
+        <Button variant="outline" className="gap-1" asChild>
+          <Link to="/settings/backup-test">
+            <Bug className="h-4 w-4 ml-1" />
+            اختبار النظام
+          </Link>
+        </Button>
+      </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-6">
         <TabsList className="mb-6 grid grid-cols-4 md:w-auto w-full">

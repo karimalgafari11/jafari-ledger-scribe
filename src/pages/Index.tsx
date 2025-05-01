@@ -44,6 +44,7 @@ import SystemSettingsPage from "./settings/SystemSettingsPage";
 import BranchesPage from "./settings/BranchesPage";
 import UsersPage from "./settings/UsersPage";
 import BackupPage from "./settings/BackupPage";
+import BackupTestPage from "./settings/BackupTestPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -87,6 +88,7 @@ const Index = () => {
           <Route path="/settings/branches" element={<BranchesPage />} />
           <Route path="/settings/users" element={<UsersPage />} />
           <Route path="/settings/backup" element={<BackupPage />} />
+          <Route path="/settings/backup-test" element={<BackupTestPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/inventory/products" element={<ProductsPage />} />
           <Route path="/inventory/movements" element={<StockMovementsPage />} />
