@@ -81,6 +81,7 @@ export interface BackupSettings {
   };
   autoCloudBackup?: boolean;
   cloudBackupFormat?: 'compressed' | 'sql' | 'json';
+  autoDownloadFromCloud?: boolean;
 }
 
 export interface BackupHistoryItem {

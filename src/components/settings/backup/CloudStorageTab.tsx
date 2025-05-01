@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -245,7 +244,7 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                     className="w-full"
                     variant="outline"
                   >
-                    <GoogleDrive className="ml-2 h-4 w-4" />
+                    <Cloud className="ml-2 h-4 w-4" />
                     تسجيل الدخول إلى Google Drive
                   </Button>
                 </div>
