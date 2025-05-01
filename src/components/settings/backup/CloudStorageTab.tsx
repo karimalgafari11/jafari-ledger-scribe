@@ -37,7 +37,6 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
   const isGoogleDriveConnected = settings.googleDriveAuth?.isAuthenticated || false;
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
-  const [googlePassword, setGooglePassword] = useState("");
   const [authError, setAuthError] = useState("");
 
   const handleGoogleDriveConnect = async () => {
@@ -47,8 +46,10 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
     }
     
     // Store email in settings before connecting
+    // Fix: Explicitly set isAuthenticated to false
     updateSetting("googleDriveAuth", {
       ...(settings.googleDriveAuth || {}),
+      isAuthenticated: false, // Explicitly set to false initially
       email: googleEmail
     });
     
