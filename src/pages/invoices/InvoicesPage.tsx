@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -76,8 +75,7 @@ const InvoicesPage: React.FC = () => {
   };
 
   const handleCreateInvoice = () => {
-    toast.info("إنشاء فاتورة جديدة");
-    // في التطبيق الحقيقي، سيتم توجيه المستخدم إلى صفحة إنشاء فاتورة جديدة
+    navigate("/invoices/new");
   };
   
   const handleBack = () => {

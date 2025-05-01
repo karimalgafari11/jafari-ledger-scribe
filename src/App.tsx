@@ -1,41 +1,32 @@
 
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Index from './pages/Index';
-import LoginPage from './pages/auth/LoginPage';
-import { Toaster } from 'sonner';
+import React from 'react';
 import './App.css';
-import { logBackupOperation } from './hooks/backup/backupTestUtils';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Dashboard from '@/pages/Dashboard';
+import { Toaster } from 'sonner';
+import NotFound from '@/pages/NotFound';
+import ReportsPage from '@/pages/Reports';
+import InvoicesPage from '@/pages/invoices/InvoicesPage';
+import SalesOrdersPage from '@/pages/invoices/SalesOrdersPage';
+import SalesInvoicePage from '@/pages/invoices/SalesInvoicePage';
+import DiscountsPage from '@/pages/definitions/DiscountsPage';
 
 function App() {
-  // تهيئة النظام عند بدء التطبيق
-  useEffect(() => {
-    // تسجيل بدء تشغيل النظام
-    logBackupOperation('تم بدء تشغيل النظام', { showToast: false });
-    
-    // يمكن إضافة المزيد من عمليات التهيئة هنا
-  }, []);
-
-  // هنا يمكن إضافة منطق التحقق من تسجيل الدخول
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
   return (
-    <div className="w-full h-screen overflow-hidden">
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/*"
-            element={
-              <Index />
-              // يمكن استخدام هذا الجزء للتحقق من تسجيل الدخول في تطبيق حقيقي
-              // isAuthenticated ? <Index /> : <Navigate to="/login" replace />
-            }
-          />
-        </Routes>
+    <Router>
+      <div className="App h-screen w-full">
         <Toaster position="top-center" richColors />
-      </Router>
-    </div>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/invoices/outgoing" element={<InvoicesPage />} />
+          <Route path="/invoices/new" element={<SalesInvoicePage />} />
+          <Route path="/invoices/orders" element={<SalesOrdersPage />} />
+          <Route path="/definitions/discounts" element={<DiscountsPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
