@@ -22,6 +22,7 @@ interface CloudStorageTabProps {
   saveSettings: () => Promise<boolean>;
   connectGoogleDrive: () => Promise<boolean>;
   disconnectGoogleDrive: () => Promise<boolean>;
+  downloadFromGoogleDrive?: (backupId?: string) => Promise<boolean>;
 }
 
 export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
@@ -32,12 +33,18 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
   updateSetting,
   saveSettings,
   connectGoogleDrive,
-  disconnectGoogleDrive
+  disconnectGoogleDrive,
+  downloadFromGoogleDrive
 }) => {
   const isGoogleDriveConnected = settings.googleDriveAuth?.isAuthenticated || false;
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
   const [authError, setAuthError] = useState("");
+  const [showCloudBackupsDialog, setShowCloudBackupsDialog] = useState(false);
+  const [selectedBackupId, setSelectedBackupId] = useState<string | undefined>(undefined);
+
+  // Get cloud backups (those with googleDriveFileId)
+  const cloudBackups = settings.backupHistory.filter(b => b.googleDriveFileId);
 
   const handleGoogleDriveConnect = async () => {
     if (googleEmail.trim() === "") {
@@ -65,6 +72,40 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
   
   const handleAutoBackupToggle = (checked: boolean) => {
     updateSetting("autoCloudBackup", checked);
+  };
+  
+  const handleDownloadFromCloud = () => {
+    if (!isGoogleDriveConnected) {
+      toast.error("يرجى الاتصال بـ Google Drive أولاً");
+      return;
+    }
+    
+    if (cloudBackups.length === 0) {
+      toast.error("لا توجد نسخ احتياطية في Google Drive");
+      return;
+    }
+    
+    // If there's only one backup, download it directly
+    if (cloudBackups.length === 1) {
+      handleDownloadBackup(cloudBackups[0].id);
+    } else {
+      // Show dialog to select backup
+      setShowCloudBackupsDialog(true);
+    }
+  };
+  
+  const handleDownloadBackup = async (backupId: string) => {
+    if (!downloadFromGoogleDrive) {
+      toast.error("وظيفة التنزيل من Google Drive غير متاحة");
+      return;
+    }
+    
+    setShowCloudBackupsDialog(false);
+    const success = await downloadFromGoogleDrive(backupId);
+    
+    if (!success) {
+      toast.error("فشل تنزيل النسخة الاحتياطية من Google Drive");
+    }
   };
 
   return (
@@ -286,7 +327,12 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
                 <File className="ml-2 h-4 w-4" />
                 تنزيل أحدث نسخة احتياطية
               </Button>
-              <Button className="flex-1" variant="outline" disabled={!isGoogleDriveConnected}>
+              <Button 
+                className="flex-1" 
+                variant="outline" 
+                disabled={!isGoogleDriveConnected}
+                onClick={handleDownloadFromCloud}
+              >
                 <CloudDownload className="ml-2 h-4 w-4" />
                 تنزيل من السحابة
               </Button>
@@ -338,6 +384,68 @@ export const CloudStorageTab: React.FC<CloudStorageTabProps> = ({
               type="button"
               variant="outline"
               onClick={() => setShowAuthDialog(false)}
+            >
+              إلغاء
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Cloud Backups Selection Dialog */}
+      <Dialog open={showCloudBackupsDialog} onOpenChange={setShowCloudBackupsDialog}>
+        <DialogContent className="max-w-md rtl">
+          <DialogHeader>
+            <DialogTitle>اختر نسخة احتياطية للتنزيل</DialogTitle>
+            <DialogDescription>
+              يرجى اختيار النسخة الاحتياطية التي ترغب في تنزيلها من Google Drive
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {cloudBackups.length > 0 ? (
+              <div className="space-y-4">
+                {cloudBackups.map(backup => (
+                  <div 
+                    key={backup.id} 
+                    className={`p-3 border rounded-md cursor-pointer ${
+                      selectedBackupId === backup.id ? 'border-primary bg-primary/5' : 'border-border'
+                    }`}
+                    onClick={() => setSelectedBackupId(backup.id)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">{new Date(backup.createdAt).toLocaleDateString('ar-SA')}</p>
+                        <p className="text-sm text-muted-foreground">{backup.size}</p>
+                      </div>
+                      <div className="text-xs bg-blue-100 text-blue-800 rounded px-2 py-1">
+                        {backup.fileFormat === 'compressed' ? 'مضغوط' : 
+                         backup.fileFormat === 'sql' ? 'SQL' : 
+                         backup.fileFormat === 'json' ? 'JSON' : 'أصلي'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                لا توجد نسخ احتياطية مخزنة في Google Drive
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter className="sm:justify-start">
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => selectedBackupId && handleDownloadBackup(selectedBackupId)}
+              disabled={!selectedBackupId}
+            >
+              تنزيل
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowCloudBackupsDialog(false)}
             >
               إلغاء
             </Button>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Header } from "@/components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -88,6 +87,7 @@ const BackupPage = () => {
             saveSettings={saveSettings}
             connectGoogleDrive={connectGoogleDrive}
             disconnectGoogleDrive={disconnectGoogleDrive}
+            downloadFromGoogleDrive={downloadFromGoogleDrive}
           />
         </TabsContent>
 
