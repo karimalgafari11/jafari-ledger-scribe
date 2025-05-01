@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   RefreshCw, Save, UploadCloud, FileUp, Download, Trash2, Mail, 
-  File, Google, CloudDownload, CloudUpload
+  File, CloudUpload, CloudDownload, Cloud
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -259,15 +258,15 @@ const BackupPage = () => {
                           <TableCell>
                             {backup.destination === 'local' ? 'محلي' :
                              backup.destination === 'cloud' ? (
-                               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
-                                 <Google className="h-3 w-3" /> سحابي
+                               <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
+                                 <Cloud className="h-3 w-3" /> سحابي
                                </Badge>
                              ) : 
                              backup.destination === 'email' ? 'بريد إلكتروني' : 'FTP'}
                           </TableCell>
                           <TableCell>
                             <Badge variant={backup.fileFormat === 'compressed' ? 'default' : 
-                                         backup.fileFormat === 'original' ? 'outline' :
+                                         backup.fileFormat === 'original' ? 'secondary' :
                                          backup.fileFormat === 'sql' ? 'secondary' : 'destructive'}>
                               {backup.fileFormat === 'compressed' ? 'مضغوط' : 
                                backup.fileFormat === 'original' ? 'أصلي' : 
@@ -476,7 +475,7 @@ const BackupPage = () => {
                   <div className="space-y-4">
                     <div className="bg-green-50 border border-green-200 rounded-md p-4 flex items-center gap-3">
                       <div className="bg-green-100 p-2 rounded-full">
-                        <Google className="h-5 w-5 text-green-600" />
+                        <Cloud className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
                         <h4 className="font-medium text-green-900">متصل بحساب Google Drive</h4>
@@ -524,7 +523,7 @@ const BackupPage = () => {
                     className="w-full"
                     variant="outline"
                   >
-                    <Google className="ml-2 h-4 w-4" />
+                    <Cloud className="ml-2 h-4 w-4" />
                     قطع الاتصال بـ Google Drive
                   </Button>
                 ) : (
@@ -534,7 +533,7 @@ const BackupPage = () => {
                     variant="default"
                     disabled={isConnectingGoogleDrive}
                   >
-                    <Google className="ml-2 h-4 w-4" />
+                    <Cloud className="ml-2 h-4 w-4" />
                     {isConnectingGoogleDrive ? "جاري الاتصال..." : "اتصال بـ Google Drive"}
                   </Button>
                 )}
