@@ -27,6 +27,8 @@ import ReportTemplatesPage from "./reports/ReportTemplatesPage";
 import ActivityLogPage from "./settings/ActivityLogPage";
 import NotificationsPage from "./settings/NotificationsPage";
 import NotificationSettingsPage from "./settings/NotificationSettingsPage";
+import AiEngineSettingsPage from "./settings/AiEngineSettingsPage";
+import FinancialDecisionsPage from "./ai/FinancialDecisionsPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -54,12 +56,14 @@ const Index = () => {
           <Route path="/customers/manage" element={<CustomersPage />} />
           <Route path="/customers/statement" element={<CustomerStatementPage />} />
           <Route path="/ai-assistant" element={<AiAssistantPage />} />
+          <Route path="/ai-financial-decisions" element={<FinancialDecisionsPage />} />
           <Route path="/definitions" element={<BasicDefinitionsPage />} />
           <Route path="/definitions/currencies" element={<CurrenciesPage />} />
           <Route path="/definitions/discounts" element={<DiscountsPage />} />
           <Route path="/settings/activity-log" element={<ActivityLogPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
+          <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
           <Route path="*" element={
             <div className="h-screen flex items-center justify-center bg-gray-100 rtl">
               <div className="text-center">
