@@ -4,46 +4,186 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Filter, PercentCircle } from 'lucide-react';
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Edit, Trash2, Filter, PercentCircle, FileDown, FileUp, Check, ArrowUp, ArrowDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { useDiscounts } from '@/hooks/useDiscounts';
+import { DiscountDialog } from './DiscountDialog';
+import { DeleteDiscountDialog } from './DeleteDiscountDialog';
+import { DiscountFilters } from './DiscountFilters';
+import { Discount } from '@/types/definitions';
 
 export const DiscountsModule = () => {
-  const [activeTab, setActiveTab] = useState("regular");
-  const [searchTerm, setSearchTerm] = useState("");
+  // Hooks
+  const { 
+    discounts, 
+    filteredDiscounts,
+    isLoading,
+    selectedDiscount,
+    setSelectedDiscount,
+    isCreateDialogOpen,
+    setIsCreateDialogOpen,
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    searchTerm,
+    setSearchTerm,
+    createDiscount,
+    updateDiscount,
+    deleteDiscount
+  } = useDiscounts();
   
-  // Mock data for discounts
-  const regularDiscounts = [
-    { id: 1, code: "DISC10", name: "خصم عام 10%", type: "نسبة مئوية", value: "10%", appliesTo: "كل المنتجات", startDate: "2024-04-01", endDate: "2024-05-31", status: "فعال" },
-    { id: 2, code: "FIXED50", name: "خصم ثابت 50 ريال", type: "قيمة ثابتة", value: "50", appliesTo: "منتجات محددة", startDate: "2024-04-01", endDate: "2024-04-30", status: "فعال" },
-    { id: 3, code: "SUMMER25", name: "خصم الصيف", type: "نسبة مئوية", value: "25%", appliesTo: "تصنيف المنتجات", startDate: "2024-06-01", endDate: "2024-08-31", status: "غير فعال" },
-  ];
+  // State
+  const [activeTab, setActiveTab] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sortField, setSortField] = useState<keyof Discount>("code");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   
-  const promotionalDiscounts = [
-    { id: 1, code: "PROMO2024", name: "خصم ترويجي 15%", type: "نسبة مئوية", value: "15%", appliesTo: "كل المنتجات", startDate: "2024-04-15", endDate: "2024-05-15", status: "فعال" },
-    { id: 2, code: "NEWCUST", name: "خصم عملاء جدد", type: "نسبة مئوية", value: "20%", appliesTo: "أول طلب", startDate: "2024-01-01", endDate: "2024-12-31", status: "فعال" },
-  ];
+  // Filter discounts based on active tab, search term, status and type
+  const getFilteredDiscounts = () => {
+    let filtered = filteredDiscounts;
+    
+    // Filter by tab
+    if (activeTab === "regular") {
+      filtered = filtered.filter(d => !d.code.startsWith("PROMO"));
+    } else if (activeTab === "promotional") {
+      filtered = filtered.filter(d => d.code.startsWith("PROMO"));
+    } else if (activeTab === "quantity") {
+      filtered = filtered.filter(d => d.minimumAmount !== undefined);
+    }
+    
+    // Filter by status
+    if (statusFilter === "active") {
+      filtered = filtered.filter(d => d.isActive);
+    } else if (statusFilter === "inactive") {
+      filtered = filtered.filter(d => !d.isActive);
+    }
+    
+    // Filter by type
+    if (typeFilter === "percentage") {
+      filtered = filtered.filter(d => d.type === "percentage");
+    } else if (typeFilter === "fixed") {
+      filtered = filtered.filter(d => d.type === "fixed");
+    }
+    
+    // Sort the results
+    filtered.sort((a, b) => {
+      if (sortField === "value") {
+        return sortDirection === "asc" 
+          ? a[sortField] - b[sortField] 
+          : b[sortField] - a[sortField];
+      } else {
+        const aValue = a[sortField as keyof Discount];
+        const bValue = b[sortField as keyof Discount];
+        
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortDirection === "asc" 
+            ? aValue.localeCompare(bValue) 
+            : bValue.localeCompare(aValue);
+        }
+        
+        return 0;
+      }
+    });
+    
+    return filtered;
+  };
   
-  const quantityDiscounts = [
-    { id: 1, name: "خصم الكميات الكبيرة", minQuantity: 10, maxQuantity: 50, discountValue: "5%", appliesTo: "كل المنتجات", status: "فعال" },
-    { id: 2, name: "خصم الجملة", minQuantity: 51, maxQuantity: 100, discountValue: "10%", appliesTo: "منتجات محددة", status: "فعال" },
-    { id: 3, name: "خصم كبار التجار", minQuantity: 101, maxQuantity: null, discountValue: "15%", appliesTo: "كل المنتجات", status: "فعال" },
-  ];
+  const displayedDiscounts = getFilteredDiscounts();
+  
+  // Handlers
+  const handleSort = (field: keyof Discount) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+  
+  const handleEdit = (discount: Discount) => {
+    setSelectedDiscount(discount);
+    setIsEditDialogOpen(true);
+  };
+  
+  const handleDelete = (discount: Discount) => {
+    setSelectedDiscount(discount);
+    setIsDeleteDialogOpen(true);
+  };
+  
+  const handleSave = (data: any) => {
+    if (isEditDialogOpen && selectedDiscount) {
+      updateDiscount(selectedDiscount.id, data);
+      setIsEditDialogOpen(false);
+      toast.success("تم تحديث الخصم بنجاح");
+    } else {
+      createDiscount(data);
+      setIsCreateDialogOpen(false);
+      toast.success("تم إضافة الخصم بنجاح");
+    }
+  };
+  
+  const confirmDelete = () => {
+    if (selectedDiscount) {
+      deleteDiscount(selectedDiscount.id);
+      setIsDeleteDialogOpen(false);
+      toast.success("تم حذف الخصم بنجاح");
+    }
+  };
+  
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setTypeFilter("all");
+  };
+  
+  const handleExportDiscounts = () => {
+    toast.info("جاري تصدير بيانات الخصومات...");
+    // Implement export functionality here
+  };
+  
+  const handleImportDiscounts = () => {
+    // Implement import functionality here
+    toast.info("ميزة استيراد الخصومات قيد التطوير");
+  };
+  
+  const getSortIcon = (field: keyof Discount) => {
+    if (sortField !== field) return null;
+    return sortDirection === "asc" ? <ArrowUp className="h-4 w-4 inline mr-1" /> : <ArrowDown className="h-4 w-4 inline mr-1" />;
+  };
 
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <CardTitle className="text-xl font-bold flex items-center gap-2">
             <PercentCircle className="h-5 w-5 text-teal-600" />
             إدارة الخصومات
           </CardTitle>
-          <div className="flex gap-3">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter size={16} />
-              تصفية
+          <div className="flex gap-3 flex-wrap">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={handleExportDiscounts}
+            >
+              <FileDown size={16} />
+              تصدير
             </Button>
-            <Button className="bg-teal hover:bg-teal-dark text-white flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={handleImportDiscounts}
+            >
+              <FileUp size={16} />
+              استيراد
+            </Button>
+            <Button 
+              className="bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-2"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
               <Plus size={16} />
               إضافة خصم جديد
             </Button>
@@ -51,171 +191,148 @@ export const DiscountsModule = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center mb-4">
-          <div className="relative w-full md:w-1/3">
-            <Input
-              placeholder="بحث عن خصم..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <div className="mr-2">
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="حالة الخصم" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">كل الخصومات</SelectItem>
-                <SelectItem value="active">الخصومات الفعالة</SelectItem>
-                <SelectItem value="inactive">الخصومات غير الفعالة</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <DiscountFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          typeFilter={typeFilter}
+          setTypeFilter={setTypeFilter}
+          clearFilters={clearFilters}
+        />
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="regular" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="all" className="w-full mt-4">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
+            <TabsTrigger value="all">كل الخصومات</TabsTrigger>
             <TabsTrigger value="regular">الخصومات العادية</TabsTrigger>
             <TabsTrigger value="promotional">الخصومات الترويجية</TabsTrigger>
             <TabsTrigger value="quantity">خصومات الكميات</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="regular">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>الكود</TableHead>
-                  <TableHead>الاسم</TableHead>
-                  <TableHead>النوع</TableHead>
-                  <TableHead>القيمة</TableHead>
-                  <TableHead>ينطبق على</TableHead>
-                  <TableHead>تاريخ البداية</TableHead>
-                  <TableHead>تاريخ النهاية</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {regularDiscounts.map((discount) => (
-                  <TableRow key={discount.id}>
-                    <TableCell>{discount.code}</TableCell>
-                    <TableCell>{discount.name}</TableCell>
-                    <TableCell>{discount.type}</TableCell>
-                    <TableCell>{discount.value}</TableCell>
-                    <TableCell>{discount.appliesTo}</TableCell>
-                    <TableCell>{discount.startDate}</TableCell>
-                    <TableCell>{discount.endDate}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${discount.status === 'فعال' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                        {discount.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+          <TabsContent value={activeTab}>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-40">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-600"></div>
+              </div>
+            ) : displayedDiscounts.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead 
+                      className="cursor-pointer"
+                      onClick={() => handleSort("code")}
+                    >
+                      الكود {getSortIcon("code")}
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer"
+                      onClick={() => handleSort("name")}
+                    >
+                      الاسم {getSortIcon("name")}
+                    </TableHead>
+                    <TableHead>النوع</TableHead>
+                    <TableHead 
+                      className="cursor-pointer"
+                      onClick={() => handleSort("value")}
+                    >
+                      القيمة {getSortIcon("value")}
+                    </TableHead>
+                    <TableHead>تاريخ البداية</TableHead>
+                    <TableHead>تاريخ النهاية</TableHead>
+                    <TableHead>الحد الأدنى</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead>الإجراءات</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-          
-          <TabsContent value="promotional">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>الكود</TableHead>
-                  <TableHead>الاسم</TableHead>
-                  <TableHead>النوع</TableHead>
-                  <TableHead>القيمة</TableHead>
-                  <TableHead>ينطبق على</TableHead>
-                  <TableHead>تاريخ البداية</TableHead>
-                  <TableHead>تاريخ النهاية</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {promotionalDiscounts.map((discount) => (
-                  <TableRow key={discount.id}>
-                    <TableCell>{discount.code}</TableCell>
-                    <TableCell>{discount.name}</TableCell>
-                    <TableCell>{discount.type}</TableCell>
-                    <TableCell>{discount.value}</TableCell>
-                    <TableCell>{discount.appliesTo}</TableCell>
-                    <TableCell>{discount.startDate}</TableCell>
-                    <TableCell>{discount.endDate}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${discount.status === 'فعال' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                        {discount.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-          
-          <TabsContent value="quantity">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>الاسم</TableHead>
-                  <TableHead>الحد الأدنى للكمية</TableHead>
-                  <TableHead>الحد الأقصى للكمية</TableHead>
-                  <TableHead>قيمة الخصم</TableHead>
-                  <TableHead>ينطبق على</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quantityDiscounts.map((discount) => (
-                  <TableRow key={discount.id}>
-                    <TableCell>{discount.name}</TableCell>
-                    <TableCell>{discount.minQuantity}</TableCell>
-                    <TableCell>{discount.maxQuantity || 'غير محدود'}</TableCell>
-                    <TableCell>{discount.discountValue}</TableCell>
-                    <TableCell>{discount.appliesTo}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${discount.status === 'فعال' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                        {discount.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {displayedDiscounts.map((discount) => (
+                    <TableRow key={discount.id}>
+                      <TableCell className="font-medium">{discount.code}</TableCell>
+                      <TableCell>{discount.name}</TableCell>
+                      <TableCell>
+                        {discount.type === "percentage" ? "نسبة مئوية" : "قيمة ثابتة"}
+                      </TableCell>
+                      <TableCell>
+                        {discount.type === "percentage" ? `${discount.value}%` : `${discount.value} ريال`}
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(discount.startDate), "yyyy-MM-dd")}
+                      </TableCell>
+                      <TableCell>
+                        {discount.endDate 
+                          ? format(new Date(discount.endDate), "yyyy-MM-dd")
+                          : "غير محدد"}
+                      </TableCell>
+                      <TableCell>
+                        {discount.minimumAmount 
+                          ? `${discount.minimumAmount} ريال`
+                          : "لا يوجد"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={discount.isActive ? "success" : "secondary"}>
+                          {discount.isActive ? "فعال" : "غير فعال"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEdit(discount)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleDelete(discount)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="text-center p-8 bg-gray-50 rounded-md">
+                <PercentCircle className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                <h3 className="text-lg font-medium text-gray-600 mb-1">لا توجد خصومات</h3>
+                <p className="text-gray-500 mb-4">
+                  لم يتم العثور على خصومات تطابق معايير البحث
+                </p>
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  إضافة خصم جديد
+                </Button>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>
+      
+      {/* الحوارات */}
+      <DiscountDialog 
+        open={isCreateDialogOpen || isEditDialogOpen} 
+        onOpenChange={(open) => {
+          if (isEditDialogOpen) setIsEditDialogOpen(open);
+          else setIsCreateDialogOpen(open);
+        }}
+        discount={isEditDialogOpen ? selectedDiscount || undefined : undefined}
+        onSave={handleSave}
+        isLoading={isLoading}
+      />
+      
+      <DeleteDiscountDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        discount={selectedDiscount}
+        onDelete={confirmDelete}
+        isLoading={isLoading}
+      />
     </Card>
   );
 };
