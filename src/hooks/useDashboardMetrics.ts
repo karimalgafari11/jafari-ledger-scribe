@@ -1,8 +1,12 @@
 
 import { useState, useMemo } from "react";
 import { salesData, profitData, customerDebtData, supplierCreditData, dailySalesData, costCenterData } from "@/data/dashboardData";
+import { useAiAssistant } from "./useAiAssistant";
 
 export const useDashboardMetrics = () => {
+  // Import system alerts from useAiAssistant hook
+  const { systemAlerts } = useAiAssistant();
+  
   // حساب إجماليات الدخل والمصروفات والربح
   const totalSales = useMemo(() => salesData.reduce((sum, item) => sum + item.sales, 0), []);
   const totalExpenses = useMemo(() => salesData.reduce((sum, item) => sum + item.expenses, 0), []);
@@ -51,6 +55,7 @@ export const useDashboardMetrics = () => {
     profitMargin,
     overdueInvoices,
     overdueTotalAmount,
-    kpis
+    kpis,
+    systemAlerts
   };
 };
