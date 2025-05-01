@@ -15,7 +15,7 @@ const Header = ({
   onBackClick,
   children
 }: HeaderProps) => {
-  return <header className="border-b border-gray-200 flex items-center justify-between px-[152px] py-[23px] my-[2px] mx-[28px] bg-blue-500">
+  return <header className="border-b border-gray-200 flex items-center justify-between px-[152px] bg-blue-500 py-[23px] my-0 mx-0">
       <div className="flex items-center">
         {showBack && <button onClick={onBackClick} className="ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors mr-3" aria-label="رجوع">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180"><path d="m9 18 6-6-6-6" /></svg>
