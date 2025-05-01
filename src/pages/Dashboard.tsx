@@ -182,8 +182,8 @@ const Dashboard = () => {
     status: "neutral" as const,
     description: "متوسط عدد المشتريات لكل عميل"
   }];
-  return <div className="w-full p-6 rtl">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-blue-400">
+  return <div className="w-full p-6 rtl px-[7px] mx-[6px] py-0 bg-orange-600">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-6 bg-blue-400 px-[8px] mx-0 py-[2px] my-[5px]">
         <Header title="لوحة التحكم الرئيسية" />
         <DashboardFilters date={date} onDateChange={setDate} period={period} onPeriodChange={value => setPeriod(value)} branch={branch} onBranchChange={setBranch} />
       </div>
