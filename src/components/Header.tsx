@@ -51,7 +51,7 @@ const Header = ({
       <div className="flex items-center gap-2 md:gap-4">
         {children}
         <NotificationsDropdown />
-        <Logo size={isMobile ? "xsmall" : "small"} />
+        <Logo size="small" className={isMobile ? "scale-75" : ""} />
       </div>
     </header>
   );
