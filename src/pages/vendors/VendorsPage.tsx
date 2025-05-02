@@ -138,21 +138,25 @@ const VendorsPage = () => {
   // تعريف إجراءات التعامل مع الموردين
   const actions = [
     { 
+      label: "عرض تفاصيل",
       icon: <Eye className="text-blue-600" />, 
       onClick: (vendor: any) => console.log('عرض تفاصيل المورد:', vendor.id),
       variant: "ghost" 
     },
     { 
+      label: "تعديل",
       icon: <Edit className="text-amber-600" />, 
       onClick: (vendor: any) => console.log('تعديل بيانات المورد:', vendor.id),
       variant: "ghost"
     },
     { 
+      label: "المعاملات",
       icon: <FileText className="text-indigo-600" />, 
       onClick: (vendor: any) => console.log('عرض معاملات المورد:', vendor.id),
       variant: "ghost"
     },
     { 
+      label: "حذف",
       icon: <Trash className="text-red-600" />, 
       onClick: (vendor: any) => console.log('حذف المورد:', vendor.id),
       variant: "ghost",
