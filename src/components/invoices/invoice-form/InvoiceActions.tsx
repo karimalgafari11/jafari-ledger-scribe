@@ -2,7 +2,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Printer, Download, Share2, FileText, MessageSquare } from "lucide-react";
+import { Printer, Download, Share2, FileText, MessageSquare, Link, Database, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface InvoiceActionsProps {
   notes: string | undefined;
@@ -11,6 +12,7 @@ interface InvoiceActionsProps {
   handleWhatsAppShare: () => void;
   handleCreatePDF: () => void;
   handleShare: () => void;
+  invoiceId?: string;
 }
 
 export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
@@ -19,8 +21,11 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
   handlePrint,
   handleWhatsAppShare,
   handleCreatePDF,
-  handleShare
+  handleShare,
+  invoiceId
 }) => {
+  const navigate = useNavigate();
+
   const handleDownload = () => {
     // Create a filename with timestamp
     const date = new Date();
@@ -35,6 +40,22 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+  };
+
+  const navigateToInventory = () => {
+    navigate("/inventory/products");
+  };
+
+  const navigateToCustomers = () => {
+    navigate("/customers");
+  };
+
+  const navigateToAccounts = () => {
+    navigate("/accounting/journal-entries");
+  };
+
+  const navigateToReports = () => {
+    navigate("/reports");
   };
 
   return (
@@ -79,6 +100,41 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
         >
           <FileText className="ml-2 h-4 w-4" />
           PDF
+        </Button>
+      </div>
+      
+      <div className="flex flex-wrap gap-2 print-hide">
+        <Button 
+          variant="default" 
+          className="h-9 text-base"
+          onClick={navigateToInventory}
+        >
+          <Database className="ml-2 h-4 w-4" />
+          المخزون
+        </Button>
+        <Button 
+          variant="default" 
+          className="h-9 text-base"
+          onClick={navigateToCustomers}
+        >
+          <Link className="ml-2 h-4 w-4" />
+          العملاء
+        </Button>
+        <Button 
+          variant="default" 
+          className="h-9 text-base"
+          onClick={navigateToAccounts}
+        >
+          <Database className="ml-2 h-4 w-4" />
+          الحسابات
+        </Button>
+        <Button 
+          variant="default" 
+          className="h-9 text-base"
+          onClick={navigateToReports}
+        >
+          <FileText className="ml-2 h-4 w-4" />
+          التقارير
         </Button>
       </div>
       

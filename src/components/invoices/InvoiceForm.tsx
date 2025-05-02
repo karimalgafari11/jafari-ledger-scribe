@@ -90,6 +90,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         handleEditItem={handleEditItem}
         handleResizeStart={handleResizeStart}
         onRemoveItem={onRemoveItem}
+        onAddItem={onAddItem}
         settings={settings}
       />
 
@@ -113,6 +114,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         handleWhatsAppShare={handleWhatsAppShare}
         handleCreatePDF={handleCreatePDF}
         handleShare={handleShare}
+        invoiceId={invoice.id}
       />
 
       {/* Print-only styles */}

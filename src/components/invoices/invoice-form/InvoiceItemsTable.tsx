@@ -2,11 +2,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Database } from "lucide-react";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceSettingsType } from "./InvoiceSettings";
 import { Input } from "@/components/ui/input";
 import { mockProducts } from "@/data/mockProducts";
+import { useNavigate } from "react-router-dom";
+import { QuickProductSearch } from "./QuickProductSearch";
+import { toast } from "sonner";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -18,6 +21,7 @@ interface InvoiceItemsTableProps {
   handleEditItem: (index: number) => void;
   handleResizeStart: (e: React.MouseEvent) => void;
   onRemoveItem: (index: number) => void;
+  onAddItem: (item: Partial<InvoiceItem>) => void;
   settings?: InvoiceSettingsType;
 }
 
@@ -31,11 +35,15 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   handleEditItem,
   handleResizeStart,
   onRemoveItem,
+  onAddItem,
   settings
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<typeof mockProducts>([]);
+  const [quickSearchActive, setQuickSearchActive] = useState(false);
+  const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
   
   // Auto-open item form when there are no items
   useEffect(() => {
@@ -63,12 +71,41 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     }
   };
 
+  const handleQuickSelect = (product: any) => {
+    const newItem = {
+      productId: product.id,
+      code: product.code,
+      name: product.name,
+      quantity: 1,
+      price: product.price,
+      discount: 0,
+      discountType: "percentage" as const,
+      tax: 15,
+      notes: ""
+    };
+    
+    onAddItem(newItem);
+    setSearchTerm("");
+    setSearchResults([]);
+    setQuickSearchActive(false);
+    toast.success(`تم إضافة ${product.name} إلى الفاتورة`);
+  };
+
   const toggleSearch = () => {
     setIsSearching(!isSearching);
     if (!isSearching) {
       setSearchTerm("");
       setSearchResults([]);
     }
+  };
+
+  const navigateToInventory = () => {
+    navigate("/inventory/products");
+  };
+
+  const handleRowClick = (index: number) => {
+    setActiveRowIndex(index);
+    setQuickSearchActive(true);
   };
 
   // Get display column configuration from settings
@@ -107,11 +144,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                     <div 
                       key={product.id} 
                       className="p-2 hover:bg-gray-100 cursor-pointer text-sm border-b"
-                      onClick={() => {
-                        setIsAddingItem(true);
-                        setIsSearching(false);
-                        console.log("Selected product:", product);
-                      }}
+                      onClick={() => handleQuickSelect(product)}
                     >
                       <div className="font-semibold">{product.name}</div>
                       <div className="text-xs text-gray-500">{product.code} - {product.price} ر.س</div>
@@ -121,15 +154,26 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
               )}
             </div>
           ) : (
-            <Button 
-              variant="outline" 
-              size="xs" 
-              onClick={toggleSearch}
-              className="h-8 text-sm flex items-center"
-            >
-              <Search className="mr-1 h-4 w-4" />
-              البحث
-            </Button>
+            <>
+              <Button 
+                variant="outline" 
+                size="xs" 
+                onClick={toggleSearch}
+                className="h-8 text-sm flex items-center"
+              >
+                <Search className="mr-1 h-4 w-4" />
+                البحث
+              </Button>
+              <Button 
+                variant="outline" 
+                size="xs" 
+                onClick={navigateToInventory}
+                className="h-8 text-sm flex items-center"
+              >
+                <Database className="mr-1 h-4 w-4" />
+                المخزون
+              </Button>
+            </>
           )}
           <Button 
             variant="outline" 
@@ -201,12 +245,17 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                     <TableCell className="border border-black text-center font-semibold py-1 text-lg">{index + 1}</TableCell>
                   }
                   {columns.includes('code') && 
-                    <TableCell className="border border-black text-center py-1 text-lg">{item.code}</TableCell>
+                    <TableCell 
+                      className="border border-black text-center py-1 text-lg cursor-pointer hover:bg-gray-200"
+                      onClick={() => handleRowClick(index)}
+                    >
+                      {item.code}
+                    </TableCell>
                   }
                   {columns.includes('name') && 
                     <TableCell 
                       className="border border-black py-1 text-lg cursor-pointer hover:bg-gray-200" 
-                      onClick={() => handleEditItem(index)}
+                      onClick={() => handleRowClick(index)}
                     >
                       {item.name}
                     </TableCell>
@@ -239,6 +288,14 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           </TableBody>
         </Table>
       </div>
+      
+      {/* Quick Product Search overlay */}
+      {quickSearchActive && (
+        <QuickProductSearch
+          onClose={() => setQuickSearchActive(false)}
+          onSelect={handleQuickSelect}
+        />
+      )}
     </div>
   );
 };
