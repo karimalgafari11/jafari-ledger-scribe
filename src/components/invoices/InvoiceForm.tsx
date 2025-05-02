@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Invoice } from "@/types/invoices";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,7 +12,6 @@ import { InvoiceSummarySection } from "./invoice-form/InvoiceSummarySection";
 
 // Custom hook
 import { useInvoiceForm } from "@/hooks/useInvoiceForm";
-
 interface InvoiceFormProps {
   invoice: Invoice;
   onFieldChange: (field: string, value: any) => void;
@@ -23,7 +21,6 @@ interface InvoiceFormProps {
   onApplyDiscount: (type: 'percentage' | 'fixed', value: number) => void;
   isLoading: boolean;
 }
-
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   invoice,
   onFieldChange,
@@ -58,77 +55,30 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     handleAmountPaidChange,
     handleNotesChange,
     handlePrint
-  } = useInvoiceForm(
-    invoice,
-    onFieldChange,
-    onAddItem,
-    onUpdateItem,
-    onRemoveItem,
-    onApplyDiscount
-  );
+  } = useInvoiceForm(invoice, onFieldChange, onAddItem, onUpdateItem, onRemoveItem, onApplyDiscount);
 
   // Get the current item being edited if applicable
   const editingItem = editingItemIndex !== null ? invoice.items[editingItemIndex] : undefined;
-
-  return (
-    <div className="space-y-6 print:p-4">
+  return <div className="space-y-6 print:p-4 py-0 px-0 bg-slate-100">
       {/* Invoice Header with Company Logo and Information */}
-      <InvoiceHeader 
-        companyInfo={companyInfo}
-        toggleCompanyEdit={toggleCompanyEdit}
-        handleCompanyInfoChange={handleCompanyInfoChange}
-      />
+      <InvoiceHeader companyInfo={companyInfo} toggleCompanyEdit={toggleCompanyEdit} handleCompanyInfoChange={handleCompanyInfoChange} />
 
       {/* Invoice Details (customer, date, etc) */}
-      <InvoiceDetails 
-        invoice={invoice}
-        onFieldChange={onFieldChange}
-      />
+      <InvoiceDetails invoice={invoice} onFieldChange={onFieldChange} />
 
       {/* Item Addition/Editing Section */}
-      <InvoiceItemSection 
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-        editingItem={editingItem}
-        handleAddItem={handleAddItem}
-        handleCancelAdd={handleCancelAdd}
-        handleUpdateItem={handleUpdateItem}
-        handleCancelEdit={handleCancelEdit}
-      />
+      <InvoiceItemSection isAddingItem={isAddingItem} editingItemIndex={editingItemIndex} editingItem={editingItem} handleAddItem={handleAddItem} handleCancelAdd={handleCancelAdd} handleUpdateItem={handleUpdateItem} handleCancelEdit={handleCancelEdit} />
 
       {/* Items Table */}
-      <InvoiceItemsTable 
-        items={invoice.items}
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-        tableWidth={tableWidth}
-        tableRef={tableRef}
-        setIsAddingItem={setIsAddingItem}
-        handleEditItem={handleEditItem}
-        handleResizeStart={handleResizeStart}
-        onRemoveItem={onRemoveItem}
-      />
+      <InvoiceItemsTable items={invoice.items} isAddingItem={isAddingItem} editingItemIndex={editingItemIndex} tableWidth={tableWidth} tableRef={tableRef} setIsAddingItem={setIsAddingItem} handleEditItem={handleEditItem} handleResizeStart={handleResizeStart} onRemoveItem={onRemoveItem} />
 
       {/* Invoice Summary and Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         {/* Notes and Action Buttons */}
-        <InvoiceActions 
-          notes={invoice.notes}
-          onNotesChange={handleNotesChange}
-          handlePrint={handlePrint}
-          handleWhatsAppShare={handleWhatsAppShare}
-          handleCreatePDF={handleCreatePDF}
-        />
+        <InvoiceActions notes={invoice.notes} onNotesChange={handleNotesChange} handlePrint={handlePrint} handleWhatsAppShare={handleWhatsAppShare} handleCreatePDF={handleCreatePDF} />
 
         {/* Invoice Summary and Payment */}
-        <InvoiceSummarySection 
-          invoice={invoice}
-          isDiscountFormOpen={isDiscountFormOpen}
-          calculateRemaining={calculateRemaining}
-          setIsDiscountFormOpen={setIsDiscountFormOpen}
-          onAmountPaidChange={handleAmountPaidChange}
-          handleApplyDiscount={handleApplyDiscount}
-        />
+        <InvoiceSummarySection invoice={invoice} isDiscountFormOpen={isDiscountFormOpen} calculateRemaining={calculateRemaining} setIsDiscountFormOpen={setIsDiscountFormOpen} onAmountPaidChange={handleAmountPaidChange} handleApplyDiscount={handleApplyDiscount} />
       </div>
 
       {/* Print-only styles */}
@@ -153,6 +103,5 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           }
         `}
       </style>
-    </div>
-  );
+    </div>;
 };
