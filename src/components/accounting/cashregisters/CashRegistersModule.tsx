@@ -14,9 +14,9 @@ export const CashRegistersModule = () => {
     isLoading,
     searchTerm,
     setSearchTerm,
-    createRegister,
-    updateRegister,
-    deleteRegister,
+    createCashRegister,
+    updateCashRegister,
+    deleteCashRegister,
     selectedRegister,
     setSelectedRegister,
     isCreateDialogOpen,
@@ -42,20 +42,20 @@ export const CashRegistersModule = () => {
   };
 
   const handleCreateRegister = (data: Omit<CashRegister, "id" | "createdAt" | "updatedAt">) => {
-    createRegister(data);
+    createCashRegister(data);
     setIsCreateDialogOpen(false);
   };
 
   const handleUpdateRegister = (data: Partial<CashRegister>) => {
     if (selectedRegister) {
-      updateRegister(selectedRegister.id, data);
+      updateCashRegister(selectedRegister.id, data);
       setIsEditDialogOpen(false);
     }
   };
 
   const handleDeleteRegister = () => {
     if (selectedRegister) {
-      deleteRegister(selectedRegister.id);
+      deleteCashRegister(selectedRegister.id);
       setIsDeleteDialogOpen(false);
     }
   };
