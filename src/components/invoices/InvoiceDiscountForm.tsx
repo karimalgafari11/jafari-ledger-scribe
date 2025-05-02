@@ -28,24 +28,24 @@ export const InvoiceDiscountForm: React.FC<DiscountFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <RadioGroup 
         value={discountType}
         onValueChange={(value) => setDiscountType(value as 'percentage' | 'fixed')}
         className="flex gap-4"
       >
-        <div className="flex items-center space-x-2 rtl">
-          <RadioGroupItem value="percentage" id="percentage" />
-          <Label htmlFor="percentage" className="text-sm">نسبة مئوية (%)</Label>
+        <div className="flex items-center space-x-1 rtl">
+          <RadioGroupItem value="percentage" id="percentage" className="h-3 w-3" />
+          <Label htmlFor="percentage" className="text-xs">نسبة مئوية (%)</Label>
         </div>
-        <div className="flex items-center space-x-2 rtl">
-          <RadioGroupItem value="fixed" id="fixed" />
-          <Label htmlFor="fixed" className="text-sm">قيمة ثابتة</Label>
+        <div className="flex items-center space-x-1 rtl">
+          <RadioGroupItem value="fixed" id="fixed" className="h-3 w-3" />
+          <Label htmlFor="fixed" className="text-xs">قيمة ثابتة</Label>
         </div>
       </RadioGroup>
 
       <div>
-        <label htmlFor="discountValue" className="block text-sm font-medium mb-1">
+        <label htmlFor="discountValue" className="block text-xs font-medium mb-0.5">
           قيمة الخصم {discountType === 'percentage' ? '(%)' : '(ر.س)'}
         </label>
         <Input
@@ -57,16 +57,17 @@ export const InvoiceDiscountForm: React.FC<DiscountFormProps> = ({
           value={discountValue}
           onChange={(e) => setDiscountValue(e.target.value)}
           required
+          className="h-7 text-sm"
         />
       </div>
 
-      <div className="flex justify-end space-x-2 rtl">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          <X className="ml-2 h-4 w-4" />
+      <div className="flex justify-end space-x-2 rtl space-x-reverse">
+        <Button type="button" variant="outline" onClick={onCancel} size="sm" className="h-7 text-xs">
+          <X className="ml-1 h-3 w-3" />
           إلغاء
         </Button>
-        <Button type="submit">
-          <Check className="ml-2 h-4 w-4" />
+        <Button type="submit" size="sm" className="h-7 text-xs">
+          <Check className="ml-1 h-3 w-3" />
           تطبيق الخصم
         </Button>
       </div>

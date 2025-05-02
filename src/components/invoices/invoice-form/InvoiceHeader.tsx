@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/Logo";
@@ -26,41 +26,42 @@ export const InvoiceHeader: React.FC<InvoiceHeaderProps> = ({
   showLogo = true
 }) => {
   return (
-    <div className="border-2 border-black p-4 mb-6 bg-white relative py-0 px-[23px] rounded">
-      <div className="flex justify-between items-center mb-4">
+    <div className="border-2 border-black p-2 mb-4 bg-white relative rounded">
+      <div className="flex justify-between items-center">
         <div className="flex items-center">
-          {showLogo && <Logo size="medium" className="ml-4" />}
+          {showLogo && <Logo size="small" className="ml-2" />}
           
           {companyInfo.isEditing ? (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Input 
                 value={companyInfo.name} 
                 onChange={e => handleCompanyInfoChange('name', e.target.value)} 
-                className="mb-1" 
+                className="mb-1 h-7 text-sm" 
                 placeholder="اسم الشركة" 
               />
               <Input 
                 value={companyInfo.phone} 
                 onChange={e => handleCompanyInfoChange('phone', e.target.value)} 
-                className="mb-1" 
+                className="mb-1 h-7 text-sm" 
                 placeholder="رقم الهاتف" 
               />
               <Input 
                 value={companyInfo.email} 
                 onChange={e => handleCompanyInfoChange('email', e.target.value)} 
-                className="mb-1" 
+                className="mb-1 h-7 text-sm" 
                 placeholder="البريد الإلكتروني" 
               />
               <Input 
                 value={companyInfo.address} 
                 onChange={e => handleCompanyInfoChange('address', e.target.value)} 
-                placeholder="العنوان" 
+                placeholder="العنوان"
+                className="h-7 text-sm" 
               />
             </div>
           ) : (
-            <div className="space-y-1">
-              <h2 className="font-bold text-3xl">{companyInfo.name}</h2>
-              <div className="text-sm text-gray-600 space-y-1">
+            <div className="space-y-0">
+              <h2 className="font-bold text-xl">{companyInfo.name}</h2>
+              <div className="text-xs text-gray-600">
                 <p>{companyInfo.phone}</p>
                 <p>{companyInfo.email}</p>
                 <p>{companyInfo.address}</p>
@@ -74,16 +75,16 @@ export const InvoiceHeader: React.FC<InvoiceHeaderProps> = ({
             onClick={toggleCompanyEdit} 
             variant="ghost" 
             size="sm" 
-            className="print-hide"
+            className="print-hide text-xs h-7"
           >
-            {companyInfo.isEditing ? 'حفظ' : 'تعديل بيانات الشركة'}
+            {companyInfo.isEditing ? 'حفظ' : 'تعديل'}
           </Button>
         </div>
       </div>
       
-      <div className="text-center mb-6">
-        <h1 className="font-bold border-b-2 border-t-2 border-black py-0 text-3xl">فاتورة مبيعات</h1>
-        <p className="text-lg mt-2">Sales Invoice</p>
+      <div className="text-center mb-2 mt-1">
+        <h1 className="font-bold border-b-2 border-t-2 border-black py-0 text-xl">فاتورة مبيعات</h1>
+        <p className="text-sm">Sales Invoice</p>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, PrinterIcon, Share2, Save } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { useSalesInvoice } from "@/hooks/useSalesInvoice";
 import { toast } from "sonner";
 import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
@@ -67,27 +67,27 @@ const SalesInvoicePage: React.FC = () => {
       <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
         <Header title="فاتورة مبيعات جديدة" showBack={true} onBackClick={handleBack} />
 
-        <div className="flex-1 overflow-auto print:overflow-visible print-section py-[6px] px-[7px]">
-          <div className="flex justify-between items-center mb-6 print:mb-8 print-hide">
-            <h2 className="text-2xl font-bold">إنشاء فاتورة مبيعات</h2>
+        <div className="flex-1 overflow-auto print:overflow-visible print-section py-[4px] px-[5px]">
+          <div className="flex justify-between items-center mb-2 print:mb-4 print-hide">
+            <h2 className="text-xl font-bold">إنشاء فاتورة مبيعات</h2>
             <div className="space-x-2 flex rtl">
               <InvoiceSettings 
                 settings={invoiceSettings}
                 onSettingsChange={handleSettingsChange}
               />
-              <Button onClick={handleBack} variant="outline" className="print-hide">
-                <ArrowLeft className="ml-2 h-4 w-4" />
+              <Button onClick={handleBack} variant="outline" className="print-hide h-8 text-xs">
+                <ArrowLeft className="ml-1 h-3 w-3" />
                 إلغاء
               </Button>
-              <Button onClick={handleSave} disabled={isLoading || invoice.items.length === 0} className="print-hide">
-                <Save className="ml-2 h-4 w-4" />
-                حفظ الفاتورة
+              <Button onClick={handleSave} disabled={isLoading || invoice.items.length === 0} className="print-hide h-8 text-xs">
+                <Save className="ml-1 h-3 w-3" />
+                حفظ
               </Button>
             </div>
           </div>
 
-          <Card className="mb-6 print:shadow-none print:border-none">
-            <CardContent className="p-6 py-0 px-[5px] bg-zinc-300">
+          <Card className="mb-4 print:shadow-none print:border-none">
+            <CardContent className="p-3 bg-zinc-100">
               <InvoiceForm 
                 invoice={invoice} 
                 onFieldChange={updateInvoiceField} 

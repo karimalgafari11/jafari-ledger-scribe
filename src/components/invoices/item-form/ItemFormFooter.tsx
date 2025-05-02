@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Check, X } from "lucide-react";
 
 interface ItemFormFooterProps {
   total: number;
@@ -16,20 +17,21 @@ export const ItemFormFooter: React.FC<ItemFormFooterProps> = ({
   onSubmit
 }) => {
   return (
-    <div className="border-t pt-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <span className="font-semibold">الإجمالي:</span>{" "}
-          {total.toFixed(2)} ر.س
-        </div>
-        <div className="space-x-2 rtl space-x-reverse">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            إلغاء
-          </Button>
-          <Button type="submit">
-            {isUpdate ? "تحديث" : "إضافة"}
-          </Button>
-        </div>
+    <div className="flex justify-between items-center">
+      <div className="text-sm font-bold">
+        <span>المجموع: </span>
+        <span>{total.toFixed(2)} ر.س</span>
+      </div>
+
+      <div className="flex space-x-2 rtl space-x-reverse">
+        <Button type="button" variant="outline" onClick={onCancel} size="sm" className="h-7 text-xs">
+          <X className="ml-1 h-3 w-3" />
+          إلغاء
+        </Button>
+        <Button type="submit" size="sm" className="h-7 text-xs">
+          <Check className="ml-1 h-3 w-3" />
+          {isUpdate ? 'تحديث' : 'إضافة'}
+        </Button>
       </div>
     </div>
   );

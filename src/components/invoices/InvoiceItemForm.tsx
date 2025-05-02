@@ -29,7 +29,7 @@ export const InvoiceItemForm: React.FC<InvoiceItemFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <ItemSearch
         products={mockProducts} 
         onSelectProduct={handleSelectProduct}

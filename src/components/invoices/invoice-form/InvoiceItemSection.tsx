@@ -31,9 +31,9 @@ export const InvoiceItemSection: React.FC<InvoiceItemSectionProps> = ({
   }
 
   return (
-    <Card className="mb-6">
-      <CardContent className="p-4">
-        <h3 className="text-lg font-bold mb-4">
+    <Card className="mb-4">
+      <CardContent className="p-3">
+        <h3 className="text-md font-bold mb-2">
           {editingItemIndex !== null ? "تعديل صنف" : "إضافة صنف جديد"}
         </h3>
         <InvoiceItemForm
