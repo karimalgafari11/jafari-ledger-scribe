@@ -1,7 +1,9 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/Logo";
+
 interface CompanyInfo {
   name: string;
   phone: string;
@@ -9,43 +11,80 @@ interface CompanyInfo {
   address: string;
   isEditing: boolean;
 }
+
 interface InvoiceHeaderProps {
   companyInfo: CompanyInfo;
   toggleCompanyEdit: () => void;
   handleCompanyInfoChange: (field: string, value: string) => void;
+  showLogo?: boolean;
 }
+
 export const InvoiceHeader: React.FC<InvoiceHeaderProps> = ({
   companyInfo,
   toggleCompanyEdit,
-  handleCompanyInfoChange
+  handleCompanyInfoChange,
+  showLogo = true
 }) => {
-  return <div className="border-2 border-black p-4 mb-6 bg-white relative py-0 px-[23px] rounded">
+  return (
+    <div className="border-2 border-black p-4 mb-6 bg-white relative py-0 px-[23px] rounded">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
-          <Logo size="medium" className="ml-4" />
-          {companyInfo.isEditing ? <div className="space-y-2">
-              <Input value={companyInfo.name} onChange={e => handleCompanyInfoChange('name', e.target.value)} className="mb-1" placeholder="اسم الشركة" />
-              <Input value={companyInfo.phone} onChange={e => handleCompanyInfoChange('phone', e.target.value)} className="mb-1" placeholder="رقم الهاتف" />
-              <Input value={companyInfo.email} onChange={e => handleCompanyInfoChange('email', e.target.value)} className="mb-1" placeholder="البريد الإلكتروني" />
-              <Input value={companyInfo.address} onChange={e => handleCompanyInfoChange('address', e.target.value)} placeholder="العنوان" />
-            </div> : <div className="space-y-1">
+          {showLogo && <Logo size="medium" className="ml-4" />}
+          
+          {companyInfo.isEditing ? (
+            <div className="space-y-2">
+              <Input 
+                value={companyInfo.name} 
+                onChange={e => handleCompanyInfoChange('name', e.target.value)} 
+                className="mb-1" 
+                placeholder="اسم الشركة" 
+              />
+              <Input 
+                value={companyInfo.phone} 
+                onChange={e => handleCompanyInfoChange('phone', e.target.value)} 
+                className="mb-1" 
+                placeholder="رقم الهاتف" 
+              />
+              <Input 
+                value={companyInfo.email} 
+                onChange={e => handleCompanyInfoChange('email', e.target.value)} 
+                className="mb-1" 
+                placeholder="البريد الإلكتروني" 
+              />
+              <Input 
+                value={companyInfo.address} 
+                onChange={e => handleCompanyInfoChange('address', e.target.value)} 
+                placeholder="العنوان" 
+              />
+            </div>
+          ) : (
+            <div className="space-y-1">
               <h2 className="font-bold text-3xl">{companyInfo.name}</h2>
               <div className="text-sm text-gray-600 space-y-1">
                 <p>{companyInfo.phone}</p>
                 <p>{companyInfo.email}</p>
                 <p>{companyInfo.address}</p>
               </div>
-            </div>}
+            </div>
+          )}
         </div>
+        
         <div>
-          <Button onClick={toggleCompanyEdit} variant="ghost" size="sm" className="print-hide">
+          <Button 
+            onClick={toggleCompanyEdit} 
+            variant="ghost" 
+            size="sm" 
+            className="print-hide"
+          >
             {companyInfo.isEditing ? 'حفظ' : 'تعديل بيانات الشركة'}
           </Button>
         </div>
       </div>
+      
       <div className="text-center mb-6">
         <h1 className="font-bold border-b-2 border-t-2 border-black py-0 text-3xl">فاتورة مبيعات</h1>
         <p className="text-lg mt-2">Sales Invoice</p>
       </div>
-    </div>;
+    </div>
+  );
 };

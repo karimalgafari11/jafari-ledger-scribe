@@ -1,6 +1,8 @@
+
 import React from "react";
 import { Invoice } from "@/types/invoices";
 import { Card, CardContent } from "@/components/ui/card";
+import { InvoiceSettings } from "./invoice-form/InvoiceSettings";
 
 // Importing refactored components
 import { InvoiceHeader } from "./invoice-form/InvoiceHeader";
@@ -12,6 +14,7 @@ import { InvoiceSummarySection } from "./invoice-form/InvoiceSummarySection";
 
 // Custom hook
 import { useInvoiceForm } from "@/hooks/useInvoiceForm";
+
 interface InvoiceFormProps {
   invoice: Invoice;
   onFieldChange: (field: string, value: any) => void;
@@ -20,7 +23,9 @@ interface InvoiceFormProps {
   onRemoveItem: (index: number) => void;
   onApplyDiscount: (type: 'percentage' | 'fixed', value: number) => void;
   isLoading: boolean;
+  settings?: InvoiceSettings['InvoiceSettings'];
 }
+
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   invoice,
   onFieldChange,
@@ -28,7 +33,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   onUpdateItem,
   onRemoveItem,
   onApplyDiscount,
-  isLoading
+  isLoading,
+  settings
 }) => {
   const {
     isAddingItem,
@@ -59,27 +65,95 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
   // Get the current item being edited if applicable
   const editingItem = editingItemIndex !== null ? invoice.items[editingItemIndex] : undefined;
-  return <div className="space-y-6 print:p-4 py-0 px-0 bg-slate-100">
+  
+  return (
+    <div className="space-y-6 print:p-4 py-0 px-0 bg-slate-100">
       {/* Invoice Header with Company Logo and Information */}
-      <InvoiceHeader companyInfo={companyInfo} toggleCompanyEdit={toggleCompanyEdit} handleCompanyInfoChange={handleCompanyInfoChange} />
+      <InvoiceHeader 
+        companyInfo={companyInfo} 
+        toggleCompanyEdit={toggleCompanyEdit} 
+        handleCompanyInfoChange={handleCompanyInfoChange}
+        showLogo={settings?.showCompanyLogo !== false}
+      />
 
-      {/* Invoice Details (customer, date, etc) */}
-      <InvoiceDetails invoice={invoice} onFieldChange={onFieldChange} />
+      {/* Invoice Details (customer, date, etc) - Condensed */}
+      {settings?.showCustomerDetails !== false && (
+        <InvoiceDetails 
+          invoice={invoice} 
+          onFieldChange={onFieldChange} 
+          condensed={true}
+        />
+      )}
 
       {/* Item Addition/Editing Section */}
-      <InvoiceItemSection isAddingItem={isAddingItem} editingItemIndex={editingItemIndex} editingItem={editingItem} handleAddItem={handleAddItem} handleCancelAdd={handleCancelAdd} handleUpdateItem={handleUpdateItem} handleCancelEdit={handleCancelEdit} />
+      <InvoiceItemSection 
+        isAddingItem={isAddingItem} 
+        editingItemIndex={editingItemIndex} 
+        editingItem={editingItem} 
+        handleAddItem={handleAddItem}
+        handleCancelAdd={handleCancelAdd} 
+        handleUpdateItem={handleUpdateItem} 
+        handleCancelEdit={handleCancelEdit}
+        settings={settings}
+      />
 
-      {/* Items Table */}
-      <InvoiceItemsTable items={invoice.items} isAddingItem={isAddingItem} editingItemIndex={editingItemIndex} tableWidth={tableWidth} tableRef={tableRef} setIsAddingItem={setIsAddingItem} handleEditItem={handleEditItem} handleResizeStart={handleResizeStart} onRemoveItem={onRemoveItem} />
+      {/* Items Table with vertical lines and sequential numbers */}
+      <InvoiceItemsTable 
+        items={invoice.items}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        tableWidth={tableWidth}
+        tableRef={tableRef}
+        setIsAddingItem={setIsAddingItem}
+        handleEditItem={handleEditItem}
+        handleResizeStart={handleResizeStart}
+        onRemoveItem={onRemoveItem}
+        settings={settings}
+      />
 
       {/* Invoice Summary and Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         {/* Notes and Action Buttons */}
-        <InvoiceActions notes={invoice.notes} onNotesChange={handleNotesChange} handlePrint={handlePrint} handleWhatsAppShare={handleWhatsAppShare} handleCreatePDF={handleCreatePDF} />
+        <InvoiceActions 
+          notes={invoice.notes} 
+          onNotesChange={handleNotesChange} 
+          handlePrint={handlePrint}
+          handleWhatsAppShare={handleWhatsAppShare} 
+          handleCreatePDF={handleCreatePDF}
+        />
 
         {/* Invoice Summary and Payment */}
-        <InvoiceSummarySection invoice={invoice} isDiscountFormOpen={isDiscountFormOpen} calculateRemaining={calculateRemaining} setIsDiscountFormOpen={setIsDiscountFormOpen} onAmountPaidChange={handleAmountPaidChange} handleApplyDiscount={handleApplyDiscount} />
+        <InvoiceSummarySection 
+          invoice={invoice}
+          isDiscountFormOpen={isDiscountFormOpen} 
+          calculateRemaining={calculateRemaining}
+          setIsDiscountFormOpen={setIsDiscountFormOpen}
+          onAmountPaidChange={handleAmountPaidChange}
+          handleApplyDiscount={handleApplyDiscount}
+          showDiscount={settings?.showDiscount !== false}
+          showTax={settings?.showTax !== false}
+        />
       </div>
+
+      {/* Signature Section */}
+      {settings?.showSignature && (
+        <div className="mt-8 border-t-2 border-black pt-4">
+          <div className="flex justify-between">
+            <div className="text-center w-1/3">
+              <p className="font-bold mb-12">توقيع المستلم</p>
+              <div className="border-t border-black w-full"></div>
+            </div>
+            <div className="text-center w-1/3">
+              <p className="font-bold mb-12">توقيع المحاسب</p>
+              <div className="border-t border-black w-full"></div>
+            </div>
+            <div className="text-center w-1/3">
+              <p className="font-bold mb-12">ختم الشركة</p>
+              <div className="border-t border-black w-full"></div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Print-only styles */}
       <style>
@@ -103,5 +177,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           }
         `}
       </style>
-    </div>;
+    </div>
+  );
 };

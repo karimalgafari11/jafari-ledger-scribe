@@ -3,15 +3,17 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { InvoiceItemForm } from "@/components/invoices/InvoiceItemForm";
 import { InvoiceItem } from "@/types/invoices";
+import { InvoiceSettings } from "./InvoiceSettings";
 
 interface InvoiceItemSectionProps {
   isAddingItem: boolean;
   editingItemIndex: number | null;
-  editingItem: InvoiceItem | undefined;
+  editingItem?: InvoiceItem;
   handleAddItem: (item: Partial<InvoiceItem>) => void;
-  handleCancelAdd: () => void;
   handleUpdateItem: (item: Partial<InvoiceItem>) => void;
   handleCancelEdit: () => void;
+  handleCancelAdd: () => void;
+  settings?: InvoiceSettings['InvoiceSettings'];
 }
 
 export const InvoiceItemSection: React.FC<InvoiceItemSectionProps> = ({
@@ -19,38 +21,28 @@ export const InvoiceItemSection: React.FC<InvoiceItemSectionProps> = ({
   editingItemIndex,
   editingItem,
   handleAddItem,
-  handleCancelAdd,
   handleUpdateItem,
-  handleCancelEdit
+  handleCancelEdit,
+  handleCancelAdd,
+  settings
 }) => {
-  return (
-    <>
-      {isAddingItem && (
-        <Card className="mb-4 border-2 border-black">
-          <CardContent className="p-4">
-            <h4 className="text-md font-bold mb-2">إضافة صنف جديد</h4>
-            <InvoiceItemForm 
-              onSubmit={handleAddItem}
-              onCancel={handleCancelAdd}
-              includeNotes={true}
-            />
-          </CardContent>
-        </Card>
-      )}
+  if (!isAddingItem && editingItemIndex === null) {
+    return null;
+  }
 
-      {editingItemIndex !== null && editingItem && (
-        <Card className="mb-4 border-2 border-black">
-          <CardContent className="p-4">
-            <h4 className="text-md font-bold mb-2">تعديل الصنف</h4>
-            <InvoiceItemForm 
-              item={editingItem}
-              onSubmit={handleUpdateItem}
-              onCancel={handleCancelEdit}
-              includeNotes={true}
-            />
-          </CardContent>
-        </Card>
-      )}
-    </>
+  return (
+    <Card className="mb-6">
+      <CardContent className="p-4">
+        <h3 className="text-lg font-bold mb-4">
+          {editingItemIndex !== null ? "تعديل صنف" : "إضافة صنف جديد"}
+        </h3>
+        <InvoiceItemForm
+          item={editingItem}
+          onSubmit={editingItemIndex !== null ? handleUpdateItem : handleAddItem}
+          onCancel={editingItemIndex !== null ? handleCancelEdit : handleCancelAdd}
+          includeNotes={settings?.showItemNotes !== false}
+        />
+      </CardContent>
+    </Card>
   );
 };

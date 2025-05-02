@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -8,8 +9,23 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, PrinterIcon, Share2, Save } from "lucide-react";
 import { useSalesInvoice } from "@/hooks/useSalesInvoice";
 import { toast } from "sonner";
+import { InvoiceSettings } from "@/components/invoices/invoice-form/InvoiceSettings";
+
+// Define default settings
+const defaultSettings = {
+  showCustomerDetails: true,
+  showItemCodes: true,
+  showItemNotes: false,
+  showDiscount: true,
+  showTax: true,
+  showSignature: false,
+  showCompanyLogo: true,
+};
+
 const SalesInvoicePage: React.FC = () => {
   const navigate = useNavigate();
+  const [invoiceSettings, setInvoiceSettings] = useState(defaultSettings);
+  
   const {
     invoice,
     createNewInvoice,
@@ -27,6 +43,7 @@ const SalesInvoicePage: React.FC = () => {
   useEffect(() => {
     createNewInvoice();
   }, []);
+
   const handleSave = async () => {
     try {
       await saveInvoice();
@@ -36,10 +53,17 @@ const SalesInvoicePage: React.FC = () => {
       toast.error("حدث خطأ أثناء حفظ الفاتورة");
     }
   };
+
   const handleBack = () => {
     navigate(-1);
   };
-  return <Layout>
+
+  const handleSettingsChange = (newSettings: typeof invoiceSettings) => {
+    setInvoiceSettings(newSettings);
+  };
+
+  return (
+    <Layout>
       <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
         <Header title="فاتورة مبيعات جديدة" showBack={true} onBackClick={handleBack} />
 
@@ -47,6 +71,10 @@ const SalesInvoicePage: React.FC = () => {
           <div className="flex justify-between items-center mb-6 print:mb-8 print-hide">
             <h2 className="text-2xl font-bold">إنشاء فاتورة مبيعات</h2>
             <div className="space-x-2 flex rtl">
+              <InvoiceSettings 
+                settings={invoiceSettings}
+                onSettingsChange={handleSettingsChange}
+              />
               <Button onClick={handleBack} variant="outline" className="print-hide">
                 <ArrowLeft className="ml-2 h-4 w-4" />
                 إلغاء
@@ -60,11 +88,22 @@ const SalesInvoicePage: React.FC = () => {
 
           <Card className="mb-6 print:shadow-none print:border-none">
             <CardContent className="p-6 py-0 px-[5px] bg-zinc-300">
-              <InvoiceForm invoice={invoice} onFieldChange={updateInvoiceField} onAddItem={addInvoiceItem} onUpdateItem={updateInvoiceItem} onRemoveItem={removeInvoiceItem} onApplyDiscount={applyDiscount} isLoading={isLoading} />
+              <InvoiceForm 
+                invoice={invoice} 
+                onFieldChange={updateInvoiceField} 
+                onAddItem={addInvoiceItem} 
+                onUpdateItem={updateInvoiceItem} 
+                onRemoveItem={removeInvoiceItem} 
+                onApplyDiscount={applyDiscount} 
+                isLoading={isLoading}
+                settings={invoiceSettings}
+              />
             </CardContent>
           </Card>
         </div>
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default SalesInvoicePage;

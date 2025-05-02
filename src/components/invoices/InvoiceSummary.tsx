@@ -5,9 +5,15 @@ import { Badge } from "@/components/ui/badge";
 
 interface InvoiceSummaryProps {
   invoice: Invoice;
+  showDiscount?: boolean;
+  showTax?: boolean;
 }
 
-export const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({ invoice }) => {
+export const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({ 
+  invoice,
+  showDiscount = true,
+  showTax = true
+}) => {
   // حساب المجموع الفرعي (مجموع الأصناف قبل الخصم والضريبة)
   const subtotal = invoice.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   
@@ -37,7 +43,7 @@ export const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({ invoice }) => {
         <div className="text-muted-foreground">المجموع الفرعي</div>
         <div className="text-left">{subtotal.toFixed(2)} ر.س</div>
         
-        {invoice.discount > 0 && (
+        {showDiscount && invoice.discount > 0 && (
           <>
             <div className="text-muted-foreground">
               الخصم {invoice.discountType === 'percentage' && `(${invoice.discount}%)`}
@@ -46,8 +52,12 @@ export const InvoiceSummary: React.FC<InvoiceSummaryProps> = ({ invoice }) => {
           </>
         )}
         
-        <div className="text-muted-foreground">ضريبة القيمة المضافة</div>
-        <div className="text-left">{totalTax.toFixed(2)} ر.س</div>
+        {showTax && (
+          <>
+            <div className="text-muted-foreground">ضريبة القيمة المضافة</div>
+            <div className="text-left">{totalTax.toFixed(2)} ر.س</div>
+          </>
+        )}
         
         <div className="font-bold">الإجمالي</div>
         <div className="text-left font-bold">{total.toFixed(2)} ر.س</div>
