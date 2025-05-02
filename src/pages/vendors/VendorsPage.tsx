@@ -141,25 +141,25 @@ const VendorsPage = () => {
       label: "عرض تفاصيل",
       icon: <Eye className="text-blue-600" />, 
       onClick: (vendor: any) => console.log('عرض تفاصيل المورد:', vendor.id),
-      variant: "ghost" 
+      variant: "ghost" as const  // Use type assertion to ensure correct type
     },
     { 
       label: "تعديل",
       icon: <Edit className="text-amber-600" />, 
       onClick: (vendor: any) => console.log('تعديل بيانات المورد:', vendor.id),
-      variant: "ghost"
+      variant: "ghost" as const  // Use type assertion to ensure correct type
     },
     { 
       label: "المعاملات",
       icon: <FileText className="text-indigo-600" />, 
       onClick: (vendor: any) => console.log('عرض معاملات المورد:', vendor.id),
-      variant: "ghost"
+      variant: "ghost" as const  // Use type assertion to ensure correct type
     },
     { 
       label: "حذف",
       icon: <Trash className="text-red-600" />, 
       onClick: (vendor: any) => console.log('حذف المورد:', vendor.id),
-      variant: "ghost",
+      variant: "ghost" as const,  // Use type assertion to ensure correct type
       condition: (vendor: any) => vendor.balance === 0 // يمكن حذف المورد فقط إذا كان رصيده صفر
     }
   ];
