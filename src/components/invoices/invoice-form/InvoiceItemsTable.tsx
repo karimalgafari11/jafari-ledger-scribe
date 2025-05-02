@@ -1,14 +1,18 @@
 
-import React, { useRef, useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
+import React, { useState } from "react";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceSettingsType } from "./InvoiceSettings";
-import { Input } from "@/components/ui/input";
 import { mockProducts } from "@/data/mockProducts";
 import { QuickProductSearch } from "./QuickProductSearch";
 import { toast } from "sonner";
+
+// Import new components
+import { ItemTableHeader } from "./table-components/ItemTableHeader";
+import { SearchResults } from "./table-components/SearchResults";
+import { EmptyTable } from "./table-components/EmptyTable";
+import { TableResizeHandle } from "./table-components/TableResizeHandle";
+import { ItemTableRow } from "./table-components/ItemTableRow";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -44,7 +48,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
   
   // Auto-open item form when there are no items
-  useEffect(() => {
+  React.useEffect(() => {
     if (items.length === 0 && !isAddingItem && editingItemIndex === null) {
       console.log("No items found, auto-opening item form");
       setIsAddingItem(true);
@@ -112,66 +116,19 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
 
   return (
     <div className="mt-2">
-      <div className="flex justify-between items-center mb-1">
-        <h3 className="text-base font-bold">الأصناف</h3>
-        <div className="flex gap-1">
-          {isSearching ? (
-            <div className="relative w-64">
-              <Input
-                value={searchTerm}
-                onChange={handleSearchChange}
-                placeholder="ابحث عن صنف..."
-                className="h-8 text-sm"
-                autoFocus
-              />
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute left-1 top-1/2 transform -translate-y-1/2 h-5 w-5"
-                onClick={toggleSearch}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-              {searchResults.length > 0 && (
-                <div className="search-results">
-                  {searchResults.map((product) => (
-                    <div 
-                      key={product.id} 
-                      className="p-2 hover:bg-gray-100 cursor-pointer text-sm border-b"
-                      onClick={() => handleQuickSelect(product)}
-                    >
-                      <div className="font-semibold">{product.name}</div>
-                      <div className="text-xs text-gray-500">{product.code} - {product.price} ر.س</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <Button 
-                variant="outline" 
-                size="xs" 
-                onClick={toggleSearch}
-                className="h-8 text-sm flex items-center"
-              >
-                <Search className="mr-1 h-4 w-4" />
-                البحث
-              </Button>
-            </>
-          )}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setIsAddingItem(true)}
-            className="h-8 text-sm"
-            disabled={isAddingItem || editingItemIndex !== null}
-          >
-            <Plus className="ml-1 h-4 w-4" />
-            إضافة صنف
-          </Button>
-        </div>
-      </div>
+      <ItemTableHeader
+        isSearching={isSearching}
+        searchTerm={searchTerm}
+        toggleSearch={toggleSearch}
+        handleSearchChange={handleSearchChange}
+        setIsAddingItem={setIsAddingItem}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+      />
+      
+      {isSearching && searchResults.length > 0 && (
+        <SearchResults results={searchResults} onSelect={handleQuickSelect} />
+      )}
       
       <div 
         ref={tableRef} 
@@ -180,11 +137,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           width: `${tableWidth}%`
         }}
       >
-        {/* Resize handle */}
-        <div 
-          className="absolute top-0 bottom-0 right-0 w-1 cursor-ew-resize bg-primary/10 hover:bg-primary/20 transition-colors" 
-          onMouseDown={handleResizeStart} 
-        />
+        <TableResizeHandle onMouseDown={handleResizeStart} />
         
         <Table className="w-full text-base invoice-table" bordered>
           <TableHeader>
@@ -215,59 +168,18 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           </TableHeader>
           <TableBody>
             {items.length === 0 ? (
-              <TableRow>
-                <TableCell 
-                  colSpan={columns.length + 1} 
-                  className="text-center py-2 text-muted-foreground border border-black text-lg"
-                >
-                  لا توجد أصناف في الفاتورة
-                </TableCell>
-              </TableRow>
+              <EmptyTable colSpan={columns.length + 1} />
             ) : (
               items.map((item, index) => (
-                <TableRow key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-gray-100"}>
-                  {columns.includes('serial') && 
-                    <TableCell className="border border-black text-center font-semibold py-1 text-lg">{index + 1}</TableCell>
-                  }
-                  {columns.includes('code') && 
-                    <TableCell 
-                      className="border border-black text-center py-1 text-lg cursor-pointer hover:bg-gray-200"
-                      onClick={() => handleRowClick(index)}
-                    >
-                      {item.code}
-                    </TableCell>
-                  }
-                  {columns.includes('name') && 
-                    <TableCell 
-                      className="border border-black py-1 text-lg cursor-pointer hover:bg-gray-200" 
-                      onClick={() => handleRowClick(index)}
-                    >
-                      {item.name}
-                    </TableCell>
-                  }
-                  {columns.includes('quantity') && 
-                    <TableCell className="border border-black text-center py-1 text-lg">{item.quantity}</TableCell>
-                  }
-                  {columns.includes('price') && 
-                    <TableCell className="border border-black text-center py-1 text-lg">{item.price.toFixed(2)}</TableCell>
-                  }
-                  {columns.includes('total') && 
-                    <TableCell className="border border-black text-center font-semibold py-1 text-lg">{item.total.toFixed(2)}</TableCell>
-                  }
-                  {columns.includes('notes') && 
-                    <TableCell className="border border-black text-center py-1 text-lg">{item.notes || '-'}</TableCell>
-                  }
-                  <TableCell className="border border-black print-hide py-1">
-                    <div className="flex space-x-1 rtl space-x-reverse justify-center">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditItem(index)} className="h-6 w-6 p-1">
-                        <Pencil size={14} />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => onRemoveItem(index)} className="h-6 w-6 p-1">
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <ItemTableRow 
+                  key={index}
+                  item={item}
+                  index={index}
+                  columns={columns}
+                  onRowClick={handleRowClick}
+                  onEdit={handleEditItem}
+                  onRemove={onRemoveItem}
+                />
               ))
             )}
           </TableBody>
