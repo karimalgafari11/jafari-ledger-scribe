@@ -85,14 +85,16 @@ const SalesInvoicePage: React.FC = () => {
 
   return (
     <Layout>
-      <style jsx global>{`
-        .invoice-text {
-          font-size: var(--invoice-font-size, 1rem);
-        }
-        .invoice-table th, .invoice-table td {
-          font-size: var(--invoice-font-size, 1rem);
-        }
-      `}</style>
+      <style>
+        {`
+          .invoice-text {
+            font-size: var(--invoice-font-size, 1rem);
+          }
+          .invoice-table th, .invoice-table td {
+            font-size: var(--invoice-font-size, 1rem);
+          }
+        `}
+      </style>
       <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
         <Header title="فاتورة مبيعات جديدة" showBack={true} onBackClick={handleBack} />
 
