@@ -23,7 +23,8 @@ import {
   FileStack,
   UserCog,
   List,
-  Warehouse
+  Warehouse,
+  Bell
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
