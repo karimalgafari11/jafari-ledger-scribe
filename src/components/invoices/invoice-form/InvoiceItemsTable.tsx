@@ -2,12 +2,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Plus, Search, X, Database } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceSettingsType } from "./InvoiceSettings";
 import { Input } from "@/components/ui/input";
 import { mockProducts } from "@/data/mockProducts";
-import { useNavigate } from "react-router-dom";
 import { QuickProductSearch } from "./QuickProductSearch";
 import { toast } from "sonner";
 
@@ -43,7 +42,6 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   const [searchResults, setSearchResults] = useState<typeof mockProducts>([]);
   const [quickSearchActive, setQuickSearchActive] = useState(false);
   const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
-  const navigate = useNavigate();
   
   // Auto-open item form when there are no items
   useEffect(() => {
@@ -97,10 +95,6 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
       setSearchTerm("");
       setSearchResults([]);
     }
-  };
-
-  const navigateToInventory = () => {
-    navigate("/inventory/products");
   };
 
   const handleRowClick = (index: number) => {
@@ -163,15 +157,6 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
               >
                 <Search className="mr-1 h-4 w-4" />
                 البحث
-              </Button>
-              <Button 
-                variant="outline" 
-                size="xs" 
-                onClick={navigateToInventory}
-                className="h-8 text-sm flex items-center"
-              >
-                <Database className="mr-1 h-4 w-4" />
-                المخزون
               </Button>
             </>
           )}

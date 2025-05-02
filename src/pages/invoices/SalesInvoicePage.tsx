@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, FilePlus } from "lucide-react";
 import { useSalesInvoice } from "@/hooks/useSalesInvoice";
 import { toast } from "sonner";
 import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
@@ -14,14 +14,14 @@ import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invo
 // Define default settings
 const defaultSettings: InvoiceSettingsType = {
   showCustomerDetails: true,
-  showItemCodes: true, // Changed to true to show item codes
+  showItemCodes: true,
   showItemNotes: true,
   showDiscount: true,
   showTax: true,
   showSignature: false,
   showCompanyLogo: true,
-  fontSize: 'large', // Changed from medium to large
-  tableColumns: ['serial', 'code', 'name', 'quantity', 'price', 'total', 'notes'], // Added code to default columns
+  fontSize: 'large',
+  tableColumns: ['serial', 'code', 'name', 'quantity', 'price', 'total', 'notes'],
   tableWidth: 100,
 };
 
@@ -74,6 +74,12 @@ const SalesInvoicePage: React.FC = () => {
     navigate(-1);
   };
 
+  const handleNewInvoice = () => {
+    // Reset the current invoice and create a new one
+    createNewInvoice();
+    toast.info("تم إنشاء فاتورة جديدة");
+  };
+
   const handleSettingsChange = (newSettings: InvoiceSettingsType) => {
     setInvoiceSettings(newSettings);
     console.log("Settings updated:", newSettings);
@@ -115,6 +121,9 @@ const SalesInvoicePage: React.FC = () => {
             z-index: 100;
             width: 100%;
           }
+          .smooth-transition {
+            transition: all 0.3s ease-in-out;
+          }
         `}
       </style>
       <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
@@ -124,6 +133,14 @@ const SalesInvoicePage: React.FC = () => {
           <div className="flex justify-between items-center mb-1 print:mb-2 print-hide">
             <h2 className="text-lg font-semibold">إنشاء فاتورة مبيعات</h2>
             <div className="space-x-1 flex rtl">
+              <Button 
+                variant="outline"
+                className="print-hide h-9 text-base smooth-transition hover:bg-primary hover:text-white"
+                onClick={handleNewInvoice}
+              >
+                <FilePlus className="ml-1 h-4 w-4" />
+                فاتورة جديدة
+              </Button>
               <InvoiceSettings 
                 settings={invoiceSettings}
                 onSettingsChange={handleSettingsChange}
