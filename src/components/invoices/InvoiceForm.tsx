@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Logo } from "@/components/Logo";
 import { mockWarehouses } from "@/data/mockWarehouses";
+import { SearchBar } from "@/components/SearchBar";
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -178,7 +180,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   return (
     <div className="space-y-6 print:p-4">
       {/* رأس الفاتورة مع شعار الشركة والبيانات */}
-      <div className="border rounded-md p-4 mb-6 bg-white relative">
+      <div className="border-2 border-black rounded-md p-4 mb-6 bg-white relative">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
             <Logo size="medium" className="ml-4" />
@@ -231,7 +233,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
         </div>
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold border-b border-t py-2">فاتورة مبيعات</h1>
+          <h1 className="text-3xl font-bold border-b-2 border-t-2 border-black py-2">فاتورة مبيعات</h1>
           <p className="text-lg mt-2">Sales Invoice</p>
         </div>
       </div>
@@ -369,7 +371,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
         
         {isAddingItem && (
-          <Card className="mb-4 border border-primary/20">
+          <Card className="mb-4 border-2 border-black">
             <CardContent className="p-4">
               <h4 className="text-md font-bold mb-2">إضافة صنف جديد</h4>
               <InvoiceItemForm 
@@ -382,7 +384,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         )}
 
         {editingItemIndex !== null && (
-          <Card className="mb-4 border border-primary/20">
+          <Card className="mb-4 border-2 border-black">
             <CardContent className="p-4">
               <h4 className="text-md font-bold mb-2">تعديل الصنف</h4>
               <InvoiceItemForm 
@@ -397,7 +399,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         <div 
           ref={tableRef} 
-          className="border rounded-md overflow-x-auto relative" 
+          className="border-2 border-black rounded-md overflow-x-auto relative" 
           style={{ width: `${tableWidth}%` }}
         >
           {/* Resize handle */}
@@ -409,43 +411,43 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           <Table className="w-full" gridLines="both" bordered>
             <TableHeader>
               <TableRow className="bg-muted">
-                <TableHead className="w-12 border-r">#</TableHead>
-                <TableHead className="border-r">الصنف</TableHead>
-                <TableHead className="border-r">الوصف</TableHead>
-                <TableHead className="border-r">الكمية</TableHead>
-                <TableHead className="border-r">السعر</TableHead>
-                <TableHead className="border-r">الخصم</TableHead>
-                <TableHead className="border-r">الإجمالي</TableHead>
-                <TableHead className="border-r">ملاحظات</TableHead>
-                <TableHead className="text-left border-r">الإجراءات</TableHead>
+                <TableHead className="w-12 border-2 border-black text-center font-bold">#</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">الصنف</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">الوصف</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">الكمية</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">السعر</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">الخصم</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">الإجمالي</TableHead>
+                <TableHead className="border-2 border-black text-center font-bold">ملاحظات</TableHead>
+                <TableHead className="text-center border-2 border-black font-bold">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {invoice.items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-4 text-muted-foreground border">
+                  <TableCell colSpan={9} className="text-center py-4 text-muted-foreground border-2 border-black">
                     لا توجد أصناف في الفاتورة. قم بإضافة صنف باستخدام زر "إضافة صنف".
                   </TableCell>
                 </TableRow>
               ) : (
                 invoice.items.map((item, index) => (
-                  <TableRow key={index} className="border-b">
-                    <TableCell className="border-r">{index + 1}</TableCell>
-                    <TableCell className="border-r">{item.name}</TableCell>
-                    <TableCell className="border-r">{item.description || '-'}</TableCell>
-                    <TableCell className="border-r">{item.quantity}</TableCell>
-                    <TableCell className="border-r">{item.price.toFixed(2)} ر.س</TableCell>
-                    <TableCell className="border-r">
+                  <TableRow key={index} className="border-2 border-black">
+                    <TableCell className="border-2 border-black text-center">{index + 1}</TableCell>
+                    <TableCell className="border-2 border-black text-center">{item.name}</TableCell>
+                    <TableCell className="border-2 border-black text-center">{item.description || '-'}</TableCell>
+                    <TableCell className="border-2 border-black text-center">{item.quantity}</TableCell>
+                    <TableCell className="border-2 border-black text-center">{item.price.toFixed(2)} ر.س</TableCell>
+                    <TableCell className="border-2 border-black text-center">
                       {item.discount > 0 && (
                         <Badge variant="outline">
                           {item.discountType === 'percentage' ? `${item.discount}%` : `${item.discount} ر.س`}
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="border-r">{item.total.toFixed(2)} ر.س</TableCell>
-                    <TableCell className="border-r">{item.notes || '-'}</TableCell>
-                    <TableCell className="border-r">
-                      <div className="flex space-x-2 rtl space-x-reverse">
+                    <TableCell className="border-2 border-black text-center">{item.total.toFixed(2)} ر.س</TableCell>
+                    <TableCell className="border-2 border-black text-center">{item.notes || '-'}</TableCell>
+                    <TableCell className="border-2 border-black">
+                      <div className="flex space-x-2 rtl space-x-reverse justify-center">
                         <Button variant="ghost" size="sm" onClick={() => handleEditItem(index)}>
                           <Pencil size={16} />
                         </Button>
@@ -504,7 +506,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
 
         <div className="space-y-4">
-          <div className="border rounded-md p-4 space-y-4">
+          <div className="border-2 border-black rounded-md p-4 space-y-4">
             <InvoiceSummary invoice={invoice} />
             
             <div className="grid grid-cols-2 gap-4 mt-4">
@@ -541,7 +543,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
 
           {isDiscountFormOpen && (
-            <Card>
+            <Card className="border-2 border-black">
               <CardContent className="p-4">
                 <h4 className="text-md font-bold mb-2">إضافة خصم</h4>
                 <InvoiceDiscountForm 

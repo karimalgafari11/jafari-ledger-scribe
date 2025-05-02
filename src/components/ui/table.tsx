@@ -18,14 +18,14 @@ const Table = React.forwardRef<
 >(({ className, gridLines = "both", stickyHeader = false, dense = false, bordered = false, striped = false, hoverable = true, ...props }, ref) => {
   const gridClasses = {
     none: "",
-    horizontal: "[&_tr]:border-b [&_tr:last-child]:border-0",
-    vertical: "[&_th]:border-r [&_td]:border-r [&_th:last-child]:border-0 [&_td:last-child]:border-0",
-    both: "[&_tr]:border-b [&_tr:last-child]:border-0 [&_th]:border-r [&_td]:border-r [&_th:last-child]:border-0 [&_td:last-child]:border-0"
+    horizontal: "[&_tr]:border-b-2 [&_tr]:border-black [&_tr:last-child]:border-0",
+    vertical: "[&_th]:border-r-2 [&_th]:border-black [&_td]:border-r-2 [&_td]:border-black [&_th:last-child]:border-0 [&_td:last-child]:border-0",
+    both: "[&_tr]:border-b-2 [&_tr]:border-black [&_tr:last-child]:border-0 [&_th]:border-r-2 [&_th]:border-black [&_td]:border-r-2 [&_td]:border-black [&_th:last-child]:border-0 [&_td:last-child]:border-0"
   };
 
   const stickyClasses = stickyHeader ? "sticky top-0 z-10 bg-white shadow-sm" : "";
   const denseClasses = dense ? "py-2" : "py-4";
-  const borderedClasses = bordered ? "border" : "";
+  const borderedClasses = bordered ? "border-2 border-black" : "";
   const stripedClasses = striped ? "[&_tr:nth-child(even)]:bg-gray-50" : "";
   const hoverClasses = hoverable ? "[&_tr:hover]:bg-gray-100" : "";
 
@@ -51,7 +51,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("bg-gray-50 border-b", className)} {...props} />
+  <thead ref={ref} className={cn("bg-gray-50 border-b-2 border-black", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -74,7 +74,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
+      "border-t-2 border-black bg-muted/50 font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}

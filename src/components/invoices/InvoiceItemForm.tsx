@@ -9,6 +9,7 @@ import { mockProducts } from "@/data/mockProducts";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { v4 as uuid } from "uuid";
+import { SearchBar } from "@/components/SearchBar";
 
 interface InvoiceItemFormProps {
   item?: InvoiceItem;
@@ -37,10 +38,27 @@ export const InvoiceItemForm: React.FC<InvoiceItemFormProps> = ({
     total: item?.total || 0,
     notes: item?.notes || ""
   });
+  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState(mockProducts);
 
   useEffect(() => {
     calculateTotal();
   }, [formData.quantity, formData.price, formData.discount, formData.discountType, formData.tax]);
+
+  // Filter products based on search term
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredProducts(mockProducts);
+    } else {
+      const term = searchTerm.toLowerCase().trim();
+      const filtered = mockProducts.filter(product => 
+        product.name.toLowerCase().includes(term) || 
+        product.code.toLowerCase().includes(term)
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [searchTerm]);
 
   const handleChange = (field: keyof InvoiceItem, value: any) => {
     setFormData((prev) => ({
@@ -93,8 +111,20 @@ export const InvoiceItemForm: React.FC<InvoiceItemFormProps> = ({
     onSubmit(formData);
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="mb-4">
+        <label htmlFor="search" className="block text-sm font-medium mb-1">البحث عن المنتج</label>
+        <SearchBar 
+          placeholder="ابحث بالاسم أو رقم الصنف" 
+          onChange={handleSearch} 
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="product" className="block text-sm font-medium mb-1">المنتج</label>
@@ -105,12 +135,16 @@ export const InvoiceItemForm: React.FC<InvoiceItemFormProps> = ({
             <SelectTrigger>
               <SelectValue placeholder="اختر منتج" />
             </SelectTrigger>
-            <SelectContent>
-              {mockProducts.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
-                  {product.name}
-                </SelectItem>
-              ))}
+            <SelectContent className="max-h-[300px]">
+              {filteredProducts.length === 0 ? (
+                <div className="p-2 text-center text-sm text-gray-500">لا توجد منتجات مطابقة</div>
+              ) : (
+                filteredProducts.map((product) => (
+                  <SelectItem key={product.id} value={product.id}>
+                    {product.code} - {product.name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </div>
