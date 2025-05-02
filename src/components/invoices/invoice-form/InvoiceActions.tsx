@@ -22,58 +22,60 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
   handleShare
 }) => {
   return (
-    <div className="space-y-1 mt-2">
-      <div className="flex flex-wrap gap-1 print-hide">
+    <div className="space-y-2 mt-3">
+      <div className="flex flex-wrap gap-2 print-hide">
         <Button 
           variant="outline" 
-          className="h-6 text-xs"
+          className="h-9 text-base"
           onClick={handlePrint}
         >
-          <Printer className="ml-1 h-3 w-3" />
+          <Printer className="ml-2 h-4 w-4" />
           طباعة
         </Button>
         <Button 
           variant="outline" 
-          className="h-6 text-xs"
+          className="h-9 text-base"
           onClick={handleDownload}
         >
-          <Download className="ml-1 h-3 w-3" />
+          <Download className="ml-2 h-4 w-4" />
           تنزيل
         </Button>
         <Button 
           variant="outline" 
-          className="h-6 text-xs"
+          className="h-9 text-base"
           onClick={handleShare}
         >
-          <Share2 className="ml-1 h-3 w-3" />
+          <Share2 className="ml-2 h-4 w-4" />
           مشاركة
         </Button>
         <Button 
           variant="outline" 
-          className="h-6 text-xs"
+          className="h-9 text-base"
           onClick={handleWhatsAppShare}
         >
-          <MessageSquare className="ml-1 h-3 w-3" />
+          <MessageSquare className="ml-2 h-4 w-4" />
           واتساب
         </Button>
         <Button 
           variant="outline" 
-          className="h-6 text-xs"
+          className="h-9 text-base"
           onClick={handleCreatePDF}
         >
-          <FileText className="ml-1 h-3 w-3" />
+          <FileText className="ml-2 h-4 w-4" />
           PDF
         </Button>
       </div>
       
-      <label htmlFor="notes" className="block text-xs font-medium mb-0.5">ملاحظات</label>
-      <Textarea
-        id="notes"
-        placeholder="أدخل أي ملاحظات إضافية هنا..."
-        value={notes || ""}
-        onChange={(e) => onNotesChange(e.target.value)}
-        className="min-h-[40px] h-16 text-xs"
-      />
+      <div>
+        <label htmlFor="notes" className="block text-base font-medium mb-1">ملاحظات</label>
+        <Textarea
+          id="notes"
+          placeholder="أدخل أي ملاحظات إضافية هنا..."
+          value={notes || ""}
+          onChange={(e) => onNotesChange(e.target.value)}
+          className="min-h-[60px] h-24 text-base"
+        />
+      </div>
     </div>
   );
 };

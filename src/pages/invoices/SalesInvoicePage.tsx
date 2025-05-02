@@ -14,12 +14,15 @@ import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invo
 // Define default settings
 const defaultSettings: InvoiceSettingsType = {
   showCustomerDetails: true,
-  showItemCodes: false, // We're not showing item codes as per request
-  showItemNotes: true, // Show notes as requested
+  showItemCodes: false,
+  showItemNotes: true,
   showDiscount: true,
   showTax: true,
   showSignature: false,
   showCompanyLogo: true,
+  fontSize: 'medium',
+  tableColumns: ['serial', 'name', 'quantity', 'price', 'total', 'notes'],
+  tableWidth: 100,
 };
 
 const SalesInvoicePage: React.FC = () => {
@@ -39,10 +42,21 @@ const SalesInvoicePage: React.FC = () => {
     isLoading
   } = useSalesInvoice();
 
-  // عند تحميل الصفحة، إنشاء فاتورة جديدة
   useEffect(() => {
     createNewInvoice();
-  }, []);
+    
+    // Apply the font size from settings globally
+    document.documentElement.style.setProperty(
+      '--invoice-font-size', 
+      invoiceSettings.fontSize === 'small' ? '0.875rem' : 
+      invoiceSettings.fontSize === 'large' ? '1.125rem' : '1rem'
+    );
+    
+    return () => {
+      // Reset font size when unmounting
+      document.documentElement.style.removeProperty('--invoice-font-size');
+    };
+  }, [invoiceSettings.fontSize]);
 
   const handleSave = async () => {
     try {
@@ -60,34 +74,49 @@ const SalesInvoicePage: React.FC = () => {
 
   const handleSettingsChange = (newSettings: InvoiceSettingsType) => {
     setInvoiceSettings(newSettings);
+    
+    // Apply the font size from settings globally
+    document.documentElement.style.setProperty(
+      '--invoice-font-size', 
+      newSettings.fontSize === 'small' ? '0.875rem' : 
+      newSettings.fontSize === 'large' ? '1.125rem' : '1rem'
+    );
   };
 
   return (
     <Layout>
+      <style jsx global>{`
+        .invoice-text {
+          font-size: var(--invoice-font-size, 1rem);
+        }
+        .invoice-table th, .invoice-table td {
+          font-size: var(--invoice-font-size, 1rem);
+        }
+      `}</style>
       <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
         <Header title="فاتورة مبيعات جديدة" showBack={true} onBackClick={handleBack} />
 
         <div className="flex-1 overflow-auto print:overflow-visible print-section py-[2px] px-[3px] bg-gray-50">
           <div className="flex justify-between items-center mb-1 print:mb-2 print-hide">
-            <h2 className="text-sm font-semibold">إنشاء فاتورة مبيعات</h2>
+            <h2 className="text-lg font-semibold">إنشاء فاتورة مبيعات</h2>
             <div className="space-x-1 flex rtl">
               <InvoiceSettings 
                 settings={invoiceSettings}
                 onSettingsChange={handleSettingsChange}
               />
-              <Button onClick={handleBack} variant="outline" className="print-hide h-7 text-xs">
-                <ArrowLeft className="ml-1 h-3 w-3" />
+              <Button onClick={handleBack} variant="outline" className="print-hide h-9 text-base">
+                <ArrowLeft className="ml-1 h-4 w-4" />
                 إلغاء
               </Button>
-              <Button onClick={handleSave} disabled={isLoading} className="print-hide h-7 text-xs">
-                <Save className="ml-1 h-3 w-3" />
+              <Button onClick={handleSave} disabled={isLoading} className="print-hide h-9 text-base">
+                <Save className="ml-1 h-4 w-4" />
                 حفظ
               </Button>
             </div>
           </div>
 
           <Card className="mb-2 print:shadow-none print:border-none">
-            <CardContent className="p-2 bg-white">
+            <CardContent className="p-3 bg-white">
               <InvoiceForm 
                 invoice={invoice} 
                 onFieldChange={updateInvoiceField} 
