@@ -56,9 +56,9 @@ export const InvoiceItemForm: React.FC<InvoiceItemFormProps> = ({
       setFormData((prev) => ({
         ...prev,
         productId,
-        code: product.sku,
+        code: product.code,
         name: product.name,
-        description: product.description || "",
+        description: "",
         price: product.price,
       }));
     }

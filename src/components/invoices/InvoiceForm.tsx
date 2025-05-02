@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,7 +9,7 @@ import { InvoiceItemForm } from "./InvoiceItemForm";
 import { InvoiceDiscountForm } from "./InvoiceDiscountForm";
 import { InvoiceSummary } from "./InvoiceSummary";
 import { Invoice, InvoiceItem } from "@/types/invoices";
-import { Trash2, Plus, Pencil, Calculator, Share, Printer, FilePdf, SendHorizontal } from "lucide-react";
+import { Trash2, Plus, Pencil, Calculator, Share, Printer, FileText, SendHorizontal } from "lucide-react";
 import { mockCustomers } from "@/data/mockCustomers";
 import { mockProducts } from "@/data/mockProducts";
 import { Badge } from "@/components/ui/badge";
@@ -498,7 +497,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               className="flex-1"
               onClick={handleCreatePDF}
             >
-              <FilePdf className="ml-2 h-4 w-4" />
+              <FileText className="ml-2 h-4 w-4" />
               PDF
             </Button>
           </div>
