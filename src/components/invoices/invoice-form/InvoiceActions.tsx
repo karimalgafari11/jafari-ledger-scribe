@@ -21,6 +21,22 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
   handleCreatePDF,
   handleShare
 }) => {
+  const handleDownload = () => {
+    // Create a filename with timestamp
+    const date = new Date();
+    const filename = `invoice_${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.txt`;
+    
+    // In a real implementation, this would create an actual file
+    // This is a simple placeholder implementation
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('Invoice data would go here'));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   return (
     <div className="space-y-2 mt-3">
       <div className="flex flex-wrap gap-2 print-hide">
@@ -79,20 +95,3 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
     </div>
   );
 };
-
-// Function to handle download
-function handleDownload() {
-  // Create a filename with timestamp
-  const date = new Date();
-  const filename = `invoice_${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.txt`;
-  
-  // In a real implementation, this would create an actual file
-  // This is a simple placeholder implementation
-  const element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('Invoice data would go here'));
-  element.setAttribute('download', filename);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-}

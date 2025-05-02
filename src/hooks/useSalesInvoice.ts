@@ -31,12 +31,13 @@ export const useSalesInvoice = () => {
     const randomNum = Math.floor(1000 + Math.random() * 9000); // رقم عشوائي من 4 أرقام
     const invoiceNumber = `INV-${dateStr}-${randomNum}`;
 
-    setInvoice({
+    // Create default invoice with sample items
+    const newInvoice: Invoice = {
       id: uuid(),
       invoiceNumber: invoiceNumber,
       customerId: "",
-      customerName: "",
-      customerPhone: "",
+      customerName: "عميل افتراضي",
+      customerPhone: "0500000000",
       customerAccountNumber: "",
       date: date.toISOString(),
       items: [],
@@ -45,7 +46,44 @@ export const useSalesInvoice = () => {
       paymentMethod: "cash",
       amountPaid: 0,
       warehouseId: ""
+    };
+
+    setInvoice(newInvoice);
+
+    // Add sample items
+    const sampleItems = [
+      {
+        productId: uuid(),
+        code: "P001",
+        name: "منتج تجريبي 1",
+        quantity: 2,
+        price: 100,
+        discount: 0,
+        discountType: "percentage" as const,
+        tax: 15,
+        total: 200,
+        notes: "ملاحظة تجريبية"
+      },
+      {
+        productId: uuid(),
+        code: "P002",
+        name: "منتج تجريبي 2",
+        quantity: 1,
+        price: 150,
+        discount: 0,
+        discountType: "percentage" as const,
+        tax: 15,
+        total: 150,
+        notes: ""
+      }
+    ];
+
+    sampleItems.forEach(item => {
+      addInvoiceItem(item);
     });
+
+    console.log("Created new invoice with sample items");
+    return newInvoice;
   };
 
   const updateInvoiceField = (field: string, value: any) => {
@@ -78,7 +116,7 @@ export const useSalesInvoice = () => {
       discount: item.discount || 0,
       discountType: item.discountType || "percentage",
       tax: item.tax || 0,
-      total: item.total || 0,
+      total: calculateItemTotal(item.quantity || 0, item.price || 0, item.discount || 0, item.discountType || "percentage", item.tax || 0),
       notes: item.notes || ""
     };
 
@@ -92,10 +130,28 @@ export const useSalesInvoice = () => {
     });
   };
 
+  const calculateItemTotal = (quantity: number, price: number, discount: number, discountType: 'percentage' | 'fixed', tax: number): number => {
+    const subtotal = quantity * price;
+    const discountAmount = discountType === 'percentage' ? (subtotal * discount / 100) : discount;
+    const afterDiscount = subtotal - discountAmount;
+    const taxAmount = afterDiscount * (tax / 100);
+    return Number((afterDiscount + taxAmount).toFixed(2));
+  };
+
   const updateInvoiceItem = (index: number, updates: Partial<InvoiceItem>) => {
     setInvoice(prev => {
       const updatedItems = [...prev.items];
-      updatedItems[index] = { ...updatedItems[index], ...updates };
+      updatedItems[index] = { 
+        ...updatedItems[index], 
+        ...updates,
+        total: calculateItemTotal(
+          updates.quantity !== undefined ? updates.quantity : updatedItems[index].quantity,
+          updates.price !== undefined ? updates.price : updatedItems[index].price,
+          updates.discount !== undefined ? updates.discount : updatedItems[index].discount,
+          updates.discountType !== undefined ? updates.discountType : updatedItems[index].discountType,
+          updates.tax !== undefined ? updates.tax : updatedItems[index].tax
+        )
+      };
       return {
         ...prev,
         items: updatedItems,

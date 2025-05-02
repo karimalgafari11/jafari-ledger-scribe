@@ -14,14 +14,14 @@ import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invo
 // Define default settings
 const defaultSettings: InvoiceSettingsType = {
   showCustomerDetails: true,
-  showItemCodes: false,
+  showItemCodes: true, // Changed to true to show item codes
   showItemNotes: true,
   showDiscount: true,
   showTax: true,
   showSignature: false,
   showCompanyLogo: true,
-  fontSize: 'medium',
-  tableColumns: ['serial', 'name', 'quantity', 'price', 'total', 'notes'],
+  fontSize: 'large', // Changed from medium to large
+  tableColumns: ['serial', 'code', 'name', 'quantity', 'price', 'total', 'notes'], // Added code to default columns
   tableWidth: 100,
 };
 
@@ -43,7 +43,9 @@ const SalesInvoicePage: React.FC = () => {
   } = useSalesInvoice();
 
   useEffect(() => {
+    // Create a new invoice and add a sample item for debugging
     createNewInvoice();
+    console.log("Invoice created with settings:", invoiceSettings);
     
     // Apply the font size from settings globally
     document.documentElement.style.setProperty(
@@ -74,6 +76,7 @@ const SalesInvoicePage: React.FC = () => {
 
   const handleSettingsChange = (newSettings: InvoiceSettingsType) => {
     setInvoiceSettings(newSettings);
+    console.log("Settings updated:", newSettings);
     
     // Apply the font size from settings globally
     document.documentElement.style.setProperty(
@@ -88,10 +91,29 @@ const SalesInvoicePage: React.FC = () => {
       <style>
         {`
           .invoice-text {
-            font-size: var(--invoice-font-size, 1rem);
+            font-size: var(--invoice-font-size, 1.125rem);
           }
           .invoice-table th, .invoice-table td {
-            font-size: var(--invoice-font-size, 1rem);
+            font-size: var(--invoice-font-size, 1.125rem);
+          }
+          .invoice-item-table {
+            width: 100%;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+          }
+          .invoice-item-table th, .invoice-item-table td {
+            border: 1px solid #000;
+            padding: 0.5rem;
+          }
+          .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            position: absolute;
+            background: white;
+            z-index: 100;
+            width: 100%;
           }
         `}
       </style>

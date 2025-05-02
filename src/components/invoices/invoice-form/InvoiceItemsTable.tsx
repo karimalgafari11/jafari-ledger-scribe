@@ -1,8 +1,8 @@
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Plus, Search } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceSettingsType } from "./InvoiceSettings";
 import { Input } from "@/components/ui/input";
@@ -38,10 +38,12 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   const [searchResults, setSearchResults] = useState<typeof mockProducts>([]);
   
   // Auto-open item form when there are no items
-  React.useEffect(() => {
+  useEffect(() => {
     if (items.length === 0 && !isAddingItem && editingItemIndex === null) {
+      console.log("No items found, auto-opening item form");
       setIsAddingItem(true);
     }
+    console.log("Current items:", items);
   }, [items, isAddingItem, editingItemIndex, setIsAddingItem]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +57,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           product.code.toLowerCase().includes(term.toLowerCase())
       );
       setSearchResults(results);
+      console.log("Search results:", results);
     } else {
       setSearchResults([]);
     }
@@ -67,6 +70,14 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
       setSearchResults([]);
     }
   };
+
+  // Get display column configuration from settings
+  const getVisibleColumns = () => {
+    const columns = settings?.tableColumns || ['serial', 'name', 'quantity', 'price', 'total', 'notes'];
+    return columns;
+  };
+  
+  const columns = getVisibleColumns();
 
   return (
     <div className="mt-2">
@@ -82,8 +93,16 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                 className="h-8 text-sm"
                 autoFocus
               />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute left-1 top-1/2 transform -translate-y-1/2 h-5 w-5"
+                onClick={toggleSearch}
+              >
+                <X className="h-3 w-3" />
+              </Button>
               {searchResults.length > 0 && (
-                <div className="absolute z-20 top-full right-0 w-full max-h-48 overflow-y-auto bg-white shadow-lg border rounded-md mt-1">
+                <div className="search-results">
                   {searchResults.map((product) => (
                     <div 
                       key={product.id} 
@@ -91,6 +110,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                       onClick={() => {
                         setIsAddingItem(true);
                         setIsSearching(false);
+                        console.log("Selected product:", product);
                       }}
                     >
                       <div className="font-semibold">{product.name}</div>
@@ -99,14 +119,6 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                   ))}
                 </div>
               )}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute left-1 top-1/2 transform -translate-y-1/2 h-5 w-5"
-                onClick={toggleSearch}
-              >
-                <Search className="h-3 w-3" />
-              </Button>
             </div>
           ) : (
             <Button 
@@ -134,7 +146,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
       
       <div 
         ref={tableRef} 
-        className="border border-gray-300 rounded-sm overflow-x-auto relative" 
+        className="border border-gray-300 rounded-sm overflow-x-auto relative invoice-item-table" 
         style={{
           width: `${tableWidth}%`
         }}
@@ -145,24 +157,39 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           onMouseDown={handleResizeStart} 
         />
         
-        <Table className="w-full text-base" bordered>
+        <Table className="w-full text-base invoice-table" bordered>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12 border border-black text-center font-semibold py-1.5 text-base">#</TableHead>
-              <TableHead className="border border-black text-center font-semibold py-1.5 text-base w-2/5">اسم الصنف</TableHead>
-              <TableHead className="border border-black text-center font-semibold py-1.5 text-base w-16">الكمية</TableHead>
-              <TableHead className="border border-black text-center font-semibold py-1.5 text-base w-28">السعر</TableHead>
-              <TableHead className="border border-black text-center font-semibold py-1.5 text-base w-28">الإجمالي</TableHead>
-              <TableHead className="border border-black text-center font-semibold py-1.5 text-base w-32">ملاحظات</TableHead>
-              <TableHead className="text-center border border-black font-semibold print-hide py-1.5 text-base w-16">الإجراءات</TableHead>
+              {columns.includes('serial') && 
+                <TableHead className="w-12 border border-black text-center font-semibold py-1.5 text-lg">#</TableHead>
+              }
+              {columns.includes('code') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">رمز الصنف</TableHead>
+              }
+              {columns.includes('name') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-2/5">اسم الصنف</TableHead>
+              }
+              {columns.includes('quantity') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-16">الكمية</TableHead>
+              }
+              {columns.includes('price') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">السعر</TableHead>
+              }
+              {columns.includes('total') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">الإجمالي</TableHead>
+              }
+              {columns.includes('notes') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-32">ملاحظات</TableHead>
+              }
+              <TableHead className="text-center border border-black font-semibold print-hide py-1.5 text-lg w-16">الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
                 <TableCell 
-                  colSpan={7} 
-                  className="text-center py-2 text-muted-foreground border border-black text-base"
+                  colSpan={columns.length + 1} 
+                  className="text-center py-2 text-muted-foreground border border-black text-lg"
                 >
                   لا توجد أصناف في الفاتورة
                 </TableCell>
@@ -170,17 +197,32 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             ) : (
               items.map((item, index) => (
                 <TableRow key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-gray-100"}>
-                  <TableCell className="border border-black text-center font-semibold py-1 text-base">{index + 1}</TableCell>
-                  <TableCell 
-                    className="border border-black py-1 text-base cursor-pointer hover:bg-gray-200" 
-                    onClick={() => handleEditItem(index)}
-                  >
-                    {item.name}
-                  </TableCell>
-                  <TableCell className="border border-black text-center py-1 text-base">{item.quantity}</TableCell>
-                  <TableCell className="border border-black text-center py-1 text-base">{item.price.toFixed(2)}</TableCell>
-                  <TableCell className="border border-black text-center font-semibold py-1 text-base">{item.total.toFixed(2)}</TableCell>
-                  <TableCell className="border border-black text-center py-1 text-base">{item.notes || '-'}</TableCell>
+                  {columns.includes('serial') && 
+                    <TableCell className="border border-black text-center font-semibold py-1 text-lg">{index + 1}</TableCell>
+                  }
+                  {columns.includes('code') && 
+                    <TableCell className="border border-black text-center py-1 text-lg">{item.code}</TableCell>
+                  }
+                  {columns.includes('name') && 
+                    <TableCell 
+                      className="border border-black py-1 text-lg cursor-pointer hover:bg-gray-200" 
+                      onClick={() => handleEditItem(index)}
+                    >
+                      {item.name}
+                    </TableCell>
+                  }
+                  {columns.includes('quantity') && 
+                    <TableCell className="border border-black text-center py-1 text-lg">{item.quantity}</TableCell>
+                  }
+                  {columns.includes('price') && 
+                    <TableCell className="border border-black text-center py-1 text-lg">{item.price.toFixed(2)}</TableCell>
+                  }
+                  {columns.includes('total') && 
+                    <TableCell className="border border-black text-center font-semibold py-1 text-lg">{item.total.toFixed(2)}</TableCell>
+                  }
+                  {columns.includes('notes') && 
+                    <TableCell className="border border-black text-center py-1 text-lg">{item.notes || '-'}</TableCell>
+                  }
                   <TableCell className="border border-black print-hide py-1">
                     <div className="flex space-x-1 rtl space-x-reverse justify-center">
                       <Button variant="ghost" size="sm" onClick={() => handleEditItem(index)} className="h-6 w-6 p-1">
