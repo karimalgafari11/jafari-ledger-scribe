@@ -1,7 +1,7 @@
 
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '@/pages/Dashboard';
 import { Toaster } from 'sonner';
 import NotFound from '@/pages/NotFound';
@@ -12,7 +12,7 @@ import SalesInvoicePage from '@/pages/invoices/SalesInvoicePage';
 import DiscountsPage from '@/pages/definitions/DiscountsPage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AccountingSidebar from '@/components/AccountingSidebar';
-import BasicDefinitionsPage from '@/pages/definitions/BasicDefinitionsPage';
+// import BasicDefinitionsPage from '@/pages/definitions/BasicDefinitionsPage';
 
 // Inventory Pages
 import ProductsPage from '@/pages/inventory/ProductsPage';
@@ -86,8 +86,8 @@ function App() {
                 <Route path="/invoices/returns" element={<ReturnsPage />} />
                 <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
                 
-                {/* Definitions */}
-                <Route path="/definitions" element={<BasicDefinitionsPage />} />
+                {/* Definitions - Redirect to settings */}
+                <Route path="/definitions" element={<Navigate to="/settings/system" replace />} />
                 <Route path="/definitions/discounts" element={<DiscountsPage />} />
                 <Route path="/definitions/currencies" element={<CurrenciesPage />} />
                 

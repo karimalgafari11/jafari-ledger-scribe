@@ -22,7 +22,8 @@ import {
   Shield,
   FileStack,
   UserCog,
-  List
+  List,
+  Warehouse
 } from "lucide-react";
 import { MenuItem } from "@/types/sidebar";
 
@@ -40,19 +41,16 @@ export const menuItems: MenuItem[] = [
     children: []
   },
   {
-    section: "التعاريف الأساسية",
-    icon: Building,
-    path: "/definitions",
-    children: []
-  },
-  {
     section: "المخزون",
-    icon: Box,
+    icon: Warehouse,
     children: [
       { label: "إدارة الأصناف", path: "/inventory/products", icon: Box },
       { label: "متابعة حركات المخزون", path: "/inventory/movements", icon: Box },
       { label: "الجرد الفعلي", path: "/inventory/counting", icon: ListChecks },
-      { label: "مستويات إعادة الطلب", path: "/inventory/reorder", icon: Box }
+      { label: "مستويات إعادة الطلب", path: "/inventory/reorder", icon: Box },
+      { label: "نقل داخلي بين المستودعات", path: "/inventory-control/transfer", icon: Box },
+      { label: "إدارة مواقع التخزين", path: "/inventory-control/locations", icon: Wrench },
+      { label: "تسجيل المخزون التالف", path: "/inventory-control/damaged", icon: Box }
     ]
   },
   {
@@ -76,15 +74,6 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
-    section: "التحكم بالمخزن",
-    icon: Wrench,
-    children: [
-      { label: "نقل داخلي بين المستودعات", path: "/inventory-control/transfer", icon: Box },
-      { label: "إدارة مواقع التخزين", path: "/inventory-control/locations", icon: Wrench },
-      { label: "تسجيل المخزون التالف", path: "/inventory-control/damaged", icon: Box }
-    ]
-  },
-  {
     section: "المحاسبة",
     icon: ChartBar,
     children: [
@@ -105,14 +94,6 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
-    section: "الأمان والصلاحيات",
-    icon: Shield,
-    children: [
-      { label: "إدارة الصلاحيات", path: "/settings/roles", icon: UserCog },
-      { label: "سجل الأحداث", path: "/settings/activity-log", icon: FileStack }
-    ]
-  },
-  {
     section: "المساعد الذكي",
     icon: Bot,
     path: "/ai-assistant",
@@ -123,9 +104,10 @@ export const menuItems: MenuItem[] = [
     icon: Settings,
     children: [
       { label: "إعدادات النظام", path: "/settings/system", icon: Settings },
-      { label: "إدارة الصفحات", path: "/settings/page-management", icon: List },
       { label: "إدارة الفروع", path: "/settings/branches", icon: Building },
       { label: "إدارة المستخدمين", path: "/settings/users", icon: Users },
+      { label: "الصلاحيات والأمان", path: "/settings/roles", icon: Shield },
+      { label: "سجل الأحداث", path: "/settings/activity-log", icon: FileStack },
       { label: "النسخ الاحتياطي", path: "/settings/backup", icon: Settings }
     ]
   }
