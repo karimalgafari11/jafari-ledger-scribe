@@ -9,19 +9,18 @@ import { Check, X } from "lucide-react";
 interface DiscountFormProps {
   onApply: (type: 'percentage' | 'fixed', value: number) => void;
   onCancel: () => void;
-  currentDiscount: {
-    type: 'percentage' | 'fixed';
-    value: number;
-  };
+  currentDiscount: number;
+  currentType: 'percentage' | 'fixed';
 }
 
 export const InvoiceDiscountForm: React.FC<DiscountFormProps> = ({
   onApply,
   onCancel,
-  currentDiscount
+  currentDiscount,
+  currentType
 }) => {
-  const [discountType, setDiscountType] = useState<'percentage' | 'fixed'>(currentDiscount.type);
-  const [discountValue, setDiscountValue] = useState(currentDiscount.value.toString());
+  const [discountType, setDiscountType] = useState<'percentage' | 'fixed'>(currentType);
+  const [discountValue, setDiscountValue] = useState(currentDiscount.toString());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

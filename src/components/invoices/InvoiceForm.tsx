@@ -2,7 +2,7 @@
 import React from "react";
 import { Invoice } from "@/types/invoices";
 import { Card, CardContent } from "@/components/ui/card";
-import { InvoiceSettings } from "./invoice-form/InvoiceSettings";
+import { InvoiceSettingsType } from "./invoice-form/InvoiceSettings";
 
 // Importing refactored components
 import { InvoiceHeader } from "./invoice-form/InvoiceHeader";
@@ -23,7 +23,7 @@ interface InvoiceFormProps {
   onRemoveItem: (index: number) => void;
   onApplyDiscount: (type: 'percentage' | 'fixed', value: number) => void;
   isLoading: boolean;
-  settings?: InvoiceSettings['InvoiceSettings'];
+  settings?: InvoiceSettingsType;
 }
 
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({

@@ -15,12 +15,12 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-interface InvoiceSettingsProps {
-  settings: InvoiceSettings;
-  onSettingsChange: (settings: InvoiceSettings) => void;
+export interface InvoiceSettingsProps {
+  settings: InvoiceSettingsType;
+  onSettingsChange: (settings: InvoiceSettingsType) => void;
 }
 
-export interface InvoiceSettings {
+export interface InvoiceSettingsType {
   showCustomerDetails: boolean;
   showItemCodes: boolean;
   showItemNotes: boolean;
@@ -34,9 +34,9 @@ export const InvoiceSettings: React.FC<InvoiceSettingsProps> = ({
   settings,
   onSettingsChange
 }) => {
-  const [localSettings, setLocalSettings] = useState<InvoiceSettings>(settings);
+  const [localSettings, setLocalSettings] = useState<InvoiceSettingsType>(settings);
 
-  const handleToggle = (field: keyof InvoiceSettings) => {
+  const handleToggle = (field: keyof InvoiceSettingsType) => {
     const newSettings = { ...localSettings, [field]: !localSettings[field] };
     setLocalSettings(newSettings);
     onSettingsChange(newSettings);

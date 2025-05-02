@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { InvoiceItemForm } from "@/components/invoices/InvoiceItemForm";
 import { InvoiceItem } from "@/types/invoices";
-import { InvoiceSettings } from "./InvoiceSettings";
+import { InvoiceSettingsType } from "./InvoiceSettings";
 
 interface InvoiceItemSectionProps {
   isAddingItem: boolean;
@@ -13,7 +13,7 @@ interface InvoiceItemSectionProps {
   handleUpdateItem: (item: Partial<InvoiceItem>) => void;
   handleCancelEdit: () => void;
   handleCancelAdd: () => void;
-  settings?: InvoiceSettings['InvoiceSettings'];
+  settings?: InvoiceSettingsType;
 }
 
 export const InvoiceItemSection: React.FC<InvoiceItemSectionProps> = ({

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { InvoiceItem } from "@/types/invoices";
-import { InvoiceSettings } from "./InvoiceSettings";
+import { InvoiceSettingsType } from "./InvoiceSettings";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -17,7 +17,7 @@ interface InvoiceItemsTableProps {
   handleEditItem: (index: number) => void;
   handleResizeStart: (e: React.MouseEvent) => void;
   onRemoveItem: (index: number) => void;
-  settings?: InvoiceSettings['InvoiceSettings'];
+  settings?: InvoiceSettingsType;
 }
 
 export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({

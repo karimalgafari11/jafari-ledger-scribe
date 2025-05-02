@@ -9,10 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, PrinterIcon, Share2, Save } from "lucide-react";
 import { useSalesInvoice } from "@/hooks/useSalesInvoice";
 import { toast } from "sonner";
-import { InvoiceSettings } from "@/components/invoices/invoice-form/InvoiceSettings";
+import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
 
 // Define default settings
-const defaultSettings = {
+const defaultSettings: InvoiceSettingsType = {
   showCustomerDetails: true,
   showItemCodes: true,
   showItemNotes: false,
@@ -58,7 +58,7 @@ const SalesInvoicePage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleSettingsChange = (newSettings: typeof invoiceSettings) => {
+  const handleSettingsChange = (newSettings: InvoiceSettingsType) => {
     setInvoiceSettings(newSettings);
   };
 
