@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -12,12 +13,16 @@ import { AccountingPeriodsModule } from "@/components/definitions/periods/Accoun
 import { VoucherTypesModule } from "@/components/definitions/vouchertypes/VoucherTypesModule";
 import { PaymentMethodsModule } from "@/components/definitions/paymentmethods/PaymentMethodsModule";
 import { SalesRepsModule } from "@/components/definitions/salesreps/SalesRepsModule";
-import { Building, Database, Tag, Calendar, Currency, FileText, Banknote, Users, ListCheck, ArrowUpRight } from "lucide-react";
+import { CashRegistersModule } from "@/components/definitions/cashregisters/CashRegistersModule";
+import { Building, Database, Tag, Calendar, Currency, FileText, Banknote, Users, ListCheck, ArrowUpRight, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
 const BasicDefinitionsPage = () => {
   const [activeTab, setActiveTab] = useState("branches");
-  return <Layout>
-      <div className="container mx-auto p-6 rtl px-0 py-0 bg-sky-200">
+  
+  return (
+    <Layout>
+      <div className="container mx-auto p-6 rtl">
         <Header title="التعاريف الأساسية" showBack={true} />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -58,6 +63,10 @@ const BasicDefinitionsPage = () => {
               <Users className="h-4 w-4" />
               <span>مندوبي المبيعات</span>
             </TabsTrigger>
+            <TabsTrigger value="cash-registers" className="flex items-center gap-2">
+              <WalletCards className="h-4 w-4" />
+              <span>صناديق النقدية</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="branches">
@@ -95,8 +104,13 @@ const BasicDefinitionsPage = () => {
           <TabsContent value="sales-reps">
             <SalesRepsModule />
           </TabsContent>
+          <TabsContent value="cash-registers">
+            <CashRegistersModule />
+          </TabsContent>
         </Tabs>
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default BasicDefinitionsPage;

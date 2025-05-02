@@ -1,136 +1,134 @@
 
-import { useState } from "react";
-import { v4 as uuid } from "uuid";
-import { CashRegister, Currency } from "@/types/definitions";
-import { toast } from "sonner";
+import { useState, useEffect } from "react";
+import { CashRegister } from "@/types/definitions";
+import { v4 as uuidv4 } from "uuid";
 
-// بيانات تجريبية لصناديق النقدية
+// Sample data for development purposes
 const initialCashRegisters: CashRegister[] = [
   {
-    id: uuid(),
+    id: "1",
     code: "CR001",
-    name: "الصندوق الرئيسي - الرياض",
+    name: "صندوق المبيعات الرئيسي",
     branchId: "1",
     branchName: "الفرع الرئيسي",
     currencyId: "1",
-    currencyCode: "SAR",
-    balance: 10000,
+    currencyCode: "ريال",
+    balance: 5000,
     isActive: true,
+    userId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
-    id: uuid(),
+    id: "2",
     code: "CR002",
-    name: "صندوق المبيعات - الرياض",
+    name: "صندوق المشتريات",
     branchId: "1",
     branchName: "الفرع الرئيسي",
     currencyId: "1",
-    currencyCode: "SAR",
-    balance: 5000,
+    currencyCode: "ريال",
+    balance: 2500,
     isActive: true,
+    userId: "2",
     createdAt: new Date(),
     updatedAt: new Date(),
-  }
+  },
+  {
+    id: "3",
+    code: "CR003",
+    name: "صندوق فرع الشمال",
+    branchId: "2",
+    branchName: "فرع الشمال",
+    currencyId: "1",
+    currencyCode: "ريال",
+    balance: 3000,
+    isActive: false,
+    userId: "1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 ];
 
 export const useCashRegister = () => {
   const [cashRegisters, setCashRegisters] = useState<CashRegister[]>(initialCashRegisters);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRegister, setSelectedRegister] = useState<CashRegister | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Dialog states
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegister, setSelectedRegister] = useState<CashRegister | null>(null);
 
-  // البحث في الصناديق
+  // Filter cash registers based on search term
   const filteredRegisters = cashRegisters.filter(
     (register) =>
-      register.name.includes(searchTerm) ||
-      register.code.includes(searchTerm) ||
-      register.branchName.includes(searchTerm)
+      register.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      register.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      register.branchName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // إضافة صندوق جديد
-  const createRegister = (register: Omit<CashRegister, "id" | "createdAt" | "updatedAt">) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      const newRegister: CashRegister = {
-        ...register,
-        id: uuid(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setCashRegisters([...cashRegisters, newRegister]);
-      toast.success("تم إضافة الصندوق بنجاح");
-      setIsLoading(false);
-    }, 500);
-    return true;
+  // Generate a new cash register code
+  const generateCashRegisterCode = () => {
+    const lastCode = cashRegisters.reduce((max, register) => {
+      const codeNum = parseInt(register.code.replace(/\D/g, ""), 10);
+      return codeNum > max ? codeNum : max;
+    }, 0);
+    return `CR${(lastCode + 1).toString().padStart(3, "0")}`;
   };
 
-  // تعديل صندوق
-  const updateRegister = (id: string, updates: Partial<CashRegister>) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setCashRegisters(
-        cashRegisters.map((register) =>
-          register.id === id
-            ? { ...register, ...updates, updatedAt: new Date() }
-            : register
-        )
-      );
-      toast.success("تم تحديث بيانات الصندوق بنجاح");
-      setIsLoading(false);
-    }, 500);
-    return true;
+  // CRUD operations
+  const createCashRegister = (data: Omit<CashRegister, "id" | "createdAt" | "updatedAt">) => {
+    const newRegister: CashRegister = {
+      id: uuidv4(),
+      ...data,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    setCashRegisters((prev) => [...prev, newRegister]);
   };
 
-  // حذف صندوق
-  const deleteRegister = (id: string) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setCashRegisters(cashRegisters.filter((register) => register.id !== id));
-      toast.success("تم حذف الصندوق بنجاح");
-      setIsLoading(false);
-    }, 500);
-    return true;
+  const updateCashRegister = (id: string, data: Partial<CashRegister>) => {
+    setCashRegisters((prev) =>
+      prev.map((register) =>
+        register.id === id
+          ? { ...register, ...data, updatedAt: new Date() }
+          : register
+      )
+    );
   };
 
-  // إيداع أو سحب من الصندوق
-  const registerTransaction = (id: string, amount: number, isDeposit: boolean) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setCashRegisters(
-        cashRegisters.map((register) => {
-          if (register.id === id) {
-            const newBalance = isDeposit
-              ? register.balance + amount
-              : register.balance - amount;
-            
-            if (!isDeposit && newBalance < 0) {
-              toast.error("لا يوجد رصيد كافٍ في الصندوق");
-              return register;
-            }
-            
-            toast.success(`تم ${isDeposit ? "إيداع" : "سحب"} المبلغ بنجاح`);
-            return {
-              ...register,
-              balance: newBalance,
-              updatedAt: new Date(),
-            };
-          }
-          return register;
-        })
-      );
-      setIsLoading(false);
-    }, 500);
-    return true;
+  const deleteCashRegister = (id: string) => {
+    setCashRegisters((prev) => prev.filter((register) => register.id !== id));
   };
+
+  const toggleCashRegisterStatus = (id: string) => {
+    setCashRegisters((prev) =>
+      prev.map((register) =>
+        register.id === id
+          ? { ...register, isActive: !register.isActive, updatedAt: new Date() }
+          : register
+      )
+    );
+  };
+
+  // Simulate loading state
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return {
     cashRegisters,
     filteredRegisters,
     isLoading,
+    searchTerm,
+    setSearchTerm,
+    createCashRegister,
+    updateCashRegister,
+    deleteCashRegister,
+    toggleCashRegisterStatus,
     selectedRegister,
     setSelectedRegister,
     isCreateDialogOpen,
@@ -139,11 +137,6 @@ export const useCashRegister = () => {
     setIsEditDialogOpen,
     isDeleteDialogOpen,
     setIsDeleteDialogOpen,
-    searchTerm,
-    setSearchTerm,
-    createRegister,
-    updateRegister,
-    deleteRegister,
-    registerTransaction,
+    generateCashRegisterCode,
   };
 };

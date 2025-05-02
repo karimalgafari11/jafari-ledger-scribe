@@ -12,6 +12,7 @@ import SalesInvoicePage from '@/pages/invoices/SalesInvoicePage';
 import DiscountsPage from '@/pages/definitions/DiscountsPage';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AccountingSidebar from '@/components/AccountingSidebar';
+import BasicDefinitionsPage from '@/pages/definitions/BasicDefinitionsPage';
 
 // Inventory Pages
 import ProductsPage from '@/pages/inventory/ProductsPage';
@@ -52,7 +53,6 @@ import BackupPage from '@/pages/settings/BackupPage';
 
 // Definitions Pages
 import CurrenciesPage from '@/pages/definitions/CurrenciesPage';
-import BasicDefinitionsPage from '@/pages/definitions/BasicDefinitionsPage';
 
 // AI Assistant Pages
 import AiAssistantPage from '@/pages/ai/AiAssistantPage';
@@ -87,6 +87,7 @@ function App() {
                 <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
                 
                 {/* Definitions */}
+                <Route path="/definitions" element={<BasicDefinitionsPage />} />
                 <Route path="/definitions/discounts" element={<DiscountsPage />} />
                 <Route path="/definitions/currencies" element={<CurrenciesPage />} />
                 
