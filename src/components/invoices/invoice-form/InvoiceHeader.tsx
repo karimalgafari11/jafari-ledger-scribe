@@ -1,8 +1,8 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Logo } from "@/components/Logo";
+import { Button } from "@/components/ui/button";
+import { Edit2, Save } from "lucide-react";
 
 interface CompanyInfo {
   name: string;
@@ -26,65 +26,74 @@ export const InvoiceHeader: React.FC<InvoiceHeaderProps> = ({
   showLogo = true
 }) => {
   return (
-    <div className="border border-gray-300 p-1 mb-2 bg-white relative rounded-sm">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          {showLogo && <Logo size="small" className="ml-1 h-8 w-8" />}
-          
-          {companyInfo.isEditing ? (
-            <div className="space-y-0.5">
-              <Input 
-                value={companyInfo.name} 
-                onChange={e => handleCompanyInfoChange('name', e.target.value)} 
-                className="mb-0.5 h-5 text-xs" 
-                placeholder="اسم الشركة" 
+    <div className="flex justify-between items-start border-b border-gray-200 pb-1 mb-1 print:pb-2 print:mb-2">
+      {/* Company Logo (Left) */}
+      {showLogo && (
+        <div className="w-12 h-12 print:w-16 print:h-16">
+          <img 
+            src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
+            alt="Company Logo" 
+            className="w-full h-full object-contain" 
+          />
+        </div>
+      )}
+
+      {/* Company Information (Center) */}
+      <div className="text-center flex-1 px-2">
+        {companyInfo.isEditing ? (
+          <div className="space-y-0.5">
+            <Input
+              value={companyInfo.name}
+              onChange={(e) => handleCompanyInfoChange('name', e.target.value)}
+              className="text-center font-bold h-5 text-xs"
+            />
+            <div className="flex gap-1 justify-center">
+              <Input
+                value={companyInfo.phone}
+                onChange={(e) => handleCompanyInfoChange('phone', e.target.value)}
+                className="text-center w-1/3 h-5 text-xs"
               />
-              <Input 
-                value={companyInfo.phone} 
-                onChange={e => handleCompanyInfoChange('phone', e.target.value)} 
-                className="mb-0.5 h-5 text-xs" 
-                placeholder="رقم الهاتف" 
-              />
-              <Input 
-                value={companyInfo.email} 
-                onChange={e => handleCompanyInfoChange('email', e.target.value)} 
-                className="mb-0.5 h-5 text-xs" 
-                placeholder="البريد الإلكتروني" 
-              />
-              <Input 
-                value={companyInfo.address} 
-                onChange={e => handleCompanyInfoChange('address', e.target.value)} 
-                placeholder="العنوان"
-                className="h-5 text-xs" 
+              <Input
+                value={companyInfo.email}
+                onChange={(e) => handleCompanyInfoChange('email', e.target.value)}
+                className="text-center w-1/3 h-5 text-xs"
               />
             </div>
-          ) : (
-            <div className="space-y-0">
-              <h2 className="font-bold text-sm">{companyInfo.name}</h2>
-              <div className="text-xs text-gray-600">
-                <p className="leading-tight">{companyInfo.phone}</p>
-                <p className="leading-tight">{companyInfo.email}</p>
-                <p className="leading-tight">{companyInfo.address}</p>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <div>
-          <Button 
-            onClick={toggleCompanyEdit} 
-            variant="ghost" 
-            size="xs" 
-            className="print-hide text-xs h-5"
-          >
-            {companyInfo.isEditing ? 'حفظ' : 'تعديل'}
-          </Button>
-        </div>
+            <Input
+              value={companyInfo.address}
+              onChange={(e) => handleCompanyInfoChange('address', e.target.value)}
+              className="text-center h-5 text-xs"
+            />
+            <Button onClick={toggleCompanyEdit} size="xs" className="h-5 text-xs">
+              <Save className="ml-1 h-3 w-3" />
+              حفظ
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-0.5 relative">
+            <h2 className="font-bold text-sm">{companyInfo.name}</h2>
+            <p className="text-xs">
+              {companyInfo.phone} | {companyInfo.email}
+            </p>
+            <p className="text-xs">{companyInfo.address}</p>
+            <Button
+              onClick={toggleCompanyEdit}
+              variant="ghost"
+              size="xs"
+              className="absolute -left-1 top-0 h-5 w-5 p-0.5 print-hide"
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
+          </div>
+        )}
       </div>
-      
-      <div className="text-center mb-0.5 mt-0.5">
-        <h1 className="font-bold border-b border-t border-gray-300 py-0 text-sm">فاتورة مبيعات</h1>
-        <p className="text-xs">Sales Invoice</p>
+
+      {/* Invoice Title (Right) */}
+      <div className="text-center w-16">
+        <div className="border border-gray-300 rounded-md p-1">
+          <h2 className="text-sm font-bold mb-0.5">فاتورة</h2>
+          <p className="text-xs">مبيعات</p>
+        </div>
       </div>
     </div>
   );

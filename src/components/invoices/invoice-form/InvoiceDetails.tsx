@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { mockCustomers } from "@/data/mockCustomers";
-import { mockWarehouses } from "@/data/mockWarehouses";
 import { format } from "date-fns";
 import { Invoice } from "@/types/invoices";
 import { SearchBar } from "@/components/SearchBar";
@@ -72,33 +71,6 @@ export const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
 
       <div className="space-y-0.5">
         <div>
-          <label htmlFor="warehouse" className="block text-xs font-medium mb-0">المخزن</label>
-          <Select 
-            value={invoice.warehouseId || ""} 
-            onValueChange={value => {
-              const warehouse = mockWarehouses.find(w => w.id === value);
-              onFieldChange('warehouseId', value);
-              if (warehouse) {
-                onFieldChange('warehouseName', warehouse.name);
-              }
-            }}
-          >
-            <SelectTrigger className="h-6 text-xs">
-              <SelectValue placeholder="اختر المخزن" />
-            </SelectTrigger>
-            <SelectContent>
-              {mockWarehouses.map(warehouse => (
-                <SelectItem key={warehouse.id} value={warehouse.id} className="text-xs">
-                  {warehouse.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="space-y-0.5">
-        <div>
           <label htmlFor="paymentMethod" className="block text-xs font-medium mb-0">طريقة الدفع</label>
           <RadioGroup 
             defaultValue={invoice.paymentMethod || "cash"} 
@@ -117,9 +89,21 @@ export const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
         </div>
       </div>
 
+      <div className="space-y-0.5">
+        <div>
+          <label htmlFor="customerAccountNumber" className="block text-xs font-medium mb-0">رقم العميل</label>
+          <Input 
+            id="customerAccountNumber" 
+            value={invoice.customerAccountNumber || ""} 
+            onChange={e => onFieldChange('customerAccountNumber', e.target.value)}
+            className="h-6 text-xs" 
+          />
+        </div>
+      </div>
+
       <div className="col-span-4 space-y-0.5">
         <div>
-          <label className="block text-xs font-medium mb-0">العميل</label>
+          <label className="block text-xs font-medium mb-0">البحث عن العميل</label>
           <SearchBar 
             placeholder="ابحث عن العميل بالاسم أو الرقم..." 
             onChange={handleCustomerSearch} 

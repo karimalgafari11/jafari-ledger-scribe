@@ -79,7 +79,7 @@ const SalesInvoicePage: React.FC = () => {
                 <ArrowLeft className="ml-1 h-3 w-3" />
                 إلغاء
               </Button>
-              <Button onClick={handleSave} disabled={isLoading || invoice.items.length === 0} className="print-hide h-7 text-xs">
+              <Button onClick={handleSave} disabled={isLoading} className="print-hide h-7 text-xs">
                 <Save className="ml-1 h-3 w-3" />
                 حفظ
               </Button>
