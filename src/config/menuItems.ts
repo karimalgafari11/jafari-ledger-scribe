@@ -63,7 +63,17 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
-    section: "الفواتير والطلبات",
+    section: "المشتريات",
+    icon: ShoppingCart,
+    children: [
+      { label: "فاتورة شراء جديدة", path: "/purchases/new", icon: Receipt },
+      { label: "فواتير الشراء", path: "/purchases/invoices", icon: FileText },
+      { label: "مرتجعات الشراء", path: "/purchases/returns", icon: FileText },
+      { label: "أوامر الشراء", path: "/purchases/orders", icon: ShoppingCart }
+    ]
+  },
+  {
+    section: "المبيعات والفواتير",
     icon: FileText,
     children: [
       { label: "الفواتير الصادرة", path: "/invoices/outgoing", icon: FileText },
@@ -74,23 +84,39 @@ export const menuItems: MenuItem[] = [
     ]
   },
   {
+    section: "الذمم والمستحقات",
+    icon: BadgeDollarSign,
+    children: [
+      { label: "الذمم المدينة", path: "/receivables/accounts", icon: PiggyBank },
+      { label: "الذمم الدائنة", path: "/payables/accounts", icon: Banknote },
+      { label: "تحصيل الديون", path: "/receivables/collection", icon: Coins },
+      { label: "سداد المستحقات", path: "/payables/payment", icon: DollarSign }
+    ]
+  },
+  {
     section: "المحاسبة",
     icon: ChartBar,
     children: [
       { label: "شجرة الحسابات", path: "/accounting/chart", icon: ChartBar },
       { label: "القيود اليومية", path: "/accounting/journals", icon: FileText },
+      { label: "دفتر الأستاذ العام", path: "/accounting/ledger", icon: FileStack },
       { label: "صناديق النقدية", path: "/accounting/cashregister", icon: WalletCards },
+      { label: "الحسابات البنكية", path: "/accounting/banks", icon: Building },
       { label: "الأوراق التجارية", path: "/accounting/commercialpapers", icon: Receipt },
       { label: "العملات وأسعار الصرف", path: "/definitions/currencies", icon: Coins },
       { label: "مراكز الكلفة", path: "/accounting/cost-centers", icon: ChartBar },
+      { label: "الموازنات التقديرية", path: "/accounting/budgets", icon: PiggyBank },
       { label: "الإعدادات المحاسبية", path: "/accounting/settings", icon: Settings }
     ]
   },
   {
-    section: "العملاء",
+    section: "العملاء والموردين",
     icon: Users,
     children: [
-      { label: "إدارة العملاء", path: "/customers/manage", icon: Users }
+      { label: "إدارة العملاء", path: "/customers/manage", icon: Users },
+      { label: "إدارة الموردين", path: "/vendors/manage", icon: Users },
+      { label: "تقارير العملاء", path: "/customers/reports", icon: FileText },
+      { label: "تقارير الموردين", path: "/vendors/reports", icon: FileText }
     ]
   },
   {
@@ -108,6 +134,7 @@ export const menuItems: MenuItem[] = [
       { label: "إدارة المستخدمين", path: "/settings/users", icon: Users },
       { label: "الصلاحيات والأمان", path: "/settings/roles", icon: Shield },
       { label: "سجل الأحداث", path: "/settings/activity-log", icon: FileStack },
+      { label: "إعدادات الإشعارات", path: "/settings/notifications", icon: Bell },
       { label: "النسخ الاحتياطي", path: "/settings/backup", icon: Settings }
     ]
   }

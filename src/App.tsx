@@ -38,9 +38,29 @@ import CommercialPapersPage from '@/pages/accounting/CommercialPapersPage';
 import CostCentersPage from '@/pages/accounting/CostCentersPage';
 import AccountingSettingsPage from '@/pages/accounting/AccountingSettingsPage';
 import AccountingRulesPage from '@/pages/accounting/AccountingRulesPage';
+import LedgerPage from '@/pages/accounting/LedgerPage';
+import BankAccountsPage from '@/pages/accounting/BankAccountsPage';
+import BudgetsPage from '@/pages/accounting/BudgetsPage';
 
 // Customers Pages
 import CustomersPage from '@/pages/customers/CustomersPage';
+import CustomerReportsPage from '@/pages/customers/CustomerReportsPage';
+
+// Vendors Pages
+import VendorsPage from '@/pages/vendors/VendorsPage';
+import VendorReportsPage from '@/pages/vendors/VendorReportsPage';
+
+// Purchases Pages
+import PurchaseInvoicePage from '@/pages/purchases/PurchaseInvoicePage';
+import PurchasesInvoicesPage from '@/pages/purchases/PurchasesInvoicesPage';
+import PurchasesOrdersPage from '@/pages/purchases/PurchasesOrdersPage';
+import PurchasesReturnsPage from '@/pages/purchases/PurchasesReturnsPage';
+
+// Receivables and Payables Pages
+import ReceivablesPage from '@/pages/receivables/ReceivablesPage';
+import ReceivablesCollectionPage from '@/pages/receivables/CollectionPage';
+import PayablesPage from '@/pages/payables/PayablesPage';
+import PayablesPaymentPage from '@/pages/payables/PaymentPage';
 
 // Settings Pages
 import UserRolesPage from '@/pages/settings/UserRolesPage';
@@ -50,6 +70,7 @@ import PageManagementPage from '@/pages/settings/PageManagementPage';
 import BranchesPage from '@/pages/settings/BranchesPage';
 import UsersPage from '@/pages/settings/UsersPage';
 import BackupPage from '@/pages/settings/BackupPage';
+import NotificationSettingsPage from '@/pages/settings/NotificationSettingsPage';
 
 // Definitions Pages
 import CurrenciesPage from '@/pages/definitions/CurrenciesPage';
@@ -86,6 +107,18 @@ function App() {
                 <Route path="/invoices/returns" element={<ReturnsPage />} />
                 <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
                 
+                {/* Purchases */}
+                <Route path="/purchases/new" element={<PurchaseInvoicePage />} />
+                <Route path="/purchases/invoices" element={<PurchasesInvoicesPage />} />
+                <Route path="/purchases/returns" element={<PurchasesReturnsPage />} />
+                <Route path="/purchases/orders" element={<PurchasesOrdersPage />} />
+                
+                {/* Receivables and Payables */}
+                <Route path="/receivables/accounts" element={<ReceivablesPage />} />
+                <Route path="/receivables/collection" element={<ReceivablesCollectionPage />} />
+                <Route path="/payables/accounts" element={<PayablesPage />} />
+                <Route path="/payables/payment" element={<PayablesPaymentPage />} />
+                
                 {/* Definitions - Redirect to settings */}
                 <Route path="/definitions" element={<Navigate to="/settings/system" replace />} />
                 <Route path="/definitions/discounts" element={<DiscountsPage />} />
@@ -110,14 +143,20 @@ function App() {
                 {/* Accounting */}
                 <Route path="/accounting/chart" element={<AccountChartPage />} />
                 <Route path="/accounting/journals" element={<JournalEntriesPage />} />
+                <Route path="/accounting/ledger" element={<LedgerPage />} />
                 <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
+                <Route path="/accounting/banks" element={<BankAccountsPage />} />
                 <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
                 <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
+                <Route path="/accounting/budgets" element={<BudgetsPage />} />
                 <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
                 <Route path="/accounting/rules" element={<AccountingRulesPage />} />
                 
-                {/* Customers */}
+                {/* Customers and Vendors */}
                 <Route path="/customers/manage" element={<CustomersPage />} />
+                <Route path="/customers/reports" element={<CustomerReportsPage />} />
+                <Route path="/vendors/manage" element={<VendorsPage />} />
+                <Route path="/vendors/reports" element={<VendorReportsPage />} />
                 
                 {/* Settings */}
                 <Route path="/settings/roles" element={<UserRolesPage />} />
@@ -127,6 +166,7 @@ function App() {
                 <Route path="/settings/branches" element={<BranchesPage />} />
                 <Route path="/settings/users" element={<UsersPage />} />
                 <Route path="/settings/backup" element={<BackupPage />} />
+                <Route path="/settings/notifications" element={<NotificationSettingsPage />} />
                 
                 {/* AI Assistant */}
                 <Route path="/ai-assistant" element={<AiAssistantPage />} />
