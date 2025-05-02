@@ -14,8 +14,8 @@ import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invo
 // Define default settings
 const defaultSettings: InvoiceSettingsType = {
   showCustomerDetails: true,
-  showItemCodes: true,
-  showItemNotes: false,
+  showItemCodes: false, // We're not showing item codes as per request
+  showItemNotes: true, // Show notes as requested
   showDiscount: true,
   showTax: true,
   showSignature: false,

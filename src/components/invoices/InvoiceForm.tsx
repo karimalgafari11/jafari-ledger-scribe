@@ -6,6 +6,9 @@ import { InvoiceSettingsType } from "./invoice-form/InvoiceSettings";
 // Importing refactored components
 import { InvoiceHeader } from "./invoice-form/InvoiceHeader";
 import { InvoiceDetails } from "./invoice-form/InvoiceDetails";
+import { InvoiceItemsTable } from "./invoice-form/InvoiceItemsTable";
+import { InvoiceSummarySection } from "./invoice-form/InvoiceSummarySection";
+import { InvoiceActions } from "./invoice-form/InvoiceActions";
 
 // Custom hook
 import { useInvoiceForm } from "@/hooks/useInvoiceForm";
@@ -35,6 +38,28 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     companyInfo,
     toggleCompanyEdit,
     handleCompanyInfoChange,
+    isAddingItem,
+    editingItemIndex,
+    isDiscountFormOpen,
+    tableWidth,
+    tableRef,
+    setIsAddingItem,
+    setEditingItemIndex,
+    setIsDiscountFormOpen,
+    handleAddItem,
+    handleUpdateItem,
+    handleEditItem,
+    handleCancelEdit,
+    handleCancelAdd,
+    handleApplyDiscount,
+    handleResizeStart,
+    handleWhatsAppShare,
+    handleCreatePDF,
+    calculateRemaining,
+    handleAmountPaidChange,
+    handleNotesChange,
+    handlePrint,
+    handleShare,
   } = useInvoiceForm(invoice, onFieldChange, onAddItem, onUpdateItem, onRemoveItem, onApplyDiscount);
   
   return (
@@ -52,6 +77,42 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         invoice={invoice} 
         onFieldChange={onFieldChange} 
         condensed={true}
+      />
+      
+      {/* Invoice Items Table */}
+      <InvoiceItemsTable
+        items={invoice.items}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        tableWidth={tableWidth}
+        tableRef={tableRef}
+        setIsAddingItem={setIsAddingItem}
+        handleEditItem={handleEditItem}
+        handleResizeStart={handleResizeStart}
+        onRemoveItem={onRemoveItem}
+        settings={settings}
+      />
+
+      {/* Invoice Summary Section */}
+      <InvoiceSummarySection 
+        invoice={invoice}
+        isDiscountFormOpen={isDiscountFormOpen}
+        calculateRemaining={calculateRemaining}
+        setIsDiscountFormOpen={setIsDiscountFormOpen}
+        onAmountPaidChange={handleAmountPaidChange}
+        handleApplyDiscount={handleApplyDiscount}
+        showDiscount={settings?.showDiscount !== false}
+        showTax={settings?.showTax !== false}
+      />
+      
+      {/* Invoice Actions */}
+      <InvoiceActions 
+        notes={invoice.notes}
+        onNotesChange={handleNotesChange}
+        handlePrint={handlePrint}
+        handleWhatsAppShare={handleWhatsAppShare}
+        handleCreatePDF={handleCreatePDF}
+        handleShare={handleShare}
       />
 
       {/* Print-only styles */}

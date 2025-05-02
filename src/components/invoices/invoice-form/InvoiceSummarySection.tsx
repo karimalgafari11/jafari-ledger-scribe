@@ -37,8 +37,9 @@ export const InvoiceSummarySection: React.FC<InvoiceSummarySectionProps> = ({
   const hasDiscount = invoice.discount && invoice.discount > 0;
 
   return (
-    <div className="space-y-1 bg-gray-50 p-1 border border-gray-300 rounded-sm">
-      <div className="grid grid-cols-2 gap-1">
+    <div className="space-y-1 mt-2 border border-black p-1.5 rounded-sm">
+      <h3 className="text-sm font-bold mb-1">ملخص الفاتورة</h3>
+      <div className="grid grid-cols-2 gap-2">
         <div className="space-y-0.5">
           <div className="text-xs flex justify-between items-center">
             <span>المجموع الفرعي:</span>
