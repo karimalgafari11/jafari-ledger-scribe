@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Printer, Download, Share2, FileText, WhatsApp } from "lucide-react";
+import { Printer, Download, Share2, FileText, MessageSquare } from "lucide-react";
 
 interface InvoiceActionsProps {
   notes: string | undefined;
@@ -53,7 +53,7 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
           className="h-6 text-xs"
           onClick={handleWhatsAppShare}
         >
-          <WhatsApp className="ml-1 h-3 w-3" />
+          <MessageSquare className="ml-1 h-3 w-3" />
           واتساب
         </Button>
         <Button 
