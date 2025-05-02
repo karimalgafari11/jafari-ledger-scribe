@@ -67,27 +67,27 @@ const SalesInvoicePage: React.FC = () => {
       <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
         <Header title="فاتورة مبيعات جديدة" showBack={true} onBackClick={handleBack} />
 
-        <div className="flex-1 overflow-auto print:overflow-visible print-section py-[4px] px-[5px]">
-          <div className="flex justify-between items-center mb-2 print:mb-4 print-hide">
-            <h2 className="text-xl font-bold">إنشاء فاتورة مبيعات</h2>
-            <div className="space-x-2 flex rtl">
+        <div className="flex-1 overflow-auto print:overflow-visible print-section py-[2px] px-[3px] bg-gray-50">
+          <div className="flex justify-between items-center mb-1 print:mb-2 print-hide">
+            <h2 className="text-sm font-semibold">إنشاء فاتورة مبيعات</h2>
+            <div className="space-x-1 flex rtl">
               <InvoiceSettings 
                 settings={invoiceSettings}
                 onSettingsChange={handleSettingsChange}
               />
-              <Button onClick={handleBack} variant="outline" className="print-hide h-8 text-xs">
+              <Button onClick={handleBack} variant="outline" className="print-hide h-7 text-xs">
                 <ArrowLeft className="ml-1 h-3 w-3" />
                 إلغاء
               </Button>
-              <Button onClick={handleSave} disabled={isLoading || invoice.items.length === 0} className="print-hide h-8 text-xs">
+              <Button onClick={handleSave} disabled={isLoading || invoice.items.length === 0} className="print-hide h-7 text-xs">
                 <Save className="ml-1 h-3 w-3" />
                 حفظ
               </Button>
             </div>
           </div>
 
-          <Card className="mb-4 print:shadow-none print:border-none">
-            <CardContent className="p-3 bg-zinc-100">
+          <Card className="mb-2 print:shadow-none print:border-none">
+            <CardContent className="p-2 bg-white">
               <InvoiceForm 
                 invoice={invoice} 
                 onFieldChange={updateInvoiceField} 

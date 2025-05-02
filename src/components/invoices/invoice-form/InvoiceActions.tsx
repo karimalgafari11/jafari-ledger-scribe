@@ -20,20 +20,20 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
   handleCreatePDF
 }) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <label htmlFor="notes" className="block text-xs font-medium mb-0.5">ملاحظات</label>
       <Textarea
         id="notes"
         placeholder="أدخل أي ملاحظات إضافية هنا..."
         value={notes || ""}
         onChange={(e) => onNotesChange(e.target.value)}
-        className="min-h-[80px] h-24 text-sm"
+        className="min-h-[60px] h-16 text-xs"
       />
       
-      <div className="flex space-x-2 rtl space-x-reverse print-hide">
+      <div className="flex space-x-1 rtl space-x-reverse print-hide">
         <Button 
           variant="outline" 
-          className="flex-1 h-7 text-xs"
+          className="flex-1 h-5 text-xs"
           onClick={handlePrint}
         >
           <Printer className="ml-1 h-3 w-3" />
@@ -41,7 +41,7 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
         </Button>
         <Button 
           variant="outline" 
-          className="flex-1 h-7 text-xs"
+          className="flex-1 h-5 text-xs"
           onClick={handleWhatsAppShare}
         >
           <SendHorizontal className="ml-1 h-3 w-3" />
@@ -49,7 +49,7 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({
         </Button>
         <Button 
           variant="outline" 
-          className="flex-1 h-7 text-xs"
+          className="flex-1 h-5 text-xs"
           onClick={handleCreatePDF}
         >
           <FileText className="ml-1 h-3 w-3" />

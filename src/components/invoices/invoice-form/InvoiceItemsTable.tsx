@@ -43,84 +43,68 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   }, [items, isAddingItem, editingItemIndex, setIsAddingItem]);
 
   return (
-    <div className="mt-4">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-md font-bold">الأصناف</h3>
+    <div className="mt-2">
+      <div className="flex justify-between items-center mb-1">
+        <h3 className="text-sm font-bold">الأصناف</h3>
       </div>
       
       <div 
         ref={tableRef} 
-        className="border-2 border-black rounded-md overflow-x-auto relative" 
+        className="border border-gray-300 rounded-sm overflow-x-auto relative" 
         style={{
           width: `${tableWidth}%`
         }}
       >
         {/* Resize handle */}
         <div 
-          className="absolute top-0 bottom-0 right-0 w-2 cursor-ew-resize bg-primary/10 hover:bg-primary/20 transition-colors" 
+          className="absolute top-0 bottom-0 right-0 w-1 cursor-ew-resize bg-primary/10 hover:bg-primary/20 transition-colors" 
           onMouseDown={handleResizeStart} 
         />
         
-        <Table className="w-full text-sm" gridLines="both" bordered>
+        <Table className="w-full text-xs" gridLines="both" bordered>
           <TableHeader>
-            <TableRow className="bg-muted">
-              <TableHead className="w-10 border-2 border-black text-center font-bold py-1">#</TableHead>
-              {showItemCodes && (
-                <TableHead className="border-2 border-black text-center font-bold py-1">رقم الماده</TableHead>
-              )}
-              <TableHead className="border-2 border-black text-center font-bold py-1">اسم الماده</TableHead>
-              <TableHead className="border-2 border-black text-center font-bold py-1">الكمية</TableHead>
-              <TableHead className="border-2 border-black text-center font-bold py-1">السعر</TableHead>
-              {settings?.showDiscount !== false && (
-                <TableHead className="border-2 border-black text-center font-bold py-1">الخصم</TableHead>
-              )}
-              <TableHead className="border-2 border-black text-center font-bold py-1">الإجمالي</TableHead>
+            <TableRow className="bg-gray-100">
+              <TableHead className="w-10 border border-gray-300 text-center font-semibold py-0.5 text-xs">#</TableHead>
+              <TableHead className="border border-gray-300 text-center font-semibold py-0.5 text-xs">رقم الصنف</TableHead>
+              <TableHead className="border border-gray-300 text-center font-semibold py-0.5 text-xs w-2/5">اسم الصنف</TableHead>
+              <TableHead className="border border-gray-300 text-center font-semibold py-0.5 text-xs w-14">الكمية</TableHead>
+              <TableHead className="border border-gray-300 text-center font-semibold py-0.5 text-xs w-24">سعر الإفرادي</TableHead>
+              <TableHead className="border border-gray-300 text-center font-semibold py-0.5 text-xs w-24">الإجمالي</TableHead>
               {showItemNotes && (
-                <TableHead className="border-2 border-black text-center font-bold py-1">ملاحظات</TableHead>
+                <TableHead className="border border-gray-300 text-center font-semibold py-0.5 text-xs w-28">ملاحظات</TableHead>
               )}
-              <TableHead className="text-center border-2 border-black font-bold print-hide py-1">الإجراءات</TableHead>
+              <TableHead className="text-center border border-gray-300 font-semibold print-hide py-0.5 text-xs w-12">الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
                 <TableCell 
-                  colSpan={showItemCodes && showItemNotes ? 9 : (showItemCodes || showItemNotes ? 8 : 7)} 
-                  className="text-center py-2 text-muted-foreground border-2 border-black text-xs"
+                  colSpan={showItemNotes ? 8 : 7} 
+                  className="text-center py-1 text-muted-foreground border border-gray-300 text-xs"
                 >
-                  لا توجد أصناف في الفاتورة. قم بالبحث عن صنف أو خدمة.
+                  لا توجد أصناف في الفاتورة
                 </TableCell>
               </TableRow>
             ) : (
               items.map((item, index) => (
-                <TableRow key={index} className="border-2 border-black">
-                  <TableCell className="border-2 border-black text-center font-bold py-1">{index + 1}</TableCell>
-                  {showItemCodes && (
-                    <TableCell className="border-2 border-black text-center py-1">{item.code || '-'}</TableCell>
-                  )}
-                  <TableCell className="border-2 border-black text-center py-1">{item.name}</TableCell>
-                  <TableCell className="border-2 border-black text-center py-1">{item.quantity}</TableCell>
-                  <TableCell className="border-2 border-black text-center py-1">{item.price.toFixed(2)} ر.س</TableCell>
-                  {settings?.showDiscount !== false && (
-                    <TableCell className="border-2 border-black text-center py-1">
-                      {item.discount > 0 && (
-                        <Badge variant="outline" className="text-xs py-0">
-                          {item.discountType === 'percentage' ? `${item.discount}%` : `${item.discount} ر.س`}
-                        </Badge>
-                      )}
-                    </TableCell>
-                  )}
-                  <TableCell className="border-2 border-black text-center font-bold py-1">{item.total.toFixed(2)} ر.س</TableCell>
+                <TableRow key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-yellow-50"}>
+                  <TableCell className="border border-gray-300 text-center font-semibold py-0.5 text-xs">{index + 1}</TableCell>
+                  <TableCell className="border border-gray-300 text-center py-0.5 text-xs">{item.code || '-'}</TableCell>
+                  <TableCell className="border border-gray-300 py-0.5 text-xs">{item.name}</TableCell>
+                  <TableCell className="border border-gray-300 text-center py-0.5 text-xs">{item.quantity}</TableCell>
+                  <TableCell className="border border-gray-300 text-center py-0.5 text-xs">{item.price.toFixed(2)}</TableCell>
+                  <TableCell className="border border-gray-300 text-center font-semibold py-0.5 text-xs">{item.total.toFixed(2)}</TableCell>
                   {showItemNotes && (
-                    <TableCell className="border-2 border-black text-center py-1 text-xs">{item.notes || '-'}</TableCell>
+                    <TableCell className="border border-gray-300 text-center py-0.5 text-xs">{item.notes || '-'}</TableCell>
                   )}
-                  <TableCell className="border-2 border-black print-hide py-1">
+                  <TableCell className="border border-gray-300 print-hide py-0.5">
                     <div className="flex space-x-1 rtl space-x-reverse justify-center">
-                      <Button variant="ghost" size="xs" onClick={() => handleEditItem(index)} className="h-5 w-5">
-                        <Pencil size={12} />
+                      <Button variant="ghost" size="xs" onClick={() => handleEditItem(index)} className="h-4 w-4 p-0">
+                        <Pencil size={10} />
                       </Button>
-                      <Button variant="ghost" size="xs" onClick={() => onRemoveItem(index)} className="h-5 w-5">
-                        <Trash2 size={12} />
+                      <Button variant="ghost" size="xs" onClick={() => onRemoveItem(index)} className="h-4 w-4 p-0">
+                        <Trash2 size={10} />
                       </Button>
                     </div>
                   </TableCell>
@@ -129,8 +113,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             )}
             <TableRow>
               <TableCell 
-                colSpan={showItemCodes && showItemNotes ? 9 : (showItemCodes || showItemNotes ? 8 : 7)} 
-                className="text-center border-2 border-black bg-muted/30 cursor-pointer hover:bg-muted py-1"
+                colSpan={showItemNotes ? 8 : 7} 
+                className="text-center border border-gray-300 bg-muted/30 cursor-pointer hover:bg-muted py-0.5"
                 onClick={() => !isAddingItem && editingItemIndex === null ? setIsAddingItem(true) : null}
               >
                 <span className="text-xs text-muted-foreground">+ إضافة صنف جديد</span>
@@ -139,7 +123,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           </TableBody>
         </Table>
       </div>
-      <div className="text-xs text-muted-foreground mt-1">* اسحب من الجانب الأيمن لتغيير حجم الجدول</div>
+      <div className="text-xs text-muted-foreground mt-0.5">* اسحب من الجانب الأيمن لتغيير حجم الجدول</div>
     </div>
   );
 };

@@ -37,31 +37,31 @@ export const InvoiceSummarySection: React.FC<InvoiceSummarySectionProps> = ({
   const hasDiscount = invoice.discount && invoice.discount > 0;
 
   return (
-    <div className="space-y-3">
-      <Card className="border-none shadow-none">
-        <CardContent className="p-2 space-y-2">
-          <div className="text-sm flex justify-between items-center">
+    <div className="space-y-1 bg-gray-50 p-1 border border-gray-300 rounded-sm">
+      <div className="grid grid-cols-2 gap-1">
+        <div className="space-y-0.5">
+          <div className="text-xs flex justify-between items-center">
             <span>المجموع الفرعي:</span>
-            <span className="font-bold">{subtotal.toFixed(2)} ر.س</span>
+            <span className="font-semibold">{subtotal.toFixed(2)}</span>
           </div>
           
           {showDiscount && (
-            <div className="text-sm flex justify-between items-center">
-              <div className="flex items-center space-x-2 rtl space-x-reverse">
+            <div className="text-xs flex justify-between items-center">
+              <div className="flex items-center space-x-1 rtl space-x-reverse">
                 <span>الخصم:</span>
                 {!isDiscountFormOpen && (
                   <Button 
                     variant="ghost" 
                     size="xs"
                     onClick={() => setIsDiscountFormOpen(true)}
-                    className="h-5 w-5 p-0"
+                    className="h-4 w-4 p-0"
                   >
-                    <Pencil size={10} />
+                    <Pencil size={8} />
                   </Button>
                 )}
               </div>
               {isDiscountFormOpen ? (
-                <div className="w-40">
+                <div className="w-32">
                   <InvoiceDiscountForm 
                     onApply={handleApplyDiscount}
                     onCancel={() => setIsDiscountFormOpen(false)}
@@ -70,14 +70,14 @@ export const InvoiceSummarySection: React.FC<InvoiceSummarySectionProps> = ({
                   />
                 </div>
               ) : (
-                <span className="font-bold">
+                <span className="font-semibold">
                   {hasDiscount ? (
                     <>
-                      {discountAmount.toFixed(2)} ر.س
+                      {discountAmount.toFixed(2)}
                       {invoice.discountType === 'percentage' && ` (${invoice.discount}%)`}
                     </>
                   ) : (
-                    "0.00 ر.س"
+                    "0.00"
                   )}
                 </span>
               )}
@@ -85,42 +85,42 @@ export const InvoiceSummarySection: React.FC<InvoiceSummarySectionProps> = ({
           )}
           
           {showTax && (
-            <div className="text-sm flex justify-between items-center">
+            <div className="text-xs flex justify-between items-center">
               <span>ضريبة القيمة المضافة (15%):</span>
-              <span className="font-bold">{taxAmount.toFixed(2)} ر.س</span>
+              <span className="font-semibold">{taxAmount.toFixed(2)}</span>
             </div>
           )}
           
-          <div className="text-md border-t pt-1 flex justify-between items-center">
+          <div className="text-xs border-t pt-0.5 flex justify-between items-center">
             <span className="font-bold">المجموع الكلي:</span>
-            <span className="font-bold">{invoice.totalAmount.toFixed(2)} ر.س</span>
+            <span className="font-bold">{invoice.totalAmount.toFixed(2)}</span>
           </div>
-          
-          <div className="text-sm grid grid-cols-2 gap-2">
-            <div>
-              <label htmlFor="amountPaid" className="block text-xs font-medium mb-0.5">المبلغ المدفوع:</label>
-              <Input
-                id="amountPaid"
-                type="number"
-                min="0"
-                step="0.01"
-                value={invoice.amountPaid || 0}
-                onChange={(e) => onAmountPaidChange(parseFloat(e.target.value) || 0)}
-                className="h-7 text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="remaining" className="block text-xs font-medium mb-0.5">المتبقي:</label>
-              <Input
-                id="remaining"
-                value={calculateRemaining()}
-                readOnly
-                className="bg-muted h-7 text-sm"
-              />
-            </div>
+        </div>
+      
+        <div className="space-y-0.5">
+          <div>
+            <label htmlFor="amountPaid" className="block text-xs font-medium mb-0.5">المبلغ المدفوع:</label>
+            <Input
+              id="amountPaid"
+              type="number"
+              min="0"
+              step="0.01"
+              value={invoice.amountPaid || 0}
+              onChange={(e) => onAmountPaidChange(parseFloat(e.target.value) || 0)}
+              className="h-5 text-xs"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <label htmlFor="remaining" className="block text-xs font-medium mb-0.5">المتبقي:</label>
+            <Input
+              id="remaining"
+              value={calculateRemaining()}
+              readOnly
+              className="bg-gray-100 h-5 text-xs"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Invoice } from "@/types/invoices";
-import { Card, CardContent } from "@/components/ui/card";
 import { InvoiceSettingsType } from "./invoice-form/InvoiceSettings";
 
 // Importing refactored components
@@ -67,7 +66,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const editingItem = editingItemIndex !== null ? invoice.items[editingItemIndex] : undefined;
   
   return (
-    <div className="space-y-6 print:p-4 py-0 px-0 bg-slate-100">
+    <div className="space-y-1 print:p-2 py-0 px-0">
       {/* Invoice Header with Company Logo and Information */}
       <InvoiceHeader 
         companyInfo={companyInfo} 
@@ -112,7 +111,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       />
 
       {/* Invoice Summary and Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div className="grid grid-cols-2 gap-2 mt-2">
         {/* Notes and Action Buttons */}
         <InvoiceActions 
           notes={invoice.notes} 
@@ -137,19 +136,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
       {/* Signature Section */}
       {settings?.showSignature && (
-        <div className="mt-8 border-t-2 border-black pt-4">
+        <div className="mt-2 border-t border-gray-300 pt-1">
           <div className="flex justify-between">
             <div className="text-center w-1/3">
-              <p className="font-bold mb-12">توقيع المستلم</p>
-              <div className="border-t border-black w-full"></div>
+              <p className="font-semibold mb-6 text-xs">توقيع المستلم</p>
+              <div className="border-t border-gray-400 w-full"></div>
             </div>
             <div className="text-center w-1/3">
-              <p className="font-bold mb-12">توقيع المحاسب</p>
-              <div className="border-t border-black w-full"></div>
+              <p className="font-semibold mb-6 text-xs">توقيع المحاسب</p>
+              <div className="border-t border-gray-400 w-full"></div>
             </div>
             <div className="text-center w-1/3">
-              <p className="font-bold mb-12">ختم الشركة</p>
-              <div className="border-t border-black w-full"></div>
+              <p className="font-semibold mb-6 text-xs">ختم الشركة</p>
+              <div className="border-t border-gray-400 w-full"></div>
             </div>
           </div>
         </div>

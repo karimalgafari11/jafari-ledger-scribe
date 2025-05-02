@@ -18,18 +18,18 @@ export const ItemFormFooter: React.FC<ItemFormFooterProps> = ({
 }) => {
   return (
     <div className="flex justify-between items-center">
-      <div className="text-sm font-bold">
+      <div className="text-xs font-bold">
         <span>المجموع: </span>
-        <span>{total.toFixed(2)} ر.س</span>
+        <span>{total.toFixed(2)}</span>
       </div>
 
-      <div className="flex space-x-2 rtl space-x-reverse">
-        <Button type="button" variant="outline" onClick={onCancel} size="sm" className="h-7 text-xs">
-          <X className="ml-1 h-3 w-3" />
+      <div className="flex space-x-1 rtl space-x-reverse">
+        <Button type="button" variant="outline" onClick={onCancel} size="xs" className="h-5 text-xs">
+          <X className="ml-0.5 h-2.5 w-2.5" />
           إلغاء
         </Button>
-        <Button type="submit" size="sm" className="h-7 text-xs">
-          <Check className="ml-1 h-3 w-3" />
+        <Button type="submit" size="xs" className="h-5 text-xs">
+          <Check className="ml-0.5 h-2.5 w-2.5" />
           {isUpdate ? 'تحديث' : 'إضافة'}
         </Button>
       </div>
