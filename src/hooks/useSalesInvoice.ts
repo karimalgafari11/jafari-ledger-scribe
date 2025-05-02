@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Invoice, InvoiceItem } from "@/types/invoices";
 import { v4 as uuid } from "uuid";
@@ -11,11 +12,14 @@ export const useSalesInvoice = () => {
     invoiceNumber: "",
     customerId: "",
     customerName: "",
+    customerPhone: "",
+    customerAccountNumber: "",
     date: new Date().toISOString(),
     items: [],
     totalAmount: 0,
     status: "draft",
-    paymentMethod: "cash"
+    paymentMethod: "cash",
+    amountPaid: 0
   });
   const [isLoading, setIsLoading] = useState(false);
   const { calculateDiscount } = useDiscounts();
@@ -32,11 +36,15 @@ export const useSalesInvoice = () => {
       invoiceNumber: invoiceNumber,
       customerId: "",
       customerName: "",
+      customerPhone: "",
+      customerAccountNumber: "",
       date: date.toISOString(),
       items: [],
       totalAmount: 0,
       status: "draft",
-      paymentMethod: "cash"
+      paymentMethod: "cash",
+      amountPaid: 0,
+      warehouseId: ""
     });
   };
 
@@ -70,7 +78,8 @@ export const useSalesInvoice = () => {
       discount: item.discount || 0,
       discountType: item.discountType || "percentage",
       tax: item.tax || 0,
-      total: item.total || 0
+      total: item.total || 0,
+      notes: item.notes || ""
     };
 
     setInvoice(prev => {

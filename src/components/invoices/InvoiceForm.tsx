@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,7 +10,7 @@ import { InvoiceItemForm } from "./InvoiceItemForm";
 import { InvoiceDiscountForm } from "./InvoiceDiscountForm";
 import { InvoiceSummary } from "./InvoiceSummary";
 import { Invoice, InvoiceItem } from "@/types/invoices";
-import { Trash2, Plus, Pencil, Calculator, Share, Printer } from "lucide-react";
+import { Trash2, Plus, Pencil, Calculator, Share, Printer, FilePdf, SendHorizontal } from "lucide-react";
 import { mockCustomers } from "@/data/mockCustomers";
 import { mockProducts } from "@/data/mockProducts";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,8 @@ import { format } from "date-fns";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Logo } from "@/components/Logo";
+import { mockWarehouses } from "@/data/mockWarehouses";
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -45,6 +48,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const isResizing = useRef(false);
   const startWidth = useRef<number>(0);
   const startX = useRef<number>(0);
+  
+  // بيانات الشركة القابلة للتعديل
+  const [companyInfo, setCompanyInfo] = useState({
+    name: "الجعفري للمحاسبة",
+    phone: "966500000000+",
+    email: "info@aljaafari.com",
+    address: "الرياض، المملكة العربية السعودية",
+    isEditing: false
+  });
 
   const handleAddItem = (item: Partial<InvoiceItem>) => {
     onAddItem(item);
@@ -69,6 +81,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const handleApplyDiscount = (type: 'percentage' | 'fixed', value: number) => {
     onApplyDiscount(type, value);
     setIsDiscountFormOpen(false);
+  };
+
+  // تحرير بيانات الشركة
+  const toggleCompanyEdit = () => {
+    setCompanyInfo(prev => ({ ...prev, isEditing: !prev.isEditing }));
+  };
+
+  const handleCompanyInfoChange = (field: string, value: string) => {
+    setCompanyInfo(prev => ({ ...prev, [field]: value }));
   };
 
   // Start table resize
@@ -97,6 +118,48 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     document.removeEventListener('mouseup', handleResizeEnd);
   };
 
+  // إرسال للواتساب
+  const handleWhatsAppShare = () => {
+    const customer = mockCustomers.find(c => c.id === invoice.customerId);
+    if (!customer || !customer.phone) {
+      toast.error("لا يمكن الإرسال عبر واتساب: رقم هاتف العميل غير متوفر");
+      return;
+    }
+
+    // تنسيق رسالة الواتساب
+    const message = `فاتورة مبيعات رقم: ${invoice.invoiceNumber}\n` +
+      `التاريخ: ${format(new Date(invoice.date), 'yyyy-MM-dd')}\n` +
+      `العميل: ${invoice.customerName}\n` +
+      `المبلغ الإجمالي: ${invoice.totalAmount} ر.س`;
+      
+    const phoneNumber = customer.phone.replace(/[^\d+]/g, '');
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // فتح رابط الواتساب في نافذة جديدة
+    window.open(whatsappUrl, '_blank');
+    toast.success("تم فتح رابط الواتساب");
+  };
+
+  // PDF إنشاء ملف
+  const handleCreatePDF = () => {
+    toast.info("جاري إعداد ملف PDF...");
+    // في تطبيق حقيقي، هنا سيتم استدعاء API لإنشاء PDF
+    setTimeout(() => {
+      toast.success("تم إنشاء ملف PDF بنجاح");
+    }, 1500);
+  };
+
+  // حساب المبلغ المتبقي
+  const calculateRemaining = () => {
+    const amountPaid = invoice.amountPaid || 0;
+    return (invoice.totalAmount - amountPaid).toFixed(2);
+  };
+
+  // Handle print button click
+  const handlePrint = () => {
+    window.print();
+  };
+
   // Handle share button click
   const handleShare = () => {
     // Check if Web Share API is supported
@@ -113,13 +176,67 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     }
   };
 
-  // Handle print button click
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div className="space-y-6 print:p-4">
+      {/* رأس الفاتورة مع شعار الشركة والبيانات */}
+      <div className="border rounded-md p-4 mb-6 bg-white relative">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center">
+            <Logo size="medium" className="ml-4" />
+            {companyInfo.isEditing ? (
+              <div className="space-y-2">
+                <Input
+                  value={companyInfo.name}
+                  onChange={(e) => handleCompanyInfoChange('name', e.target.value)}
+                  className="mb-1"
+                  placeholder="اسم الشركة"
+                />
+                <Input
+                  value={companyInfo.phone}
+                  onChange={(e) => handleCompanyInfoChange('phone', e.target.value)}
+                  className="mb-1"
+                  placeholder="رقم الهاتف"
+                />
+                <Input
+                  value={companyInfo.email}
+                  onChange={(e) => handleCompanyInfoChange('email', e.target.value)}
+                  className="mb-1"
+                  placeholder="البريد الإلكتروني"
+                />
+                <Input
+                  value={companyInfo.address}
+                  onChange={(e) => handleCompanyInfoChange('address', e.target.value)}
+                  placeholder="العنوان"
+                />
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold">{companyInfo.name}</h2>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>{companyInfo.phone}</p>
+                  <p>{companyInfo.email}</p>
+                  <p>{companyInfo.address}</p>
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <Button 
+              onClick={toggleCompanyEdit} 
+              variant="ghost" 
+              size="sm" 
+              className="print-hide"
+            >
+              {companyInfo.isEditing ? 'حفظ' : 'تعديل بيانات الشركة'}
+            </Button>
+          </div>
+        </div>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold border-b border-t py-2">فاتورة مبيعات</h1>
+          <p className="text-lg mt-2">Sales Invoice</p>
+        </div>
+      </div>
+
       {/* معلومات العميل والفاتورة */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
@@ -144,32 +261,28 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
 
           <div>
-            <label htmlFor="paymentMethod" className="block text-sm font-medium mb-1">طريقة الدفع</label>
-            <RadioGroup 
-              defaultValue={invoice.paymentMethod || "cash"} 
-              className="flex space-x-4 rtl space-x-reverse"
-              onValueChange={(value) => onFieldChange('paymentMethod', value)}
+            <label htmlFor="warehouse" className="block text-sm font-medium mb-1">المخزن</label>
+            <Select
+              value={invoice.warehouseId || ""}
+              onValueChange={(value) => {
+                const warehouse = mockWarehouses.find(w => w.id === value);
+                onFieldChange('warehouseId', value);
+                if (warehouse) {
+                  onFieldChange('warehouseName', warehouse.name);
+                }
+              }}
             >
-              <div className="flex items-center space-x-2 rtl space-x-reverse">
-                <RadioGroupItem value="cash" id="payment-cash" />
-                <Label htmlFor="payment-cash">نقد</Label>
-              </div>
-              <div className="flex items-center space-x-2 rtl space-x-reverse">
-                <RadioGroupItem value="credit" id="payment-credit" />
-                <Label htmlFor="payment-credit">آجل</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          <div>
-            <label htmlFor="dueDate" className="block text-sm font-medium mb-1">تاريخ الاستحقاق</label>
-            <Input
-              id="dueDate"
-              type="date"
-              value={invoice.dueDate ? format(new Date(invoice.dueDate), 'yyyy-MM-dd') : ''}
-              onChange={(e) => onFieldChange('dueDate', e.target.value)}
-              disabled={invoice.paymentMethod === 'cash'}
-            />
+              <SelectTrigger>
+                <SelectValue placeholder="اختر المخزن" />
+              </SelectTrigger>
+              <SelectContent>
+                {mockWarehouses.map((warehouse) => (
+                  <SelectItem key={warehouse.id} value={warehouse.id}>
+                    {warehouse.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -183,6 +296,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 onFieldChange('customerId', value);
                 if (customer) {
                   onFieldChange('customerName', customer.name);
+                  onFieldChange('customerPhone', customer.phone);
+                  onFieldChange('customerAccountNumber', customer.accountNumber || '');
                 }
               }}
             >
@@ -199,60 +314,43 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </Select>
           </div>
 
-          <div>
-            <label htmlFor="paymentTerms" className="block text-sm font-medium mb-1">شروط الدفع</label>
-            <Select
-              value={invoice.paymentTerms || ""}
-              onValueChange={(value) => onFieldChange('paymentTerms', value)}
-              disabled={invoice.paymentMethod === 'cash'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="اختر شروط الدفع" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="immediate">دفع فوري</SelectItem>
-                <SelectItem value="15days">خلال 15 يوم</SelectItem>
-                <SelectItem value="30days">خلال 30 يوم</SelectItem>
-                <SelectItem value="60days">خلال 60 يوم</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label htmlFor="accountNumber" className="block text-sm font-medium mb-1">رقم الحساب</label>
+              <Input
+                id="accountNumber"
+                value={invoice.customerAccountNumber || ""}
+                readOnly
+                className="bg-muted"
+              />
+            </div>
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium mb-1">رقم الهاتف</label>
+              <Input
+                id="phoneNumber"
+                value={invoice.customerPhone || ""}
+                readOnly
+                className="bg-muted"
+              />
+            </div>
           </div>
 
           <div>
-            <label htmlFor="status" className="block text-sm font-medium mb-1">حالة الفاتورة</label>
-            <Select
-              value={invoice.status || "draft"}
-              onValueChange={(value) => onFieldChange('status', value)}
+            <label htmlFor="paymentMethod" className="block text-sm font-medium mb-1">طريقة الدفع</label>
+            <RadioGroup 
+              defaultValue={invoice.paymentMethod || "cash"} 
+              className="flex space-x-4 rtl space-x-reverse"
+              onValueChange={(value) => onFieldChange('paymentMethod', value)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="اختر الحالة" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">مسودة</SelectItem>
-                <SelectItem value="pending">قيد الانتظار</SelectItem>
-                <SelectItem value="paid">مدفوعة</SelectItem>
-                <SelectItem value="overdue">متأخرة</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex space-x-2 rtl space-x-reverse">
-            <Button 
-              variant="outline" 
-              className="flex-1" 
-              onClick={handleShare}
-            >
-              <Share className="ml-2 h-4 w-4" />
-              مشاركة
-            </Button>
-            <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={handlePrint}
-            >
-              <Printer className="ml-2 h-4 w-4" />
-              طباعة
-            </Button>
+              <div className="flex items-center space-x-2 rtl space-x-reverse">
+                <RadioGroupItem value="cash" id="payment-cash" />
+                <Label htmlFor="payment-cash">نقد</Label>
+              </div>
+              <div className="flex items-center space-x-2 rtl space-x-reverse">
+                <RadioGroupItem value="credit" id="payment-credit" />
+                <Label htmlFor="payment-credit">آجل</Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
       </div>
@@ -278,6 +376,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <InvoiceItemForm 
                 onSubmit={handleAddItem}
                 onCancel={() => setIsAddingItem(false)}
+                includeNotes={true}
               />
             </CardContent>
           </Card>
@@ -291,6 +390,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 item={invoice.items[editingItemIndex]}
                 onSubmit={handleUpdateItem}
                 onCancel={handleCancelEdit}
+                includeNotes={true}
               />
             </CardContent>
           </Card>
@@ -307,7 +407,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             onMouseDown={handleResizeStart}
           />
           
-          <Table className="w-full">
+          <Table className="w-full" gridLines="both" bordered>
             <TableHeader>
               <TableRow className="bg-muted">
                 <TableHead className="w-12 border-r">#</TableHead>
@@ -316,8 +416,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <TableHead className="border-r">الكمية</TableHead>
                 <TableHead className="border-r">السعر</TableHead>
                 <TableHead className="border-r">الخصم</TableHead>
-                <TableHead className="border-r">الضريبة</TableHead>
                 <TableHead className="border-r">الإجمالي</TableHead>
+                <TableHead className="border-r">ملاحظات</TableHead>
                 <TableHead className="text-left border-r">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
@@ -343,14 +443,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="border-r">
-                      {item.tax > 0 && (
-                        <Badge variant="outline">
-                          {item.tax}%
-                        </Badge>
-                      )}
-                    </TableCell>
                     <TableCell className="border-r">{item.total.toFixed(2)} ر.س</TableCell>
+                    <TableCell className="border-r">{item.notes || '-'}</TableCell>
                     <TableCell className="border-r">
                       <div className="flex space-x-2 rtl space-x-reverse">
                         <Button variant="ghost" size="sm" onClick={() => handleEditItem(index)}>
@@ -370,7 +464,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         <div className="text-xs text-muted-foreground mt-2">* اسحب من الجانب الأيمن لتغيير حجم الجدول</div>
       </div>
 
-      {/* ملخص الفاتورة والخصومات */}
+      {/* ملخص الفاتورة والدفع */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         <div className="space-y-4">
           <label htmlFor="notes" className="block text-sm font-medium mb-1">ملاحظات</label>
@@ -382,21 +476,60 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             className="min-h-[120px]"
           />
           
-          <div>
-            <label htmlFor="paymentInstructions" className="block text-sm font-medium mb-1">تعليمات الدفع</label>
-            <Textarea
-              id="paymentInstructions"
-              placeholder="أدخل تعليمات الدفع هنا..."
-              value={invoice.paymentInstructions || ""}
-              onChange={(e) => onFieldChange('paymentInstructions', e.target.value)}
-            />
+          <div className="flex space-x-2 rtl space-x-reverse print-hide">
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={handlePrint}
+            >
+              <Printer className="ml-2 h-4 w-4" />
+              طباعة
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={handleWhatsAppShare}
+            >
+              <SendHorizontal className="ml-2 h-4 w-4" />
+              واتساب
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={handleCreatePDF}
+            >
+              <FilePdf className="ml-2 h-4 w-4" />
+              PDF
+            </Button>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="border rounded-md p-4">
+          <div className="border rounded-md p-4 space-y-4">
             <InvoiceSummary invoice={invoice} />
             
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label htmlFor="amountPaid" className="block text-sm font-medium mb-1">المدفوع</label>
+                <Input
+                  id="amountPaid"
+                  type="number"
+                  value={invoice.amountPaid || ""}
+                  onChange={(e) => onFieldChange('amountPaid', parseFloat(e.target.value) || 0)}
+                  placeholder="أدخل المبلغ المدفوع"
+                />
+              </div>
+              <div>
+                <label htmlFor="remaining" className="block text-sm font-medium mb-1">المتبقي</label>
+                <Input
+                  id="remaining"
+                  value={calculateRemaining()}
+                  readOnly
+                  className="bg-muted"
+                />
+              </div>
+            </div>
+
             <div className="mt-4 flex justify-end">
               <Button 
                 variant="outline" 

@@ -4,6 +4,8 @@ export interface Invoice {
   invoiceNumber: string;
   customerId: string;
   customerName: string;
+  customerPhone?: string;
+  customerAccountNumber?: string;
   date: string;
   dueDate?: string;
   items: InvoiceItem[];
@@ -17,6 +19,9 @@ export interface Invoice {
   paymentTerms?: string;
   paymentMethod: 'cash' | 'credit';
   paymentInstructions?: string;
+  amountPaid?: number;
+  warehouseId?: string;
+  warehouseName?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -33,4 +38,5 @@ export interface InvoiceItem {
   discountType: 'percentage' | 'fixed';
   tax: number;
   total: number;
+  notes?: string;
 }

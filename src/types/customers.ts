@@ -11,6 +11,7 @@ export interface Customer {
   creditLimit?: number;
   balance: number;
   status: 'active' | 'inactive';
+  accountNumber?: string;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
