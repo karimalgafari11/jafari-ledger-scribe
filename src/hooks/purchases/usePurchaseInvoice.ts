@@ -36,12 +36,30 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
   useEffect(() => {
     if (pdfData && Object.keys(pdfData).length > 0) {
       console.log("Updating invoice with PDF data:", pdfData);
+      
+      // Validate PDF data before applying it
+      const validItems = Array.isArray(pdfData.items) 
+        ? pdfData.items.filter(item => 
+            item && typeof item === 'object' && 
+            item.name && 
+            !isNaN(item.quantity) && 
+            !isNaN(item.price)
+          )
+        : [];
+        
+      if (validItems.length === 0) {
+        toast.error("لم يتم العثور على أصناف صالحة في ملف PDF");
+        return;
+      }
+      
       setInvoice(prev => {
         const mergedInvoice = {
           ...prev,
-          ...pdfData,
-          // Ensure proper handling of nested data
-          items: pdfData.items?.map(item => ({
+          invoiceNumber: pdfData.invoiceNumber || prev.invoiceNumber,
+          vendorName: pdfData.vendorName || prev.vendorName,
+          date: pdfData.date || prev.date,
+          // Ensure proper handling of items
+          items: validItems.map(item => ({
             id: item.id || uuidv4(),
             productId: item.productId || uuidv4(),
             code: item.code || "",
@@ -52,10 +70,10 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
             price: item.price || 0,
             discount: item.discount || 0,
             discountType: item.discountType || "percentage",
-            tax: item.tax || 0,
+            tax: item.tax || 15, // Default 15% VAT in Saudi Arabia
             total: item.total || (item.quantity || 1) * (item.price || 0),
             notes: item.notes || ""
-          })) || prev.items
+          }))
         };
         
         // Ensure all calculations are correct
@@ -73,7 +91,7 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
         };
       });
       
-      toast.success("تم استيراد بيانات الفاتورة بنجاح");
+      toast.success(`تم استيراد ${validItems.length} صنف بنجاح من ملف PDF`);
     }
   }, [pdfData]);
 
@@ -138,10 +156,10 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
     invoice
   });
 
-  // Log the structure of large invoices for debugging
+  // Performance optimization for large invoices
   useEffect(() => {
-    if (invoice.items.length > 50) {
-      console.log(`Large invoice detected: ${invoice.items.length} items`);
+    if (invoice.items.length > 100) {
+      console.log(`Large invoice detected: ${invoice.items.length} items - optimizing rendering`);
     }
   }, [invoice.items.length]);
 

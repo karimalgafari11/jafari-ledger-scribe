@@ -15,8 +15,8 @@ export const PaddingRows: React.FC<PaddingRowsProps> = ({ currentItemCount, tota
     return null;
   }
   
-  // Only render the first 10 padding rows for performance
-  const visiblePaddingRows = Math.min(paddingRowCount, 10);
+  // Only render the first 10 padding rows for performance when there are many items
+  const visiblePaddingRows = Math.min(paddingRowCount, 5);
   
   return (
     <>
@@ -39,10 +39,10 @@ export const PaddingRows: React.FC<PaddingRowsProps> = ({ currentItemCount, tota
         </TableRow>
       ))}
       
-      {paddingRowCount > 10 && (
+      {paddingRowCount > 5 && (
         <TableRow>
           <TableCell colSpan={12} className="text-center border border-gray-300 p-2 text-gray-500">
-            {paddingRowCount - 10} صفوف إضافية...
+            {paddingRowCount - 5} صفوف إضافية...
           </TableCell>
         </TableRow>
       )}
