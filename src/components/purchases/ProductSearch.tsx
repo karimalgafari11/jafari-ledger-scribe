@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/types/inventory";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
@@ -10,14 +10,22 @@ interface ProductSearchProps {
   placeholder?: string;
   autoFocus?: boolean;
   defaultValue?: string;
+  className?: string;
+  inline?: boolean;
+  showIcon?: boolean;
+  maxResults?: number;
 }
 
-export const ProductSearch: React.FC<ProductSearchProps> = ({
+export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
   onSelect,
   placeholder = "ابحث عن صنف...",
   autoFocus = false,
-  defaultValue = ""
-}) => {
+  defaultValue = "",
+  className = "",
+  inline = false,
+  showIcon = true,
+  maxResults = 8
+}, ref) => {
   const { products } = useInventoryProducts();
   const [searchQuery, setSearchQuery] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,13 +40,13 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.code.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setResults(filteredProducts.slice(0, 8)); // Limit to 8 results
+      setResults(filteredProducts.slice(0, maxResults));
       setIsOpen(true);
     } else {
       setResults([]);
       setIsOpen(false);
     }
-  }, [searchQuery, products]);
+  }, [searchQuery, products, maxResults]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -61,17 +69,20 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({
   };
 
   return (
-    <div className="relative" ref={searchRef}>
+    <div className={`relative ${inline ? 'inline-block' : 'w-full'}`} ref={searchRef}>
       <div className="relative">
         <Input
+          ref={ref}
           type="text"
           placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           autoFocus={autoFocus}
-          className="w-full pr-10"
+          className={`${showIcon ? 'pr-10' : ''} ${className}`}
         />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+        {showIcon && (
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+        )}
       </div>
       
       {isOpen && results.length > 0 && (
@@ -93,4 +104,6 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({
       )}
     </div>
   );
-};
+});
+
+ProductSearch.displayName = "ProductSearch";
