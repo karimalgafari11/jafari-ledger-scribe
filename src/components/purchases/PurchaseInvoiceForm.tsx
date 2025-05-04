@@ -64,7 +64,8 @@ export const PurchaseInvoiceForm: React.FC = () => {
       discount: item.discount || 0,
       discountType: item.discountType || "percentage",
       tax: item.tax || 0,
-      total: (item.quantity || 1) * (item.price || 0),
+      total: calculateItemTotal(item.quantity || 1, item.price || 0, item.discount || 0, 
+                               item.discountType || "percentage", item.tax || 0),
       notes: item.notes || ""
     } as PurchaseItem;
 
@@ -83,16 +84,47 @@ export const PurchaseInvoiceForm: React.FC = () => {
     toast.success("تمت إضافة الصنف بنجاح");
   };
 
+  // Calculate individual item total with discount and tax
+  const calculateItemTotal = (quantity: number, price: number, discount: number, 
+                             discountType: 'percentage' | 'fixed', tax: number): number => {
+    let itemSubtotal = quantity * price;
+    
+    // Apply item discount
+    if (discount > 0) {
+      if (discountType === 'percentage') {
+        itemSubtotal -= (itemSubtotal * (discount / 100));
+      } else {
+        itemSubtotal -= discount;
+      }
+    }
+    
+    // Apply item tax
+    if (tax > 0) {
+      itemSubtotal += (itemSubtotal * (tax / 100));
+    }
+    
+    return itemSubtotal;
+  };
+
   // Handle updating an item
   const handleUpdateItem = (index: number, item: Partial<PurchaseItem>) => {
     setInvoice(prev => {
       const updatedItems = [...prev.items];
-      updatedItems[index] = {
+      const updatedItem = {
         ...updatedItems[index],
-        ...item,
-        total: (item.quantity || updatedItems[index].quantity) * 
-               (item.price || updatedItems[index].price)
+        ...item
       };
+      
+      // Recalculate the total for this item
+      updatedItem.total = calculateItemTotal(
+        updatedItem.quantity, 
+        updatedItem.price,
+        updatedItem.discount || 0,
+        updatedItem.discountType || 'percentage',
+        updatedItem.tax || 0
+      );
+      
+      updatedItems[index] = updatedItem;
       
       const subtotal = calculateSubtotal(updatedItems);
       return {
