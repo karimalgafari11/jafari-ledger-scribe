@@ -22,13 +22,14 @@ export const QuickAddRow: React.FC<QuickAddRowProps> = ({
         className="border border-gray-300 p-2"
         colSpan={10}
       >
-        <div 
-          className="flex items-center justify-center text-gray-500 p-2 hover:bg-gray-200 rounded-md transition-colors cursor-pointer"
+        <Button 
+          variant="ghost"
+          className="w-full flex items-center justify-center text-gray-500 p-2 hover:bg-gray-200 rounded-md transition-colors cursor-pointer"
           onClick={() => setIsAddingItem(true)}
         >
           <Plus size={18} className="ml-2" />
-          انقر هنا لإضافة صنف جديد
-        </div>
+          إضافة صنف جديد
+        </Button>
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2 print:hidden">
         <Button 

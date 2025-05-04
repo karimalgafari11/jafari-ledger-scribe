@@ -67,7 +67,7 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
         </>
       )}
       
-      {/* Empty row for quick add */}
+      {/* Quick add row - now with simple button */}
       {!isAddingItem && editingItemIndex === null && (
         <QuickAddRow 
           itemsLength={items.length}

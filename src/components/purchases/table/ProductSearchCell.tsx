@@ -20,8 +20,8 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Don't render anything if not active
-  if (!active) return null;
+  // Don't render anything if not active or if it's a quickadd field
+  if (!active || field === "quickadd") return null;
 
   // Choose different positioning based on device
   const positionClass = isMobile 
@@ -36,13 +36,11 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
       <ProductSearch 
         ref={searchInputRef}
         autoFocus={true}
-        showIcon={field === "quickadd"}
+        showIcon={false}
         placeholder={
-          field === "quickadd" 
-            ? "ابحث لإضافة صنف جديد..." 
-            : field === "code" 
-              ? "ابحث برقم الصنف..." 
-              : "ابحث عن صنف..."
+          field === "code" 
+            ? "ابحث برقم الصنف..." 
+            : "ابحث عن صنف..."
         }
         className="w-full text-center border-none focus:ring-0"
         onSelect={(product) => onSelect(product, index !== -1 ? index : undefined)}
@@ -51,4 +49,3 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
     </div>
   );
 };
-
