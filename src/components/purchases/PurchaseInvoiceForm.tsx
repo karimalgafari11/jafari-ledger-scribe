@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { PurchaseInvoice, PurchaseItem } from "@/types/purchases";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,7 +14,6 @@ import { SimplePurchaseInvoice } from "./SimplePurchaseInvoice";
 import { usePurchaseInvoice } from "@/hooks/usePurchaseInvoice";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-
 const initialInvoice: PurchaseInvoice = {
   id: uuidv4(),
   invoiceNumber: `P-${Math.floor(Math.random() * 10000)}`,
@@ -29,7 +27,6 @@ const initialInvoice: PurchaseInvoice = {
   paymentMethod: "cash",
   status: "draft"
 };
-
 export const PurchaseInvoiceForm: React.FC = () => {
   const [invoice, setInvoice] = useState<PurchaseInvoice>(initialInvoice);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
@@ -37,15 +34,18 @@ export const PurchaseInvoiceForm: React.FC = () => {
 
   // Handle field changes
   const handleFieldChange = (field: keyof PurchaseInvoice, value: any) => {
-    setInvoice((prev) => ({ ...prev, [field]: value }));
+    setInvoice(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   // Handle date change
   const handleDateChange = (date: Date | null) => {
     if (date) {
-      setInvoice((prev) => ({ 
-        ...prev, 
-        date: format(date, "yyyy-MM-dd") 
+      setInvoice(prev => ({
+        ...prev,
+        date: format(date, "yyyy-MM-dd")
       }));
     }
   };
@@ -64,11 +64,9 @@ export const PurchaseInvoiceForm: React.FC = () => {
       discount: item.discount || 0,
       discountType: item.discountType || "percentage",
       tax: item.tax || 0,
-      total: calculateItemTotal(item.quantity || 1, item.price || 0, item.discount || 0, 
-                               item.discountType || "percentage", item.tax || 0),
+      total: calculateItemTotal(item.quantity || 1, item.price || 0, item.discount || 0, item.discountType || "percentage", item.tax || 0),
       notes: item.notes || ""
     } as PurchaseItem;
-
     setInvoice(prev => {
       const updatedItems = [...prev.items, newItem];
       const subtotal = calculateSubtotal(updatedItems);
@@ -79,30 +77,27 @@ export const PurchaseInvoiceForm: React.FC = () => {
         totalAmount: calculateTotalAmount(subtotal, prev.discount, prev.discountType, prev.tax, prev.expenses)
       };
     });
-    
     setIsAddingItem(false);
     toast.success("تمت إضافة الصنف بنجاح");
   };
 
   // Calculate individual item total with discount and tax
-  const calculateItemTotal = (quantity: number, price: number, discount: number, 
-                             discountType: 'percentage' | 'fixed', tax: number): number => {
+  const calculateItemTotal = (quantity: number, price: number, discount: number, discountType: 'percentage' | 'fixed', tax: number): number => {
     let itemSubtotal = quantity * price;
-    
+
     // Apply item discount
     if (discount > 0) {
       if (discountType === 'percentage') {
-        itemSubtotal -= (itemSubtotal * (discount / 100));
+        itemSubtotal -= itemSubtotal * (discount / 100);
       } else {
         itemSubtotal -= discount;
       }
     }
-    
+
     // Apply item tax
     if (tax > 0) {
-      itemSubtotal += (itemSubtotal * (tax / 100));
+      itemSubtotal += itemSubtotal * (tax / 100);
     }
-    
     return itemSubtotal;
   };
 
@@ -114,18 +109,10 @@ export const PurchaseInvoiceForm: React.FC = () => {
         ...updatedItems[index],
         ...item
       };
-      
+
       // Recalculate the total for this item
-      updatedItem.total = calculateItemTotal(
-        updatedItem.quantity, 
-        updatedItem.price,
-        updatedItem.discount || 0,
-        updatedItem.discountType || 'percentage',
-        updatedItem.tax || 0
-      );
-      
+      updatedItem.total = calculateItemTotal(updatedItem.quantity, updatedItem.price, updatedItem.discount || 0, updatedItem.discountType || 'percentage', updatedItem.tax || 0);
       updatedItems[index] = updatedItem;
-      
       const subtotal = calculateSubtotal(updatedItems);
       return {
         ...prev,
@@ -134,7 +121,6 @@ export const PurchaseInvoiceForm: React.FC = () => {
         totalAmount: calculateTotalAmount(subtotal, prev.discount, prev.discountType, prev.tax, prev.expenses)
       };
     });
-    
     setEditingItemIndex(null);
     toast.success("تم تحديث الصنف بنجاح");
   };
@@ -151,7 +137,6 @@ export const PurchaseInvoiceForm: React.FC = () => {
         totalAmount: calculateTotalAmount(subtotal, prev.discount, prev.discountType, prev.tax, prev.expenses)
       };
     });
-    
     toast.success("تم حذف الصنف بنجاح");
   };
 
@@ -184,34 +169,27 @@ export const PurchaseInvoiceForm: React.FC = () => {
   };
 
   // Calculate total amount
-  const calculateTotalAmount = (
-    subtotal: number, 
-    discount?: number, 
-    discountType?: 'percentage' | 'fixed',
-    tax?: number,
-    expenses?: number
-  ): number => {
+  const calculateTotalAmount = (subtotal: number, discount?: number, discountType?: 'percentage' | 'fixed', tax?: number, expenses?: number): number => {
     let total = subtotal;
-    
+
     // Apply discount
     if (discount && discount > 0) {
       if (discountType === 'percentage') {
-        total -= (subtotal * (discount / 100));
+        total -= subtotal * (discount / 100);
       } else {
         total -= discount;
       }
     }
-    
+
     // Apply tax
     if (tax && tax > 0) {
-      total += (total * (tax / 100));
+      total += total * (tax / 100);
     }
-    
+
     // Add expenses
     if (expenses && expenses > 0) {
       total += expenses;
     }
-    
     return total;
   };
 
@@ -234,15 +212,9 @@ export const PurchaseInvoiceForm: React.FC = () => {
       toast.error("رقم هاتف المورد غير متوفر");
       return;
     }
-
-    const message = `فاتورة شراء رقم: ${invoice.invoiceNumber}\n` +
-      `التاريخ: ${invoice.date}\n` +
-      `المورد: ${invoice.vendorName}\n` +
-      `المبلغ الإجمالي: ${invoice.totalAmount.toFixed(2)} ريال`;
-    
+    const message = `فاتورة شراء رقم: ${invoice.invoiceNumber}\n` + `التاريخ: ${invoice.date}\n` + `المورد: ${invoice.vendorName}\n` + `المبلغ الإجمالي: ${invoice.totalAmount.toFixed(2)} ريال`;
     const phoneNumber = invoice.vendorPhone.replace(/[^\d+]/g, '');
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
     window.open(whatsappUrl, '_blank');
     toast.success("تم فتح رابط واتساب");
   };
@@ -252,65 +224,27 @@ export const PurchaseInvoiceForm: React.FC = () => {
     const amountPaid = invoice.amountPaid || 0;
     return invoice.totalAmount - amountPaid;
   };
-
-  return (
-    <div className="container mx-auto p-2 md:p-6 print:p-0">
+  return <div className="container mx-auto p-2 md:p-6 print:p-0">
       <Card className="mb-4 shadow-md print:shadow-none print:border-none">
-        <CardContent className="p-4 md:p-6">
-          <PurchaseInvoiceHeader
-            invoice={invoice}
-            onFieldChange={handleFieldChange}
-            onDateChange={handleDateChange}
-          />
+        <CardContent className="p-4 md:p-6 py-[9px] px-[5px]">
+          <PurchaseInvoiceHeader invoice={invoice} onFieldChange={handleFieldChange} onDateChange={handleDateChange} />
           
           <div className="mb-6">
-            <PurchaseInvoiceTable
-              items={invoice.items}
-              isAddingItem={isAddingItem}
-              editingItemIndex={editingItemIndex}
-              setIsAddingItem={setIsAddingItem}
-              setEditingItemIndex={setEditingItemIndex}
-              onAddItem={handleAddItem}
-              onUpdateItem={handleUpdateItem}
-              onRemoveItem={handleRemoveItem}
-            />
+            <PurchaseInvoiceTable items={invoice.items} isAddingItem={isAddingItem} editingItemIndex={editingItemIndex} setIsAddingItem={setIsAddingItem} setEditingItemIndex={setEditingItemIndex} onAddItem={handleAddItem} onUpdateItem={handleUpdateItem} onRemoveItem={handleRemoveItem} />
           </div>
           
           <div className="flex flex-col md:flex-row gap-4 print:flex-row">
             <div className="w-full md:w-1/2 print:w-1/2">
               <Label htmlFor="notes">ملاحظات</Label>
-              <Textarea
-                id="notes"
-                className="h-32"
-                placeholder="أي ملاحظات إضافية..."
-                value={invoice.notes || ""}
-                onChange={(e) => handleFieldChange("notes", e.target.value)}
-              />
+              <Textarea id="notes" className="h-32" placeholder="أي ملاحظات إضافية..." value={invoice.notes || ""} onChange={e => handleFieldChange("notes", e.target.value)} />
             </div>
             
             <div className="w-full md:w-1/2 print:w-1/2">
-              <PurchaseInvoiceSummary 
-                subtotal={invoice.subtotal}
-                discount={invoice.discount}
-                discountType={invoice.discountType}
-                tax={invoice.tax}
-                expenses={invoice.expenses}
-                totalAmount={invoice.totalAmount}
-                amountPaid={invoice.amountPaid}
-                remaining={calculateRemaining()}
-                onApplyDiscount={handleApplyDiscount}
-                onApplyExpenses={handleApplyExpenses}
-                onAmountPaidChange={(amount) => handleFieldChange("amountPaid", amount)}
-              />
+              <PurchaseInvoiceSummary subtotal={invoice.subtotal} discount={invoice.discount} discountType={invoice.discountType} tax={invoice.tax} expenses={invoice.expenses} totalAmount={invoice.totalAmount} amountPaid={invoice.amountPaid} remaining={calculateRemaining()} onApplyDiscount={handleApplyDiscount} onApplyExpenses={handleApplyExpenses} onAmountPaidChange={amount => handleFieldChange("amountPaid", amount)} />
             </div>
           </div>
           
-          <PurchaseInvoiceActions
-            onSave={handleSaveInvoice}
-            onPrint={handlePrint}
-            onWhatsAppSend={handleWhatsAppSend}
-            className="mt-6 print:hidden"
-          />
+          <PurchaseInvoiceActions onSave={handleSaveInvoice} onPrint={handlePrint} onWhatsAppSend={handleWhatsAppSend} className="mt-6 print:hidden" />
         </CardContent>
       </Card>
 
@@ -318,6 +252,5 @@ export const PurchaseInvoiceForm: React.FC = () => {
       <div className="hidden print:block">
         <SimplePurchaseInvoice invoice={invoice} />
       </div>
-    </div>
-  );
+    </div>;
 };
