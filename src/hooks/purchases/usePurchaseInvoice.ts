@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PurchaseInvoice, PurchaseItem } from "@/types/purchases";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -8,7 +8,12 @@ import { useInvoiceItems } from "./useInvoiceItems";
 import { useInvoiceCalculations } from "./useInvoiceCalculations";
 import { useInvoiceActions } from "./useInvoiceActions";
 
-export const usePurchaseInvoice = (initialInvoice?: PurchaseInvoice) => {
+interface UsePurchaseInvoiceProps {
+  initialInvoice?: PurchaseInvoice;
+  pdfData?: Partial<PurchaseInvoice>;
+}
+
+export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoiceProps = {}) => {
   // Default invoice if none provided
   const defaultInvoice: PurchaseInvoice = initialInvoice || {
     id: uuidv4(),
@@ -27,6 +32,50 @@ export const usePurchaseInvoice = (initialInvoice?: PurchaseInvoice) => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
 
+  // Update invoice when PDF data is provided
+  useEffect(() => {
+    if (pdfData && Object.keys(pdfData).length > 0) {
+      setInvoice(prev => {
+        const mergedInvoice = {
+          ...prev,
+          ...pdfData,
+          // Ensure proper handling of nested data
+          items: pdfData.items?.map(item => ({
+            id: item.id || uuidv4(),
+            productId: item.productId || uuidv4(),
+            code: item.code || "",
+            name: item.name || "",
+            manufacturer: item.manufacturer || "",
+            size: item.size || "",
+            quantity: item.quantity || 1,
+            price: item.price || 0,
+            discount: item.discount || 0,
+            discountType: item.discountType || "percentage",
+            tax: item.tax || 0,
+            total: item.total || (item.quantity || 1) * (item.price || 0),
+            notes: item.notes || ""
+          })) || prev.items
+        };
+        
+        // Ensure all calculations are correct
+        const subtotal = mergedInvoice.items.reduce((sum, item) => sum + item.total, 0);
+        return {
+          ...mergedInvoice,
+          subtotal,
+          totalAmount: calculateTotalAmount(
+            subtotal, 
+            mergedInvoice.discount, 
+            mergedInvoice.discountType, 
+            mergedInvoice.tax, 
+            mergedInvoice.expenses
+          )
+        };
+      });
+      
+      toast.success("تم استيراد بيانات الفاتورة من ملف PDF بنجاح");
+    }
+  }, [pdfData]);
+
   // Update invoice field
   const updateField = (field: keyof PurchaseInvoice, value: any) => {
     setInvoice(prev => ({ ...prev, [field]: value }));
@@ -37,6 +86,38 @@ export const usePurchaseInvoice = (initialInvoice?: PurchaseInvoice) => {
     if (date) {
       updateField("date", format(date, "yyyy-MM-dd"));
     }
+  };
+
+  // Calculate total amount helper function
+  const calculateTotalAmount = (
+    subtotal: number, 
+    discount?: number, 
+    discountType?: 'percentage' | 'fixed',
+    tax?: number,
+    expenses?: number
+  ): number => {
+    let total = subtotal;
+    
+    // Apply discount
+    if (discount && discount > 0) {
+      if (discountType === 'percentage') {
+        total -= (subtotal * (discount / 100));
+      } else {
+        total -= discount;
+      }
+    }
+    
+    // Apply tax
+    if (tax && tax > 0) {
+      total += (total * (tax / 100));
+    }
+    
+    // Add expenses
+    if (expenses && expenses > 0) {
+      total += expenses;
+    }
+    
+    return total;
   };
 
   // Import functionality from smaller hooks

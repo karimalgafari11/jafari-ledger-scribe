@@ -1,6 +1,6 @@
 
 import { PurchaseInvoice } from "@/types/purchases";
-import { calculateTotalAmount } from "./invoiceCalculations";
+import { useState } from "react";
 
 interface UseInvoiceCalculationsProps {
   invoice: PurchaseInvoice;
@@ -12,34 +12,71 @@ export const useInvoiceCalculations = ({
   setInvoice
 }: UseInvoiceCalculationsProps) => {
   
-  // Apply discount to invoice
+  // Apply discount
   const applyDiscount = (type: 'percentage' | 'fixed', value: number) => {
-    setInvoice(prev => ({
-      ...prev,
-      discount: value,
-      discountType: type,
-      totalAmount: calculateTotalAmount(prev.subtotal, value, type, prev.tax, prev.expenses)
-    }));
+    setInvoice(prev => {
+      return {
+        ...prev,
+        discount: value,
+        discountType: type,
+        totalAmount: calculateTotalAmount(prev.subtotal, value, type, prev.tax, prev.expenses)
+      };
+    });
   };
 
-  // Apply purchase expenses
+  // Apply expenses
   const applyExpenses = (value: number) => {
-    setInvoice(prev => ({
-      ...prev,
-      expenses: value,
-      totalAmount: calculateTotalAmount(prev.subtotal, prev.discount, prev.discountType, prev.tax, value)
-    }));
+    setInvoice(prev => {
+      return {
+        ...prev,
+        expenses: value,
+        totalAmount: calculateTotalAmount(prev.subtotal, prev.discount, prev.discountType, prev.tax, value)
+      };
+    });
   };
 
-  // Calculate remaining amount to be paid
-  const calculateRemaining = (): number => {
+  // Calculate remaining amount
+  const calculateRemaining = () => {
     const amountPaid = invoice.amountPaid || 0;
     return invoice.totalAmount - amountPaid;
+  };
+  
+  // Calculate total amount with discounts, taxes, and expenses
+  const calculateTotalAmount = (
+    subtotal: number, 
+    discount?: number, 
+    discountType?: 'percentage' | 'fixed',
+    tax?: number,
+    expenses?: number
+  ): number => {
+    let total = subtotal;
+    
+    // Apply discount
+    if (discount && discount > 0) {
+      if (discountType === 'percentage') {
+        total -= (subtotal * (discount / 100));
+      } else {
+        total -= discount;
+      }
+    }
+    
+    // Apply tax
+    if (tax && tax > 0) {
+      total += (total * (tax / 100));
+    }
+    
+    // Add expenses
+    if (expenses && expenses > 0) {
+      total += expenses;
+    }
+    
+    return total;
   };
 
   return {
     applyDiscount,
     applyExpenses,
-    calculateRemaining
+    calculateRemaining,
+    calculateTotalAmount
   };
 };

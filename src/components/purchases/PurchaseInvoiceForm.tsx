@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { PurchaseInvoice, PurchaseItem } from "@/types/purchases";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,24 +16,95 @@ import { usePurchaseInvoice } from "@/hooks/purchases/usePurchaseInvoice";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
-const initialInvoice: PurchaseInvoice = {
-  id: uuidv4(),
-  invoiceNumber: `P-${Math.floor(Math.random() * 10000)}`,
-  vendorId: "",
-  vendorName: "",
-  vendorAccountNumber: "",
-  date: format(new Date(), "yyyy-MM-dd"),
-  items: [],
-  subtotal: 0,
-  totalAmount: 0,
-  paymentMethod: "cash",
-  status: "draft"
-};
+interface PurchaseInvoiceFormProps {
+  initialData?: Partial<PurchaseInvoice>;
+}
 
-export const PurchaseInvoiceForm: React.FC = () => {
-  const [invoice, setInvoice] = useState<PurchaseInvoice>(initialInvoice);
+export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initialData }) => {
+  const defaultInvoice: PurchaseInvoice = {
+    id: uuidv4(),
+    invoiceNumber: `P-${Math.floor(Math.random() * 10000)}`,
+    vendorId: "",
+    vendorName: "",
+    vendorAccountNumber: "",
+    date: format(new Date(), "yyyy-MM-dd"),
+    items: [],
+    subtotal: 0,
+    totalAmount: 0,
+    paymentMethod: "cash",
+    status: "draft"
+  };
+
+  // Initialize with either the provided initialData or default invoice
+  const [invoice, setInvoice] = useState<PurchaseInvoice>(() => {
+    if (initialData) {
+      return {
+        ...defaultInvoice,
+        ...initialData,
+        // Ensure we have valid IDs for the invoice and items
+        id: initialData.id || defaultInvoice.id,
+        items: initialData.items?.map(item => ({
+          id: item.id || uuidv4(),
+          productId: item.productId || uuidv4(),
+          code: item.code || "",
+          name: item.name || "",
+          manufacturer: item.manufacturer || "",
+          size: item.size || "",
+          quantity: item.quantity || 1,
+          price: item.price || 0,
+          discount: item.discount || 0,
+          discountType: item.discountType || "percentage",
+          tax: item.tax || 0,
+          total: (item.quantity || 1) * (item.price || 0),
+          notes: item.notes || ""
+        })) || []
+      };
+    }
+    return defaultInvoice;
+  });
+
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
+
+  // Effect to update invoice when initialData changes
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setInvoice(prev => {
+        const updatedInvoice = {
+          ...prev,
+          ...initialData,
+          vendorId: initialData.vendorId || prev.vendorId,
+          vendorName: initialData.vendorName || prev.vendorName,
+          date: initialData.date || prev.date,
+          items: initialData.items?.map(item => ({
+            id: item.id || uuidv4(),
+            productId: item.productId || uuidv4(),
+            code: item.code || "",
+            name: item.name || "",
+            manufacturer: item.manufacturer || "",
+            size: item.size || "",
+            quantity: item.quantity || 1,
+            price: item.price || 0,
+            discount: item.discount || 0,
+            discountType: item.discountType || "percentage",
+            tax: item.tax || 0,
+            total: (item.quantity || 1) * (item.price || 0),
+            notes: item.notes || ""
+          })) || prev.items
+        };
+        
+        // Recalculate subtotal and total
+        const subtotal = calculateSubtotal(updatedInvoice.items);
+        return {
+          ...updatedInvoice,
+          subtotal,
+          totalAmount: calculateTotalAmount(subtotal, updatedInvoice.discount, updatedInvoice.discountType, updatedInvoice.tax, updatedInvoice.expenses)
+        };
+      });
+      
+      toast.success("تم استيراد بيانات الفاتورة بنجاح");
+    }
+  }, [initialData]);
 
   // Handle field changes
   const handleFieldChange = (field: keyof PurchaseInvoice, value: any) => {
@@ -226,6 +298,7 @@ export const PurchaseInvoiceForm: React.FC = () => {
     const amountPaid = invoice.amountPaid || 0;
     return invoice.totalAmount - amountPaid;
   };
+  
   return <div className="container mx-auto p-2 md:p-6 print:p-0">
       <Card className="mb-4 shadow-md print:shadow-none print:border-none">
         <CardContent className="p-4 md:p-6 py-[9px] px-[5px]">
