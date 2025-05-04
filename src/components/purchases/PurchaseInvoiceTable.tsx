@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table } from "@/components/ui/table";
@@ -6,7 +5,7 @@ import { PurchaseTableHeader } from "./table/TableHeader";
 import { TableToolbar } from "./table/TableToolbar";
 import { ItemFormContainer } from "./table/ItemFormContainer";
 import { PurchaseTableBody } from "./table/PurchaseTableBody";
-import { usePurchaseTable } from "@/hooks/usePurchaseTable";
+import { usePurchaseTable } from "@/hooks/purchases/table";
 
 interface PurchaseInvoiceTableProps {
   items: PurchaseItem[];
