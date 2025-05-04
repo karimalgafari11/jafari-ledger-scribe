@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Route, Routes } from "react-router-dom";
@@ -48,6 +49,11 @@ import UsersPage from "./settings/UsersPage";
 import BackupPage from "./settings/BackupPage";
 import BackupTestPage from "./settings/BackupTestPage";
 import NotFound from "./NotFound";
+import VendorsPage from "./vendors/VendorsPage";
+import PurchaseInvoicePage from "./purchases/PurchaseInvoicePage";
+import PurchasesInvoicesPage from "./purchases/PurchasesInvoicesPage";
+import PurchasesOrdersPage from "./purchases/PurchasesOrdersPage";
+import PurchasesReturnsPage from "./purchases/PurchasesReturnsPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -103,6 +109,11 @@ const Index = () => {
             <Route path="/inventory-control/transfer" element={<TransferPage />} />
             <Route path="/inventory-control/locations" element={<LocationsPage />} />
             <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
+            <Route path="/vendors/manage" element={<VendorsPage />} />
+            <Route path="/purchases/new" element={<PurchaseInvoicePage />} />
+            <Route path="/purchases/invoices" element={<PurchasesInvoicesPage />} />
+            <Route path="/purchases/orders" element={<PurchasesOrdersPage />} />
+            <Route path="/purchases/returns" element={<PurchasesReturnsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
