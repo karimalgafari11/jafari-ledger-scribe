@@ -35,6 +35,7 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
   // Update invoice when PDF data is provided
   useEffect(() => {
     if (pdfData && Object.keys(pdfData).length > 0) {
+      console.log("Updating invoice with PDF data:", pdfData);
       setInvoice(prev => {
         const mergedInvoice = {
           ...prev,
@@ -72,7 +73,7 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
         };
       });
       
-      toast.success("تم استيراد بيانات الفاتورة من ملف PDF بنجاح");
+      toast.success("تم استيراد بيانات الفاتورة بنجاح");
     }
   }, [pdfData]);
 
@@ -136,6 +137,13 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
   const { saveInvoice, printInvoice, sendViaWhatsApp } = useInvoiceActions({
     invoice
   });
+
+  // Log the structure of large invoices for debugging
+  useEffect(() => {
+    if (invoice.items.length > 50) {
+      console.log(`Large invoice detected: ${invoice.items.length} items`);
+    }
+  }, [invoice.items.length]);
 
   return {
     invoice,

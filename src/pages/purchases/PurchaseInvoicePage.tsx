@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { PurchaseInvoiceForm } from "@/components/purchases/PurchaseInvoiceForm";
@@ -17,6 +18,7 @@ const PurchaseInvoicePage = () => {
   };
 
   const handlePDFProcessed = (invoiceData: any) => {
+    console.log("PDF processed with data:", invoiceData);
     setPdfInvoiceData(invoiceData);
     setActiveTab("manual");
   };

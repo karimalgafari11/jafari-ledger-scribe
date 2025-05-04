@@ -52,12 +52,17 @@ export const EditableTextCell: React.FC<EditableTextCellProps> = ({
     if (e.key === 'Enter' || e.key === 'Escape') {
       e.preventDefault();
       setActiveSearchCell(null);
+    } else if (e.key === 'Tab') {
+      // Don't close the cell on Tab, allow natural tab navigation
+      // The blur handler will take care of closing this cell
+      return;
     }
   };
 
   return (
     <TableCell 
-      className={`text-center border border-gray-300 p-2 editable-cell ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-blue-100 cursor-pointer'}`}
+      className={`text-center border border-gray-300 p-2 editable-cell cursor-pointer transition-all duration-150 
+      ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-blue-100'}`}
       onClick={handleCellClickInternal}
       title="انقر للتعديل"
     >
@@ -67,7 +72,7 @@ export const EditableTextCell: React.FC<EditableTextCellProps> = ({
           className="w-full border-none focus:ring-2 focus:ring-blue-400 p-1 text-center"
           value={value}
           onChange={handleChange}
-          onBlur={() => setActiveSearchCell(null)}
+          onBlur={() => setTimeout(() => setActiveSearchCell(null), 100)}
           onKeyDown={handleKeyDown}
           autoFocus
         />
@@ -77,7 +82,7 @@ export const EditableTextCell: React.FC<EditableTextCellProps> = ({
           onClick={handleCellClickInternal}
         >
           {value || 
-            <span className="text-gray-400 text-sm bg-gray-100 px-2 py-1 rounded-md animate-pulse">اضغط للتعديل</span>
+            <span className="text-gray-400 text-sm bg-gray-100 px-2 py-1 rounded-md">اضغط للتعديل</span>
           }
         </div>
       )}

@@ -15,6 +15,8 @@ interface PurchaseInvoiceFormProps {
 }
 
 export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initialData }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  
   const { 
     invoice, 
     isAddingItem, 
@@ -32,7 +34,7 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initia
     saveInvoice, 
     printInvoice,
     sendViaWhatsApp
-  } = usePurchaseInvoice({ initialInvoice: initialData });
+  } = usePurchaseInvoice({ initialInvoice: initialData, pdfData: initialData });
   
   // If we have initial data (from PDF), auto-populate the form
   useEffect(() => {
@@ -60,12 +62,21 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initia
     }, 1000);
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (invoice.items.length === 0) {
       toast.error("لا يمكن حفظ فاتورة بدون أصناف");
       return;
     }
-    saveInvoice();
+    
+    setIsLoading(true);
+    try {
+      await saveInvoice();
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error saving invoice:", error);
+      toast.error("حدث خطأ أثناء حفظ الفاتورة");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -78,6 +89,7 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initia
             <li>اضغط على زر <strong>"إضافة صنف جديد"</strong> لإضافة منتجات للفاتورة</li>
             <li>يمكنك النقر مباشرة على خلايا الجدول لتعديل البيانات</li>
             <li>انقر نقرًا مزدوجًا على اسم المنتج أو رمزه للتعديل المباشر</li>
+            <li>يمكن للجدول استيعاب أكثر من 200 صنف</li>
             <li>بعد إتمام الفاتورة، اضغط على زر <strong>"حفظ الفاتورة"</strong></li>
           </ol>
           <Button 
@@ -125,6 +137,7 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initia
         onSave={handleSave}
         onPrint={printInvoice}
         onWhatsAppSend={sendViaWhatsApp}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -1,12 +1,13 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Save, Printer, Send } from "lucide-react";
+import { Save, Printer, Send, Loader2 } from "lucide-react";
 
 interface PurchaseInvoiceActionsProps {
   onSave: () => void;
   onPrint: () => void;
   onWhatsAppSend: () => void;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -14,6 +15,7 @@ export const PurchaseInvoiceActions: React.FC<PurchaseInvoiceActionsProps> = ({
   onSave,
   onPrint,
   onWhatsAppSend,
+  isLoading = false,
   className
 }) => {
   return (
@@ -22,6 +24,7 @@ export const PurchaseInvoiceActions: React.FC<PurchaseInvoiceActionsProps> = ({
         variant="outline"
         onClick={onWhatsAppSend}
         className="flex items-center gap-1"
+        disabled={isLoading}
       >
         <Send size={18} />
         إرسال عبر واتساب
@@ -31,6 +34,7 @@ export const PurchaseInvoiceActions: React.FC<PurchaseInvoiceActionsProps> = ({
         variant="outline"
         onClick={onPrint}
         className="flex items-center gap-1"
+        disabled={isLoading}
       >
         <Printer size={18} />
         طباعة
@@ -39,9 +43,19 @@ export const PurchaseInvoiceActions: React.FC<PurchaseInvoiceActionsProps> = ({
       <Button
         onClick={onSave}
         className="flex items-center gap-1 bg-green-500 hover:bg-green-600"
+        disabled={isLoading}
       >
-        <Save size={18} />
-        حفظ الفاتورة
+        {isLoading ? (
+          <>
+            <Loader2 size={18} className="animate-spin" />
+            جاري الحفظ...
+          </>
+        ) : (
+          <>
+            <Save size={18} />
+            حفظ الفاتورة
+          </>
+        )}
       </Button>
     </div>
   );

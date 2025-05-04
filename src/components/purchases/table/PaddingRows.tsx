@@ -15,9 +15,12 @@ export const PaddingRows: React.FC<PaddingRowsProps> = ({ currentItemCount, tota
     return null;
   }
   
+  // Only render the first 10 padding rows for performance
+  const visiblePaddingRows = Math.min(paddingRowCount, 10);
+  
   return (
     <>
-      {Array.from({ length: paddingRowCount }, (_, index) => (
+      {Array.from({ length: visiblePaddingRows }, (_, index) => (
         <TableRow key={`empty-padding-row-${index}`} className={(currentItemCount + index) % 2 === 0 ? "bg-gray-50" : ""}>
           <TableCell className="text-center border border-gray-300 p-2 font-bold text-lg">
             {currentItemCount + index + 1}
@@ -35,6 +38,14 @@ export const PaddingRows: React.FC<PaddingRowsProps> = ({ currentItemCount, tota
           <TableCell className="text-center border border-gray-300 p-2 print:hidden"></TableCell>
         </TableRow>
       ))}
+      
+      {paddingRowCount > 10 && (
+        <TableRow>
+          <TableCell colSpan={12} className="text-center border border-gray-300 p-2 text-gray-500">
+            {paddingRowCount - 10} صفوف إضافية...
+          </TableCell>
+        </TableRow>
+      )}
     </>
   );
 };

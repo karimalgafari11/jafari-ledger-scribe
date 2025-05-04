@@ -5,6 +5,7 @@ import { PurchaseItem } from "@/types/purchases";
 import { ItemRow } from "./ItemRow";
 import { EmptyTableRow } from "./EmptyTableRow";
 import { PaddingRows } from "./PaddingRows";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PurchaseTableBodyProps {
   items: PurchaseItem[];
@@ -38,11 +39,32 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
   isEditingCell
 }) => {
   const MIN_ROWS = 10; // Minimum number of visible rows
+  const hasLargeDataset = items.length > 20;
   
   return (
     <TableBody>
       {items.length === 0 ? (
         <EmptyTableRow />
+      ) : hasLargeDataset ? (
+        <ScrollArea className="h-[600px]">
+          {items.map((item, index) => (
+            <ItemRow 
+              key={item.id || index}
+              item={item}
+              index={index}
+              activeSearchCell={activeSearchCell}
+              handleCellClick={handleCellClick}
+              handleProductSelect={handleProductSelect}
+              handleDirectEdit={handleDirectEdit}
+              setActiveSearchCell={setActiveSearchCell}
+              setEditingItemIndex={setEditingItemIndex}
+              onRemoveItem={onRemoveItem}
+              isAddingItem={isAddingItem}
+              editingItemIndex={editingItemIndex}
+              searchInputRef={searchInputRef}
+            />
+          ))}
+        </ScrollArea>
       ) : (
         <>
           {items.map((item, index) => (
