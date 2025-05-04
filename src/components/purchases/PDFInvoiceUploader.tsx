@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FileText, Upload, Check, FileUp, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -490,12 +489,12 @@ export const PDFInvoiceUploader: React.FC<PDFInvoiceUploaderProps> = ({ onPDFPro
           </div>
         )}
       </CardContent>
-      <style jsx>{`
-        .dirLTR {
+      <style>
+        {`.dirLTR {
           direction: ltr;
           text-align: left;
-        }
-      `}</style>
+        }`}
+      </style>
     </Card>
   );
 };
