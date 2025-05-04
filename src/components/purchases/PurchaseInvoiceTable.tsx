@@ -149,23 +149,47 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
             {items.length === 0 ? (
               <EmptyTableRow />
             ) : (
-              items.map((item, index) => (
-                <ItemRow 
-                  key={item.id || index}
-                  item={item}
-                  index={index}
-                  activeSearchCell={activeSearchCell}
-                  handleCellClick={handleCellClick}
-                  handleProductSelect={handleProductSelect}
-                  handleDirectEdit={handleDirectEdit}
-                  setActiveSearchCell={setActiveSearchCell}
-                  setEditingItemIndex={setEditingItemIndex}
-                  onRemoveItem={onRemoveItem}
-                  isAddingItem={isAddingItem}
-                  editingItemIndex={editingItemIndex}
-                  searchInputRef={searchInputRef}
-                />
-              ))
+              <>
+                {items.map((item, index) => (
+                  <ItemRow 
+                    key={item.id || index}
+                    item={item}
+                    index={index}
+                    activeSearchCell={activeSearchCell}
+                    handleCellClick={handleCellClick}
+                    handleProductSelect={handleProductSelect}
+                    handleDirectEdit={handleDirectEdit}
+                    setActiveSearchCell={setActiveSearchCell}
+                    setEditingItemIndex={setEditingItemIndex}
+                    onRemoveItem={onRemoveItem}
+                    isAddingItem={isAddingItem}
+                    editingItemIndex={editingItemIndex}
+                    searchInputRef={searchInputRef}
+                  />
+                ))}
+                
+                {/* إضافة صفوف فارغة إذا كان عدد الأصناف أقل من 10 */}
+                {items.length > 0 && items.length < 10 && (
+                  Array.from({ length: 10 - items.length }, (_, index) => (
+                    <TableRow key={`empty-padding-row-${index}`} className={(items.length + index) % 2 === 0 ? "bg-gray-50" : ""}>
+                      <TableCell className="text-center border border-gray-300 p-2 font-bold text-lg">
+                        {items.length + index + 1}
+                      </TableCell>
+                      <TableCell className="border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2 font-bold">-</TableCell>
+                      <TableCell className="border border-gray-300 p-2">-</TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2 print:hidden">-</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </>
             )}
             
             {/* Empty row for quick add */}
