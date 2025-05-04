@@ -47,19 +47,17 @@ export const ItemRow: React.FC<ItemRowProps> = ({
       <ItemNameCell 
         name={item.name}
         index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
         handleProductSelect={handleProductSelect}
-        searchInputRef={searchInputRef}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
       />
       
       <ItemCodeCell 
         code={item.code}
         index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
         handleProductSelect={handleProductSelect}
-        searchInputRef={searchInputRef}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
       />
       
       <EditableTextCell

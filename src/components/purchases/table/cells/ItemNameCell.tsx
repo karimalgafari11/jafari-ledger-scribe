@@ -1,49 +1,67 @@
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { TableCell } from "@/components/ui/table";
-import { ProductSearchCell } from "../ProductSearchCell";
+import { InventoryPicker } from "../InventoryPicker";
+import { Product } from "@/types/inventory";
 
 interface ItemNameCellProps {
   name: string;
   index: number;
-  activeSearchCell: string | null;
-  handleCellClick: (index: number, field: string) => void;
-  handleProductSelect: (product: any, index?: number) => void;
-  searchInputRef: React.RefObject<HTMLInputElement>;
+  handleProductSelect: (product: Product, index?: number) => void;
+  isAddingItem: boolean;
+  editingItemIndex: number | null;
 }
 
 export const ItemNameCell: React.FC<ItemNameCellProps> = ({ 
   name, 
   index, 
-  activeSearchCell, 
-  handleCellClick, 
   handleProductSelect,
-  searchInputRef
+  isAddingItem,
+  editingItemIndex
 }) => {
-  const cellId = `name-${index}`;
-  const isActive = activeSearchCell === cellId;
+  const [showPicker, setShowPicker] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const cellRef = useRef<HTMLTableCellElement>(null);
+  
+  const handleCellClick = () => {
+    // Don't activate if in edit mode
+    if (isAddingItem || editingItemIndex !== null) return;
+    
+    // Calculate position for the picker
+    if (cellRef.current) {
+      const rect = cellRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX
+      });
+    }
+    
+    setShowPicker(true);
+  };
+  
+  const handleSelect = (product: Product) => {
+    handleProductSelect(product, index);
+    setShowPicker(false);
+  };
   
   return (
     <TableCell 
-      className={`border border-gray-300 p-2 search-cell relative ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        handleCellClick(index, 'name');
-      }}
+      ref={cellRef}
+      className="border border-gray-300 p-2 cursor-pointer hover:bg-gray-100"
+      onClick={handleCellClick}
     >
-      <ProductSearchCell 
-        active={isActive}
-        index={index}
-        field="name"
-        onSelect={handleProductSelect}
-        searchInputRef={searchInputRef}
-      />
-      {!isActive && (
-        <div className="w-full h-full min-h-[24px] flex items-center">
-          {name || ""}
-        </div>
+      <div className="w-full h-full min-h-[24px] flex items-center">
+        {name || ""}
+      </div>
+      
+      {showPicker && (
+        <InventoryPicker 
+          position={position}
+          onSelect={handleSelect}
+          onClose={() => setShowPicker(false)}
+          field="name"
+        />
       )}
     </TableCell>
   );
 };
-
