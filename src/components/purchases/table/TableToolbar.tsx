@@ -1,13 +1,14 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings } from "lucide-react";
+import { Search } from "lucide-react";
+import { Product } from "@/types/inventory";
 
 interface TableToolbarProps {
   isAddingItem: boolean;
   editingItemIndex: number | null;
   setIsAddingItem: (isAdding: boolean) => void;
-  handleProductSelect: (product: any) => void;
+  handleProductSelect: (product: Product, index?: number) => void;
   toggleGridLines: () => void;
 }
 
@@ -15,29 +16,44 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   isAddingItem,
   editingItemIndex,
   setIsAddingItem,
-  toggleGridLines
+  toggleGridLines,
 }) => {
+  const handleAddClick = () => {
+    console.log("Add Item button clicked");
+    setIsAddingItem(true);
+  };
+
   return (
-    <div className="flex justify-between items-center">
-      <h3 className="text-lg font-semibold">الأصناف</h3>
+    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={handleAddClick}
+          disabled={isAddingItem || editingItemIndex !== null}
+          size="lg"
+          className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md flex items-center gap-2 shadow-sm"
+        >
+          <span className="text-lg">+</span> إضافة صنف جديد
+        </Button>
+      </div>
+      
       <div className="flex items-center gap-2">
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="sm" 
           onClick={toggleGridLines}
-          className="flex items-center gap-1"
+          className="text-xs"
         >
-          <Settings size={16} />
-          <span className="hidden sm:inline">إعدادات الجدول</span>
+          تبديل الشبكة
         </Button>
         
-        <Button 
-          onClick={() => setIsAddingItem(true)} 
-          className="flex items-center gap-1" 
-          size="sm" 
-          disabled={isAddingItem || editingItemIndex !== null}
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-9 w-9"
+          onClick={() => {}}
         >
-          <Plus size={16} /> إضافة صنف
+          <Search className="h-4 w-4" />
+          <span className="sr-only">بحث</span>
         </Button>
       </div>
     </div>

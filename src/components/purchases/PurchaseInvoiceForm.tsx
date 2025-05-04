@@ -1,331 +1,116 @@
 
 import React, { useState, useEffect } from "react";
-import { PurchaseInvoice, PurchaseItem } from "@/types/purchases";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
+import { toast } from "sonner";
 import { PurchaseInvoiceHeader } from "./PurchaseInvoiceHeader";
 import { PurchaseInvoiceTable } from "./PurchaseInvoiceTable";
 import { PurchaseInvoiceSummary } from "./PurchaseInvoiceSummary";
+import { PurchaseItemForm } from "./PurchaseItemForm";
 import { PurchaseInvoiceActions } from "./PurchaseInvoiceActions";
-import { SimplePurchaseInvoice } from "./SimplePurchaseInvoice";
-import { usePurchaseInvoice } from "@/hooks/purchases/usePurchaseInvoice";
-import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
+import { usePurchaseInvoice } from "@/hooks/purchases";
+import { useInvoiceItems } from "@/hooks/purchases";
+import { useInvoiceCalculations } from "@/hooks/purchases/useInvoiceCalculations";
+import { useInvoiceActions } from "@/hooks/purchases";
 
 interface PurchaseInvoiceFormProps {
-  initialData?: Partial<PurchaseInvoice>;
+  initialData?: any;
 }
 
 export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initialData }) => {
-  const defaultInvoice: PurchaseInvoice = {
-    id: uuidv4(),
-    invoiceNumber: `P-${Math.floor(Math.random() * 10000)}`,
-    vendorId: "",
-    vendorName: "",
-    vendorAccountNumber: "",
-    date: format(new Date(), "yyyy-MM-dd"),
-    items: [],
-    subtotal: 0,
-    totalAmount: 0,
-    paymentMethod: "cash",
-    status: "draft"
-  };
-
-  // Initialize with either the provided initialData or default invoice
-  const [invoice, setInvoice] = useState<PurchaseInvoice>(() => {
-    if (initialData) {
-      return {
-        ...defaultInvoice,
-        ...initialData,
-        // Ensure we have valid IDs for the invoice and items
-        id: initialData.id || defaultInvoice.id,
-        items: initialData.items?.map(item => ({
-          id: item.id || uuidv4(),
-          productId: item.productId || uuidv4(),
-          code: item.code || "",
-          name: item.name || "",
-          manufacturer: item.manufacturer || "",
-          size: item.size || "",
-          quantity: item.quantity || 1,
-          price: item.price || 0,
-          discount: item.discount || 0,
-          discountType: item.discountType || "percentage",
-          tax: item.tax || 0,
-          total: (item.quantity || 1) * (item.price || 0),
-          notes: item.notes || ""
-        })) || []
-      };
-    }
-    return defaultInvoice;
-  });
-
-  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
+  const { invoice, setInvoice, isLoading } = usePurchaseInvoice(initialData);
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
 
-  // Effect to update invoice when initialData changes
+  const { addItem, updateItem, removeItem, recalculateSubtotal } = useInvoiceItems({ invoice, setInvoice });
+  const { applyDiscount, applyExpenses, calculateRemaining } = useInvoiceCalculations({ invoice, setInvoice });
+  const { saveInvoice, printInvoice } = useInvoiceActions({ invoice });
+
+  // If we have initial data (from PDF), auto-populate the form
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setInvoice(prev => {
-        const updatedInvoice = {
-          ...prev,
-          ...initialData,
-          vendorId: initialData.vendorId || prev.vendorId,
-          vendorName: initialData.vendorName || prev.vendorName,
-          date: initialData.date || prev.date,
-          items: initialData.items?.map(item => ({
-            id: item.id || uuidv4(),
-            productId: item.productId || uuidv4(),
-            code: item.code || "",
-            name: item.name || "",
-            manufacturer: item.manufacturer || "",
-            size: item.size || "",
-            quantity: item.quantity || 1,
-            price: item.price || 0,
-            discount: item.discount || 0,
-            discountType: item.discountType || "percentage",
-            tax: item.tax || 0,
-            total: (item.quantity || 1) * (item.price || 0),
-            notes: item.notes || ""
-          })) || prev.items
-        };
-        
-        // Recalculate subtotal and total
-        const subtotal = calculateSubtotal(updatedInvoice.items);
-        return {
-          ...updatedInvoice,
-          subtotal,
-          totalAmount: calculateTotalAmount(subtotal, updatedInvoice.discount, updatedInvoice.discountType, updatedInvoice.tax, updatedInvoice.expenses)
-        };
-      });
+    if (initialData) {
+      toast.success("تم استخراج بيانات الفاتورة من PDF بنجاح");
       
-      toast.success("تم استيراد بيانات الفاتورة بنجاح");
+      // If there are items, recalculate subtotal
+      if (initialData.items && initialData.items.length > 0) {
+        setTimeout(() => {
+          recalculateSubtotal();
+          toast.info("يمكنك تعديل الأصناف بالضغط على الخلايا في الجدول", {
+            duration: 5000,
+          });
+        }, 500);
+      }
     }
   }, [initialData]);
 
-  // Handle field changes
-  const handleFieldChange = (field: keyof PurchaseInvoice, value: any) => {
-    setInvoice(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  // Show help toast when the form loads
+  useEffect(() => {
+    setTimeout(() => {
+      toast.info("اضغط على زر 'إضافة صنف جديد' أو اضغط مباشرة على خلايا الجدول للتعديل", {
+        duration: 5000,
+        id: "form-help"
+      });
+    }, 1000);
+  }, []);
 
-  // Handle date change
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setInvoice(prev => ({
-        ...prev,
-        date: format(date, "yyyy-MM-dd")
-      }));
-    }
-  };
-
-  // Handle adding an item
-  const handleAddItem = (item: Partial<PurchaseItem>) => {
-    const newItem = {
-      id: uuidv4(),
-      productId: item.productId || uuidv4(),
-      code: item.code || "",
-      name: item.name || "",
-      manufacturer: item.manufacturer || "",
-      size: item.size || "",
-      quantity: item.quantity || 1,
-      price: item.price || 0,
-      discount: item.discount || 0,
-      discountType: item.discountType || "percentage",
-      tax: item.tax || 0,
-      total: calculateItemTotal(item.quantity || 1, item.price || 0, item.discount || 0, item.discountType || "percentage", item.tax || 0),
-      notes: item.notes || ""
-    } as PurchaseItem;
-    setInvoice(prev => {
-      const updatedItems = [...prev.items, newItem];
-      const subtotal = calculateSubtotal(updatedItems);
-      return {
-        ...prev,
-        items: updatedItems,
-        subtotal,
-        totalAmount: calculateTotalAmount(subtotal, prev.discount, prev.discountType, prev.tax, prev.expenses)
-      };
-    });
-    setIsAddingItem(false);
-    toast.success("تمت إضافة الصنف بنجاح");
-  };
-
-  // Calculate individual item total with discount and tax
-  const calculateItemTotal = (quantity: number, price: number, discount: number, discountType: 'percentage' | 'fixed', tax: number): number => {
-    let itemSubtotal = quantity * price;
-
-    // Apply item discount
-    if (discount > 0) {
-      if (discountType === 'percentage') {
-        itemSubtotal -= itemSubtotal * (discount / 100);
-      } else {
-        itemSubtotal -= discount;
-      }
-    }
-
-    // Apply item tax
-    if (tax > 0) {
-      itemSubtotal += itemSubtotal * (tax / 100);
-    }
-    return itemSubtotal;
-  };
-
-  // Handle updating an item
-  const handleUpdateItem = (index: number, item: Partial<PurchaseItem>) => {
-    setInvoice(prev => {
-      const updatedItems = [...prev.items];
-      const updatedItem = {
-        ...updatedItems[index],
-        ...item
-      };
-
-      // Recalculate the total for this item
-      updatedItem.total = calculateItemTotal(updatedItem.quantity, updatedItem.price, updatedItem.discount || 0, updatedItem.discountType || 'percentage', updatedItem.tax || 0);
-      updatedItems[index] = updatedItem;
-      const subtotal = calculateSubtotal(updatedItems);
-      return {
-        ...prev,
-        items: updatedItems,
-        subtotal,
-        totalAmount: calculateTotalAmount(subtotal, prev.discount, prev.discountType, prev.tax, prev.expenses)
-      };
-    });
-    setEditingItemIndex(null);
-    toast.success("تم تحديث الصنف بنجاح");
-  };
-
-  // Handle removing an item
-  const handleRemoveItem = (index: number) => {
-    setInvoice(prev => {
-      const updatedItems = prev.items.filter((_, i) => i !== index);
-      const subtotal = calculateSubtotal(updatedItems);
-      return {
-        ...prev,
-        items: updatedItems,
-        subtotal,
-        totalAmount: calculateTotalAmount(subtotal, prev.discount, prev.discountType, prev.tax, prev.expenses)
-      };
-    });
-    toast.success("تم حذف الصنف بنجاح");
-  };
-
-  // Apply discount
-  const handleApplyDiscount = (type: 'percentage' | 'fixed', value: number) => {
-    setInvoice(prev => {
-      return {
-        ...prev,
-        discount: value,
-        discountType: type,
-        totalAmount: calculateTotalAmount(prev.subtotal, value, type, prev.tax, prev.expenses)
-      };
-    });
-  };
-
-  // Apply expenses
-  const handleApplyExpenses = (value: number) => {
-    setInvoice(prev => {
-      return {
-        ...prev,
-        expenses: value,
-        totalAmount: calculateTotalAmount(prev.subtotal, prev.discount, prev.discountType, prev.tax, value)
-      };
-    });
-  };
-
-  // Calculate subtotal
-  const calculateSubtotal = (items: PurchaseItem[]): number => {
-    return items.reduce((sum, item) => sum + item.total, 0);
-  };
-
-  // Calculate total amount
-  const calculateTotalAmount = (subtotal: number, discount?: number, discountType?: 'percentage' | 'fixed', tax?: number, expenses?: number): number => {
-    let total = subtotal;
-
-    // Apply discount
-    if (discount && discount > 0) {
-      if (discountType === 'percentage') {
-        total -= subtotal * (discount / 100);
-      } else {
-        total -= discount;
-      }
-    }
-
-    // Apply tax
-    if (tax && tax > 0) {
-      total += total * (tax / 100);
-    }
-
-    // Add expenses
-    if (expenses && expenses > 0) {
-      total += expenses;
-    }
-    return total;
-  };
-
-  // Save invoice
-  const handleSaveInvoice = () => {
-    // Here you would typically save to your backend
-    console.log("Saving invoice:", invoice);
-    toast.success("تم حفظ الفاتورة بنجاح");
-  };
-
-  // Handle print
-  const handlePrint = () => {
-    window.print();
-    toast.success("جاري طباعة الفاتورة");
-  };
-
-  // Handle WhatsApp send
-  const handleWhatsAppSend = () => {
-    if (!invoice.vendorPhone) {
-      toast.error("رقم هاتف المورد غير متوفر");
+  const handleSave = () => {
+    if (invoice.items.length === 0) {
+      toast.error("لا يمكن حفظ فاتورة بدون أصناف");
       return;
     }
-    const message = `فاتورة شراء رقم: ${invoice.invoiceNumber}\n` + `التاريخ: ${invoice.date}\n` + `المورد: ${invoice.vendorName}\n` + `المبلغ الإجمالي: ${invoice.totalAmount.toFixed(2)} ريال`;
-    const phoneNumber = invoice.vendorPhone.replace(/[^\d+]/g, '');
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    toast.success("تم فتح رابط واتساب");
+    saveInvoice();
   };
 
-  // Calculate remaining amount
-  const calculateRemaining = () => {
-    const amountPaid = invoice.amountPaid || 0;
-    return invoice.totalAmount - amountPaid;
-  };
-  
-  return <div className="container mx-auto p-2 md:p-6 print:p-0">
-      <Card className="mb-4 shadow-md print:shadow-none print:border-none">
-        <CardContent className="p-4 md:p-6 py-[9px] px-[5px]">
-          <PurchaseInvoiceHeader invoice={invoice} onFieldChange={handleFieldChange} onDateChange={handleDateChange} />
-          
-          <div className="mb-6">
-            <PurchaseInvoiceTable items={invoice.items} isAddingItem={isAddingItem} editingItemIndex={editingItemIndex} setIsAddingItem={setIsAddingItem} setEditingItemIndex={setEditingItemIndex} onAddItem={handleAddItem} onUpdateItem={handleUpdateItem} onRemoveItem={handleRemoveItem} />
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4 print:flex-row">
-            <div className="w-full md:w-1/2 print:w-1/2">
-              <Label htmlFor="notes">ملاحظات</Label>
-              <Textarea id="notes" className="h-32" placeholder="أي ملاحظات إضافية..." value={invoice.notes || ""} onChange={e => handleFieldChange("notes", e.target.value)} />
-            </div>
-            
-            <div className="w-full md:w-1/2 print:w-1/2">
-              <PurchaseInvoiceSummary subtotal={invoice.subtotal} discount={invoice.discount} discountType={invoice.discountType} tax={invoice.tax} expenses={invoice.expenses} totalAmount={invoice.totalAmount} amountPaid={invoice.amountPaid} remaining={calculateRemaining()} onApplyDiscount={handleApplyDiscount} onApplyExpenses={handleApplyExpenses} onAmountPaidChange={amount => handleFieldChange("amountPaid", amount)} />
-            </div>
-          </div>
-          
-          <PurchaseInvoiceActions onSave={handleSaveInvoice} onPrint={handlePrint} onWhatsAppSend={handleWhatsAppSend} className="mt-6 print:hidden" />
+  return (
+    <div className="space-y-4">
+      {/* Tutorial card */}
+      <Card className="bg-blue-50 border-blue-200 shadow-sm">
+        <CardContent className="p-4">
+          <h3 className="text-lg font-semibold text-blue-700 mb-2">طريقة إدخال الفاتورة:</h3>
+          <ol className="list-decimal list-inside space-y-2 text-blue-600">
+            <li>اضغط على زر <strong>"إضافة صنف جديد"</strong> لإضافة منتجات للفاتورة</li>
+            <li>يمكنك النقر مباشرة على خلايا الجدول لتعديل البيانات</li>
+            <li>انقر نقرًا مزدوجًا على اسم المنتج أو رمزه للتعديل المباشر</li>
+            <li>بعد إتمام الفاتورة، اضغط على زر <strong>"حفظ الفاتورة"</strong></li>
+          </ol>
+          <Button 
+            variant="link" 
+            className="text-blue-700 p-0 mt-2"
+            onClick={() => toast.dismiss("form-help")}
+          >
+            فهمت
+          </Button>
         </CardContent>
       </Card>
 
-      {/* This is hidden except during print */}
-      <div className="hidden print:block">
-        <SimplePurchaseInvoice invoice={invoice} />
-      </div>
-    </div>;
+      <PurchaseInvoiceHeader 
+        invoice={invoice}
+        setInvoice={setInvoice}
+      />
+      
+      <PurchaseInvoiceTable
+        items={invoice.items}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        setIsAddingItem={setIsAddingItem}
+        setEditingItemIndex={setEditingItemIndex}
+        onAddItem={addItem}
+        onUpdateItem={updateItem}
+        onRemoveItem={removeItem}
+      />
+      
+      <PurchaseInvoiceSummary
+        invoice={invoice}
+        onApplyDiscount={applyDiscount}
+        onApplyExpenses={applyExpenses}
+        calculateRemaining={calculateRemaining}
+      />
+      
+      <PurchaseInvoiceActions
+        onSave={handleSave}
+        onPrint={printInvoice}
+        isLoading={isLoading}
+      />
+    </div>
+  );
 };

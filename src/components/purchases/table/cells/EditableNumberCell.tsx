@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { TableCell } from "@/components/ui/table";
-import { EditableCell } from "../EditableCell";
+import { Input } from "@/components/ui/input";
 
 interface EditableNumberCellProps {
   value: number;
@@ -36,37 +36,67 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
 }) => {
   const cellId = `${field}-${index}`;
   const isActive = activeSearchCell === cellId;
+  const cellInputRef = useRef<HTMLInputElement>(null);
   
   const handleCellClickInternal = (e: React.MouseEvent) => {
     e.stopPropagation();
+    console.log(`EditableNumberCell clicked: field=${field}, index=${index}`);
     handleCellClick(index, field);
+  };
+
+  // Focus input when cell becomes active
+  useEffect(() => {
+    if (isActive && cellInputRef.current) {
+      setTimeout(() => {
+        cellInputRef.current?.focus();
+        cellInputRef.current?.select();
+      }, 10);
+    }
+  }, [isActive]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value === '' ? 0 : Number(e.target.value);
+    handleDirectEdit(index, field, newValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      e.preventDefault();
+      setActiveSearchCell(null);
+    }
   };
 
   return (
     <TableCell 
-      className={`text-center border border-gray-300 p-2 editable-cell ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
+      className={`text-center border border-gray-300 p-2 editable-cell ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-blue-50'}`}
       onClick={handleCellClickInternal}
     >
-      <EditableCell 
-        active={isActive}
-        value={value}
-        type="number"
-        min={min}
-        step={step}
-        field={field}
-        index={index}
-        inputRef={inputRef}
-        onChange={handleDirectEdit}
-        onBlur={() => setActiveSearchCell(null)}
-        showPercentageSymbol={showPercentageSymbol}
-      />
-      {!isActive && (
+      {isActive ? (
+        <Input
+          ref={cellInputRef}
+          type="number"
+          min={min}
+          step={step}
+          className="w-full border-none focus:ring-0 p-1 text-center"
+          value={value === 0 ? '' : value}
+          onChange={handleChange}
+          onBlur={() => setActiveSearchCell(null)}
+          onKeyDown={handleKeyDown}
+          autoFocus
+        />
+      ) : (
         <div 
           className="cursor-pointer w-full min-h-[24px] flex items-center justify-center"
           onClick={handleCellClickInternal}
         >
-          {displayValue || value.toString()}
-          {displaySuffix || ""}
+          {value > 0 ? (
+            <>
+              {displayValue || value.toString()}
+              {displaySuffix || ""}
+            </>
+          ) : (
+            <span className="text-gray-400 text-sm">اضغط للتعديل</span>
+          )}
         </div>
       )}
     </TableCell>

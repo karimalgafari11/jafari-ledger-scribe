@@ -3,6 +3,8 @@ import { useTableState } from './useTableState';
 import { useCellEditing } from './useCellEditing';
 import { useTableEvents } from './useTableEvents';
 import { PurchaseItem } from "@/types/purchases";
+import { toast } from "sonner";
+import { useEffect } from 'react';
 
 export interface UsePurchaseTableProps {
   items: PurchaseItem[];
@@ -60,6 +62,27 @@ export function usePurchaseTable({
     setIsEditingCell,
     items
   });
+
+  // Add debug logs
+  useEffect(() => {
+    console.log("Purchase Table State:", {
+      itemsCount: items.length,
+      isAddingItem,
+      editingItemIndex,
+      activeSearchCell,
+      isEditingCell
+    });
+  }, [items.length, isAddingItem, editingItemIndex, activeSearchCell, isEditingCell]);
+
+  // Help message for users
+  useEffect(() => {
+    if (items.length > 0 && !isAddingItem && !editingItemIndex && !isEditingCell) {
+      toast.info("يمكنك الضغط على الخلايا لتعديلها أو إضافة منتج جديد", {
+        id: "table-help",
+        duration: 3000,
+      });
+    }
+  }, [items.length, isAddingItem, editingItemIndex, isEditingCell]);
 
   return {
     activeSearchCell,
