@@ -6,9 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "lucide-react";
-import { ar } from "date-fns/locale";
-import { parse, format } from "date-fns";
+import { parse } from "date-fns";
 
 interface PurchaseInvoiceHeaderProps {
   invoice: PurchaseInvoice;

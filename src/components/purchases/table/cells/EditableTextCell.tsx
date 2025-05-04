@@ -1,7 +1,6 @@
 
 import React, { useRef, useEffect } from "react";
 import { TableCell } from "@/components/ui/table";
-import { EditableCell } from "../EditableCell";
 import { Input } from "@/components/ui/input";
 
 interface EditableTextCellProps {
@@ -58,13 +57,14 @@ export const EditableTextCell: React.FC<EditableTextCellProps> = ({
 
   return (
     <TableCell 
-      className={`text-center border border-gray-300 p-2 editable-cell ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-blue-50'}`}
+      className={`text-center border border-gray-300 p-2 editable-cell ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-blue-100 cursor-pointer'}`}
       onClick={handleCellClickInternal}
+      title="انقر للتعديل"
     >
       {isActive ? (
         <Input
           ref={cellInputRef}
-          className="w-full border-none focus:ring-0 p-1 text-center"
+          className="w-full border-none focus:ring-2 focus:ring-blue-400 p-1 text-center"
           value={value}
           onChange={handleChange}
           onBlur={() => setActiveSearchCell(null)}
@@ -73,11 +73,11 @@ export const EditableTextCell: React.FC<EditableTextCellProps> = ({
         />
       ) : (
         <div 
-          className="cursor-pointer w-full min-h-[24px] flex items-center justify-center"
+          className="cursor-pointer w-full min-h-[24px] flex items-center justify-center p-1 transition-colors duration-150 rounded hover:bg-blue-50"
           onClick={handleCellClickInternal}
         >
           {value || 
-            <span className="text-gray-400 text-sm">اضغط للتعديل</span>
+            <span className="text-gray-400 text-sm bg-gray-100 px-2 py-1 rounded-md animate-pulse">اضغط للتعديل</span>
           }
         </div>
       )}

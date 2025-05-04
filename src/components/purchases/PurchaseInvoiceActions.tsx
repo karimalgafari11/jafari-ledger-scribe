@@ -38,7 +38,7 @@ export const PurchaseInvoiceActions: React.FC<PurchaseInvoiceActionsProps> = ({
       
       <Button
         onClick={onSave}
-        className="flex items-center gap-1"
+        className="flex items-center gap-1 bg-green-500 hover:bg-green-600"
       >
         <Save size={18} />
         حفظ الفاتورة

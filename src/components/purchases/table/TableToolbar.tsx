@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, FilePlus } from "lucide-react";
 import { Product } from "@/types/inventory";
 
 interface TableToolbarProps {
@@ -30,9 +30,10 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
           onClick={handleAddClick}
           disabled={isAddingItem || editingItemIndex !== null}
           size="lg"
-          className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md flex items-center gap-2 shadow-sm"
+          className="bg-green-500 hover:bg-green-600 text-white py-3 px-5 rounded-md flex items-center gap-2 shadow-md transition-all duration-200 animate-pulse"
         >
-          <span className="text-lg">+</span> إضافة صنف جديد
+          <FilePlus className="h-5 w-5" />
+          <span className="font-bold">إضافة صنف جديد</span>
         </Button>
       </div>
       

@@ -9,32 +9,39 @@ import { PurchaseInvoiceSummary } from "./PurchaseInvoiceSummary";
 import { PurchaseItemForm } from "./PurchaseItemForm";
 import { PurchaseInvoiceActions } from "./PurchaseInvoiceActions";
 import { usePurchaseInvoice } from "@/hooks/purchases";
-import { useInvoiceItems } from "@/hooks/purchases";
-import { useInvoiceCalculations } from "@/hooks/purchases/useInvoiceCalculations";
-import { useInvoiceActions } from "@/hooks/purchases";
 
 interface PurchaseInvoiceFormProps {
   initialData?: any;
 }
 
 export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initialData }) => {
-  const { invoice, setInvoice, isLoading } = usePurchaseInvoice(initialData);
-  const [isAddingItem, setIsAddingItem] = useState(false);
-  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
-
-  const { addItem, updateItem, removeItem, recalculateSubtotal } = useInvoiceItems({ invoice, setInvoice });
-  const { applyDiscount, applyExpenses, calculateRemaining } = useInvoiceCalculations({ invoice, setInvoice });
-  const { saveInvoice, printInvoice } = useInvoiceActions({ invoice });
-
+  const { 
+    invoice, 
+    isAddingItem, 
+    setIsAddingItem, 
+    editingItemIndex, 
+    setEditingItemIndex, 
+    updateField,
+    updateDate,
+    addItem, 
+    updateItem, 
+    removeItem, 
+    applyDiscount, 
+    applyExpenses, 
+    calculateRemaining,
+    saveInvoice, 
+    printInvoice,
+    sendViaWhatsApp
+  } = usePurchaseInvoice({ initialInvoice: initialData });
+  
   // If we have initial data (from PDF), auto-populate the form
   useEffect(() => {
     if (initialData) {
       toast.success("تم استخراج بيانات الفاتورة من PDF بنجاح");
       
-      // If there are items, recalculate subtotal
+      // If there are items, show help toast
       if (initialData.items && initialData.items.length > 0) {
         setTimeout(() => {
-          recalculateSubtotal();
           toast.info("يمكنك تعديل الأصناف بالضغط على الخلايا في الجدول", {
             duration: 5000,
           });
@@ -85,7 +92,8 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initia
 
       <PurchaseInvoiceHeader 
         invoice={invoice}
-        setInvoice={setInvoice}
+        onFieldChange={updateField}
+        onDateChange={updateDate}
       />
       
       <PurchaseInvoiceTable
@@ -100,16 +108,23 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ initia
       />
       
       <PurchaseInvoiceSummary
-        invoice={invoice}
+        subtotal={invoice.subtotal}
+        discount={invoice.discount}
+        discountType={invoice.discountType}
+        tax={invoice.tax}
+        expenses={invoice.expenses}
+        totalAmount={invoice.totalAmount}
+        amountPaid={invoice.amountPaid}
+        remaining={calculateRemaining()}
         onApplyDiscount={applyDiscount}
         onApplyExpenses={applyExpenses}
-        calculateRemaining={calculateRemaining}
+        onAmountPaidChange={(amount) => updateField('amountPaid', amount)}
       />
       
       <PurchaseInvoiceActions
         onSave={handleSave}
         onPrint={printInvoice}
-        isLoading={isLoading}
+        onWhatsAppSend={sendViaWhatsApp}
       />
     </div>
   );
