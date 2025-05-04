@@ -43,6 +43,7 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
   }, [quantity, price, setValue, total]);
 
   const handleProductSelect = (product: Product) => {
+    setValue('productId', product.id);
     setValue('name', product.name);
     setValue('code', product.code);
     setValue('price', product.price);
@@ -70,24 +71,29 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="code">رقم الصنف</Label>
+              <Label htmlFor="productSearch">بحث عن صنف</Label>
               <ProductSearch
-                placeholder="ابحث برقم الصنف"
+                placeholder="ابحث برقم الصنف أو الاسم"
                 onSelect={handleProductSelect}
-                defaultValue={item?.code || ""}
+                autoFocus
               />
-              <input type="hidden" {...register("code", { required: "رقم الصنف مطلوب" })} />
+            </div>
+            
+            <div>
+              <Label htmlFor="code">رقم الصنف</Label>
+              <Input
+                id="code"
+                {...register("code", { required: "رقم الصنف مطلوب" })}
+              />
               {errors.code && <span className="text-red-500 text-xs">{errors.code.message as string}</span>}
             </div>
             
             <div>
               <Label htmlFor="name">اسم الصنف</Label>
-              <ProductSearch
-                placeholder="ابحث باسم الصنف"
-                onSelect={handleProductSelect}
-                defaultValue={item?.name || ""}
+              <Input
+                id="name"
+                {...register("name", { required: "اسم الصنف مطلوب" })}
               />
-              <input type="hidden" {...register("name", { required: "اسم الصنف مطلوب" })} />
               {errors.name && <span className="text-red-500 text-xs">{errors.name.message as string}</span>}
             </div>
 
@@ -149,6 +155,7 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
                 readOnly
                 className="bg-muted"
               />
+              <input type="hidden" {...register("total")} />
             </div>
           </div>
           

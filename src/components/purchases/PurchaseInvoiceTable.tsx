@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,6 +7,7 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import { PurchaseItemForm } from "./PurchaseItemForm";
 import { ProductSearch } from "./ProductSearch";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
+
 interface PurchaseInvoiceTableProps {
   items: PurchaseItem[];
   isAddingItem: boolean;
@@ -16,6 +18,7 @@ interface PurchaseInvoiceTableProps {
   onUpdateItem: (index: number, item: Partial<PurchaseItem>) => void;
   onRemoveItem: (index: number) => void;
 }
+
 export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   items,
   isAddingItem,
@@ -26,9 +29,8 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   onUpdateItem,
   onRemoveItem
 }) => {
-  const {
-    products
-  } = useInventoryProducts();
+  const { products } = useInventoryProducts();
+  
   const handleProductSelect = (product: any) => {
     const newItem = {
       productId: product.id,
@@ -39,7 +41,9 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
       total: product.price
     };
     onAddItem(newItem);
+    setIsAddingItem(false);
   };
+  
   return <div className="space-y-3">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">الأصناف</h3>
@@ -55,15 +59,17 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
       
       {/* نموذج إضافة أو تحرير صنف */}
       {(isAddingItem || editingItemIndex !== null) && <PurchaseItemForm item={editingItemIndex !== null ? items[editingItemIndex] : undefined} onSubmit={item => {
-      if (editingItemIndex !== null) {
-        onUpdateItem(editingItemIndex, item);
-      } else {
-        onAddItem(item);
-      }
-    }} onCancel={() => {
-      setIsAddingItem(false);
-      setEditingItemIndex(null);
-    }} />}
+        if (editingItemIndex !== null) {
+          onUpdateItem(editingItemIndex, item);
+          setEditingItemIndex(null);
+        } else {
+          onAddItem(item);
+          setIsAddingItem(false);
+        }
+      }} onCancel={() => {
+        setIsAddingItem(false);
+        setEditingItemIndex(null);
+      }} />}
       
       {/* جدول الأصناف */}
       <div className="border rounded overflow-auto">
@@ -73,11 +79,11 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
               <TableHead className="text-center border border-gray-300 p-2 w-12">#</TableHead>
               <TableHead className="text-center border border-gray-300 p-2">اسم الصنف</TableHead>
               <TableHead className="text-center border border-gray-300 p-2">رقم الصنف</TableHead>
-              <TableHead className="text-center border border-gray-300 p-2">الكميه </TableHead>
+              <TableHead className="text-center border border-gray-300 p-2">الكميه</TableHead>
               <TableHead className="text-center border border-gray-300 p-2">السعر</TableHead>
-              <TableHead className="text-center border border-gray-300 p-2">السركه الصانعه</TableHead>
+              <TableHead className="text-center border border-gray-300 p-2">الشركة الصانعة</TableHead>
+              <TableHead className="text-center border border-gray-300 p-2">المقاس</TableHead>
               <TableHead className="text-center border border-gray-300 p-2">الاجمالي</TableHead>
-              <TableHead className="text-center border border-gray-300 p-2 px-[6px]">المقاس</TableHead>
               <TableHead className="text-center border border-gray-300 p-2">ملاحظات</TableHead>
               <TableHead className="text-center border border-gray-300 p-2 w-20 print:hidden">إجراءات</TableHead>
             </TableRow>
@@ -87,14 +93,14 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
                 <TableCell colSpan={10} className="text-center border border-gray-300 py-[5px]">
                   لا توجد أصناف. قم بالضغط على زر "إضافة صنف" أو استخدم البحث السريع لإضافة صنف جديد.
                 </TableCell>
-              </TableRow> : items.map((item, index) => <TableRow key={item.id}>
+              </TableRow> : items.map((item, index) => <TableRow key={item.id || index}>
                   <TableCell className="text-center border border-gray-300 p-2">{index + 1}</TableCell>
                   <TableCell className="border border-gray-300 p-2">{item.name}</TableCell>
                   <TableCell className="text-center border border-gray-300 p-2">{item.code}</TableCell>
-                  <TableCell className="text-center border border-gray-300 p-2">{item.size || "-"}</TableCell>
-                  <TableCell className="text-center border border-gray-300 p-2">{item.manufacturer || "-"}</TableCell>
                   <TableCell className="text-center border border-gray-300 p-2">{item.quantity}</TableCell>
                   <TableCell className="text-center border border-gray-300 p-2">{item.price.toFixed(2)}</TableCell>
+                  <TableCell className="text-center border border-gray-300 p-2">{item.manufacturer || "-"}</TableCell>
+                  <TableCell className="text-center border border-gray-300 p-2">{item.size || "-"}</TableCell>
                   <TableCell className="text-center border border-gray-300 p-2">{item.total.toFixed(2)}</TableCell>
                   <TableCell className="border border-gray-300 p-2">{item.notes || "-"}</TableCell>
                   <TableCell className="text-center border border-gray-300 p-2 print:hidden">

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/types/inventory";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
+import { Search } from "lucide-react";
 
 interface ProductSearchProps {
   onSelect: (product: Product) => void;
@@ -55,20 +56,23 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({
 
   const handleSelect = (product: Product) => {
     onSelect(product);
-    setSearchQuery(product.name);
+    setSearchQuery(""); // Clear the search input after selection
     setIsOpen(false);
   };
 
   return (
     <div className="relative" ref={searchRef}>
-      <Input
-        type="text"
-        placeholder={placeholder}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        autoFocus={autoFocus}
-        className="w-full"
-      />
+      <div className="relative">
+        <Input
+          type="text"
+          placeholder={placeholder}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          autoFocus={autoFocus}
+          className="w-full pr-10"
+        />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+      </div>
       
       {isOpen && results.length > 0 && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
