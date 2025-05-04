@@ -128,6 +128,6 @@ export const useJournalPage = () => {
     handleExport,
     handlePrintPreview,
     handleShareWhatsApp: () => handleShareWhatsApp(selectedEntries, entries),
-    setSelectedEntries, // Added this line to export setSelectedEntries
+    setSelectedEntries,
   };
 };

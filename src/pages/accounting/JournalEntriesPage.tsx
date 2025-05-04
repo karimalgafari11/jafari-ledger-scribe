@@ -44,15 +44,12 @@ const JournalEntriesPage: React.FC = () => {
     setSelectedEntries
   } = useJournalPage();
 
-  // Wrapper functions to handle the type mismatches
+  // Fix type mismatch: Create wrapper function for handleSelectAll
   const handleSelectAllEntries = (selected: boolean) => {
-    if (selected) {
-      setSelectedEntries(filteredEntries.map(entry => entry.id));
-    } else {
-      setSelectedEntries([]);
-    }
+    handleSelectAll(selected);
   };
 
+  // Fix type mismatch: Create wrapper functions for handleView and handleEdit
   const handleViewEntry = (id: string) => {
     const entry = filteredEntries.find(entry => entry.id === id);
     if (entry) {
