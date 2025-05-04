@@ -4,7 +4,6 @@ import { TableBody } from "@/components/ui/table";
 import { PurchaseItem } from "@/types/purchases";
 import { ItemRow } from "./ItemRow";
 import { EmptyTableRow } from "./EmptyTableRow";
-import { QuickAddRow } from "./QuickAddRow";
 import { PaddingRows } from "./PaddingRows";
 
 interface PurchaseTableBodyProps {
@@ -65,14 +64,6 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
           {/* Add padding rows if needed */}
           <PaddingRows currentItemCount={items.length} totalRows={MIN_ROWS} />
         </>
-      )}
-      
-      {/* Quick add row - now with simple button */}
-      {!isAddingItem && editingItemIndex === null && (
-        <QuickAddRow 
-          itemsLength={items.length}
-          setIsAddingItem={setIsAddingItem}
-        />
       )}
     </TableBody>
   );

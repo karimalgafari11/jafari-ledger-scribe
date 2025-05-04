@@ -31,11 +31,6 @@ export function usePurchaseTable({
   const handleCellClick = (index: number, field: string) => {
     if (isAddingItem || editingItemIndex !== null) return;
     
-    // Don't activate search for fields in the quick add row (which would show as index === items.length)
-    if (index === items.length && field === "quickadd") {
-      return;
-    }
-    
     // Generate a unique ID for the cell using consistent format
     const cellId = `${field}-${index}`;
     console.log(`Activating search cell: ${cellId}`);
