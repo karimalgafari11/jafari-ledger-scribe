@@ -34,7 +34,11 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
   const isSectionActive = (section: any): boolean => {
     if (section.path && currentPath === section.path) return true;
     if (section.children && section.children.length > 0) {
-      return section.children.some((child: any) => child.path === currentPath);
+      return section.children.some((child: any) => {
+        if (child.path === currentPath) return true;
+        if (child.path && currentPath.startsWith(child.path + '/')) return true;
+        return false;
+      });
     }
     return false;
   };
@@ -47,7 +51,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
       }
     });
     setExpandedSections(newExpandedSections);
-  }, []);
+  }, [currentPath]);
 
   const toggleSection = (section: string) => {
     if (autoClose) {
@@ -66,6 +70,10 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
 
   const handleItemClick = (path: string) => {
     navigate(path);
+    if (isMobile) {
+      const { setOpenMobile } = useSidebar();
+      setOpenMobile(false);
+    }
   };
 
   return (
@@ -77,7 +85,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
       </SidebarHeader>
 
       <SidebarContent>
-        <div className="p-2 space-y-1 rtl">
+        <div className="p-2 space-y-1 rtl max-h-[calc(100vh-150px)] overflow-y-auto">
           {menuItems.map(item => (
             <div key={item.section} className="mb-1">
               {item.children && item.children.length > 0 ? (
@@ -103,7 +111,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
                           icon={<child.icon size={18} />} 
                           label={child.label} 
                           path={child.path} 
-                          isActive={currentPath === child.path} 
+                          isActive={currentPath === child.path || currentPath.startsWith(child.path + '/')} 
                           onClick={() => handleItemClick(child.path)} 
                           depth={1} 
                         />
@@ -116,7 +124,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
                   icon={<item.icon size={20} />} 
                   label={item.section} 
                   path={item.path} 
-                  isActive={currentPath === item.path} 
+                  isActive={currentPath === item.path || (item.path && currentPath.startsWith(item.path + '/'))} 
                   onClick={() => item.path && handleItemClick(item.path)} 
                 />
               )}

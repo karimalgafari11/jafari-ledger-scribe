@@ -13,18 +13,23 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   isActive,
   hasChildren = false,
   isExpanded = false,
-  depth = 0
+  depth = 0,
+  onClick
 }) => {
   const { handleItemClick } = useSidebarNavigation();
+  
+  // If there's a custom onClick handler, use it; otherwise use the default navigation handler
+  const onItemClick = onClick || (() => handleItemClick(path));
 
   return (
     <div
-      onClick={() => handleItemClick(path)}
+      onClick={onItemClick}
       className={cn(
         "flex items-center gap-2 py-2 px-4 rounded-md mb-0.5 cursor-pointer transition-all duration-200 group relative",
         isActive 
           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm translate-x-1.5" 
-          : "text-sidebar-foreground hover:bg-sidebar-primary/30 hover:text-sidebar-foreground"
+          : "text-sidebar-foreground hover:bg-sidebar-primary/30 hover:text-sidebar-foreground",
+        depth > 0 && "py-1.5 text-sm"
       )}
     >
       <SidebarItemIcon icon={icon} isActive={isActive} />
