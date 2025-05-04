@@ -50,6 +50,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
         handleProductSelect={handleProductSelect}
         isAddingItem={isAddingItem}
         editingItemIndex={editingItemIndex}
+        handleDirectEdit={handleDirectEdit}
       />
       
       <ItemCodeCell 
@@ -58,6 +59,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
         handleProductSelect={handleProductSelect}
         isAddingItem={isAddingItem}
         editingItemIndex={editingItemIndex}
+        handleDirectEdit={handleDirectEdit}
       />
       
       <EditableTextCell

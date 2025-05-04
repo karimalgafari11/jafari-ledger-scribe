@@ -59,7 +59,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           value={value}
           onChange={(e) => onChange(index, field, Number(e.target.value))}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' || e.key === 'Enter') {
               onBlur();
             }
           }}
@@ -94,7 +94,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           onChange={(e) => onChange(index, field, Number(e.target.value))}
           onBlur={onBlur}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' || e.key === 'Enter') {
               onBlur();
             }
           }}
@@ -120,11 +120,10 @@ export const EditableCell: React.FC<EditableCellProps> = ({
       onBlur={onBlur}
       onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' || e.key === 'Enter') {
           onBlur();
         }
       }}
     />
   );
 };
-
