@@ -1,5 +1,11 @@
 
-export type JournalStatus = 'draft' | 'approved' | 'canceled';
+// Define JournalStatus as enum to be used both as type and value
+export enum JournalStatus {
+  Draft = 'draft',
+  Approved = 'approved',
+  Canceled = 'canceled',
+  Pending = 'pending'
+}
 
 export interface JournalEntryLine {
   id: string;
@@ -12,6 +18,7 @@ export interface JournalEntryLine {
 
 export interface JournalEntry {
   id: string;
+  number: string; // Added this property since it's referenced in code
   entryNumber: string;
   date: string;
   description: string;

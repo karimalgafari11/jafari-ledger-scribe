@@ -1,7 +1,7 @@
 
 import { Permission, PermissionCategory } from "@/types/permissions";
 import { User } from "@/types/settings";
-import { JournalEntry } from "@/types/journal";
+import { JournalEntry, JournalStatus } from "@/types/journal";
 import { Product } from "@/types/inventory";
 import { Expense } from "@/types/expenses";
 import { Customer } from "@/types/customers";
@@ -35,7 +35,7 @@ export interface VerificationRequest {
 export function isSensitiveData(data: any, category?: SensitiveDataCategory): boolean {
   // Financial data checks
   if ((category === SensitiveDataCategory.FINANCIAL || !category) && 
-      (data instanceof JournalEntry || 
+      (isJournalEntry(data) || 
        (typeof data === 'object' && data && 
         ('balance' in data || 'amount' in data || 'totalDebit' in data || 'totalCredit' in data)))) {
     return true;
@@ -43,7 +43,7 @@ export function isSensitiveData(data: any, category?: SensitiveDataCategory): bo
   
   // Customer data checks
   if ((category === SensitiveDataCategory.CUSTOMER || !category) && 
-      (data instanceof Customer || 
+      (isCustomer(data) || 
        (typeof data === 'object' && data && 
         ('customerInfo' in data || 'contactInfo' in data || 'creditLimit' in data)))) {
     return true;
@@ -51,7 +51,7 @@ export function isSensitiveData(data: any, category?: SensitiveDataCategory): bo
   
   // Inventory checks for sensitive products
   if ((category === SensitiveDataCategory.INVENTORY || !category) && 
-      (data instanceof Product && data.costPrice && data.quantity)) {
+      (isProduct(data) && data.costPrice && data.quantity)) {
     return true;
   }
   
@@ -63,6 +63,23 @@ export function isSensitiveData(data: any, category?: SensitiveDataCategory): bo
   }
   
   return false;
+}
+
+// Helper functions to check types without using instanceof
+function isJournalEntry(data: any): boolean {
+  return typeof data === 'object' && data !== null && 
+         'totalDebit' in data && 'totalCredit' in data &&
+         'status' in data && 'lines' in data;
+}
+
+function isCustomer(data: any): boolean {
+  return typeof data === 'object' && data !== null &&
+         'name' in data && ('balance' in data || 'creditLimit' in data);
+}
+
+function isProduct(data: any): boolean {
+  return typeof data === 'object' && data !== null &&
+         'name' in data && 'costPrice' in data && 'quantity' in data;
 }
 
 // Get required verification level based on data category

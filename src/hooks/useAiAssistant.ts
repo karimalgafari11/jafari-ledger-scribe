@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { ApiResponse, Message, SystemAlert, AiAssistantContext } from "@/types/ai";
 import { Product } from "@/types/inventory";
@@ -277,7 +276,7 @@ export const useAiAssistant = () => {
                           currentVerificationLevel === VerificationLevel.BASIC ? 'أساسي' :
                           currentVerificationLevel === VerificationLevel.TWO_FACTOR ? 'متقدم' : 'كامل';
     
-    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} للوصول إلى أجزاء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
+    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أجزاء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
 
 معلومات حالية عن النظام:
 - يوجد حالياً ${systemContext.lowStockItems} منتج بمخزون منخفض يحتاج إلى إعادة طلب.

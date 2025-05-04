@@ -21,7 +21,8 @@ import {
   Fingerprint,
   Bell,
   Mail,
-  MessageSquare
+  MessageSquare,
+  AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAiAssistant } from "@/hooks/useAiAssistant";

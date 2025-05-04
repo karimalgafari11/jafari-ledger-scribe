@@ -217,7 +217,7 @@ export const ChatInterface = () => {
       "قم بإنشاء تقرير ميزانية عمومية",
       "ما هي أفضل المنتجات مبيعاً هذا الشهر؟",
       "ما هي حالة المخزون الحالية؟",
-      "أرسل تذكيرات للعملاء المتأخرين عن السداد",
+      "أرسل تذكيرات للعملاء الم��أخرين عن السداد",
       "قم بتحليل الإيرادات والمصروفات للربع الحالي",
       "أنشئ قيداً محاسبياً لتسوية المخزون",
       "افحص النظام بحثاً عن أخطاء",
@@ -237,11 +237,7 @@ export const ChatInterface = () => {
 
   const startSpeechRecognition = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      toast({
-        title: "غير مدعوم",
-        description: "متصفحك لا يدعم خاصية التعرف على الصوت",
-        variant: "destructive",
-      });
+      toast.error("متصفحك لا يدعم خاصية التعرف على الصوت");
       return;
     }
     
@@ -271,11 +267,7 @@ export const ChatInterface = () => {
       speechRecognition.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error);
         setListening(false);
-        toast({
-          title: "خطأ",
-          description: "حدث خطأ أثناء الاستماع. حاول مرة أخرى.",
-          variant: "destructive",
-        });
+        toast.error("حدث خطأ أثناء الاستماع. حاول مرة أخرى.");
       };
       
       speechRecognition.current.onend = () => {
@@ -285,11 +277,7 @@ export const ChatInterface = () => {
       speechRecognition.current.start();
     } catch (error) {
       console.error('Speech recognition error:', error);
-      toast({
-        title: "خطأ",
-        description: "لم نتمكن من بدء خاصية التعرف على الصوت",
-        variant: "destructive",
-      });
+      toast.error("لم نتمكن من بدء خاصية التعرف على الصوت");
     }
   };
 
@@ -303,10 +291,7 @@ export const ChatInterface = () => {
   const handleScanSystem = async () => {
     try {
       const results = await scanForSystemErrors();
-      toast({
-        title: "اكتمل فحص النظام",
-        description: `تم اكتشاف ${results.warnings} تحذيرات و ${results.notifications} تنبيهات`,
-      });
+      toast.success(`تم اكتشاف ${results.warnings} تحذيرات و ${results.notifications} تنبيهات`);
     } catch (error) {
       console.error("Error scanning system:", error);
     }
@@ -322,7 +307,7 @@ export const ChatInterface = () => {
         toast.error("كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى");
       }
     } else if (verificationMethod === "2fa") {
-      // التحقق برمز التحقق ثنائي العامل
+      // التحقق برمز التحقق ثنائي ال��امل
       if (verificationCode.length === 6 && /^\d+$/.test(verificationCode)) {
         simulateVerificationProcess();
       } else {
@@ -390,7 +375,7 @@ export const ChatInterface = () => {
     : [
         {
           role: "assistant",
-          content: "مرحباً بك في المساعد الذكي الآمن! كيف يمكنني مساعدتك اليوم؟",
+          content: "مرحباً بك في المساعد الذكي آمن! كيف يمكنني مساعدتك اليوم؟",
           timestamp: new Date()
         },
       ];
@@ -491,7 +476,7 @@ export const ChatInterface = () => {
                     onClick={handleScanSystem}
                   >
                     <AlertCircle className="mr-2 h-4 w-4" />
-                    فحص النظام بحثاً عن أخطاء
+                    فحص النظام بحثاً عن أ��طاء
                   </Button>
                 </div>
               </div>
