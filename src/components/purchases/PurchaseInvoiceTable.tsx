@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+
+import React, { useState, useRef, useEffect } from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { PurchaseItemForm } from "./PurchaseItemForm";
@@ -41,20 +42,24 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   const handleCellClick = (index: number, field: string) => {
     if (isAddingItem || editingItemIndex !== null) return;
     
-    // Generate a unique ID for the cell
+    // Generate a unique ID for the cell using consistent format
     const cellId = `${field}-${index}`;
+    console.log(`Activating search cell: ${cellId}`);
     setActiveSearchCell(cellId);
     
     // Focus the search input after rendering
     setTimeout(() => {
       if (searchInputRef.current) {
+        console.log("Focusing search input");
         searchInputRef.current.focus();
       }
-    }, 10);
+    }, 50); // Increased timeout to ensure DOM is updated
   };
   
   // Handle product selection from search
   const handleProductSelect = (product: any, index?: number) => {
+    console.log("Product selected:", product, "for index:", index);
+    
     if (index !== undefined) {
       // Update existing item
       const updatedItem = {
@@ -96,11 +101,29 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   // Reset active search cell when user clicks away
   const handleTableClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    // Only close if clicking outside the search cells
+    // Only close if clicking outside the search cells and search dropdowns
     if (!target.closest('.search-cell') && !target.closest('.product-search-dropdown')) {
+      console.log("Clicked outside search cells, resetting active cell");
       setActiveSearchCell(null);
     }
   };
+  
+  // Effect to handle document clicks (outside table)
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (tableRef.current && !tableRef.current.contains(target) && 
+          !target.closest('.product-search-dropdown')) {
+        setActiveSearchCell(null);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleDocumentClick);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentClick);
+    };
+  }, []);
   
   // Toggle table display settings
   const toggleGridLines = () => {

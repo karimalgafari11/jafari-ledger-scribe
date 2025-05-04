@@ -32,6 +32,14 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
   const [results, setResults] = useState<Product[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Focus the input when autoFocus is true
+  useEffect(() => {
+    if (autoFocus && ref && 'current' in ref && ref.current) {
+      ref.current.focus();
+      console.log("Auto-focusing search input");
+    }
+  }, [autoFocus, ref]);
+
   useEffect(() => {
     // Filter products based on search query
     if (searchQuery.trim().length > 0) {
@@ -42,9 +50,12 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
       );
       setResults(filteredProducts.slice(0, maxResults));
       setIsOpen(true);
+      console.log("Search results:", filteredProducts.length);
     } else {
-      setResults([]);
-      setIsOpen(false);
+      // If no search query, show some recent or common products
+      setResults(products.slice(0, maxResults));
+      setIsOpen(products.length > 0);
+      console.log("Showing default products:", products.slice(0, maxResults).length);
     }
   }, [searchQuery, products, maxResults]);
 
@@ -66,6 +77,7 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
     onSelect(product);
     setSearchQuery(""); // Clear the search input after selection
     setIsOpen(false);
+    console.log("Product selected from dropdown:", product.name);
   };
 
   return (
@@ -79,27 +91,37 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
           onChange={(e) => setSearchQuery(e.target.value)}
           autoFocus={autoFocus}
           className={`${showIcon ? 'pr-10' : ''} ${className}`}
+          onClick={(e) => e.stopPropagation()}
         />
         {showIcon && (
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
         )}
       </div>
       
-      {isOpen && results.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-          {results.map((product) => (
-            <div
-              key={product.id}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between"
-              onClick={() => handleSelect(product)}
-            >
-              <div>
-                <div className="font-medium">{product.name}</div>
-                <div className="text-xs text-gray-500">{product.code}</div>
+      {isOpen && (
+        <div className="absolute z-[100] mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+          {results.length > 0 ? (
+            results.map((product) => (
+              <div
+                key={product.id}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelect(product);
+                }}
+              >
+                <div>
+                  <div className="font-medium">{product.name}</div>
+                  <div className="text-xs text-gray-500">{product.code}</div>
+                </div>
+                <div className="text-sm">{product.price} ريال</div>
               </div>
-              <div className="text-sm">{product.price} ريال</div>
+            ))
+          ) : (
+            <div className="px-4 py-3 text-center text-gray-500">
+              لا توجد نتائج مطابقة
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>

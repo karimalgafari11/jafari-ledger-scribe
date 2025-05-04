@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -42,8 +41,11 @@ export const ItemRow: React.FC<ItemRowProps> = ({
         {index + 1}
       </TableCell>
       <TableCell 
-        className="border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell"
-        onClick={() => handleCellClick(index, 'name')}
+        className="border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCellClick(index, 'name');
+        }}
       >
         <ProductSearchCell 
           active={activeSearchCell === `name-${index}`}
@@ -57,8 +59,11 @@ export const ItemRow: React.FC<ItemRowProps> = ({
         )}
       </TableCell>
       <TableCell 
-        className="text-center border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell" 
-        onClick={() => handleCellClick(index, 'code')}
+        className="text-center border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative" 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCellClick(index, 'code');
+        }}
       >
         <ProductSearchCell 
           active={activeSearchCell === `code-${index}`}

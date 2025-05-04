@@ -26,8 +26,11 @@ export const QuickAddRow: React.FC<QuickAddRowProps> = ({
         {itemsLength + 1}
       </TableCell>
       <TableCell 
-        className="border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell" 
-        onClick={() => handleCellClick(-1, 'quickadd')}
+        className="border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative" 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCellClick(-1, 'quickadd');
+        }}
         colSpan={10}
       >
         <ProductSearchCell 
@@ -38,7 +41,7 @@ export const QuickAddRow: React.FC<QuickAddRowProps> = ({
           searchInputRef={searchInputRef}
         />
         {activeSearchCell !== `quickadd-${-1}` && (
-          <div className="flex items-center justify-center text-gray-500">
+          <div className="flex items-center justify-center text-gray-500 p-2">
             <Search size={18} className="ml-2" />
             انقر هنا للبحث وإضافة صنف جديد
           </div>
