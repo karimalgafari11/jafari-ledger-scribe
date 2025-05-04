@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Product } from "@/types/inventory";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
 import { Search } from "lucide-react";
+import { debounce } from "lodash";
 
 interface ProductSearchProps {
   onSelect: (product: Product) => void;
@@ -24,13 +25,15 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
   className = "",
   inline = false,
   showIcon = true,
-  maxResults = 8
+  maxResults = 5
 }, ref) => {
   const { products } = useInventoryProducts();
   const [searchQuery, setSearchQuery] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<Product[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const searchRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Focus the input when autoFocus is true
   useEffect(() => {
@@ -40,24 +43,31 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
     }
   }, [autoFocus, ref]);
 
+  // Filter products using debounce
+  const filterProducts = React.useCallback(
+    debounce((query: string) => {
+      if (query.trim().length > 0) {
+        const filteredProducts = products.filter(
+          product =>
+            product.name.toLowerCase().includes(query.toLowerCase()) ||
+            product.code.toLowerCase().includes(query.toLowerCase())
+        );
+        setResults(filteredProducts.slice(0, maxResults));
+        setIsOpen(true);
+        console.log("Search results:", filteredProducts.length);
+      } else {
+        // If no search query, show some recent or common products
+        setResults(products.slice(0, maxResults));
+        setIsOpen(products.length > 0);
+      }
+      setSelectedIndex(-1);
+    }, 150),
+    [products, maxResults]
+  );
+
   useEffect(() => {
-    // Filter products based on search query
-    if (searchQuery.trim().length > 0) {
-      const filteredProducts = products.filter(
-        product =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.code.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setResults(filteredProducts.slice(0, maxResults));
-      setIsOpen(true);
-      console.log("Search results:", filteredProducts.length);
-    } else {
-      // If no search query, show some recent or common products
-      setResults(products.slice(0, maxResults));
-      setIsOpen(products.length > 0);
-      console.log("Showing default products:", products.slice(0, maxResults).length);
-    }
-  }, [searchQuery, products, maxResults]);
+    filterProducts(searchQuery);
+  }, [searchQuery, filterProducts]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -72,6 +82,42 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen) return;
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : 0));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < results.length) {
+          handleSelect(results[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setIsOpen(false);
+        break;
+    }
+  };
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (resultsRef.current && selectedIndex >= 0) {
+      const selectedElement = resultsRef.current.children[selectedIndex] as HTMLElement;
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [selectedIndex]);
 
   const handleSelect = (product: Product) => {
     onSelect(product);
@@ -89,9 +135,13 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
           placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           autoFocus={autoFocus}
           className={`${showIcon ? 'pr-10' : ''} ${className}`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
         />
         {showIcon && (
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
@@ -99,16 +149,20 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
       </div>
       
       {isOpen && (
-        <div className="absolute z-[100] mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div 
+          className="absolute z-[1000] mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+          ref={resultsRef}
+        >
           {results.length > 0 ? (
-            results.map((product) => (
+            results.map((product, index) => (
               <div
                 key={product.id}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between"
+                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between ${selectedIndex === index ? 'bg-blue-50' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSelect(product);
                 }}
+                onMouseEnter={() => setSelectedIndex(index)}
               >
                 <div>
                   <div className="font-medium">{product.name}</div>

@@ -22,7 +22,7 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
 
   return (
     <div 
-      className="product-search-dropdown w-full absolute left-0 right-0 top-0 bottom-0 z-50 bg-white"
+      className="product-search-dropdown w-full absolute left-0 right-0 top-0 bottom-0 z-50 bg-white shadow-xl border border-gray-300 rounded-sm"
       onClick={(e) => e.stopPropagation()}
     >
       <ProductSearch 
@@ -38,6 +38,7 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
         }
         className="w-full text-center border-none focus:ring-0"
         onSelect={(product) => onSelect(product, index !== -1 ? index : undefined)}
+        maxResults={5}
       />
     </div>
   );

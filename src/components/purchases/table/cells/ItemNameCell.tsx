@@ -38,7 +38,7 @@ export const ItemNameCell: React.FC<ItemNameCellProps> = ({
         searchInputRef={searchInputRef}
       />
       {activeSearchCell !== cellId && (
-        <div className="w-full h-full min-h-[24px]">{name || ""}</div>
+        <div className="w-full h-full min-h-[24px] flex items-center">{name || ""}</div>
       )}
     </TableCell>
   );
