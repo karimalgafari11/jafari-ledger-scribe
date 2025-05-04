@@ -1,6 +1,7 @@
 
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { ProductSearch } from "../ProductSearch";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProductSearchCellProps {
   active: boolean;
@@ -17,12 +18,19 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
   onSelect, 
   searchInputRef 
 }) => {
+  const isMobile = useIsMobile();
+  
   // Don't render anything if not active
   if (!active) return null;
 
+  // Choose different positioning based on device
+  const positionClass = isMobile 
+    ? "fixed inset-0 z-[1000]" 
+    : "absolute z-[1000] left-0 right-0 top-0 bottom-0";
+
   return (
     <div 
-      className="product-search-dropdown w-full absolute left-0 right-0 top-0 bottom-0 z-50 bg-white shadow-xl border border-gray-300 rounded-sm"
+      className={`product-search-dropdown ${positionClass} bg-white shadow-xl border border-gray-300 rounded-sm overflow-visible`}
       onClick={(e) => e.stopPropagation()}
     >
       <ProductSearch 

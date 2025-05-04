@@ -29,19 +29,42 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
 }, ref) => {
   const { products } = useInventoryProducts();
   const [searchQuery, setSearchQuery] = useState(defaultValue);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true); // Default to open immediately for better UX
   const [results, setResults] = useState<Product[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Focus the input when autoFocus is true
+  // Merge the refs to support autoFocus
   useEffect(() => {
-    if (autoFocus && ref && 'current' in ref && ref.current) {
-      ref.current.focus();
-      console.log("Auto-focusing search input");
+    if (ref) {
+      if (typeof ref === 'function') {
+        ref(inputRef.current);
+      } else {
+        ref.current = inputRef.current;
+      }
     }
-  }, [autoFocus, ref]);
+  }, [ref]);
+
+  // Focus the input when active
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+          console.log("Auto-focusing search input");
+        }
+      }, 50);
+    }
+  }, [autoFocus]);
+
+  // Immediately show some products when opened to improve UX
+  useEffect(() => {
+    if (products.length > 0) {
+      setResults(products.slice(0, maxResults));
+    }
+  }, [products, maxResults]);
 
   // Filter products using debounce
   const filterProducts = React.useCallback(
@@ -69,23 +92,12 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
     filterProducts(searchQuery);
   }, [searchQuery, filterProducts]);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setIsOpen(true);
+      return;
+    }
     
     switch (e.key) {
       case 'ArrowDown':
@@ -100,6 +112,9 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < results.length) {
           handleSelect(results[selectedIndex]);
+        } else if (results.length > 0) {
+          // Select first result if none selected
+          handleSelect(results[0]);
         }
         break;
       case 'Escape':
@@ -130,14 +145,14 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
     <div className={`relative ${inline ? 'inline-block' : 'w-full'}`} ref={searchRef}>
       <div className="relative">
         <Input
-          ref={ref}
+          ref={inputRef}
           type="text"
           placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           autoFocus={autoFocus}
-          className={`${showIcon ? 'pr-10' : ''} ${className}`}
+          className={`${showIcon ? 'pr-10' : ''} ${className} border-2 focus:border-blue-400`}
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(true);
@@ -150,14 +165,14 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
       
       {isOpen && (
         <div 
-          className="absolute z-[1000] mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-[1001] mt-1 w-full bg-white border-2 border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
           ref={resultsRef}
         >
           {results.length > 0 ? (
             results.map((product, index) => (
               <div
                 key={product.id}
-                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between ${selectedIndex === index ? 'bg-blue-50' : ''}`}
+                className={`px-4 py-2 hover:bg-blue-50 cursor-pointer flex justify-between ${selectedIndex === index ? 'bg-blue-100' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSelect(product);
@@ -168,7 +183,7 @@ export const ProductSearch = forwardRef<HTMLInputElement, ProductSearchProps>(({
                   <div className="font-medium">{product.name}</div>
                   <div className="text-xs text-gray-500">{product.code}</div>
                 </div>
-                <div className="text-sm">{product.price} ريال</div>
+                <div className="text-sm text-gray-700">{product.price} ريال</div>
               </div>
             ))
           ) : (

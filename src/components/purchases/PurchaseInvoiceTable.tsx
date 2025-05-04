@@ -56,7 +56,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
         console.log("Focusing search input");
         searchInputRef.current.focus();
       }
-    }, 50); // Increased timeout to ensure DOM is updated
+    }, 100);
   };
   
   // Handle product selection from search
@@ -133,8 +133,10 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   useEffect(() => {
     const handleDocumentClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (tableRef.current && !tableRef.current.contains(target) && 
-          !target.closest('.product-search-dropdown')) {
+      if (tableRef.current && 
+          !tableRef.current.contains(target) && 
+          !target.closest('.product-search-dropdown') &&
+          !target.closest('.search-cell')) {
         setActiveSearchCell(null);
       }
     };

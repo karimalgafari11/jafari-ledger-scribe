@@ -24,7 +24,7 @@ export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
   
   return (
     <TableCell 
-      className="text-center border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative" 
+      className={`text-center border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative ${activeSearchCell === cellId ? 'bg-gray-100' : ''}`}
       onClick={(e) => {
         e.stopPropagation();
         handleCellClick(index, 'code');

@@ -29,7 +29,7 @@ export const QuickAddRow: React.FC<QuickAddRowProps> = ({
         {itemsLength + 1}
       </TableCell>
       <TableCell 
-        className="border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative" 
+        className={`border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative ${activeSearchCell === cellId ? 'bg-gray-100' : ''}`}
         onClick={(e) => {
           e.stopPropagation();
           handleCellClick(-1, 'quickadd');
