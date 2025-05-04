@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
-import { ProductSearch } from "./ProductSearch";
 
 interface PurchaseItemFormProps {
   item?: PurchaseItem;
@@ -42,15 +41,6 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
     setValue('total', total);
   }, [quantity, price, setValue, total]);
 
-  const handleProductSelect = (product: Product) => {
-    setValue('productId', product.id);
-    setValue('name', product.name);
-    setValue('code', product.code);
-    setValue('price', product.price);
-    // Calculate the total after setting the price
-    setValue('total', Number(quantity) * product.price);
-  };
-
   const handleFormSubmit = (data: any) => {
     const formattedItem = {
       ...data,
@@ -71,19 +61,11 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="productSearch">بحث عن صنف</Label>
-              <ProductSearch
-                placeholder="ابحث برقم الصنف أو الاسم"
-                onSelect={handleProductSelect}
-                autoFocus
-              />
-            </div>
-            
-            <div>
               <Label htmlFor="code">رقم الصنف</Label>
               <Input
                 id="code"
                 {...register("code", { required: "رقم الصنف مطلوب" })}
+                autoFocus
               />
               {errors.code && <span className="text-red-500 text-xs">{errors.code.message as string}</span>}
             </div>
