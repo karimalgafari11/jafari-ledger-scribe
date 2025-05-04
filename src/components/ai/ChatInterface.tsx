@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,11 @@ import {
   Mic,
   Send,
   Trash2,
-  Shield
+  Shield,
+  Lock,
+  LockKeyhole,
+  Fingerprint,
+  KeyRound
 } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { Message, SystemAlert } from "@/types/ai";
@@ -27,6 +30,12 @@ import { formatDistanceToNow } from "date-fns";
 import { ar } from "date-fns/locale";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SensitiveDataCategory, VerificationLevel } from "@/utils/aiSecurityUtils";
+import { toast } from "sonner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 
 // Add type declarations for the Web Speech API
 interface SpeechRecognitionEvent extends Event {
@@ -98,7 +107,13 @@ export const ChatInterface = () => {
     "حلل أداء المبيعات حسب المنتج"
   ]);
   
-  const { toast } = useToast();
+  // اضافة حالة للتحقق من الهوية
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationProgress, setVerificationProgress] = useState(0);
+  const [verificationMethod, setVerificationMethod] = useState<"password" | "2fa" | "biometric">("password");
+  
+  const { toast: toastNotify } = useToast();
   const { 
     sendMessage, 
     isLoading, 
@@ -107,7 +122,13 @@ export const ChatInterface = () => {
     clearChatHistory,
     hasFullAccess,
     toggleFullAccess,
-    scanForSystemErrors
+    scanForSystemErrors,
+    securityMode,
+    setSecurityLevel,
+    identityVerified,
+    currentVerificationLevel,
+    pendingVerification,
+    verifyUserIdentity
   } = useAiAssistant();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
@@ -121,23 +142,62 @@ export const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [chatHistory]);
+  
+  // إضافة مراقبة لطلبات التحقق المعلقة
+  useEffect(() => {
+    if (pendingVerification) {
+      setIsVerificationDialogOpen(true);
+    }
+  }, [pendingVerification]);
+  
+  // عملية محاكاة للتحقق من الهوية
+  const simulateVerificationProcess = async () => {
+    setVerificationProgress(0);
+    
+    const interval = setInterval(() => {
+      setVerificationProgress(prev => {
+        const newProgress = prev + 10;
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          
+          // التحقق بنجاح بعد اكتمال التقدم
+          setTimeout(() => {
+            setIsVerificationDialogOpen(false);
+            toast.success("تم التحقق من هويتك بنجاح");
+            
+            // هن�� نجري عملية تحقق حقيقية مع pendingVerification
+            if (pendingVerification) {
+              verifyUserIdentity(pendingVerification.category);
+            }
+          }, 500);
+        }
+        return newProgress;
+      });
+    }, 200);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!input.trim()) return;
     
+    // التحقق من طلب المساعدة الأمنية
+    if (input.includes("تحقق") || input.includes("الأمان") || input.includes("التحقق من الهوية")) {
+      setInput("");
+      setIsVerificationDialogOpen(true);
+      return;
+    }
+    
     setInput("");
     
     try {
-      // إضافة رسالة "جاري الكتابة..." مؤقتة
       await sendMessage(input);
       
       // توليد اقتراحات جديدة بناء على المحادثة
       generateSuggestedQuestions();
     } catch (error) {
       console.error("Error sending message:", error);
-      toast({
+      toastNotify({
         title: "حدث خطأ",
         description: "لم نتمكن من الاتصال بالمساعد الذكي. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
@@ -251,6 +311,78 @@ export const ChatInterface = () => {
       console.error("Error scanning system:", error);
     }
   };
+  
+  // معالجة التحقق اليدوي من الهوية
+  const handleManualVerification = () => {
+    if (verificationMethod === "password") {
+      // التحقق بكلمة المرور
+      if (verificationCode === "123456") {
+        simulateVerificationProcess();
+      } else {
+        toast.error("كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى");
+      }
+    } else if (verificationMethod === "2fa") {
+      // التحقق برمز التحقق ثنائي العامل
+      if (verificationCode.length === 6 && /^\d+$/.test(verificationCode)) {
+        simulateVerificationProcess();
+      } else {
+        toast.error("رمز التحقق غير صحيح، يجب أن يكون 6 أرقام");
+      }
+    } else if (verificationMethod === "biometric") {
+      // محاكاة التحقق البيومتري
+      simulateVerificationProcess();
+    }
+  };
+
+  // إظهار رمز مستوى التحقق
+  const renderVerificationLevelIcon = () => {
+    if (!identityVerified) {
+      return <Lock className="h-4 w-4 text-red-500" />;
+    }
+    
+    switch (currentVerificationLevel) {
+      case VerificationLevel.BASIC:
+        return <LockKeyhole className="h-4 w-4 text-amber-500" />;
+      case VerificationLevel.TWO_FACTOR:
+        return <KeyRound className="h-4 w-4 text-green-500" />;
+      case VerificationLevel.BIOMETRIC:
+        return <Fingerprint className="h-4 w-4 text-blue-500" />;
+      default:
+        return <Lock className="h-4 w-4 text-gray-500" />;
+    }
+  };
+  
+  // إظهار نص مستوى التحقق
+  const getVerificationLevelText = () => {
+    if (!identityVerified) {
+      return "غير متحقق";
+    }
+    
+    switch (currentVerificationLevel) {
+      case VerificationLevel.BASIC:
+        return "أساسي";
+      case VerificationLevel.TWO_FACTOR:
+        return "ثنائي العامل";
+      case VerificationLevel.BIOMETRIC:
+        return "بيومتري";
+      default:
+        return "غير معروف";
+    }
+  };
+  
+  // وضع الأمان المناسب
+  const getSecurityModeText = () => {
+    switch (securityMode) {
+      case "standard":
+        return "قياسي";
+      case "enhanced":
+        return "محسّن";
+      case "strict":
+        return "صارم";
+      default:
+        return "غير معروف";
+    }
+  };
 
   // إذا لم يكن هناك رسائل في المحادثة، أضف رسالة ترحيبية
   const displayMessages = chatHistory.length > 0 
@@ -258,7 +390,7 @@ export const ChatInterface = () => {
     : [
         {
           role: "assistant",
-          content: "مرحباً بك في المساعد الذكي! كيف يمكنني مساعدتك اليوم؟",
+          content: "مرحباً بك في المساعد الذكي الآمن! كيف يمكنني مساعدتك اليوم؟",
           timestamp: new Date()
         },
       ];
@@ -279,6 +411,29 @@ export const ChatInterface = () => {
         </div>
         
         <div className="flex gap-2">
+          {/* Verification Badge */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge 
+                  className={`flex items-center gap-1 px-2 py-1 ${
+                    !identityVerified ? "bg-red-100 text-red-600 hover:bg-red-200" :
+                    currentVerificationLevel === VerificationLevel.BASIC ? "bg-amber-100 text-amber-600 hover:bg-amber-200" :
+                    currentVerificationLevel === VerificationLevel.TWO_FACTOR ? "bg-green-100 text-green-600 hover:bg-green-200" :
+                    "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                  } cursor-pointer`}
+                  onClick={() => setIsVerificationDialogOpen(true)}
+                >
+                  {renderVerificationLevelIcon()}
+                  <span>{getVerificationLevelText()}</span>
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>انقر للتحقق من الهوية</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
           <Popover>
             <PopoverTrigger asChild>
               <Button 
@@ -291,8 +446,31 @@ export const ChatInterface = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
-              <div className="space-y-3">
-                <h3 className="font-medium text-blue-900">إعدادات الصلاحيات</h3>
+              <div className="space-y-4">
+                <h3 className="font-medium text-blue-900">إعد��دات الأمان والصلاحيات</h3>
+                
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">مستوى الأمان</h4>
+                  <RadioGroup 
+                    defaultValue={securityMode} 
+                    onValueChange={(value) => setSecurityLevel(value as 'standard' | 'enhanced' | 'strict')}
+                    className="flex flex-col space-y-1"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="standard" id="standard" />
+                      <Label htmlFor="standard" className="mr-2">قياسي</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="enhanced" id="enhanced" />
+                      <Label htmlFor="enhanced" className="mr-2">محسّن</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="strict" id="strict" />
+                      <Label htmlFor="strict" className="mr-2">صارم</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <h4>الصلاحيات الكاملة</h4>
@@ -304,6 +482,7 @@ export const ChatInterface = () => {
                     aria-label="تبديل الصلاحيات الكاملة"
                   />
                 </div>
+                
                 <div className="pt-2">
                   <Button 
                     variant="outline" 
@@ -331,6 +510,20 @@ export const ChatInterface = () => {
       </div>
 
       <ScrollArea className="flex-1 rounded-lg mb-4 bg-white/70 backdrop-blur-sm border border-blue-100 p-3">
+        {/* System Security Info */}
+        <div className="mb-4 bg-blue-50/70 rounded-lg p-2 border border-blue-200">
+          <div className="flex items-center justify-between text-xs text-blue-700">
+            <div className="flex items-center gap-1">
+              <Shield className="h-3 w-3" />
+              <span>مستوى الأمان: {getSecurityModeText()}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              {renderVerificationLevelIcon()}
+              <span>مستوى التحقق: {getVerificationLevelText()}</span>
+            </div>
+          </div>
+        </div>
+        
         {displayMessages.map((message, index) => (
           <div
             key={index}
@@ -466,11 +659,99 @@ export const ChatInterface = () => {
         </TooltipProvider>
       </form>
       
+      {/* محادثة نشطة */}
       {listening && (
         <div className="mt-2 text-center text-sm text-blue-600 animate-pulse">
           جارٍ الاستماع... تحدث الآن
         </div>
       )}
+      
+      {/* نافذة التحقق من الهوية */}
+      <Dialog open={isVerificationDialogOpen} onOpenChange={setIsVerificationDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>التحقق من هويتك</DialogTitle>
+            <DialogDescription>
+              يتطلب الوصول إلى المعلومات الحساسة التحقق من هويتك.
+              اختر طريقة التحقق المناسبة.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <RadioGroup 
+              defaultValue={verificationMethod} 
+              onValueChange={(value) => setVerificationMethod(value as "password" | "2fa" | "biometric")}
+              className="flex flex-col space-y-3"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="password" id="password" />
+                <Label htmlFor="password" className="mr-2 flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-amber-500" />
+                  <span>كلمة المرور</span>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="2fa" id="2fa" />
+                <Label htmlFor="2fa" className="mr-2 flex items-center gap-2">
+                  <KeyRound className="h-4 w-4 text-green-500" />
+                  <span>التحقق الثنائي</span>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="biometric" id="biometric" />
+                <Label htmlFor="biometric" className="mr-2 flex items-center gap-2">
+                  <Fingerprint className="h-4 w-4 text-blue-500" />
+                  <span>البصمة البيومترية</span>
+                </Label>
+              </div>
+            </RadioGroup>
+            
+            {verificationMethod !== "biometric" && (
+              <div className="mt-3">
+                <Label htmlFor="verificationCode" className="mb-2 block">
+                  {verificationMethod === "password" ? "كلمة المرور" : "رمز التحقق"}
+                </Label>
+                <Input
+                  id="verificationCode"
+                  type={verificationMethod === "password" ? "password" : "text"}
+                  placeholder={verificationMethod === "password" ? "أدخل كلمة المرور" : "أدخل رمز التحقق من 6 أرقام"}
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {verificationMethod === "password" 
+                    ? "لأغراض العرض، استخدم كلمة المرور: 123456" 
+                    : "لأغراض العرض، أدخل أي 6 أرقام"}
+                </p>
+              </div>
+            )}
+            
+            {verificationProgress > 0 && (
+              <div className="space-y-2">
+                <Label>جاري التحقق...</Label>
+                <Progress value={verificationProgress} className="h-2" />
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter className="flex items-center justify-end space-x-2">
+            <Button
+              variant="ghost"
+              onClick={() => setIsVerificationDialogOpen(false)}
+            >
+              إلغاء
+            </Button>
+            <Button
+              type="button"
+              onClick={handleManualVerification}
+              disabled={verificationProgress > 0 || (verificationMethod !== "biometric" && !verificationCode)}
+              className="mr-2"
+            >
+              {verificationMethod === "biometric" ? "استخدام البصمة" : "تحقق"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

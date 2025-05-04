@@ -1,19 +1,27 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ApiResponse, Message, SystemAlert, AiAssistantContext } from "@/types/ai";
 import { Product } from "@/types/inventory";
 import { Expense } from "@/types/expenses";
-import { JournalEntry } from "@/types/journal";
+import { JournalEntry, JournalStatus } from "@/types/journal";
 import { Customer } from "@/types/customers";
 import { mockProducts } from "@/data/mockProducts";
 import { mockExpenses } from "@/data/mockExpenses";
 import { mockCustomers } from "@/data/mockCustomers";
 import { mockJournalEntries } from "@/data/mockJournalEntries";
 import { toast } from "sonner";
+import { 
+  SensitiveDataCategory, 
+  VerificationLevel, 
+  VerificationRequest, 
+  isSensitiveData,
+  getRequiredVerificationLevel
+} from "@/utils/aiSecurityUtils";
 
-// إنشاء مفتاح فريد للتخزين المحلي
+// Local storage keys
 const CHAT_HISTORY_KEY = "ai_assistant_chat_history";
 const SYSTEM_CONTEXT_KEY = "ai_assistant_context";
+const VERIFICATION_STATUS_KEY = "ai_assistant_verification";
 
 export const useAiAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +35,10 @@ export const useAiAssistant = () => {
   const [systemAlerts, setSystemAlerts] = useState<SystemAlert[]>([]);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [hasFullAccess, setHasFullAccess] = useState(true);
+  const [currentVerificationLevel, setCurrentVerificationLevel] = useState<VerificationLevel>(VerificationLevel.NONE);
+  const [pendingVerification, setPendingVerification] = useState<VerificationRequest | null>(null);
+  const [securityMode, setSecurityMode] = useState<'standard' | 'enhanced' | 'strict'>('standard');
+  const [identityVerified, setIdentityVerified] = useState(false);
 
   const API_KEY = "sk-1c339b5c5397486ebbcc7730383c8cdc";
   const API_URL = "https://api.deepseek.com/v1/chat/completions";
@@ -56,6 +68,29 @@ export const useAiAssistant = () => {
         console.error("فشل في استرجاع سياق النظام:", error);
       }
     }
+    
+    // استرجاع حالة التحقق المحفوظة
+    const savedVerification = localStorage.getItem(VERIFICATION_STATUS_KEY);
+    if (savedVerification) {
+      try {
+        const verification = JSON.parse(savedVerification);
+        setCurrentVerificationLevel(verification.level || VerificationLevel.NONE);
+        setIdentityVerified(verification.verified || false);
+        
+        // إعادة التحقق إذا مر وقت معين
+        const verifiedAt = new Date(verification.timestamp || 0);
+        const currentTime = new Date();
+        const timeDiff = (currentTime.getTime() - verifiedAt.getTime()) / (1000 * 60); // بالدقائق
+        
+        // إعادة التحقق بعد 30 دقيقة
+        if (timeDiff > 30) {
+          setIdentityVerified(false);
+          setCurrentVerificationLevel(VerificationLevel.NONE);
+        }
+      } catch (error) {
+        console.error("فشل في استرجاع حالة التحقق:", error);
+      }
+    }
   }, []);
   
   // حفظ سجل المحادثات عند تحديثه
@@ -69,6 +104,15 @@ export const useAiAssistant = () => {
   useEffect(() => {
     localStorage.setItem(SYSTEM_CONTEXT_KEY, JSON.stringify(systemContext));
   }, [systemContext]);
+  
+  // حفظ حالة التحقق عند تغييرها
+  useEffect(() => {
+    localStorage.setItem(VERIFICATION_STATUS_KEY, JSON.stringify({
+      level: currentVerificationLevel,
+      verified: identityVerified,
+      timestamp: new Date().toISOString()
+    }));
+  }, [currentVerificationLevel, identityVerified]);
 
   const collectSystemContext = () => {
     // فحص المخزون المنخفض
@@ -83,7 +127,7 @@ export const useAiAssistant = () => {
     
     // فحص القيود اليومية التي تنتظر الموافقة
     const pendingJournalEntries = mockJournalEntries.filter(
-      (entry) => entry.status === "pending"
+      (entry) => entry.status === JournalStatus.Pending
     );
     
     // إنشاء تنبيهات النظام
@@ -142,7 +186,7 @@ export const useAiAssistant = () => {
     
     // العملاء ذوو الديون العالية
     const highDebtCustomers = mockCustomers.filter(
-      (customer) => customer.balance > customer.creditLimit * 0.8
+      (customer) => customer.balance > customer.creditLimit! * 0.8
     );
     
     highDebtCustomers.forEach(customer => {
@@ -170,15 +214,86 @@ export const useAiAssistant = () => {
     setSystemAlerts(alerts);
   };
 
-  // بناء رسالة النظام بناءً على سياق التطبيق
+  // التحقق من هوية المستخدم قبل تقديم معلومات حساسة
+  const verifyUserIdentity = async (category: SensitiveDataCategory): Promise<boolean> => {
+    const requiredLevel = getRequiredVerificationLevel(category);
+    
+    // إذا كان المستخدم مُتحقق منه بالفعل بمستوى أعلى أو مساوي، نعود true
+    if (identityVerified && currentVerificationLevel >= requiredLevel) {
+      return true;
+    }
+    
+    // إنشاء طلب تحقق جديد
+    const verificationRequest: VerificationRequest = {
+      category,
+      requiredLevel,
+      timestamp: new Date(),
+      verified: false,
+      message: `يلزم التحقق من هويتك للوصول إلى معلومات ${
+        category === SensitiveDataCategory.FINANCIAL ? 'مالية' :
+        category === SensitiveDataCategory.CUSTOMER ? 'العملاء' :
+        category === SensitiveDataCategory.INVENTORY ? 'المخزون' : 'النظام'
+      }`
+    };
+    
+    setPendingVerification(verificationRequest);
+    
+    // الانتظار حتى يتم التحقق من الهوية
+    return new Promise<boolean>((resolve) => {
+      // في الإصدار الحالي، نستخدم مهلة قصيرة للمحاكاة - في الواقع، سيتم استبدال هذا برمز تحقق حقيقي
+      setTimeout(() => {
+        // نفترض أن المستخدم تم التحقق منه
+        setCurrentVerificationLevel(requiredLevel);
+        setIdentityVerified(true);
+        setPendingVerification(null);
+        resolve(true);
+      }, 1000);
+    });
+  };
+  
+  // تحليل الرسالة للكشف عن طلبات للمعلومات الحساسة
+  const analyzeMessageForSensitiveRequests = useCallback((message: string): SensitiveDataCategory | null => {
+    const financialKeywords = ['مال', 'أرباح', 'خسائر', 'رصيد', 'ميزانية', 'قيود', 'محاسبة', 'تقارير مالية'];
+    const customerKeywords = ['عميل', 'عملاء', 'زبون', 'زبائن', 'بيانات العملاء', 'معلومات العملاء'];
+    const inventoryKeywords = ['مخزون', 'بضاعة', 'سعر التكلفة', 'قيمة المخزون'];
+    const systemKeywords = ['كلمة سر', 'كلمة المرور', 'API', 'مفتاح', 'إعدادات النظام', 'صلاحيات'];
+    
+    if (financialKeywords.some(keyword => message.includes(keyword))) {
+      return SensitiveDataCategory.FINANCIAL;
+    } else if (customerKeywords.some(keyword => message.includes(keyword))) {
+      return SensitiveDataCategory.CUSTOMER;
+    } else if (inventoryKeywords.some(keyword => message.includes(keyword))) {
+      return SensitiveDataCategory.INVENTORY;
+    } else if (systemKeywords.some(keyword => message.includes(keyword))) {
+      return SensitiveDataCategory.SYSTEM;
+    }
+    
+    return null;
+  }, []);
+
+  // بناء رسالة النظام بناءً على سياق التطبيق وحالة التحقق
   const buildSystemPrompt = () => {
-    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات كاملة للوصول إلى جميع أجزاء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
+    const securityLevel = !identityVerified ? 'محدود' : 
+                          currentVerificationLevel === VerificationLevel.BASIC ? 'أساسي' :
+                          currentVerificationLevel === VerificationLevel.TWO_FACTOR ? 'متقدم' : 'كامل';
+    
+    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} للوصول إلى أجزاء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
 
 معلومات حالية عن النظام:
 - يوجد حالياً ${systemContext.lowStockItems} منتج بمخزون منخفض يحتاج إلى إعادة طلب.
 - يوجد ${systemContext.unpaidInvoices} فاتورة غير مدفوعة.
 - يوجد ${systemContext.pendingExpenses} مصروف ينتظر الموافقة.
 - يوجد ${systemContext.pendingApprovals} عملية تنتظر الموافقة بشكل عام.
+
+مستوى أمان الجلسة: ${securityLevel}
+مستوى التحقق الحالي: ${currentVerificationLevel}
+صلاحية الوصول: ${hasFullAccess ? 'كاملة' : 'محدودة'}
+
+قواعد الأمان المهمة:
+1. لا تقدم معلومات مالية حساسة إلا بعد التحقق من المستخدم بمستوى ${VerificationLevel.TWO_FACTOR} على الأقل.
+2. لا تقدم معلومات عملاء حساسة إلا بعد التحقق من المستخدم بمستوى ${VerificationLevel.BASIC} على الأقل.
+3. لا تقدم معلومات نظام حساسة إلا بعد التحقق من المستخدم بمستوى ${VerificationLevel.TWO_FACTOR} على الأقل.
+4. إذا طلب المستخدم معلومات لا تملك صلاحية الوصول إليها، اطلب منه التحقق من هويته أولاً.
 
 قدراتك الخاصة:
 - أنت تملك صلاحيات استكشاف وإصلاح الأخطاء في النظام
@@ -187,21 +302,41 @@ export const useAiAssistant = () => {
 - يمكنك إنشاء التقارير والقيود المحاسبية بشكل تلقائي
 - يمكنك معالجة البيانات وتحليلها عبر جميع أقسام النظام
 
-عندما يسأل المستخدم عن:
-- المخزون: قدم معلومات حول المنتجات، مستويات المخزون، إعادة الطلب.
-- المبيعات: قدم معلومات حول الفواتير، العملاء، المبيعات الأخيرة.
-- المشتريات: قدم معلومات حول المشتريات، الموردين، الطلبات.
-- المحاسبة: قدم معلومات حول الإيرادات، المصروفات، التقارير المالية.
-- الأخطاء: اقترح حلولاً للمشاكل وقم بتشخيص أسبابها.
-
 أجب بأسلوب مهني ومختصر ومفيد. قدم اقتراحات عملية للمستخدم بناءً على المعلومات المتاحة.`;
   };
 
-  // إرسال رسالة إلى API المساعد الذكي
+  // إرسال رسالة إلى API المساعد الذكي مع التحقق من الأمان أولاً
   const sendMessage = async (message: string): Promise<string> => {
     setIsLoading(true);
     
     try {
+      // تحليل الرسالة للكشف عن طلبات معلومات حساسة
+      const sensitiveCategory = analyzeMessageForSensitiveRequests(message);
+      
+      // إذا كانت الرسالة تتضمن طلب معلومات حساسة وليس لدى المستخدم صلاحية
+      if (sensitiveCategory && securityMode !== 'standard') {
+        // التحقق من هوية المستخدم قبل إرسال الطلب
+        const isVerified = await verifyUserIdentity(sensitiveCategory);
+        
+        if (!isVerified) {
+          // إضافة رسالة التحقق إلى سجل المحادثة
+          const newUserMessage: Message = {
+            role: "user",
+            content: message,
+            timestamp: new Date()
+          };
+          
+          const verificationMessage: Message = {
+            role: "assistant",
+            content: "يرجى التحقق من هويتك أولاً للوصول إلى هذه المعلومات الحساسة.",
+            timestamp: new Date()
+          };
+          
+          setChatHistory(prev => [...prev, newUserMessage, verificationMessage]);
+          return verificationMessage.content;
+        }
+      }
+      
       // بناء رسائل للإرسال إلى API
       const systemMessage = {
         role: "system" as const,
@@ -275,7 +410,7 @@ export const useAiAssistant = () => {
   
   // استعلام عن القيود المحاسبية المعلقة
   const getPendingJournalEntries = (): JournalEntry[] => {
-    return mockJournalEntries.filter(entry => entry.status === "pending");
+    return mockJournalEntries.filter(entry => entry.status === JournalStatus.Pending);
   };
   
   // تحليل أداء المبيعات (افتراضية حالياً)
@@ -329,6 +464,20 @@ export const useAiAssistant = () => {
       setIsLoading(false);
     }
   };
+  
+  // الدخول إلى وضع الأمان المحسّن
+  const setSecurityLevel = (level: 'standard' | 'enhanced' | 'strict') => {
+    setSecurityMode(level);
+    // إعادة تعيين حالة التحقق عند تغيير مستوى الأمان
+    if (level !== 'standard') {
+      setIdentityVerified(false);
+      setCurrentVerificationLevel(VerificationLevel.NONE);
+    }
+    toast.success(`تم تعيين مستوى الأمان إلى: ${
+      level === 'standard' ? 'قياسي' : 
+      level === 'enhanced' ? 'محسّن' : 'صارم'
+    }`);
+  };
 
   return { 
     sendMessage, 
@@ -342,6 +491,12 @@ export const useAiAssistant = () => {
     clearChatHistory,
     hasFullAccess,
     toggleFullAccess,
-    scanForSystemErrors
+    scanForSystemErrors,
+    securityMode,
+    setSecurityLevel,
+    identityVerified,
+    currentVerificationLevel,
+    pendingVerification,
+    verifyUserIdentity
   };
 };
