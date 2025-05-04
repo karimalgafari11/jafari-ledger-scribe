@@ -19,7 +19,9 @@ const PurchaseInvoicePage = () => {
         showBack={true}
         onBackClick={handleBack}
       />
-      <PurchaseInvoiceForm />
+      <div className="flex-1 overflow-auto p-4">
+        <PurchaseInvoiceForm />
+      </div>
     </Layout>
   );
 };
