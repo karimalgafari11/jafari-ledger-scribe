@@ -37,13 +37,15 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
   const cellId = `${field}-${index}`;
   const isActive = activeSearchCell === cellId;
   
+  const handleCellClickInternal = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleCellClick(index, field);
+  };
+
   return (
     <TableCell 
-      className={`text-center border border-gray-300 p-2 ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        handleCellClick(index, field);
-      }}
+      className={`text-center border border-gray-300 p-2 editable-cell ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
+      onClick={handleCellClickInternal}
     >
       <EditableCell 
         active={isActive}
@@ -61,6 +63,7 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
       {!isActive && (
         <div 
           className="cursor-pointer w-full min-h-[24px] flex items-center justify-center"
+          onClick={handleCellClickInternal}
         >
           {displayValue || value.toString()}
           {displaySuffix || ""}
@@ -69,4 +72,3 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
     </TableCell>
   );
 };
-

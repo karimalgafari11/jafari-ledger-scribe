@@ -34,6 +34,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
     showGridLines,
     searchInputRef,
     tableRef,
+    isEditingCell,
     handleCellClick,
     handleProductSelect,
     handleDirectEdit,
@@ -87,6 +88,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
             editingItemIndex={editingItemIndex}
             searchInputRef={searchInputRef}
             setIsAddingItem={setIsAddingItem}
+            isEditingCell={isEditingCell}
           />
         </Table>
       </div>

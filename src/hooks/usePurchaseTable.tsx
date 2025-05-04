@@ -26,6 +26,7 @@ export function usePurchaseTable({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
   const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<number | null>(null);
+  const [isEditingCell, setIsEditingCell] = useState(false); // Track if user is actively editing
   
   // Handle product search activation in table
   const handleCellClick = (index: number, field: string) => {
@@ -34,8 +35,13 @@ export function usePurchaseTable({
     // Generate a unique ID for the cell using consistent format
     const cellId = `${field}-${index}`;
     console.log(`Activating search cell: ${cellId}`);
+    
+    // If clicking the same cell that's already active, don't reset
+    if (activeSearchCell === cellId) return;
+    
     setActiveSearchCell(cellId);
     setLastSelectedRowIndex(index);
+    setIsEditingCell(true); // Mark that we're in editing mode
     
     // Focus the search input after rendering
     setTimeout(() => {
@@ -108,21 +114,28 @@ export function usePurchaseTable({
   };
   
   // Reset active search cell when user clicks away
+  // Only reset when not clicking on a valid interactive element
   const handleTableClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     
-    // Don't reset if clicking on input, search cell, or search dropdown
+    // Don't reset if clicking on input, search cell, search dropdown, or any editable element
     if (
       target.closest('input') || 
       target.closest('select') ||
       target.closest('.search-cell') || 
-      target.closest('.product-search-dropdown')
+      target.closest('.product-search-dropdown') ||
+      target.closest('.editable-cell') ||
+      isEditingCell
     ) {
       return;
     }
     
-    console.log("Clicked outside search cells, resetting active cell");
-    setActiveSearchCell(null);
+    // Only log and reset if we're actually changing from an active state
+    if (activeSearchCell) {
+      console.log("Clicked outside search cells, resetting active cell");
+      setActiveSearchCell(null);
+      setIsEditingCell(false);
+    }
   };
   
   // Effect to handle document clicks (outside table)
@@ -137,9 +150,11 @@ export function usePurchaseTable({
         !target.closest('.product-search-dropdown') &&
         !target.closest('.search-cell') &&
         !target.closest('input') &&
-        !target.closest('select')
+        !target.closest('select') &&
+        !target.closest('.editable-cell')
       ) {
         setActiveSearchCell(null);
+        setIsEditingCell(false);
       }
     };
     
@@ -183,8 +198,12 @@ export function usePurchaseTable({
       if (nextIndex < rowCount) {
         const nextCellId = `${nextField}-${nextIndex}`;
         setActiveSearchCell(nextCellId);
+        setIsEditingCell(true);
         console.log(`Navigating to cell: ${nextCellId}`);
       }
+    } else if (e.key === 'Escape') {
+      setActiveSearchCell(null);
+      setIsEditingCell(false);
     }
   };
   
@@ -204,6 +223,12 @@ export function usePurchaseTable({
     setShowGridLines(options[nextIndex]);
   };
 
+  // Function to blur active inputs and end editing session
+  const finishEditing = () => {
+    setActiveSearchCell(null);
+    setIsEditingCell(false);
+  };
+
   return {
     activeSearchCell,
     showGridLines,
@@ -211,11 +236,13 @@ export function usePurchaseTable({
     searchInputRef,
     tableRef,
     lastSelectedRowIndex,
+    isEditingCell,
     handleCellClick,
     handleProductSelect,
     handleDirectEdit,
     handleTableClick,
     toggleGridLines,
-    setActiveSearchCell
+    setActiveSearchCell,
+    finishEditing,
   };
 }

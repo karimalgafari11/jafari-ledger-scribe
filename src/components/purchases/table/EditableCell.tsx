@@ -46,9 +46,13 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 
   if (!active) return null;
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent click from bubbling up to table
+  };
+
   if (field === "discount" && discountType) {
     return (
-      <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+      <div className="flex items-center editable-cell" onClick={handleClick}>
         <Input 
           ref={inputRef}
           autoFocus={true}
@@ -60,9 +64,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           onChange={(e) => onChange(index, field, Number(e.target.value))}
           onKeyDown={(e) => {
             if (e.key === 'Escape' || e.key === 'Enter') {
+              e.preventDefault(); // Prevent default behavior
               onBlur();
             }
           }}
+          onClick={(e) => e.stopPropagation()}
         />
         <Select 
           value={discountType}
@@ -82,7 +88,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 
   if (field === "tax" && showPercentageSymbol) {
     return (
-      <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+      <div className="flex items-center editable-cell" onClick={handleClick}>
         <Input 
           ref={inputRef}
           autoFocus={true}
@@ -92,12 +98,13 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           className="w-full text-center border-none focus:ring-0"
           value={value}
           onChange={(e) => onChange(index, field, Number(e.target.value))}
-          onBlur={onBlur}
           onKeyDown={(e) => {
             if (e.key === 'Escape' || e.key === 'Enter') {
+              e.preventDefault();
               onBlur();
             }
           }}
+          onClick={(e) => e.stopPropagation()}
         />
         <span className="ml-1">%</span>
       </div>
@@ -111,19 +118,19 @@ export const EditableCell: React.FC<EditableCellProps> = ({
       type={type}
       min={min}
       step={step}
-      className="w-full text-center border-none focus:ring-0"
+      className="w-full text-center border-none focus:ring-0 editable-cell"
       value={value}
       onChange={(e) => {
         const newValue = type === "number" ? Number(e.target.value) : e.target.value;
         onChange(index, field, newValue);
       }}
-      onBlur={onBlur}
-      onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => {
         if (e.key === 'Escape' || e.key === 'Enter') {
+          e.preventDefault();
           onBlur();
         }
       }}
+      onClick={(e) => e.stopPropagation()}
     />
   );
 };
