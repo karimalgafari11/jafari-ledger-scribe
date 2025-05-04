@@ -176,7 +176,7 @@ export const useAiAssistant = () => {
     pendingJournalEntries.forEach(entry => {
       alerts.push({
         type: "invoices",
-        message: `قيد محاسبي رقم ${entry.number} بقيمة ${entry.totalDebit} ينتظر الموافقة`,
+        message: `قيد محاسبي رقم ${entry.entryNumber} بقيمة ${entry.totalDebit} ينتظر الموافقة`,
         priority: "medium",
         data: entry,
         timestamp: new Date()
@@ -276,7 +276,7 @@ export const useAiAssistant = () => {
                           currentVerificationLevel === VerificationLevel.BASIC ? 'أساسي' :
                           currentVerificationLevel === VerificationLevel.TWO_FACTOR ? 'متقدم' : 'كامل';
     
-    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أجزاء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
+    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أج��اء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
 
 معلومات حالية عن النظام:
 - يوجد حالياً ${systemContext.lowStockItems} منتج بمخزون منخفض يحتاج إلى إعادة طلب.

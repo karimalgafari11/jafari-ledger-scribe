@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -44,7 +45,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
   const [entryDate, setEntryDate] = useState("");
   const [description, setDescription] = useState("");
   const [lines, setLines] = useState<Omit<JournalEntryLine, "id">[]>([]);
-  const [status, setStatus] = useState<JournalStatus>("draft");
+  const [status, setStatus] = useState<JournalStatus>(JournalStatus.Draft);
   const [totalDebit, setTotalDebit] = useState(0);
   const [totalCredit, setTotalCredit] = useState(0);
   const [isBalanced, setIsBalanced] = useState(true);
@@ -55,7 +56,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
       setEntryDate(new Date().toISOString().split('T')[0]);
       setDescription("");
       setLines([{ accountId: "", accountName: "", description: "", debit: 0, credit: 0 }]);
-      setStatus("draft");
+      setStatus(JournalStatus.Draft);
       setTotalDebit(0);
       setTotalCredit(0);
       setIsBalanced(true);
@@ -109,7 +110,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
     }
   };
 
-  const handleSave = (saveAs: JournalStatus = "draft") => {
+  const handleSave = (saveAs: JournalStatus = JournalStatus.Draft) => {
     if (!entryNumber || !entryDate || !description) {
       toast.error("يرجى ملء جميع الحقول المطلوبة");
       return;
@@ -131,6 +132,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
 
     const entryData = {
       entryNumber,
+      number: entryNumber, // Add number property to match JournalEntry interface
       date: entryDate,
       description,
       lines: lines.map(line => ({ ...line, id: uuidv4() })),
@@ -180,10 +182,10 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
             <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
               <X className="ml-1 h-4 w-4" /> إلغاء
             </Button>
-            <Button variant="secondary" onClick={() => handleSave("draft")}>
+            <Button variant="secondary" onClick={() => handleSave(JournalStatus.Draft)}>
               <Save className="ml-1 h-4 w-4" /> حفظ كمسودة
             </Button>
-            <Button onClick={() => handleSave("approved")}>
+            <Button onClick={() => handleSave(JournalStatus.Approved)}>
               <Check className="ml-1 h-4 w-4" /> اعتماد القيد
             </Button>
           </DialogFooter>
@@ -220,7 +222,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({
             <Button variant="secondary" onClick={() => handleSave(status)}>
               <Save className="ml-1 h-4 w-4" /> حفظ التعديلات
             </Button>
-            <Button onClick={() => handleSave("approved")}>
+            <Button onClick={() => handleSave(JournalStatus.Approved)}>
               <Check className="ml-1 h-4 w-4" /> اعتماد القيد
             </Button>
           </DialogFooter>

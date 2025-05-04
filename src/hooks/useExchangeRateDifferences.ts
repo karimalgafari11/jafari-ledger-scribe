@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
 import { ExchangeRateDifference } from "@/types/exchangeRateTypes";
-import { JournalEntry } from "@/types/journal";
+import { JournalEntry, JournalStatus } from "@/types/journal";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { useCurrencies } from "@/hooks/useCurrencies";
 
@@ -138,9 +137,10 @@ export const useExchangeRateDifferences = () => {
     // Prepare journal entry data
     const entryData: Omit<JournalEntry, "id" | "createdAt" | "updatedAt"> = {
       entryNumber: `FX-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random() * 1000)}`,
+      number: `FX-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random() * 1000)}`,
       date: new Date().toISOString().split('T')[0],
       description: `فرق سعر صرف بين ${sourceCurrency} و ${targetCurrency}`,
-      status: 'approved',
+      status: JournalStatus.Approved,
       createdBy: 'النظام',
       lines: [],
       totalDebit: 0,

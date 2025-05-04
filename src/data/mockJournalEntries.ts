@@ -1,10 +1,12 @@
-import { JournalEntry } from '@/types/journal';
+
+import { JournalEntry, JournalStatus } from '@/types/journal';
 import { v4 as uuidv4 } from 'uuid';
 
 // Generate mock journal entries
 export const mockJournalEntries: JournalEntry[] = [
   {
     id: uuidv4(),
+    number: 'JE-230401-001',
     entryNumber: 'JE-230401-001',
     date: '2023-04-01',
     description: 'تسجيل مبيعات نقدية',
@@ -28,13 +30,14 @@ export const mockJournalEntries: JournalEntry[] = [
     ],
     totalDebit: 5000,
     totalCredit: 5000,
-    status: 'approved',
+    status: JournalStatus.Approved,
     createdBy: 'أحمد محمد',
     createdAt: new Date('2023-04-01T09:30:00'),
     updatedAt: new Date('2023-04-01T09:30:00'),
   },
   {
     id: uuidv4(),
+    number: 'JE-230402-001',
     entryNumber: 'JE-230402-001',
     date: '2023-04-02',
     description: 'شراء معدات مكتبية',
@@ -58,13 +61,14 @@ export const mockJournalEntries: JournalEntry[] = [
     ],
     totalDebit: 12000,
     totalCredit: 12000,
-    status: 'approved',
+    status: JournalStatus.Approved,
     createdBy: 'سارة أحمد',
     createdAt: new Date('2023-04-02T11:45:00'),
     updatedAt: new Date('2023-04-02T11:45:00'),
   },
   {
     id: uuidv4(),
+    number: 'JE-230403-001',
     entryNumber: 'JE-230403-001',
     date: '2023-04-03',
     description: 'سداد فواتير مرافق',
@@ -96,13 +100,14 @@ export const mockJournalEntries: JournalEntry[] = [
     ],
     totalDebit: 1200,
     totalCredit: 1200,
-    status: 'draft',
+    status: JournalStatus.Draft,
     createdBy: 'محمد علي',
     createdAt: new Date('2023-04-03T14:20:00'),
     updatedAt: new Date('2023-04-03T14:20:00'),
   },
   {
     id: uuidv4(),
+    number: 'JE-230404-001',
     entryNumber: 'JE-230404-001',
     date: '2023-04-04',
     description: 'رواتب الموظفين',
@@ -126,13 +131,14 @@ export const mockJournalEntries: JournalEntry[] = [
     ],
     totalDebit: 45000,
     totalCredit: 45000,
-    status: 'approved',
+    status: JournalStatus.Approved,
     createdBy: 'عمر خالد',
     createdAt: new Date('2023-04-04T16:00:00'),
     updatedAt: new Date('2023-04-04T16:00:00'),
   },
   {
     id: uuidv4(),
+    number: 'JE-230405-001',
     entryNumber: 'JE-230405-001',
     date: '2023-04-05',
     description: 'إيجار المكتب',
@@ -156,13 +162,14 @@ export const mockJournalEntries: JournalEntry[] = [
     ],
     totalDebit: 8000,
     totalCredit: 8000,
-    status: 'approved',
+    status: JournalStatus.Approved,
     createdBy: 'ليلى محمد',
     createdAt: new Date('2023-04-05T10:15:00'),
     updatedAt: new Date('2023-04-05T10:15:00'),
   },
   {
     id: uuidv4(),
+    number: 'JE-230406-001',
     entryNumber: 'JE-230406-001',
     date: '2023-04-06',
     description: 'تحصيل من العملاء',
@@ -186,7 +193,7 @@ export const mockJournalEntries: JournalEntry[] = [
     ],
     totalDebit: 23500,
     totalCredit: 23500,
-    status: 'canceled',
+    status: JournalStatus.Canceled,
     createdBy: 'أحمد محمد',
     createdAt: new Date('2023-04-06T13:40:00'),
     updatedAt: new Date('2023-04-06T15:20:00'),
