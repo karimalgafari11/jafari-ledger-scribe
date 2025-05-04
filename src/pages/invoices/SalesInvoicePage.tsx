@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, FilePlus } from "lucide-react";
-import { useSalesInvoice } from "@/hooks/useSalesInvoice";
+import { useSalesInvoice } from "@/hooks/sales/useSalesInvoice";
 import { toast } from "sonner";
 import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
 
