@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
@@ -175,17 +174,17 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
                       <TableCell className="text-center border border-gray-300 p-2 font-bold text-lg">
                         {items.length + index + 1}
                       </TableCell>
-                      <TableCell className="border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2 font-bold">-</TableCell>
-                      <TableCell className="border border-gray-300 p-2">-</TableCell>
-                      <TableCell className="text-center border border-gray-300 p-2 print:hidden">-</TableCell>
+                      <TableCell className="border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2 font-bold"></TableCell>
+                      <TableCell className="border border-gray-300 p-2"></TableCell>
+                      <TableCell className="text-center border border-gray-300 p-2 print:hidden"></TableCell>
                     </TableRow>
                   ))
                 )}

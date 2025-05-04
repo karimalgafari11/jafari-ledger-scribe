@@ -9,17 +9,17 @@ export const EmptyTableRow: React.FC = () => {
       <TableCell className="text-center border border-gray-300 p-2 font-bold text-lg">
         {index + 1}
       </TableCell>
-      <TableCell className="border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2 font-bold">-</TableCell>
-      <TableCell className="border border-gray-300 p-2">-</TableCell>
-      <TableCell className="text-center border border-gray-300 p-2 print:hidden">-</TableCell>
+      <TableCell className="border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2 font-bold"></TableCell>
+      <TableCell className="border border-gray-300 p-2"></TableCell>
+      <TableCell className="text-center border border-gray-300 p-2 print:hidden"></TableCell>
     </TableRow>
   ));
 

@@ -21,7 +21,7 @@ export const QuickAddRow: React.FC<QuickAddRowProps> = ({
   searchInputRef
 }) => {
   return (
-    <TableRow className="bg-gray-50">
+    <TableRow className="bg-gray-50 hover:bg-gray-100">
       <TableCell className="text-center border border-gray-300 p-2 font-bold text-lg">
         {itemsLength + 1}
       </TableCell>

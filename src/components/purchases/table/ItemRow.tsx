@@ -37,7 +37,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
   searchInputRef
 }) => {
   return (
-    <TableRow key={item.id || index} className={index % 2 === 0 ? "bg-gray-50" : ""}>
+    <TableRow key={item.id || index} className={index % 2 === 0 ? "bg-gray-50 hover:bg-gray-100" : "hover:bg-gray-100"}>
       <TableCell className="text-center border border-gray-300 p-2 font-bold text-lg">
         {index + 1}
       </TableCell>
@@ -52,7 +52,9 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onSelect={handleProductSelect}
           searchInputRef={searchInputRef}
         />
-        {activeSearchCell !== `name-${index}` && item.name}
+        {activeSearchCell !== `name-${index}` && (
+          <div className="w-full h-full min-h-[24px]">{item.name || ""}</div>
+        )}
       </TableCell>
       <TableCell 
         className="text-center border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell" 
@@ -65,7 +67,9 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onSelect={handleProductSelect}
           searchInputRef={searchInputRef}
         />
-        {activeSearchCell !== `code-${index}` && item.code}
+        {activeSearchCell !== `code-${index}` && (
+          <div className="w-full h-full min-h-[24px]">{item.code || ""}</div>
+        )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2">
         <EditableCell 
@@ -78,9 +82,12 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onBlur={() => setActiveSearchCell(null)}
         />
         {activeSearchCell !== `manufacturer-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'manufacturer')}>
-            {item.manufacturer || "-"}
-          </span>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'manufacturer')}
+          >
+            {item.manufacturer || ""}
+          </div>
         )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2">
@@ -94,9 +101,12 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onBlur={() => setActiveSearchCell(null)}
         />
         {activeSearchCell !== `size-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'size')}>
-            {item.size || "-"}
-          </span>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'size')}
+          >
+            {item.size || ""}
+          </div>
         )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2">
@@ -112,9 +122,12 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onBlur={() => setActiveSearchCell(null)}
         />
         {activeSearchCell !== `quantity-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'quantity')}>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'quantity')}
+          >
             {item.quantity}
-          </span>
+          </div>
         )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2">
@@ -131,9 +144,12 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onBlur={() => setActiveSearchCell(null)}
         />
         {activeSearchCell !== `price-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'price')}>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'price')}
+          >
             {item.price.toFixed(2)}
-          </span>
+          </div>
         )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2">
@@ -152,9 +168,12 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onDiscountTypeChange={(value) => handleDirectEdit(index, 'discountType', value)}
         />
         {activeSearchCell !== `discount-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'discount')}>
-            {(item.discount || 0) > 0 ? `${item.discount}${item.discountType === 'percentage' ? '%' : ' ر.س'}` : "-"}
-          </span>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'discount')}
+          >
+            {(item.discount || 0) > 0 ? `${item.discount}${item.discountType === 'percentage' ? '%' : ' ر.س'}` : ""}
+          </div>
         )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2">
@@ -172,12 +191,17 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           showPercentageSymbol={true}
         />
         {activeSearchCell !== `tax-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'tax')}>
-            {(item.tax || 0) > 0 ? `${item.tax}%` : "-"}
-          </span>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'tax')}
+          >
+            {(item.tax || 0) > 0 ? `${item.tax}%` : ""}
+          </div>
         )}
       </TableCell>
-      <TableCell className="text-center border border-gray-300 p-2 font-bold">{item.total.toFixed(2)}</TableCell>
+      <TableCell className="text-center border border-gray-300 p-2 font-bold">
+        {item.total.toFixed(2)}
+      </TableCell>
       <TableCell className="border border-gray-300 p-2">
         <EditableCell 
           active={activeSearchCell === `notes-${index}`}
@@ -189,9 +213,12 @@ export const ItemRow: React.FC<ItemRowProps> = ({
           onBlur={() => setActiveSearchCell(null)}
         />
         {activeSearchCell !== `notes-${index}` && (
-          <span className="cursor-pointer w-full block" onClick={() => handleCellClick(index, 'notes')}>
-            {item.notes || "-"}
-          </span>
+          <div 
+            className="cursor-pointer w-full min-h-[24px]" 
+            onClick={() => handleCellClick(index, 'notes')}
+          >
+            {item.notes || ""}
+          </div>
         )}
       </TableCell>
       <TableCell className="text-center border border-gray-300 p-2 print:hidden">
