@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from "react";
 import { PurchaseItem } from "@/types/purchases";
-import { Table, TableBody } from "@/components/ui/table";
+import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { PurchaseItemForm } from "./PurchaseItemForm";
 import { PurchaseTableHeader } from "./table/TableHeader";
 import { ItemRow } from "./table/ItemRow";
