@@ -86,6 +86,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
             isAddingItem={isAddingItem}
             editingItemIndex={editingItemIndex}
             searchInputRef={searchInputRef}
+            setIsAddingItem={setIsAddingItem}
           />
         </Table>
       </div>
