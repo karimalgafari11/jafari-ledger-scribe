@@ -1,12 +1,14 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { PurchaseItem } from "@/types/purchases";
+import { Product } from "@/types/inventory";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
+import { ProductSearch } from "./ProductSearch";
 
 interface PurchaseItemFormProps {
   item?: PurchaseItem;
@@ -40,6 +42,14 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
     setValue('total', total);
   }, [quantity, price, setValue, total]);
 
+  const handleProductSelect = (product: Product) => {
+    setValue('name', product.name);
+    setValue('code', product.code);
+    setValue('price', product.price);
+    // Calculate the total after setting the price
+    setValue('total', Number(quantity) * product.price);
+  };
+
   const handleFormSubmit = (data: any) => {
     const formattedItem = {
       ...data,
@@ -61,21 +71,23 @@ export const PurchaseItemForm: React.FC<PurchaseItemFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="code">رقم الصنف</Label>
-              <Input
-                id="code"
-                placeholder="رقم الصنف"
-                {...register("code", { required: "رقم الصنف مطلوب" })}
+              <ProductSearch
+                placeholder="ابحث برقم الصنف"
+                onSelect={handleProductSelect}
+                defaultValue={item?.code || ""}
               />
+              <input type="hidden" {...register("code", { required: "رقم الصنف مطلوب" })} />
               {errors.code && <span className="text-red-500 text-xs">{errors.code.message as string}</span>}
             </div>
             
             <div>
               <Label htmlFor="name">اسم الصنف</Label>
-              <Input
-                id="name"
-                placeholder="اسم الصنف"
-                {...register("name", { required: "اسم الصنف مطلوب" })}
+              <ProductSearch
+                placeholder="ابحث باسم الصنف"
+                onSelect={handleProductSelect}
+                defaultValue={item?.name || ""}
               />
+              <input type="hidden" {...register("name", { required: "اسم الصنف مطلوب" })} />
               {errors.name && <span className="text-red-500 text-xs">{errors.name.message as string}</span>}
             </div>
 
