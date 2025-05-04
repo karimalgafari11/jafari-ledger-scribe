@@ -13,7 +13,7 @@ const PurchaseInvoicePage = () => {
   };
 
   return (
-    <Layout className="p-0">
+    <Layout>
       <Header 
         title="فاتورة شراء جديدة" 
         showBack={true}
