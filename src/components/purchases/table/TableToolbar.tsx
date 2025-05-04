@@ -2,7 +2,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings } from "lucide-react";
-import { ProductSearch } from "../ProductSearch";
 
 interface TableToolbarProps {
   isAddingItem: boolean;
@@ -16,42 +15,30 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   isAddingItem,
   editingItemIndex,
   setIsAddingItem,
-  handleProductSelect,
   toggleGridLines
 }) => {
   return (
     <div className="flex justify-between items-center">
       <h3 className="text-lg font-semibold">الأصناف</h3>
       <div className="flex items-center gap-2">
-        {!isAddingItem && editingItemIndex === null && (
-          <div className="w-64">
-            <ProductSearch 
-              placeholder="بحث سريع وإضافة صنف" 
-              onSelect={handleProductSelect} 
-            />
-          </div>
-        )}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={toggleGridLines}
+          className="flex items-center gap-1"
+        >
+          <Settings size={16} />
+          <span className="hidden sm:inline">إعدادات الجدول</span>
+        </Button>
         
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={toggleGridLines}
-            className="flex items-center gap-1"
-          >
-            <Settings size={16} />
-            <span className="hidden sm:inline">إعدادات الجدول</span>
-          </Button>
-          
-          <Button 
-            onClick={() => setIsAddingItem(true)} 
-            className="flex items-center gap-1" 
-            size="sm" 
-            disabled={isAddingItem || editingItemIndex !== null}
-          >
-            <Plus size={16} /> إضافة صنف
-          </Button>
-        </div>
+        <Button 
+          onClick={() => setIsAddingItem(true)} 
+          className="flex items-center gap-1" 
+          size="sm" 
+          disabled={isAddingItem || editingItemIndex !== null}
+        >
+          <Plus size={16} /> إضافة صنف
+        </Button>
       </div>
     </div>
   );

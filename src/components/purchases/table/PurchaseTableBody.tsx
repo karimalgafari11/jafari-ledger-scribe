@@ -19,6 +19,7 @@ interface PurchaseTableBodyProps {
   isAddingItem: boolean;
   editingItemIndex: number | null;
   searchInputRef: React.RefObject<HTMLInputElement>;
+  setIsAddingItem: (isAdding: boolean) => void;
 }
 
 export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
@@ -32,7 +33,8 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
   onRemoveItem,
   isAddingItem,
   editingItemIndex,
-  searchInputRef
+  searchInputRef,
+  setIsAddingItem
 }) => {
   const MIN_ROWS = 10; // Minimum number of visible rows
   
@@ -69,10 +71,7 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
       {!isAddingItem && editingItemIndex === null && (
         <QuickAddRow 
           itemsLength={items.length}
-          activeSearchCell={activeSearchCell}
-          handleCellClick={handleCellClick}
-          handleProductSelect={handleProductSelect}
-          searchInputRef={searchInputRef}
+          setIsAddingItem={setIsAddingItem}
         />
       )}
     </TableBody>
