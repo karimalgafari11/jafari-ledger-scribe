@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { FilePdf, Upload } from "lucide-react";
+import { FileText, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
@@ -140,7 +139,7 @@ export const PDFInvoiceUploader: React.FC<PDFInvoiceUploaderProps> = ({ onPDFPro
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FilePdf /> تحميل فاتورة من ملف PDF
+          <FileText /> تحميل فاتورة من ملف PDF
         </CardTitle>
         <CardDescription>
           قم بسحب ملف PDF أو اضغط لاختيار ملف
@@ -195,7 +194,7 @@ export const PDFInvoiceUploader: React.FC<PDFInvoiceUploaderProps> = ({ onPDFPro
             className="mt-4 w-full"
             disabled={isProcessing}
           >
-            <FilePdf className="mr-2 h-4 w-4" />
+            <FileText className="mr-2 h-4 w-4" />
             معالجة الفاتورة
           </Button>
         )}
