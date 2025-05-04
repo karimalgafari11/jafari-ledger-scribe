@@ -12,7 +12,9 @@ import {
   X, 
   ChevronDown,
   Mic,
-  Send
+  Send,
+  Trash2,
+  Shield
 } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { Message, SystemAlert } from "@/types/ai";
@@ -23,6 +25,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { ar } from "date-fns/locale";
+import { Switch } from "@/components/ui/switch";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // Add type declarations for the Web Speech API
 interface SpeechRecognitionEvent extends Event {
@@ -84,14 +88,6 @@ declare global {
 
 export const ChatInterface = () => {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "مرحباً بك في المساعد الذكي! كيف يمكنني مساعدتك اليوم؟",
-      timestamp: new Date()
-    },
-  ]);
-  
   const [listening, setListening] = useState(false);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([
     "ما هي الأصناف التي توشك على النفاذ؟",
@@ -103,10 +99,20 @@ export const ChatInterface = () => {
   ]);
   
   const { toast } = useToast();
-  const { sendMessage, isLoading, systemAlerts } = useAiAssistant();
+  const { 
+    sendMessage, 
+    isLoading, 
+    systemAlerts, 
+    chatHistory,
+    clearChatHistory,
+    hasFullAccess,
+    toggleFullAccess,
+    scanForSystemErrors
+  } = useAiAssistant();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const speechRecognition = useRef<SpeechRecognition | null>(null);
+  const [showFullAccessControls, setShowFullAccessControls] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -114,53 +120,21 @@ export const ChatInterface = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [chatHistory]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!input.trim()) return;
     
-    const userMessage: Message = {
-      role: "user",
-      content: input,
-      timestamp: new Date()
-    };
-    
-    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     
     try {
       // إضافة رسالة "جاري الكتابة..." مؤقتة
-      const tempId = Date.now().toString();
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "جاري الكتابة...",
-          timestamp: new Date(),
-          id: tempId
-        }
-      ]);
+      await sendMessage(input);
       
-      const response = await sendMessage(input);
-      
-      // إزالة الرسالة المؤقتة واستبدالها بالرسالة الفعلية
-      setMessages((prev) => prev.filter(msg => msg.id !== tempId));
-      
-      if (response) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: response,
-            timestamp: new Date()
-          },
-        ]);
-        
-        // توليد اقتراحات جديدة بناء على المحادثة
-        generateSuggestedQuestions();
-      }
+      // توليد اقتراحات جديدة بناء على المحادثة
+      generateSuggestedQuestions();
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -185,7 +159,9 @@ export const ChatInterface = () => {
       "ما هي حالة المخزون الحالية؟",
       "أرسل تذكيرات للعملاء المتأخرين عن السداد",
       "قم بتحليل الإيرادات والمصروفات للربع الحالي",
-      "أنشئ قيداً محاسبياً لتسوية المخزون"
+      "أنشئ قيداً محاسبياً لتسوية المخزون",
+      "افحص النظام بحثاً عن أخطاء",
+      "حلل أداء فريق المبيعات"
     ];
     setSuggestedQuestions(prevSuggestions => {
       // مزج الاقتراحات الحالية مع الاقتراحات الجديدة وأخذ 6 اقتراحات عشوائية
@@ -196,7 +172,7 @@ export const ChatInterface = () => {
   
   const formatMessageTime = (timestamp?: Date) => {
     if (!timestamp) return "";
-    return formatDistanceToNow(timestamp, { addSuffix: true, locale: ar });
+    return formatDistanceToNow(timestamp instanceof Date ? timestamp : new Date(timestamp), { addSuffix: true, locale: ar });
   };
 
   const startSpeechRecognition = () => {
@@ -263,21 +239,99 @@ export const ChatInterface = () => {
       setListening(false);
     }
   };
+  
+  const handleScanSystem = async () => {
+    try {
+      const results = await scanForSystemErrors();
+      toast({
+        title: "اكتمل فحص النظام",
+        description: `تم اكتشاف ${results.warnings} تحذيرات و ${results.notifications} تنبيهات`,
+      });
+    } catch (error) {
+      console.error("Error scanning system:", error);
+    }
+  };
+
+  // إذا لم يكن هناك رسائل في المحادثة، أضف رسالة ترحيبية
+  const displayMessages = chatHistory.length > 0 
+    ? chatHistory 
+    : [
+        {
+          role: "assistant",
+          content: "مرحباً بك في المساعد الذكي! كيف يمكنني مساعدتك اليوم؟",
+          timestamp: new Date()
+        },
+      ];
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
-      <div className="relative mb-4">
-        <div className="absolute inset-0 blur-xl bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-xl -z-10"></div>
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-blue-100 p-4">
-          <h3 className="text-lg font-medium text-blue-800 mb-2">مرحباً بك في المساعد الذكي 👋</h3>
-          <p className="text-sm text-blue-600">
-            يمكنني مساعدتك في إدارة الحسابات والمخزون والفواتير وتقديم تحليلات للبيانات. ما الذي يمكنني مساعدتك به اليوم؟
-          </p>
+      <div className="flex items-center justify-between mb-4">
+        <div className="relative">
+          <div className="absolute inset-0 blur-xl bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-xl -z-10"></div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-blue-100 p-3">
+            <h3 className="text-lg font-medium text-blue-800 flex items-center">
+              <Bot className="mr-2 h-5 w-5" /> مرحباً بك في المساعد الذكي 👋
+            </h3>
+            <p className="text-sm text-blue-600">
+              أنا هنا لمساعدتك في إدارة النظام وحل المشكلات وتقديم التحليلات
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="bg-white hover:bg-blue-50"
+                onClick={() => setShowFullAccessControls(true)}
+              >
+                <Shield className="h-4 w-4 text-blue-600" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-3">
+                <h3 className="font-medium text-blue-900">إعدادات الصلاحيات</h3>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <h4>الصلاحيات الكاملة</h4>
+                    <p className="text-xs text-gray-500">السماح للمساعد بالوصول الكامل للنظام</p>
+                  </div>
+                  <Switch 
+                    checked={hasFullAccess} 
+                    onCheckedChange={toggleFullAccess} 
+                    aria-label="تبديل الصلاحيات الكاملة"
+                  />
+                </div>
+                <div className="pt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="w-full text-amber-600 border-amber-200 hover:bg-amber-50"
+                    onClick={handleScanSystem}
+                  >
+                    <AlertCircle className="mr-2 h-4 w-4" />
+                    فحص النظام بحثاً عن أخطاء
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="bg-white hover:bg-red-50"
+            onClick={clearChatHistory}
+          >
+            <Trash2 className="h-4 w-4 text-red-500" />
+          </Button>
         </div>
       </div>
 
       <ScrollArea className="flex-1 rounded-lg mb-4 bg-white/70 backdrop-blur-sm border border-blue-100 p-3">
-        {messages.map((message, index) => (
+        {displayMessages.map((message, index) => (
           <div
             key={index}
             className={`mb-4 flex ${

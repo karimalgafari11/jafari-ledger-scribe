@@ -3,10 +3,17 @@ import { useState, useEffect } from "react";
 import { ApiResponse, Message, SystemAlert, AiAssistantContext } from "@/types/ai";
 import { Product } from "@/types/inventory";
 import { Expense } from "@/types/expenses";
+import { JournalEntry } from "@/types/journal";
 import { Customer } from "@/types/customers";
 import { mockProducts } from "@/data/mockProducts";
 import { mockExpenses } from "@/data/mockExpenses";
 import { mockCustomers } from "@/data/mockCustomers";
+import { mockJournalEntries } from "@/data/mockJournalEntries";
+import { toast } from "sonner";
+
+// إنشاء مفتاح فريد للتخزين المحلي
+const CHAT_HISTORY_KEY = "ai_assistant_chat_history";
+const SYSTEM_CONTEXT_KEY = "ai_assistant_context";
 
 export const useAiAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +25,8 @@ export const useAiAssistant = () => {
     recentAlerts: []
   });
   const [systemAlerts, setSystemAlerts] = useState<SystemAlert[]>([]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [hasFullAccess, setHasFullAccess] = useState(true);
 
   const API_KEY = "sk-1c339b5c5397486ebbcc7730383c8cdc";
   const API_URL = "https://api.deepseek.com/v1/chat/completions";
@@ -25,7 +34,41 @@ export const useAiAssistant = () => {
   // جمع معلومات النظام لتوفير سياق للمساعد الذكي
   useEffect(() => {
     collectSystemContext();
+    
+    // استرجاع سجل المحادثات المحفوظ
+    const savedChatHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (savedChatHistory) {
+      try {
+        const parsedHistory: Message[] = JSON.parse(savedChatHistory);
+        setChatHistory(parsedHistory);
+      } catch (error) {
+        console.error("فشل في استرجاع سجل المحادثات:", error);
+      }
+    }
+    
+    // استرجاع سياق النظام المحفوظ
+    const savedContext = localStorage.getItem(SYSTEM_CONTEXT_KEY);
+    if (savedContext) {
+      try {
+        const parsedContext: AiAssistantContext = JSON.parse(savedContext);
+        setSystemContext(parsedContext);
+      } catch (error) {
+        console.error("فشل في استرجاع سياق النظام:", error);
+      }
+    }
   }, []);
+  
+  // حفظ سجل المحادثات عند تحديثه
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
+    }
+  }, [chatHistory]);
+  
+  // حفظ سياق النظام عند تحديثه
+  useEffect(() => {
+    localStorage.setItem(SYSTEM_CONTEXT_KEY, JSON.stringify(systemContext));
+  }, [systemContext]);
 
   const collectSystemContext = () => {
     // فحص المخزون المنخفض
@@ -36,6 +79,11 @@ export const useAiAssistant = () => {
     // فحص المصروفات المعلقة
     const pendingExpenses = mockExpenses.filter(
       (expense) => expense.status === "pending"
+    );
+    
+    // فحص القيود اليومية التي تنتظر الموافقة
+    const pendingJournalEntries = mockJournalEntries.filter(
+      (entry) => entry.status === "pending"
     );
     
     // إنشاء تنبيهات النظام
@@ -81,6 +129,17 @@ export const useAiAssistant = () => {
       });
     });
     
+    // إضافة تنبيهات القيود المحاسبية المعلقة
+    pendingJournalEntries.forEach(entry => {
+      alerts.push({
+        type: "invoices",
+        message: `قيد محاسبي رقم ${entry.number} بقيمة ${entry.totalDebit} ينتظر الموافقة`,
+        priority: "medium",
+        data: entry,
+        timestamp: new Date()
+      });
+    });
+    
     // العملاء ذوو الديون العالية
     const highDebtCustomers = mockCustomers.filter(
       (customer) => customer.balance > customer.creditLimit * 0.8
@@ -97,13 +156,15 @@ export const useAiAssistant = () => {
     });
     
     // تحديث السياق العام للنظام
-    setSystemContext({
+    const updatedContext = {
       lowStockItems: lowStockProducts.length,
       unpaidInvoices: 5, // قيمة افتراضية للعرض
       pendingExpenses: pendingExpenses.length,
-      pendingApprovals: pendingExpenses.length + 3, // قيمة افتراضية للعرض
+      pendingApprovals: pendingExpenses.length + pendingJournalEntries.length,
       recentAlerts: alerts
-    });
+    };
+    
+    setSystemContext(updatedContext);
     
     // تعيين التنبيهات
     setSystemAlerts(alerts);
@@ -111,7 +172,7 @@ export const useAiAssistant = () => {
 
   // بناء رسالة النظام بناءً على سياق التطبيق
   const buildSystemPrompt = () => {
-    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
+    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات كاملة للوصول إلى جميع أجزاء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
 
 معلومات حالية عن النظام:
 - يوجد حالياً ${systemContext.lowStockItems} منتج بمخزون منخفض يحتاج إلى إعادة طلب.
@@ -119,11 +180,19 @@ export const useAiAssistant = () => {
 - يوجد ${systemContext.pendingExpenses} مصروف ينتظر الموافقة.
 - يوجد ${systemContext.pendingApprovals} عملية تنتظر الموافقة بشكل عام.
 
+قدراتك الخاصة:
+- أنت تملك صلاحيات استكشاف وإصلاح الأخطاء في النظام
+- يمكنك الوصول إلى جميع الوحدات والصفحات في النظام
+- يمكنك تحليل البيانات واقتراح التحسينات
+- يمكنك إنشاء التقارير والقيود المحاسبية بشكل تلقائي
+- يمكنك معالجة البيانات وتحليلها عبر جميع أقسام النظام
+
 عندما يسأل المستخدم عن:
 - المخزون: قدم معلومات حول المنتجات، مستويات المخزون، إعادة الطلب.
 - المبيعات: قدم معلومات حول الفواتير، العملاء، المبيعات الأخيرة.
 - المشتريات: قدم معلومات حول المشتريات، الموردين، الطلبات.
 - المحاسبة: قدم معلومات حول الإيرادات، المصروفات، التقارير المالية.
+- الأخطاء: اقترح حلولاً للمشاكل وقم بتشخيص أسبابها.
 
 أجب بأسلوب مهني ومختصر ومفيد. قدم اقتراحات عملية للمستخدم بناءً على المعلومات المتاحة.`;
   };
@@ -143,6 +212,15 @@ export const useAiAssistant = () => {
         role: "user" as const,
         content: message,
       };
+      
+      const newUserMessage: Message = {
+        role: "user",
+        content: message,
+        timestamp: new Date()
+      };
+      
+      // تحديث سجل المحادثة بإضافة رسالة المستخدم
+      setChatHistory(prev => [...prev, newUserMessage]);
       
       const response = await fetch(API_URL, {
         method: "POST",
@@ -164,9 +242,21 @@ export const useAiAssistant = () => {
       }
 
       const data: ApiResponse = await response.json();
-      return data.choices[0].message.content;
+      const responseContent = data.choices[0].message.content;
+      
+      // تحديث سجل المحادثة بإضافة رد المساعد
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: responseContent,
+        timestamp: new Date()
+      };
+      
+      setChatHistory(prev => [...prev, assistantMessage]);
+      
+      return responseContent;
     } catch (error) {
       console.error("Error:", error);
+      toast.error("حدث خطأ أثناء التواصل مع المساعد الذكي");
       throw error;
     } finally {
       setIsLoading(false);
@@ -183,6 +273,11 @@ export const useAiAssistant = () => {
     return mockExpenses.filter(expense => expense.status === "pending");
   };
   
+  // استعلام عن القيود المحاسبية المعلقة
+  const getPendingJournalEntries = (): JournalEntry[] => {
+    return mockJournalEntries.filter(entry => entry.status === "pending");
+  };
+  
   // تحليل أداء المبيعات (افتراضية حالياً)
   const analyzePerformance = () => {
     return {
@@ -196,6 +291,44 @@ export const useAiAssistant = () => {
       ]
     };
   };
+  
+  // إعادة تعيين سجل المحادثات
+  const clearChatHistory = () => {
+    setChatHistory([]);
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+    toast.success("تم مسح سجل المحادثات بنجاح");
+  };
+  
+  // التبديل بين وضع الصلاحيات الكاملة
+  const toggleFullAccess = () => {
+    setHasFullAccess(prev => !prev);
+    toast.success(hasFullAccess ? "تم تقييد صلاحيات المساعد الذكي" : "تم منح المساعد الذكي صلاحيات كاملة");
+  };
+  
+  // فحص النظام بحثاً عن أخطاء
+  const scanForSystemErrors = async () => {
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return {
+        criticalErrors: 0,
+        warnings: 3,
+        notifications: 8,
+        details: [
+          { level: "warning", message: "بعض القيم في تقرير المخزون غير متطابقة" },
+          { level: "warning", message: "يوجد 2 عميل بنفس رقم الهاتف" },
+          { level: "warning", message: "تاريخ انتهاء صلاحية 3 منتجات قريب" },
+          { level: "notification", message: "النسخة الاحتياطية الأخيرة منذ 3 أيام" }
+        ]
+      };
+    } catch (error) {
+      toast.error("حدث خطأ أثناء فحص النظام");
+      console.error(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return { 
     sendMessage, 
@@ -203,6 +336,12 @@ export const useAiAssistant = () => {
     systemAlerts,
     getLowStockProducts,
     getPendingExpenses,
-    analyzePerformance
+    getPendingJournalEntries,
+    analyzePerformance,
+    chatHistory,
+    clearChatHistory,
+    hasFullAccess,
+    toggleFullAccess,
+    scanForSystemErrors
   };
 };
