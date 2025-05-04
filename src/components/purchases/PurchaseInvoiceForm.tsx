@@ -13,9 +13,11 @@ import { PurchaseInvoiceHeader } from "./PurchaseInvoiceHeader";
 import { PurchaseInvoiceTable } from "./PurchaseInvoiceTable";
 import { PurchaseInvoiceSummary } from "./PurchaseInvoiceSummary";
 import { PurchaseInvoiceActions } from "./PurchaseInvoiceActions";
+import { SimplePurchaseInvoice } from "./SimplePurchaseInvoice";
 import { usePurchaseInvoice } from "@/hooks/usePurchaseInvoice";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const initialInvoice: PurchaseInvoice = {
   id: uuidv4(),
@@ -35,6 +37,7 @@ export const PurchaseInvoiceForm: React.FC = () => {
   const [invoice, setInvoice] = useState<PurchaseInvoice>(initialInvoice);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("detailed");
 
   // Handle field changes
   const handleFieldChange = (field: keyof PurchaseInvoice, value: any) => {
@@ -193,8 +196,11 @@ export const PurchaseInvoiceForm: React.FC = () => {
 
   // Handle print
   const handlePrint = () => {
-    window.print();
-    toast.success("جاري طباعة الفاتورة");
+    setActiveTab("simple"); // Switch to simple view before printing
+    setTimeout(() => {
+      window.print();
+      toast.success("جاري طباعة الفاتورة");
+    }, 100);
   };
 
   // Handle WhatsApp send
@@ -226,64 +232,88 @@ export const PurchaseInvoiceForm: React.FC = () => {
     <div className="container mx-auto p-2 md:p-6 print:p-0 flex flex-col min-h-screen">
       <h1 className="text-2xl font-bold mb-4 print:hidden">فاتورة شراء جديدة</h1>
 
-      <Card className="mb-4 print:shadow-none print:border-none">
-        <CardContent className="p-2 md:p-6">
-          <PurchaseInvoiceHeader
-            invoice={invoice}
-            onFieldChange={handleFieldChange}
-            onDateChange={handleDateChange}
-          />
-          
-          <div className="mb-4 print:mb-2">
-            <PurchaseInvoiceTable
-              items={invoice.items}
-              isAddingItem={isAddingItem}
-              editingItemIndex={editingItemIndex}
-              setIsAddingItem={setIsAddingItem}
-              setEditingItemIndex={setEditingItemIndex}
-              onAddItem={handleAddItem}
-              onUpdateItem={handleUpdateItem}
-              onRemoveItem={handleRemoveItem}
+      <div className="print:hidden mb-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="detailed">المحرر الكامل</TabsTrigger>
+            <TabsTrigger value="simple">عرض مبسط</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <TabsContent value="detailed" className={activeTab !== "detailed" ? "hidden" : ""}>
+        <Card className="mb-4 print:shadow-none print:border-none">
+          <CardContent className="p-2 md:p-6">
+            <PurchaseInvoiceHeader
+              invoice={invoice}
+              onFieldChange={handleFieldChange}
+              onDateChange={handleDateChange}
             />
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4 print:flex-row">
-            <div className="w-full md:w-1/2 print:w-1/2">
-              <Label htmlFor="notes">ملاحظات</Label>
-              <Textarea
-                id="notes"
-                className="h-32"
-                placeholder="أي ملاحظات إضافية..."
-                value={invoice.notes || ""}
-                onChange={(e) => handleFieldChange("notes", e.target.value)}
+            
+            <div className="mb-4 print:mb-2">
+              <PurchaseInvoiceTable
+                items={invoice.items}
+                isAddingItem={isAddingItem}
+                editingItemIndex={editingItemIndex}
+                setIsAddingItem={setIsAddingItem}
+                setEditingItemIndex={setEditingItemIndex}
+                onAddItem={handleAddItem}
+                onUpdateItem={handleUpdateItem}
+                onRemoveItem={handleRemoveItem}
               />
             </div>
             
-            <div className="w-full md:w-1/2 print:w-1/2">
-              <PurchaseInvoiceSummary 
-                subtotal={invoice.subtotal}
-                discount={invoice.discount}
-                discountType={invoice.discountType}
-                tax={invoice.tax}
-                expenses={invoice.expenses}
-                totalAmount={invoice.totalAmount}
-                amountPaid={invoice.amountPaid}
-                remaining={calculateRemaining()}
-                onApplyDiscount={handleApplyDiscount}
-                onApplyExpenses={handleApplyExpenses}
-                onAmountPaidChange={(amount) => handleFieldChange("amountPaid", amount)}
-              />
+            <div className="flex flex-col md:flex-row gap-4 print:flex-row">
+              <div className="w-full md:w-1/2 print:w-1/2">
+                <Label htmlFor="notes">ملاحظات</Label>
+                <Textarea
+                  id="notes"
+                  className="h-32"
+                  placeholder="أي ملاحظات إضافية..."
+                  value={invoice.notes || ""}
+                  onChange={(e) => handleFieldChange("notes", e.target.value)}
+                />
+              </div>
+              
+              <div className="w-full md:w-1/2 print:w-1/2">
+                <PurchaseInvoiceSummary 
+                  subtotal={invoice.subtotal}
+                  discount={invoice.discount}
+                  discountType={invoice.discountType}
+                  tax={invoice.tax}
+                  expenses={invoice.expenses}
+                  totalAmount={invoice.totalAmount}
+                  amountPaid={invoice.amountPaid}
+                  remaining={calculateRemaining()}
+                  onApplyDiscount={handleApplyDiscount}
+                  onApplyExpenses={handleApplyExpenses}
+                  onAmountPaidChange={(amount) => handleFieldChange("amountPaid", amount)}
+                />
+              </div>
             </div>
-          </div>
-          
-          <PurchaseInvoiceActions
-            onSave={handleSaveInvoice}
-            onPrint={handlePrint}
-            onWhatsAppSend={handleWhatsAppSend}
-            className="mt-4 print:hidden"
-          />
-        </CardContent>
-      </Card>
+            
+            <PurchaseInvoiceActions
+              onSave={handleSaveInvoice}
+              onPrint={handlePrint}
+              onWhatsAppSend={handleWhatsAppSend}
+              className="mt-4 print:hidden"
+            />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="simple" className={`${activeTab !== "simple" ? "hidden" : ""} print:block`}>
+        <SimplePurchaseInvoice invoice={invoice} />
+        
+        <div className="mt-4 flex justify-center gap-2 print:hidden">
+          <Button onClick={handlePrint}>
+            طباعة الفاتورة
+          </Button>
+          <Button variant="outline" onClick={() => setActiveTab("detailed")}>
+            العودة للمحرر
+          </Button>
+        </div>
+      </TabsContent>
     </div>
   );
 };

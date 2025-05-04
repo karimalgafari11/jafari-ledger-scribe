@@ -2,7 +2,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Save, Printer, Send } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface PurchaseInvoiceActionsProps {
   onSave: () => void;
@@ -18,26 +17,31 @@ export const PurchaseInvoiceActions: React.FC<PurchaseInvoiceActionsProps> = ({
   className
 }) => {
   return (
-    <div className={cn("flex justify-end gap-2", className)}>
+    <div className={`flex justify-end gap-2 ${className}`}>
       <Button 
-        variant="outline" 
-        onClick={onSave}
+        variant="outline"
+        onClick={onWhatsAppSend}
         className="flex items-center gap-1"
       >
-        <Save size={16} /> حفظ
+        <Send size={18} />
+        إرسال عبر واتساب
       </Button>
-      <Button 
-        variant="outline" 
+      
+      <Button
+        variant="outline"
         onClick={onPrint}
         className="flex items-center gap-1"
       >
-        <Printer size={16} /> طباعة
+        <Printer size={18} />
+        طباعة
       </Button>
-      <Button 
-        onClick={onWhatsAppSend}
-        className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+      
+      <Button
+        onClick={onSave}
+        className="flex items-center gap-1"
       >
-        <Send size={16} /> إرسال للواتس
+        <Save size={18} />
+        حفظ الفاتورة
       </Button>
     </div>
   );
