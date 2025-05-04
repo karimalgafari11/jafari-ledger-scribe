@@ -11,9 +11,10 @@ import { PurchaseInvoiceTable } from "./PurchaseInvoiceTable";
 import { PurchaseInvoiceSummary } from "./PurchaseInvoiceSummary";
 import { PurchaseInvoiceActions } from "./PurchaseInvoiceActions";
 import { SimplePurchaseInvoice } from "./SimplePurchaseInvoice";
-import { usePurchaseInvoice } from "@/hooks/usePurchaseInvoice";
+import { usePurchaseInvoice } from "@/hooks/purchases/usePurchaseInvoice";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+
 const initialInvoice: PurchaseInvoice = {
   id: uuidv4(),
   invoiceNumber: `P-${Math.floor(Math.random() * 10000)}`,
@@ -27,6 +28,7 @@ const initialInvoice: PurchaseInvoice = {
   paymentMethod: "cash",
   status: "draft"
 };
+
 export const PurchaseInvoiceForm: React.FC = () => {
   const [invoice, setInvoice] = useState<PurchaseInvoice>(initialInvoice);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
