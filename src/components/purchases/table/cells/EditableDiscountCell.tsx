@@ -27,11 +27,18 @@ export const EditableDiscountCell: React.FC<EditableDiscountCellProps> = ({
   onDiscountTypeChange
 }) => {
   const cellId = `discount-${index}`;
+  const isActive = activeSearchCell === cellId;
   
   return (
-    <TableCell className="text-center border border-gray-300 p-2">
+    <TableCell 
+      className={`text-center border border-gray-300 p-2 ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        handleCellClick(index, 'discount');
+      }}
+    >
       <EditableCell 
-        active={activeSearchCell === cellId}
+        active={isActive}
         value={discount}
         type="number"
         min="0"
@@ -44,10 +51,9 @@ export const EditableDiscountCell: React.FC<EditableDiscountCellProps> = ({
         discountType={discountType}
         onDiscountTypeChange={onDiscountTypeChange}
       />
-      {activeSearchCell !== cellId && (
+      {!isActive && (
         <div 
-          className="cursor-pointer w-full min-h-[24px]" 
-          onClick={() => handleCellClick(index, 'discount')}
+          className="cursor-pointer w-full min-h-[24px] flex items-center justify-center"
         >
           {discount > 0 ? `${discount}${discountType === 'percentage' ? '%' : ' ر.س'}` : ""}
         </div>
@@ -55,3 +61,4 @@ export const EditableDiscountCell: React.FC<EditableDiscountCellProps> = ({
     </TableCell>
   );
 };
+

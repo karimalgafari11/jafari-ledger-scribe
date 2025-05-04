@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -34,11 +34,21 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   onDiscountTypeChange,
   showPercentageSymbol
 }) => {
+  // Focus the input when active state changes
+  useEffect(() => {
+    if (active && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      }, 10);
+    }
+  }, [active, inputRef]);
+
   if (!active) return null;
 
   if (field === "discount" && discountType) {
     return (
-      <div className="flex items-center">
+      <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
         <Input 
           ref={inputRef}
           autoFocus={true}
@@ -48,6 +58,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           className="w-3/4 text-center border-none focus:ring-0"
           value={value}
           onChange={(e) => onChange(index, field, Number(e.target.value))}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              onBlur();
+            }
+          }}
         />
         <Select 
           value={discountType}
@@ -67,7 +82,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 
   if (field === "tax" && showPercentageSymbol) {
     return (
-      <div className="flex items-center">
+      <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
         <Input 
           ref={inputRef}
           autoFocus={true}
@@ -78,6 +93,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           value={value}
           onChange={(e) => onChange(index, field, Number(e.target.value))}
           onBlur={onBlur}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              onBlur();
+            }
+          }}
         />
         <span className="ml-1">%</span>
       </div>
@@ -98,6 +118,13 @@ export const EditableCell: React.FC<EditableCellProps> = ({
         onChange(index, field, newValue);
       }}
       onBlur={onBlur}
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          onBlur();
+        }
+      }}
     />
   );
 };
+

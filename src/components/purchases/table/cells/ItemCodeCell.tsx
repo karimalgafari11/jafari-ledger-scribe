@@ -21,25 +21,29 @@ export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
   searchInputRef
 }) => {
   const cellId = `code-${index}`;
+  const isActive = activeSearchCell === cellId;
   
   return (
     <TableCell 
-      className={`text-center border border-gray-300 p-2 hover:bg-gray-100 cursor-pointer search-cell relative ${activeSearchCell === cellId ? 'bg-gray-100' : ''}`}
+      className={`text-center border border-gray-300 p-2 search-cell relative ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
       onClick={(e) => {
         e.stopPropagation();
         handleCellClick(index, 'code');
       }}
     >
       <ProductSearchCell 
-        active={activeSearchCell === cellId}
+        active={isActive}
         index={index}
         field="code"
         onSelect={handleProductSelect}
         searchInputRef={searchInputRef}
       />
-      {activeSearchCell !== cellId && (
-        <div className="w-full h-full min-h-[24px] flex items-center justify-center">{code || ""}</div>
+      {!isActive && (
+        <div className="w-full h-full min-h-[24px] flex items-center justify-center">
+          {code || ""}
+        </div>
       )}
     </TableCell>
   );
 };
+

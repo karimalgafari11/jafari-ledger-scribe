@@ -51,3 +51,4 @@ export const ProductSearchCell: React.FC<ProductSearchCellProps> = ({
     </div>
   );
 };
+

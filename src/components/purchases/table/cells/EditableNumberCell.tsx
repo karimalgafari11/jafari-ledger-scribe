@@ -35,11 +35,18 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
   displaySuffix
 }) => {
   const cellId = `${field}-${index}`;
+  const isActive = activeSearchCell === cellId;
   
   return (
-    <TableCell className="text-center border border-gray-300 p-2">
+    <TableCell 
+      className={`text-center border border-gray-300 p-2 ${isActive ? 'bg-blue-50 ring-2 ring-blue-300' : 'hover:bg-gray-100'}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        handleCellClick(index, field);
+      }}
+    >
       <EditableCell 
-        active={activeSearchCell === cellId}
+        active={isActive}
         value={value}
         type="number"
         min={min}
@@ -51,10 +58,9 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
         onBlur={() => setActiveSearchCell(null)}
         showPercentageSymbol={showPercentageSymbol}
       />
-      {activeSearchCell !== cellId && (
+      {!isActive && (
         <div 
-          className="cursor-pointer w-full min-h-[24px]" 
-          onClick={() => handleCellClick(index, field)}
+          className="cursor-pointer w-full min-h-[24px] flex items-center justify-center"
         >
           {displayValue || value.toString()}
           {displaySuffix || ""}
@@ -63,3 +69,4 @@ export const EditableNumberCell: React.FC<EditableNumberCellProps> = ({
     </TableCell>
   );
 };
+

@@ -42,8 +42,9 @@ export function usePurchaseTable({
       if (searchInputRef.current) {
         console.log("Focusing search input");
         searchInputRef.current.focus();
+        searchInputRef.current.select();
       }
-    }, 100);
+    }, 10);
   };
   
   // Handle product selection from search
@@ -68,7 +69,7 @@ export function usePurchaseTable({
         const quantityCellId = `quantity-${index}`;
         setActiveSearchCell(quantityCellId);
         console.log(`Moving to quantity cell: ${quantityCellId}`);
-      }, 100);
+      }, 10);
     } else {
       // Add new item
       const newItem = {
@@ -90,7 +91,7 @@ export function usePurchaseTable({
           setActiveSearchCell(quantityCellId);
           console.log(`Moving to quantity cell: ${quantityCellId}`);
         }
-      }, 100);
+      }, 10);
     }
   };
   
@@ -109,21 +110,35 @@ export function usePurchaseTable({
   // Reset active search cell when user clicks away
   const handleTableClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    // Only close if clicking outside the search cells and search dropdowns
-    if (!target.closest('.search-cell') && !target.closest('.product-search-dropdown')) {
-      console.log("Clicked outside search cells, resetting active cell");
-      setActiveSearchCell(null);
+    
+    // Don't reset if clicking on input, search cell, or search dropdown
+    if (
+      target.closest('input') || 
+      target.closest('select') ||
+      target.closest('.search-cell') || 
+      target.closest('.product-search-dropdown')
+    ) {
+      return;
     }
+    
+    console.log("Clicked outside search cells, resetting active cell");
+    setActiveSearchCell(null);
   };
   
   // Effect to handle document clicks (outside table)
   useEffect(() => {
     const handleDocumentClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (tableRef.current && 
-          !tableRef.current.contains(target) && 
-          !target.closest('.product-search-dropdown') &&
-          !target.closest('.search-cell')) {
+      
+      // Don't reset focus if clicking on table elements that should maintain focus
+      if (
+        tableRef.current && 
+        !tableRef.current.contains(target) && 
+        !target.closest('.product-search-dropdown') &&
+        !target.closest('.search-cell') &&
+        !target.closest('input') &&
+        !target.closest('select')
+      ) {
         setActiveSearchCell(null);
       }
     };
@@ -204,3 +219,4 @@ export function usePurchaseTable({
     setActiveSearchCell
   };
 }
+
