@@ -1,22 +1,20 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef } from 'react';
 
 export function useTableState() {
   const [activeSearchCell, setActiveSearchCell] = useState<string | null>(null);
-  const [showGridLines, setShowGridLines] = useState<'both' | 'horizontal' | 'vertical' | 'none'>('both');
-  const [isDenseView, setIsDenseView] = useState(false);
+  const [showGridLines, setShowGridLines] = useState<boolean>(true);
+  const [isDenseView, setIsDenseView] = useState<boolean>(false);
+  const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<number | null>(null);
+  const [isEditingCell, setIsEditingCell] = useState<boolean>(false);
+  
   const searchInputRef = useRef<HTMLInputElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
-  const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<number | null>(null);
-  const [isEditingCell, setIsEditingCell] = useState(false);
-
+  
   const toggleGridLines = () => {
-    const options: Array<'both' | 'horizontal' | 'vertical' | 'none'> = ['both', 'horizontal', 'vertical', 'none'];
-    const currentIndex = options.indexOf(showGridLines);
-    const nextIndex = (currentIndex + 1) % options.length;
-    setShowGridLines(options[nextIndex]);
+    setShowGridLines(prev => !prev);
   };
-
+  
   return {
     activeSearchCell,
     setActiveSearchCell,
