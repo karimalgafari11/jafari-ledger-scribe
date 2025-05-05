@@ -5,6 +5,8 @@ import { Filter } from "lucide-react";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Building, Tag } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 interface VendorFiltersProps {
   activeTab: string;
@@ -14,6 +16,8 @@ interface VendorFiltersProps {
   inactiveVendors: number;
   showFilters: boolean;
   setShowFilters: (show: boolean) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
 export const VendorFilters: React.FC<VendorFiltersProps> = ({
@@ -24,25 +28,40 @@ export const VendorFilters: React.FC<VendorFiltersProps> = ({
   inactiveVendors,
   showFilters,
   setShowFilters,
+  searchTerm,
+  setSearchTerm
 }) => {
   return (
     <>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="all" className="flex items-center gap-2">
-            <Building size={16} /> كل الموردين
-            <Badge variant="outline" className="ml-2 bg-gray-100">{totalVendors}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="active" className="flex items-center gap-2">
-            <Tag size={16} /> نشط
-            <Badge variant="outline" className="ml-2 bg-green-100">{activeVendors}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="inactive" className="flex items-center gap-2">
-            <Tag size={16} /> غير نشط
-            <Badge variant="outline" className="ml-2 bg-gray-100">{inactiveVendors}</Badge>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+          <TabsList className="w-full sm:w-auto grid grid-cols-3">
+            <TabsTrigger value="all" className="flex items-center gap-2">
+              <Building size={16} /> كل الموردين
+              <Badge variant="outline" className="ml-2 bg-gray-100">{totalVendors}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="active" className="flex items-center gap-2">
+              <Tag size={16} /> نشط
+              <Badge variant="outline" className="ml-2 bg-green-100">{activeVendors}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="inactive" className="flex items-center gap-2">
+              <Tag size={16} /> غير نشط
+              <Badge variant="outline" className="ml-2 bg-gray-100">{inactiveVendors}</Badge>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            type="text"
+            placeholder="بحث عن مورد..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-3 pr-10"
+          />
+        </div>
+      </div>
       
       {showFilters && (
         <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
@@ -74,18 +93,6 @@ export const VendorFilters: React.FC<VendorFiltersProps> = ({
           </div>
         </div>
       )}
-
-      <div className="flex items-center gap-2 justify-end mb-4">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="flex items-center gap-2"
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <Filter size={16} />
-          تصفية
-        </Button>
-      </div>
     </>
   );
 };

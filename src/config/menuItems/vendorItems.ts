@@ -1,5 +1,5 @@
 
-import { Network, User } from "lucide-react";
+import { Network, User, FileText } from "lucide-react";
 import { MenuItem } from "./types";
 
 export const vendorItems: MenuItem[] = [
@@ -11,6 +11,11 @@ export const vendorItems: MenuItem[] = [
         label: "إدارة الموردين",
         path: "/vendors/manage",
         icon: User,
+      },
+      {
+        label: "تقارير الموردين",
+        path: "/vendors/reports",
+        icon: FileText,
       },
     ],
   },
