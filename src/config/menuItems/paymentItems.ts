@@ -1,5 +1,5 @@
 
-import { CreditCard, CircleDollarSign } from "lucide-react";
+import { CreditCard, CircleDollarSign, FileText } from "lucide-react";
 import { MenuItem } from "./types";
 
 export const paymentItems: MenuItem[] = [
@@ -10,7 +10,7 @@ export const paymentItems: MenuItem[] = [
       {
         label: "الحسابات المستحقة",
         path: "/payables/accounts",
-        icon: CreditCard,
+        icon: FileText,
       },
       {
         label: "تسجيل دفعة",
@@ -26,7 +26,7 @@ export const paymentItems: MenuItem[] = [
       {
         label: "الحسابات المستحقة",
         path: "/receivables/accounts",
-        icon: CreditCard,
+        icon: FileText,
       },
       {
         label: "تسجيل قبض",
