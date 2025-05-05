@@ -1,26 +1,58 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PaymentForm } from "@/components/payables/PaymentForm";
+import { PaymentHistory } from "@/components/payables/PaymentHistory";
+import { PaymentStats } from "@/components/payables/PaymentStats";
+import { usePaymentPage } from "@/hooks/usePaymentPage";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PaymentPage = () => {
+  const {
+    vendorData,
+    paymentStats,
+    paymentHistory,
+    handlePaymentSubmit,
+    isLoading
+  } = usePaymentPage();
+  
+  const [activeTab, setActiveTab] = useState("payment");
+
   return (
-    <div className="container p-6 mx-auto">
-      <h1 className="text-2xl font-bold mb-6">سداد المستحقات</h1>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>سداد المستحقات للموردين</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-500 mb-4">إدارة عمليات سداد المستحقات للموردين</p>
-          
-          {/* محتوى الصفحة سيتم تطويره لاحقاً */}
-          <div className="bg-gray-100 p-6 rounded-md text-center">
-            <p className="text-xl text-gray-600">سيتم تطوير هذه الصفحة قريباً</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Layout>
+      <div className="container p-6 mx-auto">
+        <h1 className="text-2xl font-bold mb-6">سداد المستحقات</h1>
+        
+        <PaymentStats stats={paymentStats} />
+        
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>إدارة عمليات السداد</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="rtl">
+              <TabsList className="mb-6">
+                <TabsTrigger value="payment">تسجيل عملية سداد</TabsTrigger>
+                <TabsTrigger value="history">سجل المدفوعات</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="payment">
+                <PaymentForm 
+                  vendors={vendorData}
+                  onSubmit={handlePaymentSubmit}
+                  isLoading={isLoading}
+                />
+              </TabsContent>
+              
+              <TabsContent value="history">
+                <PaymentHistory payments={paymentHistory} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </Layout>
   );
 };
 
