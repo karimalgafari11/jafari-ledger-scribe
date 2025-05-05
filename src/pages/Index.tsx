@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Route, Routes } from "react-router-dom";
@@ -92,6 +93,8 @@ const Index = () => {
             <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
             <Route path="/accounting/ledger" element={<LedgerPage />} />
             <Route path="/integrations/external-systems" element={<ExternalSystemsPage />} />
+            {/* Add the route for the settings path too */}
+            <Route path="/settings/integrations" element={<ExternalSystemsPage />} />
             <Route path="/customers/manage" element={<CustomersPage />} />
             <Route path="/customers/statement" element={<CustomerStatementPage />} />
             <Route path="/ai-assistant" element={<AiAssistantPage />} />
