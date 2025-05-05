@@ -43,7 +43,7 @@ export function ProductsTable({
 
   // Table configuration options
   const [tableConfig, setTableConfig] = useState({
-    gridLines: "both" as "none" | "horizontal" | "vertical" | "both",
+    gridLines: true,
     striped: true,
     dense: false,
     bordered: true
@@ -55,10 +55,10 @@ export function ProductsTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setTableConfig(prev => ({...prev, gridLines: prev.gridLines === "both" ? "horizontal" : "both"}))}
+          onClick={() => setTableConfig(prev => ({...prev, gridLines: !prev.gridLines}))}
           className="text-xs"
         >
-          {tableConfig.gridLines === "both" ? "خطوط أفقية فقط" : "خطوط أفقية وعمودية"}
+          {tableConfig.gridLines ? "خطوط أفقية فقط" : "خطوط أفقية وعمودية"}
         </Button>
         <Button
           variant="outline"
@@ -80,7 +80,7 @@ export function ProductsTable({
       
       <div className="bg-white rounded-lg shadow overflow-hidden rtl">
         <Table 
-          gridLines={tableConfig.gridLines} 
+          gridLines={tableConfig.gridLines}
           striped={tableConfig.striped}
           dense={tableConfig.dense}
           bordered={tableConfig.bordered}

@@ -10,15 +10,21 @@ const Table = React.forwardRef<
     striped?: boolean;
     bordered?: boolean;
     hoverable?: boolean;
+    dense?: boolean;
+    stickyHeader?: boolean;
   }
->(({ className, gridLines, striped, bordered, hoverable, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+>(({ className, gridLines, striped, bordered, hoverable, dense, stickyHeader, ...props }, ref) => (
+  <div className={cn("relative w-full overflow-auto", stickyHeader && "overflow-y-auto")}>
     <table
       ref={ref}
       className={cn(
         "w-full caption-bottom text-sm",
         gridLines && "border-collapse",
         bordered && "border border-border",
+        dense && "text-xs [&_th]:py-1 [&_td]:py-1",
+        striped && "[&_tbody_tr:nth-child(even)]:bg-muted/50",
+        hoverable && "[&_tbody_tr:hover]:bg-muted/60",
+        stickyHeader && "[&_thead_tr_th]:sticky [&_thead_tr_th]:top-0 [&_thead_tr_th]:bg-background [&_thead_tr_th]:z-10",
         className
       )}
       {...props}
