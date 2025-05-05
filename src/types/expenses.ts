@@ -6,8 +6,18 @@ export interface Expense {
   description: string;
   amount: number;
   paymentMethod: 'cash' | 'credit' | 'bank';
+  status?: 'pending' | 'approved' | 'rejected';
+  attachments?: string[];
   reference?: string;
   notes?: string;
+}
+
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  description?: string;
+  budgetLimit?: number;
+  isActive: boolean;
 }
 
 export interface SalesReport {
