@@ -12,11 +12,11 @@ import {
   SidebarMenuButton,
   SidebarGroupLabel,
   SidebarGroup,
-  SidebarGroupContent
+  SidebarGroupContent,
+  useSidebar
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import SidebarItem from "./sidebar/SidebarItem";
-import { useSidebar } from "@/components/ui/sidebar";
 
 interface SidebarMenuProps {
   autoClose?: boolean;
@@ -28,7 +28,7 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
   const isSectionActive = (section: any): boolean => {
@@ -71,7 +71,6 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
   const handleItemClick = (path: string) => {
     navigate(path);
     if (isMobile) {
-      const { setOpenMobile } = useSidebar();
       setOpenMobile(false);
     }
   };
