@@ -2,9 +2,10 @@
 import React, { ReactNode } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Outlet } from "react-router-dom";
 
 interface LayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   showWatermark?: boolean;
 }
@@ -41,7 +42,7 @@ export function Layout({
       
       <TooltipProvider>
         <div className={`flex flex-col flex-1 ${isMobile ? 'h-screen overflow-hidden' : ''}`}>
-          {children}
+          {children || <Outlet />}
         </div>
       </TooltipProvider>
     </div>
