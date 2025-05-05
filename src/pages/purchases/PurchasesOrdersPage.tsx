@@ -37,8 +37,6 @@ const PurchasesOrdersPage = () => {
 
   const handleCreateNew = () => {
     navigate("/purchases/orders/new");
-    // For now, we'll show a toast since the new order page doesn't exist yet
-    toast.info("صفحة إنشاء أمر شراء جديد قيد التطوير");
   };
 
   const handleExport = () => {
@@ -57,6 +55,11 @@ const PurchasesOrdersPage = () => {
   };
 
   const handleToggleSelection = (id: string) => {
+    if (id === "clear-all") {
+      setSelectedOrders([]);
+      return;
+    }
+    
     setSelectedOrders(prev => 
       prev.includes(id) 
         ? prev.filter(orderId => orderId !== id) 

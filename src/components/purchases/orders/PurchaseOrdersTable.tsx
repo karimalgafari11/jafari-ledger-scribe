@@ -13,7 +13,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil, Trash2 } from "lucide-react";
-import { formatDate } from "@/utils/formatters";
+import { formatDate, formatCurrency } from "@/utils/formatters";
+import { useNavigate } from "react-router-dom";
 
 interface PurchaseOrdersTableProps {
   orders: PurchaseOrder[];
@@ -26,6 +27,7 @@ export function PurchaseOrdersTable({
   selectedOrders, 
   onToggleSelection 
 }: PurchaseOrdersTableProps) {
+  const navigate = useNavigate();
   
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -60,10 +62,19 @@ export function PurchaseOrdersTable({
         return status;
     }
   };
+  
+  const handleView = (orderId: string) => {
+    // For now, just navigate to the edit page as we don't have a separate view page
+    navigate(`/purchases/orders/new?id=${orderId}`);
+  };
+  
+  const handleEdit = (orderId: string) => {
+    navigate(`/purchases/orders/new?id=${orderId}`);
+  };
 
   return (
     <div className="rounded-md border overflow-hidden">
-      <Table hoverable striped bordered>
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-12">
@@ -115,7 +126,7 @@ export function PurchaseOrdersTable({
                 <TableCell>{formatDate(order.date)}</TableCell>
                 <TableCell>{order.deliveryDate ? formatDate(order.deliveryDate) : "غير محدد"}</TableCell>
                 <TableCell className="font-semibold">
-                  {order.totalAmount.toLocaleString("ar-EG", { style: "currency", currency: "SAR" })}
+                  {formatCurrency(order.totalAmount)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(order.status)}>
@@ -129,6 +140,7 @@ export function PurchaseOrdersTable({
                       variant="ghost"
                       size="icon"
                       title="عرض"
+                      onClick={() => handleView(order.id)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -137,6 +149,7 @@ export function PurchaseOrdersTable({
                       size="icon"
                       title="تعديل"
                       disabled={order.status === "completed" || order.status === "cancelled"}
+                      onClick={() => handleEdit(order.id)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -145,6 +158,7 @@ export function PurchaseOrdersTable({
                       size="icon"
                       title="حذف"
                       disabled={order.status === "completed"}
+                      onClick={() => onToggleSelection(order.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
