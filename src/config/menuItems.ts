@@ -1,3 +1,4 @@
+
 import {
   BarChart3,
   Building2,
@@ -21,7 +22,6 @@ import {
   Package,
   Percent,
   Receipt,
-  ReceiptTax,
   Scale,
   Settings,
   ShoppingBag,
@@ -32,6 +32,8 @@ import {
   Users,
   Wallet,
   Zap,
+  AlertTriangle,
+  Info,
 } from "lucide-react";
 
 type MenuItem = {
@@ -189,7 +191,7 @@ export const menuItems: MenuItem[] = [
       {
         label: "فاتورة شراء جديدة",
         path: "/purchases/new",
-        icon: ReceiptTax,
+        icon: Receipt,
       },
       {
         label: "فواتير الشراء",
