@@ -1,6 +1,7 @@
 
 import { RouteObject } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import Index from "@/pages/Index";
 import Dashboard from "@/pages/Dashboard";
 import Reports from "@/pages/Reports";
 import NotFound from "@/pages/NotFound";
@@ -30,7 +31,7 @@ export const appRoutes: RouteObject[] = [
   },
   {
     path: "/",
-    element: <Layout />,
+    element: <Index />,
     children: [
       { index: true, element: <Dashboard /> },
       { path: "dashboard", element: <Dashboard /> },
