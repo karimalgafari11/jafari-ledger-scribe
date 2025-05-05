@@ -43,3 +43,21 @@ export const formatCurrency = (
     return `${amount} ${currency}`;
   }
 };
+
+/**
+ * Format number with thousand separators
+ * @param num Number to format
+ * @param locale Locale string (defaults to ar-SA)
+ * @returns Formatted number string
+ */
+export const formatNumber = (
+  num: number,
+  locale: string = 'ar-SA'
+): string => {
+  try {
+    return num.toLocaleString(locale);
+  } catch (error) {
+    console.error('Error formatting number:', error);
+    return num.toString();
+  }
+};
