@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table } from "@/components/ui/table";
