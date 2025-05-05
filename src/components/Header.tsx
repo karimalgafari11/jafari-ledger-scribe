@@ -3,7 +3,7 @@ import React from 'react';
 import NotificationsDropdown from './notifications/NotificationsDropdown';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
-import { ArrowLeft, Menu } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SidebarTrigger } from '@/components/ui/sidebar';
