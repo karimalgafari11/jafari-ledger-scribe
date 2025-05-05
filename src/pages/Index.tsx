@@ -26,6 +26,7 @@ import CommercialPapersPage from "./accounting/CommercialPapersPage";
 import CurrenciesPage from "./definitions/CurrenciesPage";
 import DiscountsPage from "./definitions/DiscountsPage";
 import ReportTemplatesPage from "./reports/ReportTemplatesPage";
+import SalesReportsPage from "./reports/SalesReportsPage";
 import ActivityLogPage from "./settings/ActivityLogPage";
 import NotificationsPage from "./settings/NotificationsPage";
 import NotificationSettingsPage from "./settings/NotificationSettingsPage";
@@ -74,6 +75,7 @@ const Index = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/reports/templates" element={<ReportTemplatesPage />} />
+            <Route path="/reports/sales" element={<SalesReportsPage />} />
             <Route path="/expenses/new" element={<NewExpensePage />} />
             <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
             <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
