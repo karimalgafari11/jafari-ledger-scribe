@@ -1,66 +1,9 @@
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Route, Routes } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AccountingSidebar from "@/components/AccountingSidebar";
-import Dashboard from "./Dashboard";
-import Reports from "./Reports";
-import NewExpensePage from "./expenses/NewExpensePage";
-import ExpenseCategoriesPage from "./expenses/ExpenseCategoriesPage";
-import ExpenseReportsPage from "./expenses/ExpenseReportsPage";
-import InvoicesPage from "./invoices/InvoicesPage";
-import QuotesPage from "./invoices/QuotesPage";
-import SalesOrdersPage from "./invoices/SalesOrdersPage";
-import ReturnsPage from "./invoices/ReturnsPage";
-import AccountChartPage from "./accounting/AccountChartPage";
-import JournalEntriesPage from "./accounting/JournalEntriesPage";
-import CostCentersPage from "./accounting/CostCentersPage";
-import CustomersPage from "./customers/CustomersPage";
-import CustomerStatementPage from "./customers/CustomerStatementPage";
-import AiAssistantPage from "./ai/AiAssistantPage";
-import BasicDefinitionsPage from "./definitions/BasicDefinitionsPage";
-import CashRegisterPage from "./accounting/CashRegisterPage";
-import CommercialPapersPage from "./accounting/CommercialPapersPage";
-import CurrenciesPage from "./definitions/CurrenciesPage";
-import DiscountsPage from "./definitions/DiscountsPage";
-import ReportTemplatesPage from "./reports/ReportTemplatesPage";
-import SalesReportsPage from "./reports/SalesReportsPage";
-import ActivityLogPage from "./settings/ActivityLogPage";
-import NotificationsPage from "./settings/NotificationsPage";
-import NotificationSettingsPage from "./settings/NotificationSettingsPage";
-import AiEngineSettingsPage from "./settings/AiEngineSettingsPage";
-import FinancialDecisionsPage from "./ai/FinancialDecisionsPage";
-import LoginPage from "./auth/LoginPage";
-import AboutPage from "./about/AboutPage";
-import ProductsPage from "./inventory/ProductsPage";
-import StockMovementsPage from "./inventory/StockMovementsPage";
-import CountingPage from "./inventory/CountingPage";
-import ReorderPage from "./inventory/ReorderPage";
-import TransferPage from "./inventory-control/TransferPage";
-import LocationsPage from "./inventory-control/LocationsPage";
-import DamagedItemsPage from "./inventory-control/DamagedItemsPage";
-import AccountingSettingsPage from "./accounting/AccountingSettingsPage";
-import UserRolesPage from "./settings/UserRolesPage";
-import SystemSettingsPage from "./settings/SystemSettingsPage";
-import PageManagementPage from "./settings/PageManagementPage";
-import BranchesPage from "./settings/BranchesPage";
-import UsersPage from "./settings/UsersPage";
-import BackupPage from "./settings/BackupPage";
-import BackupTestPage from "./settings/BackupTestPage";
-import NotFound from "./NotFound";
-import VendorsPage from "./vendors/VendorsPage";
-import PurchaseInvoicePage from "./purchases/PurchaseInvoicePage";
-import PurchasesInvoicesPage from "./purchases/PurchasesInvoicesPage";
-import PurchasesOrdersPage from "./purchases/PurchasesOrdersPage";
-import PurchasesReturnsPage from "./purchases/PurchasesReturnsPage";
-import PayablesPage from "./payables/PayablesPage";
-import PaymentPage from "./payables/PaymentPage";
-import ReceivablesPage from "./receivables/ReceivablesPage";
-import CollectionPage from "./receivables/CollectionPage";
-import LedgerPage from "./accounting/LedgerPage";
-import ExternalSystemsPage from "./integrations/ExternalSystemsPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -70,67 +13,8 @@ const Index = () => {
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="flex h-screen w-full overflow-hidden">
         <AccountingSidebar />
-        <div className={cn("flex-1 overflow-auto w-full")}>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/reports/templates" element={<ReportTemplatesPage />} />
-            <Route path="/reports/sales" element={<SalesReportsPage />} />
-            <Route path="/expenses/new" element={<NewExpensePage />} />
-            <Route path="/expenses/categories" element={<ExpenseCategoriesPage />} />
-            <Route path="/expenses/reports" element={<ExpenseReportsPage />} />
-            <Route path="/invoices/outgoing" element={<InvoicesPage />} />
-            <Route path="/invoices/quotes" element={<QuotesPage />} />
-            <Route path="/invoices/sales-orders" element={<SalesOrdersPage />} />
-            <Route path="/invoices/returns" element={<ReturnsPage />} />
-            <Route path="/accounting/chart" element={<AccountChartPage />} />
-            <Route path="/accounting/journals" element={<JournalEntriesPage />} />
-            <Route path="/accounting/cashregister" element={<CashRegisterPage />} />
-            <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
-            <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
-            <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
-            <Route path="/accounting/ledger" element={<LedgerPage />} />
-            <Route path="/integrations/external-systems" element={<ExternalSystemsPage />} />
-            <Route path="/settings/integrations" element={<ExternalSystemsPage />} />
-            <Route path="/customers/manage" element={<CustomersPage />} />
-            <Route path="/customers/statement" element={<CustomerStatementPage />} />
-            <Route path="/ai-assistant" element={<AiAssistantPage />} />
-            <Route path="/ai-financial-decisions" element={<FinancialDecisionsPage />} />
-            <Route path="/definitions" element={<BasicDefinitionsPage />} />
-            <Route path="/definitions/currencies" element={<CurrenciesPage />} />
-            <Route path="/definitions/discounts" element={<DiscountsPage />} />
-            <Route path="/settings/activity-log" element={<ActivityLogPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/settings/notification-settings" element={<NotificationSettingsPage />} />
-            <Route path="/settings/ai-engine" element={<AiEngineSettingsPage />} />
-            <Route path="/settings/roles" element={<UserRolesPage />} />
-            <Route path="/settings/system" element={<SystemSettingsPage />} />
-            <Route path="/settings/page-management" element={<PageManagementPage />} />
-            <Route path="/settings/branches" element={<BranchesPage />} />
-            <Route path="/settings/users" element={<UsersPage />} />
-            <Route path="/settings/backup" element={<BackupPage />} />
-            <Route path="/settings/backup-test" element={<BackupTestPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/inventory/products" element={<ProductsPage />} />
-            <Route path="/inventory/movements" element={<StockMovementsPage />} />
-            <Route path="/inventory/counting" element={<CountingPage />} />
-            <Route path="/inventory/reorder" element={<ReorderPage />} />
-            <Route path="/inventory-control/transfer" element={<TransferPage />} />
-            <Route path="/inventory-control/locations" element={<LocationsPage />} />
-            <Route path="/inventory-control/damaged" element={<DamagedItemsPage />} />
-            <Route path="/vendors/manage" element={<VendorsPage />} />
-            <Route path="/purchases/new" element={<PurchaseInvoicePage />} />
-            <Route path="/purchases/invoices" element={<PurchasesInvoicesPage />} />
-            <Route path="/purchases/orders" element={<PurchasesOrdersPage />} />
-            <Route path="/purchases/returns" element={<PurchasesReturnsPage />} />
-            <Route path="/payables/accounts" element={<PayablesPage />} />
-            <Route path="/payables/payment" element={<PaymentPage />} />
-            <Route path="/receivables/accounts" element={<ReceivablesPage />} />
-            <Route path="/receivables/collection" element={<CollectionPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <div className="flex-1 overflow-auto w-full">
+          <Outlet />
         </div>
       </div>
     </SidebarProvider>
