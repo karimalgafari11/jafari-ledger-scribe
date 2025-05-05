@@ -117,13 +117,14 @@ const PayablesAccountsPage = () => {
       </main>
 
       <VendorDetailsDialog 
-        isOpen={isDetailsDialogOpen} 
+        open={isDetailsDialogOpen} 
         onClose={() => setIsDetailsDialogOpen(false)}
         vendor={selectedVendor}
+        onMakePayment={handleMakePayment}
       />
 
       <MakePaymentDialog 
-        isOpen={isPaymentDialogOpen}
+        open={isPaymentDialogOpen}
         onClose={() => setIsPaymentDialogOpen(false)}
         vendor={selectedVendor}
       />
