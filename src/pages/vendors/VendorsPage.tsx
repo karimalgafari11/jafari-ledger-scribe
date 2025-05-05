@@ -72,6 +72,8 @@ const VendorsPage = () => {
               inactiveVendors={inactiveVendors}
               showFilters={showFilters}
               setShowFilters={setShowFilters}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
             />
             
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
