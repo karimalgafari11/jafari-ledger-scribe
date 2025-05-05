@@ -1,4 +1,3 @@
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -6,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
 
 // Common Components
-import Layout from "./components/Layout";
+import { Layout } from "./components/Layout";
 
 // Pages
 import Index from "./pages/Index";
