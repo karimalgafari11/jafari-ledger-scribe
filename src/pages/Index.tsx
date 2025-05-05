@@ -54,6 +54,8 @@ import PurchaseInvoicePage from "./purchases/PurchaseInvoicePage";
 import PurchasesInvoicesPage from "./purchases/PurchasesInvoicesPage";
 import PurchasesOrdersPage from "./purchases/PurchasesOrdersPage";
 import PurchasesReturnsPage from "./purchases/PurchasesReturnsPage";
+import PayablesPage from "./payables/PayablesPage";
+import PaymentPage from "./payables/PaymentPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -114,6 +116,8 @@ const Index = () => {
             <Route path="/purchases/invoices" element={<PurchasesInvoicesPage />} />
             <Route path="/purchases/orders" element={<PurchasesOrdersPage />} />
             <Route path="/purchases/returns" element={<PurchasesReturnsPage />} />
+            <Route path="/payables/accounts" element={<PayablesPage />} />
+            <Route path="/payables/payment" element={<PaymentPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
