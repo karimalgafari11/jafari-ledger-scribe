@@ -32,6 +32,8 @@ const LedgerPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [period, setPeriod] = useState("all");
   const [accountId, setAccountId] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const { accounts, filteredAccounts, searchAccounts } = useAccounts();
   const { 
     entries, 
@@ -70,13 +72,8 @@ const LedgerPage = () => {
       {
         label: "أرصدة الحسابات",
         data: [250000, 120000, 130000, 70000, 45000],
-        backgroundColor: [
-          "rgba(54, 162, 235, 0.7)",
-          "rgba(255, 99, 132, 0.7)",
-          "rgba(75, 192, 192, 0.7)",
-          "rgba(153, 102, 255, 0.7)",
-          "rgba(255, 159, 64, 0.7)"
-        ]
+        backgroundColor: "rgba(54, 162, 235, 0.7)", // Changed from array to string
+        borderColor: "rgba(54, 162, 235, 1)"
       }
     ]
   };
@@ -144,9 +141,17 @@ const LedgerPage = () => {
 
           {period === "custom" && (
             <div className="flex gap-2">
-              <DatePicker />
+              <DatePicker 
+                date={startDate} 
+                onDateChange={setStartDate} 
+                placeholder="تاريخ البداية" 
+              />
               <span className="self-center">إلى</span>
-              <DatePicker />
+              <DatePicker 
+                date={endDate} 
+                onDateChange={setEndDate} 
+                placeholder="تاريخ النهاية" 
+              />
             </div>
           )}
         </div>
