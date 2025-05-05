@@ -42,3 +42,25 @@ export interface PurchaseItem {
   total: number;
   notes?: string;
 }
+
+export interface PurchaseOrder {
+  id: string;
+  orderNumber: string;
+  vendorId: string;
+  vendorName: string;
+  date: string;
+  deliveryDate?: string;
+  items: PurchaseItem[];
+  subtotal: number;
+  totalAmount: number;
+  discount?: number;
+  discountType?: 'percentage' | 'fixed';
+  tax?: number;
+  status: 'draft' | 'pending' | 'approved' | 'completed' | 'cancelled';
+  notes?: string;
+  termsAndConditions?: string;
+  createdBy: string;
+  approvedBy?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
