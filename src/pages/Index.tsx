@@ -59,6 +59,7 @@ import PayablesPage from "./payables/PayablesPage";
 import PaymentPage from "./payables/PaymentPage";
 import ReceivablesPage from "./receivables/ReceivablesPage";
 import CollectionPage from "./receivables/CollectionPage";
+import LedgerPage from "./accounting/LedgerPage";
 
 const Index = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -89,6 +90,7 @@ const Index = () => {
             <Route path="/accounting/commercialpapers" element={<CommercialPapersPage />} />
             <Route path="/accounting/cost-centers" element={<CostCentersPage />} />
             <Route path="/accounting/settings" element={<AccountingSettingsPage />} />
+            <Route path="/accounting/ledger" element={<LedgerPage />} />
             <Route path="/customers/manage" element={<CustomersPage />} />
             <Route path="/customers/statement" element={<CustomerStatementPage />} />
             <Route path="/ai-assistant" element={<AiAssistantPage />} />
