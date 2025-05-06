@@ -5,12 +5,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Search } from "lucide-react";
 import { formatCurrency } from "@/utils/formatters";
+import { AccountStatus } from "@/hooks/useReceivablesAccounts";
 
 interface CollectionFilterProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  statusFilter: string;
-  onStatusFilterChange: (value: string) => void;
+  statusFilter: AccountStatus;
+  onStatusFilterChange: (value: AccountStatus) => void;
   amountRange: [number, number];
   onAmountRangeChange: (value: [number, number]) => void;
   maxAmount: number;

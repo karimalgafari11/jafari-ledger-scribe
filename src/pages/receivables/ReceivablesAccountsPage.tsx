@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
-import { useReceivablesAccounts } from "@/hooks/useReceivablesAccounts";
+import { useReceivablesAccounts, AccountStatus } from "@/hooks/useReceivablesAccounts";
 import { ReceivablesFilter } from "@/components/receivables/ReceivablesFilter";
 import { ReceivablesStats } from "@/components/receivables/ReceivablesStats";
 import { ReceivablesAccountsTable } from "@/components/receivables/ReceivablesAccountsTable";
