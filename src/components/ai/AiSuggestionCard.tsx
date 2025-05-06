@@ -1,35 +1,40 @@
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-interface AiSuggestionCardProps {
+export interface AiSuggestionCardProps {
   title: string;
   description: string;
   actionText: string;
-  onAction?: () => void;
+  onAction: () => void;
+  icon?: ReactNode; // Added icon prop
 }
 
 export const AiSuggestionCard: React.FC<AiSuggestionCardProps> = ({
   title,
   description,
   actionText,
-  onAction = () => {}
+  onAction,
+  icon
 }) => {
   return (
-    <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
-      <CardContent className="p-3">
-        <h3 className="text-sm font-medium">{title}</h3>
-        <p className="text-xs text-gray-600 mt-1">{description}</p>
-        <div className="flex justify-end mt-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-7 text-xs px-2 bg-white text-blue-600 hover:bg-blue-50"
-            onClick={onAction}
-          >
-            {actionText}
-          </Button>
+    <Card className="bg-white/70 backdrop-blur-sm border-blue-100 hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          {icon && <div className="mt-1 shrink-0">{icon}</div>}
+          <div className="flex-1">
+            <h3 className="font-medium text-blue-900 mb-1">{title}</h3>
+            <p className="text-sm text-muted-foreground mb-3">{description}</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
+              onClick={onAction}
+            >
+              {actionText}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

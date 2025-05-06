@@ -9,7 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from 'react-router-dom';
 
-const FinancialDecisionsWidget: React.FC = () => {
+// Changed to use interface instead of React.FC<Props> pattern
+interface FinancialDecisionsWidgetProps {
+  performance: any;
+}
+
+const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps) => {
   const { decisions } = useFinancialDecisions();
   const [activeType, setActiveType] = useState<'all' | 'journal_entry' | 'pricing' | 'provision' | 'variance'>('all');
   const navigate = useNavigate();
@@ -155,7 +160,7 @@ const FinancialDecisionsWidget: React.FC = () => {
         </ScrollArea>
         
         <div className="mt-4 flex justify-center">
-          <Button onClick={() => navigate('/ai-financial-decisions')} size="sm">
+          <Button onClick={() => navigate('/ai/financial-decisions')} size="sm">
             عرض جميع القرارات والاقتراحات
           </Button>
         </div>
@@ -164,4 +169,5 @@ const FinancialDecisionsWidget: React.FC = () => {
   );
 };
 
+// Changed to default export
 export default FinancialDecisionsWidget;
