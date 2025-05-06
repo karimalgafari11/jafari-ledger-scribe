@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -135,7 +136,7 @@ const CustomerStatementPage = () => {
                           <div>
                             <h3 className="font-medium text-amber-700">يوجد رصيد مستحق</h3>
                             <p className="text-sm text-amber-600 mt-1">
-                              يرجى متابعة تحصيل المبلغ المستحق وقدر�� {formatCurrency(customer.balance)}
+                              يرجى متابعة تحصيل المبلغ المستحق وقدره {formatCurrency(customer.balance)}
                             </p>
                           </div>
                         </div>
