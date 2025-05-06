@@ -1,6 +1,6 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Customer } from "@/types/customers";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/formatters";
 
 interface CustomerInfoProps {
@@ -9,30 +9,64 @@ interface CustomerInfoProps {
 
 export const CustomerInfo = ({ customer }: CustomerInfoProps) => {
   return (
-    <Card className="mb-6">
-      <CardHeader className="rtl">
-        <div className="flex justify-between items-start">
+    <Card>
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <CardTitle className="text-xl mb-2">معلومات العميل</CardTitle>
-            <h2 className="text-2xl font-bold">{customer.name}</h2>
+            <h2 className="text-xl font-bold mb-4">{customer.name}</h2>
+            <div className="space-y-2 text-sm">
+              {customer.address && <p className="text-gray-600">{customer.address}</p>}
+              {customer.phone && (
+                <p className="text-gray-600">
+                  <span className="font-medium">الهاتف: </span>
+                  {customer.phone}
+                </p>
+              )}
+              {customer.email && (
+                <p className="text-gray-600">
+                  <span className="font-medium">البريد الإلكتروني: </span>
+                  {customer.email}
+                </p>
+              )}
+            </div>
           </div>
-          <div className="text-left">
-            <p className="text-gray-500">رقم العميل: {customer.id.substring(0, 8)}</p>
-            {customer.vatNumber && <p className="text-gray-500">الرقم الضريبي: {customer.vatNumber}</p>}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="rtl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
           <div>
-            <p className="mb-1"><strong>رقم الهاتف:</strong> {customer.phone}</p>
-            <p className="mb-1"><strong>البريد الإلكتروني:</strong> {customer.email || 'غير متوفر'}</p>
-            <p className="mb-1"><strong>العنوان:</strong> {customer.address || 'غير متوفر'}</p>
+            <h3 className="font-semibold mb-2 text-gray-700">معلومات إضافية</h3>
+            <div className="space-y-2 text-sm">
+              <p className="text-gray-600">
+                <span className="font-medium">رقم الحساب: </span>
+                {customer.accountNumber || "-"}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">نوع العميل: </span>
+                {customer.type === 'individual' ? 'فرد' : 'شركة'}
+              </p>
+              {customer.vatNumber && (
+                <p className="text-gray-600">
+                  <span className="font-medium">الرقم الضريبي: </span>
+                  {customer.vatNumber}
+                </p>
+              )}
+            </div>
           </div>
-          <div>
-            <p className="mb-1"><strong>نوع العميل:</strong> {customer.type === 'company' ? 'شركة' : 'فرد'}</p>
-            <p className="mb-1"><strong>الرصيد الحالي:</strong> <span className="text-red-600 font-bold">{formatCurrency(customer.balance)}</span></p>
-            <p className="mb-1"><strong>حد الائتمان:</strong> {formatCurrency(customer.creditLimit || 0)}</p>
+          
+          <div className="flex flex-col items-start">
+            <div className="bg-gray-100 rounded-lg p-4 w-full">
+              <h3 className="font-semibold mb-2 text-gray-700">ملخص الحساب</h3>
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-gray-600">الرصيد الحالي</span>
+                <span className={`text-lg font-bold ${customer.balance > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                  {formatCurrency(customer.balance)}
+                </span>
+              </div>
+              {customer.creditLimit && (
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-gray-600">حد الائتمان</span>
+                  <span className="font-medium">{formatCurrency(customer.creditLimit)}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
