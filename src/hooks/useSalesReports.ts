@@ -128,7 +128,7 @@ const generateProductData = () => {
     { id: 10, name: "راوتر WiFi" },
   ];
 
-  const productData = products.map(product => {
+  const productItems = products.map(product => {
     const sales = Math.floor(Math.random() * 50000) + 10000;
     return {
       id: product.id,
@@ -140,49 +140,53 @@ const generateProductData = () => {
   });
 
   // Sort by sales (highest first)
-  productData.sort((a, b) => b.sales - a.sales);
+  productItems.sort((a, b) => b.sales - a.sales);
 
-  // Add chart data
+  // Create chart data
+  const pieChartData = {
+    labels: productItems.map(p => p.name),
+    datasets: [
+      {
+        label: "المبيعات حسب المنتج",
+        data: productItems.map(p => p.sales),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 159, 64, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(231, 233, 237, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+        ]
+      }
+    ]
+  };
+
+  const lineChartData = {
+    labels: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+    datasets: [
+      {
+        label: productItems[0].name,
+        data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 10000) + 5000),
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      },
+      {
+        label: productItems[1].name,
+        data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 8000) + 4000),
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      }
+    ]
+  };
+
   return {
-    ...productData,
-    pieChart: {
-      labels: productData.map(p => p.name),
-      datasets: [
-        {
-          label: "المبيعات حسب المنتج",
-          data: productData.map(p => p.sales),
-          backgroundColor: [
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(153, 102, 255, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(231, 233, 237, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-          ]
-        }
-      ]
-    },
-    lineChart: {
-      labels: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
-      datasets: [
-        {
-          label: productData[0].name,
-          data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 10000) + 5000),
-          borderColor: 'rgba(54, 162, 235, 1)',
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        },
-        {
-          label: productData[1].name,
-          data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 8000) + 4000),
-          borderColor: 'rgba(255, 99, 132, 1)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        }
-      ]
-    }
+    productItems,
+    pieChart: pieChartData,
+    lineChart: lineChartData
   };
 };
 
@@ -201,7 +205,7 @@ const generateCustomerData = () => {
     { id: 10, name: "مؤسسة الرواد" },
   ];
 
-  const customerData = customers.map(customer => {
+  const customerItems = customers.map(customer => {
     const sales = Math.floor(Math.random() * 50000) + 10000;
     return {
       id: customer.id,
@@ -213,49 +217,53 @@ const generateCustomerData = () => {
   });
 
   // Sort by sales (highest first)
-  customerData.sort((a, b) => b.sales - a.sales);
+  customerItems.sort((a, b) => b.sales - a.sales);
 
-  // Add chart data
+  // Create chart data
+  const pieChartData = {
+    labels: customerItems.map(c => c.name),
+    datasets: [
+      {
+        label: "المبيعات حسب العميل",
+        data: customerItems.map(c => c.sales),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 159, 64, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(231, 233, 237, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+        ]
+      }
+    ]
+  };
+
+  const lineChartData = {
+    labels: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+    datasets: [
+      {
+        label: customerItems[0].name,
+        data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 10000) + 5000),
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      },
+      {
+        label: customerItems[1].name,
+        data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 8000) + 4000),
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      }
+    ]
+  };
+
   return {
-    ...customerData,
-    pieChart: {
-      labels: customerData.map(c => c.name),
-      datasets: [
-        {
-          label: "المبيعات حسب العميل",
-          data: customerData.map(c => c.sales),
-          backgroundColor: [
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(153, 102, 255, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(231, 233, 237, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-          ]
-        }
-      ]
-    },
-    lineChart: {
-      labels: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
-      datasets: [
-        {
-          label: customerData[0].name,
-          data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 10000) + 5000),
-          borderColor: 'rgba(54, 162, 235, 1)',
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        },
-        {
-          label: customerData[1].name,
-          data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 8000) + 4000),
-          borderColor: 'rgba(255, 99, 132, 1)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        }
-      ]
-    }
+    customerItems,
+    pieChart: pieChartData,
+    lineChart: lineChartData
   };
 };
 
@@ -308,8 +316,8 @@ export const useSalesReports = () => {
   
   const [salesData, setSalesData] = useState(generateSalesData(dateRange));
   const [revenueData, setRevenueData] = useState(generateRevenueData());
-  const [productData, setProductData] = useState(generateProductData());
-  const [customerData, setCustomerData] = useState(generateCustomerData());
+  const [productDataState, setProductDataState] = useState(generateProductData());
+  const [customerDataState, setCustomerDataState] = useState(generateCustomerData());
   const [salesByDate, setSalesByDate] = useState(generateSalesByDate());
   
   useEffect(() => {
@@ -319,8 +327,8 @@ export const useSalesReports = () => {
     const timer = setTimeout(() => {
       setSalesData(generateSalesData(dateRange));
       setRevenueData(generateRevenueData());
-      setProductData(generateProductData());
-      setCustomerData(generateCustomerData());
+      setProductDataState(generateProductData());
+      setCustomerDataState(generateCustomerData());
       setSalesByDate(generateSalesByDate());
       setIsLoading(false);
     }, 800);
@@ -342,8 +350,8 @@ export const useSalesReports = () => {
     isLoading,
     salesData,
     revenueData,
-    productData,
-    customerData,
+    productData: productDataState.productItems,
+    customerData: customerDataState.customerItems,
     salesByDate,
     dateRange,
     setDateRange,

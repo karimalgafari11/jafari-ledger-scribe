@@ -190,7 +190,7 @@ const SalesReportsPage = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {productData.slice(0, 10).map((product, index) => (
+                            {productData.filter(product => typeof product.name === 'string').slice(0, 10).map((product, index) => (
                               <tr key={index} className="border-b hover:bg-gray-50 transition-colors">
                                 <td className="px-4 py-3">{product.name}</td>
                                 <td className="px-4 py-3">{product.quantity.toLocaleString('ar-SA')}</td>
@@ -233,7 +233,7 @@ const SalesReportsPage = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {customerData.slice(0, 10).map((customer, index) => (
+                            {customerData.filter(customer => typeof customer.name === 'string').slice(0, 10).map((customer, index) => (
                               <tr key={index} className="border-b hover:bg-gray-50 transition-colors">
                                 <td className="px-4 py-3">{customer.name}</td>
                                 <td className="px-4 py-3">{customer.transactions.toLocaleString('ar-SA')}</td>
