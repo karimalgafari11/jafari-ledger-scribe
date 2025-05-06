@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { formatCurrency } from "@/utils/formatters";
 
 const CustomerStatementPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -135,7 +135,7 @@ const CustomerStatementPage = () => {
                           <div>
                             <h3 className="font-medium text-amber-700">يوجد رصيد مستحق</h3>
                             <p className="text-sm text-amber-600 mt-1">
-                              يرجى متابعة تحصيل المبلغ المستحق وقدره {formatCurrency(customer.balance)}
+                              يرجى متابعة تحصيل المبلغ المستحق وقدر�� {formatCurrency(customer.balance)}
                             </p>
                           </div>
                         </div>
