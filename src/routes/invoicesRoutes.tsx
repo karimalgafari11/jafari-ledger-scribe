@@ -11,7 +11,7 @@ export const invoicesRoutes: RouteObject[] = [
   { path: "invoices", element: <InvoicesPage /> },
   { path: "invoices/new", element: <SalesInvoicePage /> },
   { path: "invoices/quotes", element: <QuotesPage /> },
-  { path: "invoices/orders", element: <SalesOrdersPage /> },
+  { path: "invoices/sales-orders", element: <SalesOrdersPage /> },
   { path: "invoices/returns", element: <ReturnsPage /> },
   { path: "invoices/outgoing", element: <OutgoingInvoicesPage /> }
 ];
