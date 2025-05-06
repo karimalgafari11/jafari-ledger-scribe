@@ -24,6 +24,7 @@ const CustomerStatementPage = () => {
     totalPages,
     handleTypeFilterChange,
     handleDateRangeChange,
+    handleDateRangeReset,
     handlePageChange,
     handlePrint, 
     handleDownload, 
@@ -31,7 +32,7 @@ const CustomerStatementPage = () => {
   } = useCustomerStatement(id);
 
   const handleBack = () => {
-    navigate('/customers/manage');
+    navigate('/customers/statement');
   };
 
   const handleShare = () => {
@@ -75,6 +76,7 @@ const CustomerStatementPage = () => {
           selectedTypes={selectedTypes}
           handleTypeFilterChange={handleTypeFilterChange}
           handleDateRangeChange={handleDateRangeChange}
+          handleDateRangeReset={handleDateRangeReset}
           handlePrint={handlePrint}
           handleDownload={handleDownload}
           handleShare={handleShare}

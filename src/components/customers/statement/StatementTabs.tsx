@@ -18,6 +18,7 @@ interface StatementTabsProps {
   selectedTypes: (Transaction["type"] | "all")[];
   handleTypeFilterChange: (types: (Transaction["type"] | "all")[]) => void;
   handleDateRangeChange: (range: DateRange) => void;
+  handleDateRangeReset: () => void;
   handlePrint: () => void;
   handleDownload: () => void;
   handleShare: () => void;
@@ -33,6 +34,7 @@ export const StatementTabs = ({
   selectedTypes,
   handleTypeFilterChange,
   handleDateRangeChange,
+  handleDateRangeReset,
   handlePrint,
   handleDownload,
   handleShare,
@@ -84,6 +86,7 @@ export const StatementTabs = ({
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
+              onDateRangeReset={handleDateRangeReset}
             />
           </div>
         </div>

@@ -60,16 +60,21 @@ const mockTransactions: Transaction[] = [
 
 type TransactionType = Transaction["type"] | "all";
 
+// Default date range - last 30 days
+const getDefaultDateRange = () => {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(from.getDate() - 30);
+  return { from, to };
+};
+
 export const useCustomerStatement = (customerId: string | undefined) => {
   const [customer, setCustomer] = useState<Customer | undefined>(undefined);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [paginatedTransactions, setPaginatedTransactions] = useState<Transaction[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<TransactionType[]>(["all", "invoice", "payment", "return"]);
-  const [dateRange, setDateRange] = useState<{from: Date; to: Date}>({
-    from: new Date('2023-10-01'),
-    to: new Date('2023-11-01')
-  });
+  const [dateRange, setDateRange] = useState<{from: Date; to: Date}>(getDefaultDateRange());
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
@@ -135,6 +140,10 @@ export const useCustomerStatement = (customerId: string | undefined) => {
     setDateRange(range);
   };
 
+  const handleDateRangeReset = () => {
+    setDateRange(getDefaultDateRange());
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -161,6 +170,7 @@ export const useCustomerStatement = (customerId: string | undefined) => {
     pageSize,
     handleTypeFilterChange,
     handleDateRangeChange,
+    handleDateRangeReset,
     handlePageChange,
     handlePageSizeChange,
     handlePrint,

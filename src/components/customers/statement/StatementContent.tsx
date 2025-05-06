@@ -2,8 +2,8 @@
 import { Transaction } from "@/types/transactions";
 import { Customer } from "@/types/customers";
 import { TransactionsTable } from "@/components/customers/TransactionsTable";
-import { FileText } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { EmptyStatementNotice } from "./EmptyStatementNotice";
 
 interface StatementContentProps {
   transactions: Transaction[];
@@ -11,6 +11,7 @@ interface StatementContentProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onDateRangeReset: () => void;
 }
 
 export const StatementContent = ({ 
@@ -18,7 +19,8 @@ export const StatementContent = ({
   customer,
   currentPage,
   totalPages,
-  onPageChange
+  onPageChange,
+  onDateRangeReset
 }: StatementContentProps) => {
   return (
     <>
@@ -62,11 +64,7 @@ export const StatementContent = ({
           )}
         </div>
       ) : (
-        <div className="text-center py-12 bg-gray-50 border border-dashed border-gray-300 rounded-md">
-          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">لا توجد معاملات في الفترة المحددة</p>
-          <p className="text-gray-500 text-sm mt-1">يمكنك تغيير نطاق البحث لعرض المزيد من المعاملات</p>
-        </div>
+        <EmptyStatementNotice customer={customer} onDateRangeReset={onDateRangeReset} />
       )}
     </>
   );
