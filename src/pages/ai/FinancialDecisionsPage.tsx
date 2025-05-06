@@ -9,6 +9,7 @@ import { AiAnalyticsPanel } from "@/components/ai/AiAnalyticsPanel";
 import { AiRulesPanel } from "@/components/ai/AiRulesPanel";
 import { Product } from "@/types/inventory";
 import { Expense } from "@/types/expenses";
+import { useNavigate } from "react-router-dom";
 
 const FinancialDecisionsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("analysis");
@@ -81,14 +82,13 @@ const FinancialDecisionsPage: React.FC = () => {
         isActive: true 
       },
     ] as Product[],
-    // Fixed to match Expense type
+    // Fixed to match Expense type (removed createdAt)
     pendingExpenses: [
       { 
         id: "1", 
         description: "إيجار المكتب", 
         amount: 5000, 
-        status: "pending" as 'pending' | 'approved' | 'rejected', 
-        createdAt: new Date(),
+        status: "pending" as 'pending' | 'approved' | 'rejected',
         date: new Date(), 
         category: "إيجارات", 
         paymentMethod: "bank" as 'cash' | 'credit' | 'bank'
@@ -97,8 +97,7 @@ const FinancialDecisionsPage: React.FC = () => {
         id: "2", 
         description: "فواتير الكهرباء", 
         amount: 1200, 
-        status: "pending" as 'pending' | 'approved' | 'rejected', 
-        createdAt: new Date(),
+        status: "pending" as 'pending' | 'approved' | 'rejected',
         date: new Date(), 
         category: "مرافق", 
         paymentMethod: "bank" as 'cash' | 'credit' | 'bank'

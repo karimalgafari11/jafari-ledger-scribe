@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
-interface InteractiveStatCardProps {
+export interface InteractiveStatCardProps {
   title: string;
   value: string;
   description: string;
@@ -12,6 +12,7 @@ interface InteractiveStatCardProps {
   trendValue?: string;
   animation?: "pulse" | "fade" | "scale";
   color?: string;
+  onClick?: () => void;
 }
 
 export const InteractiveStatCard: React.FC<InteractiveStatCardProps> = ({
@@ -22,7 +23,8 @@ export const InteractiveStatCard: React.FC<InteractiveStatCardProps> = ({
   trend = "neutral",
   trendValue,
   animation,
-  color = "blue"
+  color = "blue",
+  onClick
 }) => {
   const getColorClass = () => {
     switch (color) {
@@ -90,7 +92,10 @@ export const InteractiveStatCard: React.FC<InteractiveStatCardProps> = ({
   const animationClass = getAnimationClass();
 
   return (
-    <Card className={`${colorClasses.bg} backdrop-blur-sm ${colorClasses.border} ${animationClass}`}>
+    <Card 
+      className={`${colorClasses.bg} backdrop-blur-sm ${colorClasses.border} ${animationClass} cursor-pointer`} 
+      onClick={onClick}
+    >
       <CardContent className="pt-6 px-4">
         <div className="flex justify-between">
           <div>

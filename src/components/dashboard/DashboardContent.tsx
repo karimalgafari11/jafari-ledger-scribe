@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SystemAlert } from "@/types/ai";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -106,7 +107,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       )}
       
       {/* FinancialDecisionsWidget من النظام الذكي */}
-      {displayOptions.showAiWidget && (
+      {displayOptions.showAiWidget && performance && (
         <div className="mt-6 mb-6">
           <FinancialDecisionsWidget performance={performance} />
         </div>
