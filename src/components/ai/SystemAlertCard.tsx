@@ -54,8 +54,9 @@ export const SystemAlertCard: React.FC<SystemAlertCardProps> = ({
           }`} />
           <div className="flex-1">
             <div className="font-medium text-gray-900">{alertTitle}</div>
-            {(alert?.description || description) && (
-              <div className="text-sm text-gray-600 mt-1">{alert?.description || description}</div>
+            {/* The SystemAlert type doesn't have a description property, so we need to use the description prop directly */}
+            {description && (
+              <div className="text-sm text-gray-600 mt-1">{description}</div>
             )}
             <div className="text-xs text-gray-500 mt-1 flex items-center">
               <Clock className="h-3 w-3 mr-1" />
