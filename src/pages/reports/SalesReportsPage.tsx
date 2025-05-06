@@ -19,7 +19,9 @@ const SalesReportsPage = () => {
     salesData,
     revenueData,
     customerData,
+    customerCharts,
     productData,
+    productCharts,
     salesByDate,
     isLoading,
     dateRange,
@@ -206,9 +208,9 @@ const SalesReportsPage = () => {
                       <ReportDashboard
                         title=""
                         summary=""
-                        barChartData={productData.pieChart}
-                        pieChartData={productData.pieChart}
-                        lineChartData={productData.lineChart}
+                        barChartData={productCharts.pieChart}
+                        pieChartData={productCharts.pieChart}
+                        lineChartData={productCharts.lineChart}
                       />
                     </div>
                   </CardContent>
@@ -249,9 +251,9 @@ const SalesReportsPage = () => {
                       <ReportDashboard
                         title=""
                         summary=""
-                        barChartData={customerData.pieChart}
-                        pieChartData={customerData.pieChart}
-                        lineChartData={customerData.lineChart}
+                        barChartData={customerCharts.pieChart}
+                        pieChartData={customerCharts.pieChart}
+                        lineChartData={customerCharts.lineChart}
                       />
                     </div>
                   </CardContent>

@@ -185,8 +185,10 @@ const generateProductData = () => {
 
   return {
     productItems,
-    pieChart: pieChartData,
-    lineChart: lineChartData
+    productCharts: {
+      pieChart: pieChartData,
+      lineChart: lineChartData
+    }
   };
 };
 
@@ -262,8 +264,10 @@ const generateCustomerData = () => {
 
   return {
     customerItems,
-    pieChart: pieChartData,
-    lineChart: lineChartData
+    customerCharts: {
+      pieChart: pieChartData,
+      lineChart: lineChartData
+    }
   };
 };
 
@@ -351,7 +355,9 @@ export const useSalesReports = () => {
     salesData,
     revenueData,
     productData: productDataState.productItems,
+    productCharts: productDataState.productCharts,
     customerData: customerDataState.customerItems,
+    customerCharts: customerDataState.customerCharts,
     salesByDate,
     dateRange,
     setDateRange,
