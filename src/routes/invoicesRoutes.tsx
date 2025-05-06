@@ -5,11 +5,13 @@ import SalesInvoicePage from "@/pages/invoices/SalesInvoicePage";
 import QuotesPage from "@/pages/invoices/QuotesPage";
 import SalesOrdersPage from "@/pages/invoices/SalesOrdersPage";
 import ReturnsPage from "@/pages/invoices/ReturnsPage";
+import OutgoingInvoicesPage from "@/pages/invoices/OutgoingInvoicesPage";
 
 export const invoicesRoutes: RouteObject[] = [
   { path: "invoices", element: <InvoicesPage /> },
   { path: "invoices/new", element: <SalesInvoicePage /> },
   { path: "invoices/quotes", element: <QuotesPage /> },
   { path: "invoices/orders", element: <SalesOrdersPage /> },
-  { path: "invoices/returns", element: <ReturnsPage /> }
+  { path: "invoices/returns", element: <ReturnsPage /> },
+  { path: "invoices/outgoing", element: <OutgoingInvoicesPage /> }
 ];
