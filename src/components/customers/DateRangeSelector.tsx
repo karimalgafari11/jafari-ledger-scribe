@@ -1,74 +1,128 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { ar } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 interface DateRangeSelectorProps {
-  dateRange: {
-    from: Date;
-    to: Date;
-  };
-  onDateRangeChange: (range: { from: Date; to: Date }) => void;
+  dateRange: DateRange;
+  onDateRangeChange: (range: DateRange) => void;
 }
 
-export const DateRangeSelector = ({ dateRange, onDateRangeChange }: DateRangeSelectorProps) => {
+export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
+  dateRange,
+  onDateRangeChange,
+}) => {
+  const handlePresetRange = (preset: string) => {
+    const today = new Date();
+    const from = new Date();
+    
+    switch (preset) {
+      case 'today':
+        onDateRangeChange({ from: today, to: today });
+        break;
+      case 'yesterday':
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        onDateRangeChange({ from: yesterday, to: yesterday });
+        break;
+      case 'thisWeek':
+        from.setDate(today.getDate() - today.getDay());
+        onDateRangeChange({ from, to: today });
+        break;
+      case 'lastWeek':
+        const lastWeekEnd = new Date();
+        lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+        from.setDate(lastWeekEnd.getDate() - 6);
+        onDateRangeChange({ from, to: lastWeekEnd });
+        break;
+      case 'thisMonth':
+        from.setDate(1);
+        onDateRangeChange({ from, to: today });
+        break;
+      case 'lastMonth':
+        const lastMonthEnd = new Date();
+        lastMonthEnd.setDate(0); // Last day of previous month
+        from.setMonth(today.getMonth() - 1);
+        from.setDate(1);
+        onDateRangeChange({ from, to: lastMonthEnd });
+        break;
+      case 'thisYear':
+        from.setMonth(0);
+        from.setDate(1);
+        onDateRangeChange({ from, to: today });
+        break;
+      case 'lastYear':
+        const lastYearEnd = new Date();
+        lastYearEnd.setMonth(0);
+        lastYearEnd.setDate(0); // Last day of previous year
+        from.setFullYear(today.getFullYear() - 1);
+        from.setMonth(0);
+        from.setDate(1);
+        onDateRangeChange({ from, to: lastYearEnd });
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <Card className="mb-4">
+    <Card>
       <CardContent className="pt-6">
-        <h3 className="text-sm font-medium mb-3 text-right">تصفية حسب التاريخ</h3>
-        <div className="flex gap-3 flex-row-reverse">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex flex-row-reverse justify-between w-40">
-                <CalendarIcon className="ml-2 h-4 w-4" />
-                {dateRange.from
-                  ? format(dateRange.from, "dd/MM/yyyy", { locale: ar })
-                  : "تاريخ البداية"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="single"
-                selected={dateRange.from}
-                onSelect={(date) =>
-                  date && onDateRangeChange({ ...dateRange, from: date })
-                }
-                initialFocus
-                locale={ar}
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
-
-          <span className="flex items-center px-2 text-gray-500">إلى</span>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex flex-row-reverse justify-between w-40">
-                <CalendarIcon className="ml-2 h-4 w-4" />
-                {dateRange.to
-                  ? format(dateRange.to, "dd/MM/yyyy", { locale: ar })
-                  : "تاريخ النهاية"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="single"
-                selected={dateRange.to}
-                onSelect={(date) =>
-                  date && onDateRangeChange({ ...dateRange, to: date })
-                }
-                initialFocus
-                locale={ar}
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+        <h3 className="text-sm font-medium mb-3 text-right">الفترة الزمنية</h3>
+        <div className="flex flex-col gap-4">
+          <DatePickerWithRange value={dateRange} onChange={onDateRangeChange} />
+          
+          <div className="grid grid-cols-4 gap-2 mt-2">
+            <button
+              onClick={() => handlePresetRange('today')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              اليوم
+            </button>
+            <button
+              onClick={() => handlePresetRange('yesterday')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              أمس
+            </button>
+            <button
+              onClick={() => handlePresetRange('thisWeek')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              هذا الأسبوع
+            </button>
+            <button
+              onClick={() => handlePresetRange('lastWeek')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              الأسبوع الماضي
+            </button>
+            <button
+              onClick={() => handlePresetRange('thisMonth')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              هذا الشهر
+            </button>
+            <button
+              onClick={() => handlePresetRange('lastMonth')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              الشهر الماضي
+            </button>
+            <button
+              onClick={() => handlePresetRange('thisYear')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              هذا العام
+            </button>
+            <button
+              onClick={() => handlePresetRange('lastYear')}
+              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-center"
+            >
+              العام الماضي
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>
