@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SystemAlert } from "@/types/ai";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -8,6 +7,7 @@ import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
 import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
+import { useAiAssistant } from "@/hooks/useAiAssistant";
 
 interface DashboardContentProps {
   totalSales: number;
@@ -65,6 +65,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   shortcuts
 }) => {
   const isMobile = useIsMobile();
+  const { analyzePerformance } = useAiAssistant();
+  const performance = analyzePerformance();
 
   const dashboardContent = (
     <>
@@ -106,7 +108,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       {/* FinancialDecisionsWidget من النظام الذكي */}
       {displayOptions.showAiWidget && (
         <div className="mt-6 mb-6">
-          <FinancialDecisionsWidget />
+          <FinancialDecisionsWidget performance={performance} />
         </div>
       )}
     </>

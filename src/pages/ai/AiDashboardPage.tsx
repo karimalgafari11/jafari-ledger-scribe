@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { useNavigate } from "react-router-dom";
@@ -105,7 +104,7 @@ const AiDashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <InteractiveStatCard 
               title="المخزون المنخفض"
-              value={highPriorityAlerts.filter(a => a.type === "inventory").length}
+              value={highPriorityAlerts.filter(a => a.type === "inventory").length.toString()} // Convert number to string
               description="منتجات تحتاج إعادة طلب"
               colorClass="bg-amber-50 border-amber-200"
               textClass="text-amber-700"
@@ -113,7 +112,7 @@ const AiDashboardPage: React.FC = () => {
             />
             <InteractiveStatCard 
               title="التحسينات المقترحة"
-              value={4}
+              value="4" // Changed from number to string
               description="تحسينات لزيادة الكفاءة"
               colorClass="bg-blue-50 border-blue-200"
               textClass="text-blue-700"
@@ -121,7 +120,7 @@ const AiDashboardPage: React.FC = () => {
             />
             <InteractiveStatCard 
               title="الفرص المحتملة"
-              value={performanceInsights.topProduct ? 1 : 0}
+              value={(performanceInsights.topProduct ? 1 : 0).toString()} // Convert number to string
               description="فرص لزيادة المبيعات"
               colorClass="bg-green-50 border-green-200"
               textClass="text-green-700"
@@ -180,7 +179,7 @@ const AiDashboardPage: React.FC = () => {
               <CardContent className="space-y-2">
                 <QuickActionCard
                   title="تحليل المبيعات"
-                  description="تحليل أنماط المبيعات والعملاء"
+                  description="تحليل أ��ماط المبيعات والعملاء"
                   onClick={() => {}}
                 />
                 <QuickActionCard

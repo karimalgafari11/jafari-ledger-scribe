@@ -4,10 +4,11 @@ import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
-// Fix import to use default export
 import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { AiAnalyticsPanel } from "@/components/ai/AiAnalyticsPanel";
 import { AiRulesPanel } from "@/components/ai/AiRulesPanel";
+import { Product } from "@/types/inventory";
+import { Expense } from "@/types/expenses";
 
 const FinancialDecisionsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("analysis");
@@ -47,15 +48,62 @@ const FinancialDecisionsPage: React.FC = () => {
       { name: "أدوات منزلية", stock: 60, optimal: 75 },
       { name: "أخرى", stock: 40, optimal: 30 },
     ],
+    // Fixed to match Product type
     lowStockItems: [
-      { id: "1", name: "هاتف ذكي", quantity: 5, reorderLevel: 10 },
-      { id: "2", name: "جهاز تابلت", quantity: 2, reorderLevel: 8 },
-      { id: "3", name: "سماعات لاسلكية", quantity: 0, reorderLevel: 15 },
-    ],
+      { 
+        id: "1", 
+        name: "هاتف ذكي", 
+        quantity: 5, 
+        reorderLevel: 10, 
+        code: "PHN-001", 
+        price: 1299.99, 
+        category: "إلكترونيات", 
+        isActive: true 
+      },
+      { 
+        id: "2", 
+        name: "جهاز تابلت", 
+        quantity: 2, 
+        reorderLevel: 8, 
+        code: "TAB-002", 
+        price: 899.99, 
+        category: "إلكترونيات", 
+        isActive: true 
+      },
+      { 
+        id: "3", 
+        name: "سماعات لاسلكية", 
+        quantity: 0, 
+        reorderLevel: 15, 
+        code: "AUD-003", 
+        price: 299.99, 
+        category: "إلكترونيات", 
+        isActive: true 
+      },
+    ] as Product[],
+    // Fixed to match Expense type
     pendingExpenses: [
-      { id: "1", description: "إيجار المكتب", amount: 5000, status: "pending", createdAt: new Date() },
-      { id: "2", description: "فواتير الكهرباء", amount: 1200, status: "pending", createdAt: new Date() },
-    ],
+      { 
+        id: "1", 
+        description: "إيجار المكتب", 
+        amount: 5000, 
+        status: "pending" as 'pending' | 'approved' | 'rejected', 
+        createdAt: new Date(),
+        date: new Date(), 
+        category: "إيجارات", 
+        paymentMethod: "bank" as 'cash' | 'credit' | 'bank'
+      },
+      { 
+        id: "2", 
+        description: "فواتير الكهرباء", 
+        amount: 1200, 
+        status: "pending" as 'pending' | 'approved' | 'rejected', 
+        createdAt: new Date(),
+        date: new Date(), 
+        category: "مرافق", 
+        paymentMethod: "bank" as 'cash' | 'credit' | 'bank'
+      },
+    ] as Expense[],
     COLORS: ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
   };
   
