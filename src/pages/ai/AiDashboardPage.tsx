@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -14,7 +13,7 @@ import { AiSuggestionCard } from "@/components/ai/AiSuggestionCard";
 
 const AiDashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { getSystemAlerts, analyzePerformance } = useAiAssistant();
+  const { getSystemAlerts, analyzePerformance, systemAlerts } = useAiAssistant();
   const [activeTab, setActiveTab] = useState<"suggestions" | "alerts">("suggestions");
   
   const alerts = getSystemAlerts();
@@ -183,12 +182,7 @@ const AiDashboardPage: React.FC = () => {
                     alerts.map((alert, index) => (
                       <SystemAlertCard
                         key={index}
-                        title={alert.title}
-                        description={alert.description}
-                        severity={alert.severity}
-                        timestamp={alert.timestamp}
-                        isRead={alert.isRead}
-                        source={alert.source}
+                        alert={alert}
                         onMarkAsRead={() => console.log("Marked as read", alert)}
                         onDismiss={() => console.log("Dismissed alert", alert)}
                       />

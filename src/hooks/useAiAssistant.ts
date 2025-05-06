@@ -213,6 +213,11 @@ export const useAiAssistant = () => {
     setSystemAlerts(alerts);
   };
 
+  // Add explicit getter for system alerts
+  const getSystemAlerts = (): SystemAlert[] => {
+    return systemAlerts;
+  };
+
   // التحقق من هوية المستخدم قبل تقديم معلومات حساسة
   const verifyUserIdentity = async (category: SensitiveDataCategory): Promise<boolean> => {
     const requiredLevel = getRequiredVerificationLevel(category);
@@ -276,7 +281,7 @@ export const useAiAssistant = () => {
                           currentVerificationLevel === VerificationLevel.BASIC ? 'أساسي' :
                           currentVerificationLevel === VerificationLevel.TWO_FACTOR ? 'متقدم' : 'كامل';
     
-    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أج��اء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
+    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أج����اء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
 
 معلومات حالية عن النظام:
 - يوجد حالياً ${systemContext.lowStockItems} منتج بمخزون منخفض يحتاج إلى إعادة طلب.
@@ -412,7 +417,7 @@ export const useAiAssistant = () => {
     return mockJournalEntries.filter(entry => entry.status === JournalStatus.Pending);
   };
   
-  // تحليل أداء المبيعات (افتراضية حالياً)
+  // Extended analyzePerformance function to include missing properties
   const analyzePerformance = () => {
     return {
       totalSales: 156750.25,
@@ -422,7 +427,10 @@ export const useAiAssistant = () => {
         "زيادة مخزون المنتجات الأكثر مبيعاً",
         "التواصل مع العملاء المتأخرين عن السداد",
         "مراجعة المصروفات المعلقة للموافقة عليها"
-      ]
+      ],
+      // Add the missing properties needed in the UI
+      profitMargin: 18.5,
+      currentRatio: 1.8
     };
   };
   
@@ -496,6 +504,8 @@ export const useAiAssistant = () => {
     identityVerified,
     currentVerificationLevel,
     pendingVerification,
-    verifyUserIdentity
+    verifyUserIdentity,
+    // Add the getter function
+    getSystemAlerts
   };
 };
