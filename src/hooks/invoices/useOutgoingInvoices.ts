@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { Invoice } from "@/types/invoices";
 import { toast } from "sonner";
 import { format, subDays } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 // نوع إحصائيات الفواتير
 export type InvoiceStatistics = {
@@ -19,7 +19,7 @@ export type InvoiceStatistics = {
 // نوع خيارات الفلترة
 export type InvoiceFilter = {
   status: "all" | "paid" | "pending" | "overdue" | "draft";
-  dateRange: { from: Date | undefined; to: Date | undefined } | undefined;
+  dateRange: DateRange | undefined;
   customer: string;
   paymentMethod: "all" | "cash" | "credit" | undefined;
   minAmount: number | undefined;
