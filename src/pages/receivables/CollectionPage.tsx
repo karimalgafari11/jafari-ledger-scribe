@@ -13,6 +13,7 @@ import { CustomerDetailsDialog } from "@/components/receivables/CustomerDetailsD
 import { CollectionActionsDialog } from "@/components/receivables/CollectionActionsDialog";
 import { Download, FileText, CreditCard, FileCheck } from "lucide-react";
 import { toast } from "sonner";
+import { AccountStatus } from "@/hooks/useReceivablesAccounts";
 
 const CollectionPage = () => {
   const {
@@ -96,8 +97,8 @@ const CollectionPage = () => {
             <CollectionFilter
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
+              statusFilter={statusFilter as AccountStatus}
+              onStatusFilterChange={(value: AccountStatus) => setStatusFilter(value)}
               amountRange={amountRange}
               onAmountRangeChange={setAmountRange}
               maxAmount={100000}

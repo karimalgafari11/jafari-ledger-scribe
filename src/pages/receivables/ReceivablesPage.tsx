@@ -11,6 +11,7 @@ import { CollectPaymentDialog } from "@/components/receivables/CollectPaymentDia
 import { Customer } from "@/types/customers";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, CreditCard } from "lucide-react";
+import { AccountStatus } from "@/hooks/useReceivablesAccounts";
 
 const ReceivablesPage = () => {
   const {
@@ -84,8 +85,8 @@ const ReceivablesPage = () => {
             <ReceivablesFilter
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
+              statusFilter={statusFilter as AccountStatus}
+              onStatusFilterChange={(value: AccountStatus) => setStatusFilter(value)}
               amountRange={amountRange}
               onAmountRangeChange={setAmountRange}
               maxAmount={100000}
