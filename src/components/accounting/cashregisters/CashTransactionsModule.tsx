@@ -66,8 +66,8 @@ const mockTransactions: Transaction[] = [
 export const CashTransactionsModule = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegister, setSelectedRegister] = useState("1");
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
 
   const filteredTransactions = transactions.filter(transaction => {
@@ -151,8 +151,7 @@ export const CashTransactionsModule = () => {
             <label className="text-sm font-medium mb-1 block">من تاريخ</label>
             <DatePicker 
               date={startDate} 
-              onSelect={setStartDate} 
-              locale={ar}
+              onDateChange={setStartDate} 
               placeholder="اختر التاريخ"
             />
           </div>
@@ -161,8 +160,7 @@ export const CashTransactionsModule = () => {
             <label className="text-sm font-medium mb-1 block">إلى تاريخ</label>
             <DatePicker 
               date={endDate} 
-              onSelect={setEndDate} 
-              locale={ar}
+              onDateChange={setEndDate} 
               placeholder="اختر التاريخ"
             />
           </div>
