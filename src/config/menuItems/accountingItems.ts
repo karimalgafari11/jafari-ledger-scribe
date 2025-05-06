@@ -17,7 +17,7 @@ export const accountingItems: MenuItem[] = [
     children: [
       {
         label: "دليل الحسابات",
-        path: "/accounting/chart",
+        path: "/accounting/accounts",
         icon: ClipboardList,
       },
       {
@@ -37,7 +37,7 @@ export const accountingItems: MenuItem[] = [
       },
       {
         label: "الأوراق التجارية",
-        path: "/accounting/commercialpapers",
+        path: "/accounting/commercial-papers",
         icon: CreditCard,
       },
       {

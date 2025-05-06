@@ -17,9 +17,11 @@ export const accountingRoutes: RouteObject[] = [
   { path: "accounting/journals", element: <JournalEntriesPage /> },
   { path: "accounting/cost-centers", element: <CostCentersPage /> },
   { path: "accounting/settings", element: <AccountingSettingsPage /> },
-  { path: "accounting/cash-register", element: <CashRegisterPage /> },
+  { path: "accounting/cashregister", element: <CashRegisterPage /> },
+  { path: "accounting/cash-register", element: <CashRegisterPage /> }, // إضافة مسار بديل لمعالجة الخطأ
   { path: "accounting/budgets", element: <BudgetsPage /> },
   { path: "accounting/bank-accounts", element: <BankAccountsPage /> },
   { path: "accounting/commercial-papers", element: <CommercialPapersPage /> },
+  { path: "accounting/commercialpapers", element: <CommercialPapersPage /> }, // إضافة مسار بديل لمعالجة الخطأ
   { path: "accounting/rules", element: <AccountingRulesPage /> }
 ];

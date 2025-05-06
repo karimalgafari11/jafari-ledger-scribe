@@ -3,9 +3,10 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CashRegisterTable } from "./CashRegisterTable";
 import { CashRegisterToolbar } from "./CashRegisterToolbar";
-import { useCashRegister } from "@/hooks/useCashRegister";
 import { CashRegisterDialog } from "./CashRegisterDialog";
 import { DeleteCashRegisterDialog } from "./DeleteCashRegisterDialog";
+import { useCashRegister } from "@/hooks/useCashRegister";
+import { useToast } from "@/hooks/use-toast";
 import { CashRegister } from "@/types/definitions";
 
 export const CashRegistersModule = () => {
@@ -25,7 +26,10 @@ export const CashRegistersModule = () => {
     setIsEditDialogOpen,
     isDeleteDialogOpen,
     setIsDeleteDialogOpen,
+    generateCashRegisterCode,
   } = useCashRegister();
+  
+  const { toast } = useToast();
 
   const handleOpenCreateDialog = () => {
     setIsCreateDialogOpen(true);
@@ -41,15 +45,31 @@ export const CashRegistersModule = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleViewTransactions = (register: CashRegister) => {
+    // يمكن تنفيذ عملية عرض عمليات الصندوق هنا
+    toast({
+      title: "عمليات الصندوق",
+      description: `تم اختيار عرض عمليات الصندوق: ${register.name}`,
+    });
+  };
+
   const handleCreateRegister = (data: Omit<CashRegister, "id" | "createdAt" | "updatedAt">) => {
     createCashRegister(data);
     setIsCreateDialogOpen(false);
+    toast({
+      title: "تمت الإضافة بنجاح",
+      description: "تم إضافة صندوق جديد بنجاح",
+    });
   };
 
   const handleUpdateRegister = (data: Partial<CashRegister>) => {
     if (selectedRegister) {
       updateCashRegister(selectedRegister.id, data);
       setIsEditDialogOpen(false);
+      toast({
+        title: "تم التعديل بنجاح",
+        description: "تم تعديل بيانات الصندوق بنجاح",
+      });
     }
   };
 
@@ -57,11 +77,16 @@ export const CashRegistersModule = () => {
     if (selectedRegister) {
       deleteCashRegister(selectedRegister.id);
       setIsDeleteDialogOpen(false);
+      toast({
+        title: "تم الحذف بنجاح",
+        description: "تم حذف الصندوق بنجاح",
+        variant: "destructive",
+      });
     }
   };
 
   return (
-    <Card>
+    <Card className="mb-6">
       <CardHeader>
         <CardTitle>إدارة صناديق النقدية</CardTitle>
       </CardHeader>
@@ -77,6 +102,7 @@ export const CashRegistersModule = () => {
           isLoading={isLoading}
           onEditRegister={handleOpenEditDialog}
           onDeleteRegister={handleOpenDeleteDialog}
+          onViewTransactions={handleViewTransactions}
         />
         
         <CashRegisterDialog
