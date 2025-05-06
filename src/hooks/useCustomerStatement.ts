@@ -64,12 +64,16 @@ export const useCustomerStatement = (customerId: string | undefined) => {
   const [customer, setCustomer] = useState<Customer | undefined>(undefined);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [paginatedTransactions, setPaginatedTransactions] = useState<Transaction[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<TransactionType[]>(["all", "invoice", "payment", "return"]);
   const [dateRange, setDateRange] = useState<{from: Date; to: Date}>({
     from: new Date('2023-10-01'),
     to: new Date('2023-11-01')
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     // البحث عن العميل بواسطة المعرف
@@ -103,7 +107,25 @@ export const useCustomerStatement = (customerId: string | undefined) => {
     }
     
     setFilteredTransactions(filtered);
-  }, [selectedTypes, dateRange, allTransactions]);
+    setTotalPages(Math.max(1, Math.ceil(filtered.length / pageSize)));
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [selectedTypes, dateRange, allTransactions, pageSize]);
+
+  useEffect(() => {
+    // Apply pagination to filtered transactions
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    setPaginatedTransactions(filteredTransactions.slice(startIndex, endIndex));
+  }, [filteredTransactions, currentPage, pageSize]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
 
   const handleTypeFilterChange = (types: TransactionType[]) => {
     setSelectedTypes(types);
@@ -129,12 +151,18 @@ export const useCustomerStatement = (customerId: string | undefined) => {
 
   return {
     customer,
-    transactions: filteredTransactions,
+    transactions: paginatedTransactions,
+    allTransactions: filteredTransactions,
     isLoading,
     selectedTypes,
     dateRange,
+    currentPage,
+    totalPages,
+    pageSize,
     handleTypeFilterChange,
     handleDateRangeChange,
+    handlePageChange,
+    handlePageSizeChange,
     handlePrint,
     handleDownload,
     handleSendEmail

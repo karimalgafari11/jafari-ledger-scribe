@@ -21,6 +21,9 @@ interface StatementTabsProps {
   handlePrint: () => void;
   handleDownload: () => void;
   handleShare: () => void;
+  currentPage: number;
+  totalPages: number;
+  handlePageChange: (page: number) => void;
 }
 
 export const StatementTabs = ({
@@ -32,7 +35,10 @@ export const StatementTabs = ({
   handleDateRangeChange,
   handlePrint,
   handleDownload,
-  handleShare
+  handleShare,
+  currentPage,
+  totalPages,
+  handlePageChange
 }: StatementTabsProps) => {
   const [activeTab, setActiveTab] = useState<string>("statement");
 
@@ -75,6 +81,9 @@ export const StatementTabs = ({
             <StatementContent 
               transactions={transactions} 
               customer={customer}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
             />
           </div>
         </div>

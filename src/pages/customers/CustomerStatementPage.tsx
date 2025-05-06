@@ -20,8 +20,11 @@ const CustomerStatementPage = () => {
     isLoading,
     selectedTypes,
     dateRange,
+    currentPage,
+    totalPages,
     handleTypeFilterChange,
     handleDateRangeChange,
+    handlePageChange,
     handlePrint, 
     handleDownload, 
     handleSendEmail 
@@ -75,6 +78,9 @@ const CustomerStatementPage = () => {
           handlePrint={handlePrint}
           handleDownload={handleDownload}
           handleShare={handleShare}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
         />
       </main>
     </div>
