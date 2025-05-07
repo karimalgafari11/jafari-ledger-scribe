@@ -72,7 +72,7 @@ const Dashboard = () => {
       enabled: true,
       badge: {
         text: "جديد",
-        variant: "success"
+        variant: "success" as const
       },
       description: "إنشاء وإدارة فواتير المبيعات للعملاء"
     },
@@ -164,7 +164,7 @@ const Dashboard = () => {
       enabled: true,
       badge: {
         text: "جديد",
-        variant: "secondary"
+        variant: "secondary" as const
       },
       description: "الاستفادة من مساعد الذكاء الاصطناعي"
     }
@@ -246,7 +246,7 @@ const Dashboard = () => {
         </div>
         
         <div className="container p-4 mx-auto">
-          <DashboardShortcuts shortcuts={shortcuts} />
+          <DashboardShortcuts shortcuts={shortcuts.filter(shortcut => shortcut.enabled)} />
         </div>
 
         {interactiveMode ? (

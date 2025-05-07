@@ -21,6 +21,11 @@ interface ShortcutItem {
   icon: React.ReactNode;
   route: string;
   enabled: boolean;
+  badge?: {
+    text: string;
+    variant?: "default" | "secondary" | "outline" | "destructive" | "success";
+  };
+  description?: string;
 }
 
 // تعريف نوع خيارات العرض
@@ -30,38 +35,6 @@ interface DisplayOptions {
   showCharts: boolean;
   showAiWidget: boolean;
 }
-
-// القائمة الافتراضية للاختصارات
-const defaultShortcuts: ShortcutItem[] = [
-  {
-    id: "sales-invoice",
-    name: "فاتورة مبيعات",
-    icon: <FileText size={20} />,
-    route: "/invoices",
-    enabled: true
-  },
-  {
-    id: "purchase-invoice",
-    name: "فاتورة مشتريات",
-    icon: <Receipt size={20} />,
-    route: "/purchases",
-    enabled: true
-  },
-  {
-    id: "payment-voucher",
-    name: "سند دفع",
-    icon: <FileDown size={20} />,
-    route: "/payment-vouchers",
-    enabled: true
-  },
-  {
-    id: "receipt-voucher",
-    name: "سند قبض",
-    icon: <FileUp size={20} />,
-    route: "/receipt-vouchers",
-    enabled: true
-  }
-];
 
 export const DashboardSettings: React.FC<{
   displayOptions: DisplayOptions;

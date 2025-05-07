@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SystemAlert } from "@/types/ai";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -8,6 +9,19 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
 import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
+
+interface ShortcutItem {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  route: string;
+  enabled: boolean;
+  badge?: {
+    text: string;
+    variant?: "default" | "secondary" | "outline" | "destructive" | "success";
+  };
+  description?: string;
+}
 
 interface DashboardContentProps {
   totalSales: number;
@@ -36,18 +50,7 @@ interface DashboardContentProps {
     showCharts: boolean;
     showAiWidget: boolean;
   };
-  shortcuts: {
-    id: string;
-    name: string;
-    icon: React.ReactNode;
-    route: string;
-    enabled: boolean;
-    badge?: {
-      text: string;
-      variant?: "default" | "secondary" | "outline" | "destructive" | "success";
-    };
-    description?: string;
-  }[];
+  shortcuts: ShortcutItem[];
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -76,7 +79,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const dashboardContent = (
     <>
       {/* اختصارات سريعة */}
-      <DashboardShortcuts shortcuts={shortcuts} />
+      <DashboardShortcuts shortcuts={shortcuts.filter(shortcut => shortcut.enabled)} />
 
       {/* بطاقات الإحصائيات الرئيسية */}
       {displayOptions.showStats && (
