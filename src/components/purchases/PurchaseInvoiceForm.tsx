@@ -25,7 +25,6 @@ interface PurchaseInvoiceFormProps {
   onWhatsAppSend: () => void;
   isLoading: boolean;
   isPrintPreview?: boolean;
-  // Add these new props
   isAddingItem: boolean;
   setIsAddingItem: (isAdding: boolean) => void;
   editingItemIndex: number | null;
@@ -49,7 +48,6 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({
   onWhatsAppSend,
   isLoading,
   isPrintPreview = false,
-  // Add new props here
   isAddingItem,
   setIsAddingItem,
   editingItemIndex,
@@ -59,7 +57,7 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({
   React.useEffect(() => {
     if (!isPrintPreview) {
       setTimeout(() => {
-        toast.info("اضغط على زر 'إضافة صنف جديد' أو اضغط مباشرة على خلايا الجدول للتعديل", {
+        toast.info("اضغط على زر 'إضافة صنف' أو اضغط مباشرة على خلايا الجدول للتعديل", {
           duration: 5000,
           id: "form-help"
         });
@@ -69,21 +67,8 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({
 
   return (
     <div className={`space-y-4 print-section ${isPrintPreview ? 'print-preview' : ''}`}>
-      {/* Tutorial card - hide in print preview */}
-      {!isPrintPreview && (
-        <Card className="bg-blue-50 border-blue-200 shadow-sm print-hide">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold text-blue-700 mb-2">طريقة إدخال الفاتورة:</h3>
-            <ol className="list-decimal list-inside space-y-2 text-blue-600">
-              <li>اضغط على زر <strong>"إضافة صنف جديد"</strong> لإضافة منتجات للفاتورة</li>
-              <li>يمكنك النقر مباشرة على خلايا الجدول لتعديل البيانات</li>
-              <li>انقر نقرًا مزدوجًا على اسم المنتج أو رمزه للتعديل المباشر</li>
-              <li>بعد إتمام الفاتورة، اضغط على زر <strong>"حفظ الفاتورة"</strong></li>
-            </ol>
-          </CardContent>
-        </Card>
-      )}
-
+      {/* مربع التعليمات تمت إزالته من هنا */}
+      
       <PurchaseInvoiceHeader 
         invoice={invoice}
         onFieldChange={onFieldChange}

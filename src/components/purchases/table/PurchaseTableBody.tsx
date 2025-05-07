@@ -3,7 +3,7 @@ import React from "react";
 import { TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { PurchaseItem } from "@/types/purchases";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash, Plus, X } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ItemCodeCell } from "./cells/ItemCodeCell";
 import { ItemNameCell } from "./cells/ItemNameCell";
@@ -94,14 +94,7 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
             ) : (
               <div className="flex flex-col items-center">
                 <p>لا توجد أصناف في الفاتورة</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-2"
-                  onClick={() => setIsAddingItem(true)}
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  إضافة صنف جديد
-                </Button>
+                {/* تمت إزالة زر إضافة صنف جديد من هنا */}
               </div>
             )}
           </TableCell>

@@ -152,6 +152,13 @@ const PurchaseInvoicePage = () => {
           .smooth-transition {
             transition: all 0.3s ease-in-out;
           }
+          .table-bordered {
+            border-collapse: collapse;
+          }
+          .table-bordered th,
+          .table-bordered td {
+            border: 1px solid #e2e8f0;
+          }
           @media print {
             body * {
               visibility: hidden;
