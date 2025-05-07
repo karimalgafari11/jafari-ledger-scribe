@@ -5,13 +5,19 @@ import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Database, ArrowLeft, FileText, Calculator, CreditCard, Wallet } from "lucide-react";
+import { Database, ArrowLeft, FileText, Calculator, CreditCard, Wallet, BarChart3 } from "lucide-react";
 import { useJournalPage } from "@/hooks/useJournalPage";
 import { useLedgerEntries } from "@/hooks/useLedgerEntries";
+import { toast } from "sonner";
 
 const LedgerPage = () => {
   const navigate = useNavigate();
   const { filteredEntries, accountSummary, searchEntries, filterEntriesByPeriod } = useLedgerEntries();
+
+  const handleReportsClick = () => {
+    navigate("/reports/financial");
+    toast.success("جاري فتح التقارير المالية");
+  };
 
   return (
     <Layout>
@@ -99,10 +105,10 @@ const LedgerPage = () => {
           </Card>
 
           {/* التقارير المالية */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/reports/financial")}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={handleReportsClick}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">التقارير المالية</CardTitle>
-              <Calculator className="h-6 w-6 text-green-500" />
+              <BarChart3 className="h-6 w-6 text-green-500" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
@@ -157,6 +163,9 @@ const LedgerPage = () => {
           </Button>
           <Button variant="outline" onClick={() => navigate("/accounting/chart")}>
             <FileText className="mr-2 h-4 w-4" /> شجرة الحسابات
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/reports/financial")}>
+            <BarChart3 className="mr-2 h-4 w-4" /> التقارير المالية
           </Button>
           <Button variant="outline" onClick={() => navigate("/accounting/cashregister")}>
             <Wallet className="mr-2 h-4 w-4" /> الصندوق
