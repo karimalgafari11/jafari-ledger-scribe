@@ -1,12 +1,13 @@
 
 import React from "react";
-import { Settings } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import { SettingsContent } from "./settings/SettingsContent";
 import { useDashboardSettings } from "@/hooks/useDashboardSettings";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const DashboardSettings: React.FC<{
   displayOptions: DisplayOptions;
@@ -50,9 +51,19 @@ export const DashboardSettings: React.FC<{
   return showMobileView ? (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Settings className="h-4 w-4" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="icon" className="relative group">
+                <Settings2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="text-sm font-medium">إعدادات لوحة التحكم</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </DrawerTrigger>
       <DrawerContent className="p-6">
         <div className="mx-auto w-full max-w-sm">
@@ -64,9 +75,23 @@ export const DashboardSettings: React.FC<{
   ) : (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Settings className="h-4 w-4" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="relative group overflow-hidden"
+              >
+                <Settings2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300 group-hover:rotate-45 transform" />
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="text-sm font-medium">إعدادات لوحة التحكم</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
@@ -77,8 +102,13 @@ export const DashboardSettings: React.FC<{
         </DialogHeader>
         <SettingsContent {...settingsContentProps} />
         <DialogFooter>
-          <Button type="submit" onClick={handleSaveSettings}>
-            حفظ الإعدادات
+          <Button 
+            type="submit" 
+            onClick={handleSaveSettings} 
+            className="relative overflow-hidden group"
+          >
+            <span className="relative z-10">حفظ الإعدادات</span>
+            <span className="absolute inset-0 bg-primary/20 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
           </Button>
         </DialogFooter>
       </DialogContent>
