@@ -8,6 +8,11 @@ export const purchaseItems: MenuItem[] = [
     icon: ShoppingBag,
     children: [
       {
+        label: "نظام المشتريات",
+        path: "/purchases",
+        icon: ShoppingBag,
+      },
+      {
         label: "فاتورة شراء جديدة",
         path: "/purchases/new",
         icon: Receipt,

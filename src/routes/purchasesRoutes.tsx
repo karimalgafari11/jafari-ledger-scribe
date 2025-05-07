@@ -5,8 +5,10 @@ import PurchasesInvoicesPage from "@/pages/purchases/PurchasesInvoicesPage";
 import PurchasesOrdersPage from "@/pages/purchases/PurchasesOrdersPage";
 import NewPurchaseOrderPage from "@/pages/purchases/NewPurchaseOrderPage";
 import PurchasesReturnsPage from "@/pages/purchases/PurchasesReturnsPage";
+import PurchasesPage from "@/pages/purchases/PurchasesPage";
 
 export const purchasesRoutes: RouteObject[] = [
+  { path: "purchases", element: <PurchasesPage /> },
   { path: "purchases/new", element: <PurchaseInvoicePage /> },
   { path: "purchases/invoices", element: <PurchasesInvoicesPage /> },
   { path: "purchases/orders", element: <PurchasesOrdersPage /> },
