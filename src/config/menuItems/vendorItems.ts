@@ -13,6 +13,11 @@ export const vendorItems: MenuItem[] = [
         icon: User,
       },
       {
+        label: "كشوفات الحسابات",
+        path: "/vendors/statement",
+        icon: FileText,
+      },
+      {
         label: "تقارير الموردين",
         path: "/vendors/reports",
         icon: FileText,
