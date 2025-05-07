@@ -23,15 +23,17 @@ export const createStockMovementColumns = ({ formatDate }: CreateColumnsOptions)
       accessorKey: "type",
       width: "120px",
       isSortable: true,
-      cell: (value: 'inbound' | 'outbound' | 'transfer') => {
+      cell: (value: 'purchase' | 'sale' | 'return' | 'transfer' | 'adjustment' | 'damaged' | 'inbound' | 'outbound') => {
         let color;
         let label;
         
         switch(value) {
+          case 'purchase':
           case 'inbound':
             color = "bg-green-600";
             label = "وارد";
             break;
+          case 'sale':
           case 'outbound':
             color = "bg-red-600";
             label = "صادر";
@@ -40,6 +42,21 @@ export const createStockMovementColumns = ({ formatDate }: CreateColumnsOptions)
             color = "bg-blue-600";
             label = "نقل";
             break;
+          case 'return':
+            color = "bg-yellow-600";
+            label = "إرجاع";
+            break;
+          case 'adjustment':
+            color = "bg-purple-600";
+            label = "تعديل";
+            break;
+          case 'damaged':
+            color = "bg-red-800";
+            label = "تالف";
+            break;
+          default:
+            color = "bg-gray-600";
+            label = "غير معروف";
         }
         
         return <Badge className={color}>{label}</Badge>;

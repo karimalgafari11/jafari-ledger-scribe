@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Table, 
@@ -38,16 +37,24 @@ export function MovementsTable({
     }).format(date);
   };
 
-  const getMovementTypeBadge = (type: 'inbound' | 'outbound' | 'transfer') => {
+  const getMovementTypeBadge = (type: StockMovement['type']) => {
     switch (type) {
+      case 'purchase':
       case 'inbound':
         return <Badge className="bg-green-600">وارد</Badge>;
+      case 'sale':
       case 'outbound':
         return <Badge className="bg-red-600">صادر</Badge>;
       case 'transfer':
         return <Badge className="bg-blue-600">نقل</Badge>;
+      case 'return':
+        return <Badge className="bg-yellow-600">إرجاع</Badge>;
+      case 'adjustment':
+        return <Badge className="bg-purple-600">تعديل</Badge>;
+      case 'damaged':
+        return <Badge className="bg-red-800">تالف</Badge>;
       default:
-        return null;
+        return <Badge className="bg-gray-600">غير معروف</Badge>;
     }
   };
 

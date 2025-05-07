@@ -39,7 +39,7 @@ export interface ReorderItem {
 export interface StockMovement {
   id: string;
   date: Date;
-  type: 'purchase' | 'sale' | 'return' | 'transfer' | 'adjustment' | 'damaged';
+  type: 'purchase' | 'sale' | 'return' | 'transfer' | 'adjustment' | 'damaged' | 'inbound' | 'outbound';
   productId: string;
   productName?: string;
   itemName?: string; // Alias for backward compatibility
