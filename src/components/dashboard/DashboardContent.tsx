@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SystemAlert } from "@/types/ai";
 import StatsCards from "@/components/dashboard/StatsCards";
@@ -37,13 +36,18 @@ interface DashboardContentProps {
     showCharts: boolean;
     showAiWidget: boolean;
   };
-  shortcuts: Array<{
+  shortcuts: {
     id: string;
     name: string;
     icon: React.ReactNode;
     route: string;
     enabled: boolean;
-  }>;
+    badge?: {
+      text: string;
+      variant?: "default" | "secondary" | "outline" | "destructive" | "success";
+    };
+    description?: string;
+  }[];
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({

@@ -10,7 +10,9 @@ import { ZoomProvider } from "@/components/interactive/ZoomControl";
 import ZoomControl from "@/components/interactive/ZoomControl";
 import { Button } from "@/components/ui/button";
 import { DashboardSettings } from "@/components/dashboard/DashboardSettings";
-import { FileText, Receipt, FileDown, FileUp } from "lucide-react";
+import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
+import ShortcutsSettings from "@/components/dashboard/ShortcutsSettings";
+import { FileText, Receipt, FileDown, FileUp, Database, Users, Truck, Calculator, CreditCard, BarChart, Package, ArrowLeftRight, Zap } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 
 const Dashboard = () => {
@@ -55,8 +57,16 @@ const Dashboard = () => {
   // اختصارات لوحة التحكم
   const [shortcuts, setShortcuts] = useState([
     {
+      id: "purchase-invoice",
+      name: "فاتورة شراء",
+      icon: <Receipt size={20} />,
+      route: "/purchases",
+      enabled: true,
+      description: "إنشاء وإدارة فواتير المشتريات من الموردين"
+    },
+    {
       id: "sales-invoice",
-      name: "فاتورة مبيعات",
+      name: "فاتورة بيع",
       icon: <FileText size={20} />,
       route: "/invoices/outgoing",
       enabled: true,
@@ -67,18 +77,10 @@ const Dashboard = () => {
       description: "إنشاء وإدارة فواتير المبيعات للعملاء"
     },
     {
-      id: "purchase-invoice",
-      name: "فاتورة مشتريات",
-      icon: <Receipt size={20} />,
-      route: "/purchases",
-      enabled: true,
-      description: "إنشاء وإدارة فواتير المشتريات من الموردين"
-    },
-    {
       id: "payment-voucher",
       name: "سند دفع",
       icon: <FileDown size={20} />,
-      route: "/payment-vouchers",
+      route: "/payables/payment",
       enabled: true,
       description: "إنشاء وإدارة سندات الدفع للموردين"
     },
@@ -89,6 +91,82 @@ const Dashboard = () => {
       route: "/receipt-vouchers",
       enabled: true,
       description: "إنشاء وإدارة سندات القبض من العملاء"
+    },
+    {
+      id: "general-ledger",
+      name: "دفتر الأستاذ",
+      icon: <Database size={20} />,
+      route: "/accounting/general-ledger",
+      enabled: true,
+      description: "الاطلاع على الحسابات وحركات دفتر الأستاذ"
+    },
+    {
+      id: "cash-register",
+      name: "الصندوق",
+      icon: <CreditCard size={20} />,
+      route: "/accounting/cash-registers",
+      enabled: true,
+      description: "إدارة عمليات الصندوق والإيداع والسحب"
+    },
+    {
+      id: "price-offers",
+      name: "عروض الأسعار",
+      icon: <BarChart size={20} />,
+      route: "/invoices/quotes",
+      enabled: false,
+      description: "إنشاء وإدارة عروض الأسعار للعملاء"
+    },
+    {
+      id: "customer-management",
+      name: "إدارة العملاء",
+      icon: <Users size={20} />,
+      route: "/customers",
+      enabled: true,
+      description: "إدارة بيانات العملاء وحساباتهم"
+    },
+    {
+      id: "vendor-management",
+      name: "إدارة الموردين",
+      icon: <Truck size={20} />,
+      route: "/vendors",
+      enabled: true,
+      description: "إدارة بيانات الموردين وحساباتهم"
+    },
+    {
+      id: "vendor-reports",
+      name: "تقارير الموردين",
+      icon: <FileText size={20} />,
+      route: "/reports/vendors",
+      enabled: false,
+      description: "عرض وتحليل تقارير الموردين"
+    },
+    {
+      id: "reorder-inventory",
+      name: "إعادة الطلب",
+      icon: <Package size={20} />,
+      route: "/inventory/reorder",
+      enabled: false,
+      description: "إدارة الطلبيات وإعادة طلب المنتجات"
+    },
+    {
+      id: "inventory-transfer",
+      name: "التحويل",
+      icon: <ArrowLeftRight size={20} />,
+      route: "/inventory-control/transfers",
+      enabled: false,
+      description: "تحويل المخزون بين المستودعات"
+    },
+    {
+      id: "ai-assistant",
+      name: "مساعد الذكاء",
+      icon: <Zap size={20} />,
+      route: "/ai/assistant",
+      enabled: true,
+      badge: {
+        text: "جديد",
+        variant: "secondary"
+      },
+      description: "الاستفادة من مساعد الذكاء الاصطناعي"
     }
   ]);
   
@@ -141,6 +219,11 @@ const Dashboard = () => {
             branch={branch} 
             onBranchChange={setBranch}
           >
+            <ShortcutsSettings 
+              shortcuts={shortcuts}
+              onShortcutsChange={handleShortcutsChange}
+            />
+            
             <DashboardSettings 
               displayOptions={displayOptions}
               onDisplayOptionsChange={handleDisplayOptionsChange}
@@ -160,6 +243,10 @@ const Dashboard = () => {
               <ZoomControl compact />
             )}
           </DashboardWelcome>
+        </div>
+        
+        <div className="container p-4 mx-auto">
+          <DashboardShortcuts shortcuts={shortcuts} />
         </div>
 
         {interactiveMode ? (
