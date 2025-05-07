@@ -1,4 +1,5 @@
 
+
 export const MOCK_EXPENSES = [
   {
     id: "1",
@@ -6,7 +7,7 @@ export const MOCK_EXPENSES = [
     amount: 1200,
     date: new Date('2023-07-15'),
     category: "مستلزمات مكتبية",
-    paymentMethod: "cash",
+    paymentMethod: "cash" as const,
     vendor: "شركة المستلزمات المكتبية",
     vendorId: "1"
   },
@@ -16,7 +17,7 @@ export const MOCK_EXPENSES = [
     amount: 3500,
     date: new Date('2023-08-20'),
     category: "معدات إلكترونية",
-    paymentMethod: "bank",
+    paymentMethod: "bank" as const,
     vendor: "مؤسسة الإمداد التجارية",
     vendorId: "2"
   },
@@ -26,7 +27,7 @@ export const MOCK_EXPENSES = [
     amount: 5000,
     date: new Date('2023-09-05'),
     category: "أثاث مكتبي",
-    paymentMethod: "credit",
+    paymentMethod: "credit" as const,
     vendor: "مؤسسة نور للتجهيزات",
     vendorId: "3"
   },
@@ -36,7 +37,7 @@ export const MOCK_EXPENSES = [
     amount: 7500,
     date: new Date('2023-09-15'),
     category: "أجهزة وتقنية",
-    paymentMethod: "bank",
+    paymentMethod: "bank" as const,
     vendor: "شركة تقنيات المستقبل",
     vendorId: "4"
   },
@@ -46,8 +47,9 @@ export const MOCK_EXPENSES = [
     amount: 750,
     date: new Date('2023-09-25'),
     category: "منتجات ورقية",
-    paymentMethod: "cash",
+    paymentMethod: "cash" as const,
     vendor: "مصنع الجودة للمنتجات الورقية",
     vendorId: "5"
   }
 ];
+

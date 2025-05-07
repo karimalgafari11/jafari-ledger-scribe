@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
 import { AdvancedReportFilters } from "@/components/reports/AdvancedReportFilters";
@@ -9,7 +8,6 @@ import { mockVendors } from "@/data/mockVendors";
 import { useVendorReports } from "@/hooks/useVendorReports";
 import { Button } from "@/components/ui/button";
 import { Download, Printer } from "lucide-react";
-import { toast } from "sonner";
 
 const VendorReportsPage = () => {
   const {

@@ -14,7 +14,7 @@ export const useVendorFilters = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // فلترة البيانات
-  const filteredExpenses = useMemo(() => {
+  const filteredExpenses = useMemo<Expense[]>(() => {
     return MOCK_EXPENSES.filter(expense => {
       const matchesDate = expense.date >= dateRange.from && expense.date <= dateRange.to;
       const matchesCategory = category === 'all' || expense.category === category;
@@ -23,7 +23,7 @@ export const useVendorFilters = () => {
         (expense.vendor && expense.vendor.toLowerCase().includes(searchQuery.toLowerCase()));
       
       return matchesDate && matchesCategory && matchesSearch;
-    });
+    }) as Expense[];
   }, [dateRange, category, searchQuery]);
 
   // وظائف التفاعل

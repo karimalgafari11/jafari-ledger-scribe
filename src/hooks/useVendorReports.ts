@@ -5,9 +5,10 @@ import { useVendorFilters } from './vendors/reports/useVendorFilters';
 import { useVendorChartData } from './vendors/reports/useVendorChartData';
 import { useVendorExport } from './vendors/reports/useVendorExport';
 import { useVendorStats } from './vendors/reports/useVendorStats';
+import { Expense } from '@/types/expenses';
 
 export const useVendorReports = () => {
-  // бизнес-логика фильтрации
+  // بيزنس-لوجيك فلترة
   const {
     dateRange,
     setDateRange,
@@ -20,16 +21,16 @@ export const useVendorReports = () => {
     resetFilters
   } = useVendorFilters();
 
-  // бизнес-логика экспорта
+  // بيزنس-لوجيك إكسبورت
   const { exportReport, printReport } = useVendorExport();
 
-  // бизнес-логика статистики
+  // بيزنس-لوجيك ستاتيستك
   const { totalPurchases, avgPurchaseValue, activeVendorsCount } = useVendorStats(filteredExpenses);
 
-  // бизнес-логика графиков
+  // بيزنس-لوجيك تشارت
   const { pieChartData, barChartData, lineChartData } = useVendorChartData();
 
-  // бизнес-логика данных о поставщиках
+  // بيزنس-لوجيك فيندور داتا
   const vendorData = useMemo(() => {
     return mockVendors;
   }, []);
