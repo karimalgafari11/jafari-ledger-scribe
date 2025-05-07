@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
@@ -88,7 +87,7 @@ export function useDashboardState() {
       icon: BarChart,
       route: "/invoices/quotes-module",
       enabled: true,
-      description: "إنشاء وإدارة عروض الأسعار للعملاء مع إمكانية تحويلها لفواتير مبيعات وتتبع حالة الموافقة والطباعة"
+      description: "إنشاء وإدارة عروض الأسعار للعملاء مع إمكانية تحويلها لفواتير مبيعات وتتب�� حالة الموافقة والطباعة"
     },
     {
       id: "customer-management",

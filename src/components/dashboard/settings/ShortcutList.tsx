@@ -19,6 +19,21 @@ export const ShortcutList: React.FC<ShortcutListProps> = ({
   onDeleteShortcut,
   onDragEnd
 }) => {
+  // Function to safely render icon component
+  const renderIcon = (icon: any) => {
+    try {
+      // Check if icon is a valid component
+      if (typeof icon === 'function') {
+        return React.createElement(icon, { size: 20 });
+      }
+      // Fallback for invalid icons
+      return <div className="w-5 h-5 bg-muted rounded-full"></div>;
+    } catch (error) {
+      console.error("Error rendering icon:", error);
+      return <div className="w-5 h-5 bg-muted rounded-full"></div>;
+    }
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="shortcuts">
@@ -43,7 +58,7 @@ export const ShortcutList: React.FC<ShortcutListProps> = ({
                   >
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-muted rounded-md">
-                        {React.createElement(shortcut.icon, { size: 20 })}
+                        {renderIcon(shortcut.icon)}
                       </div>
                       <div>
                         <p className="font-medium">{shortcut.name}</p>

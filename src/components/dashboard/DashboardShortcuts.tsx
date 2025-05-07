@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShortcutItem } from "@/types/dashboard";
-import { LucideIcon } from "lucide-react";
+import { FileText } from "lucide-react";
 
 interface DashboardShortcutsProps {
   shortcuts: ShortcutItem[];
@@ -19,50 +19,55 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
     return null;
   }
   
+  // Function to safely render icon component
+  const renderIcon = (icon: any) => {
+    try {
+      // Check if icon is a valid component
+      if (typeof icon === 'function') {
+        return React.createElement(icon, { size: 20 });
+      }
+      // Fallback to FileText icon for invalid icons
+      return <FileText size={20} />;
+    } catch (error) {
+      console.error("Error rendering icon:", error);
+      return <FileText size={20} />;
+    }
+  };
+  
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
-      {enabledShortcuts.map((shortcut) => {
-        // Create a proper component reference that React can use
-        const IconComponent = shortcut.icon;
-        
-        return (
-          <TooltipProvider key={shortcut.id}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Card 
-                  key={shortcut.id}
-                  className="p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent transition-all duration-200 hover:shadow-md relative group h-24"
-                  onClick={() => navigate(shortcut.route)}
-                >
-                  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {shortcut.badge && (
-                      <Badge variant={shortcut.badge.variant || "default"} className="text-xs">
-                        {shortcut.badge.text}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <div className="p-2 bg-primary/10 rounded-full text-primary transform group-hover:scale-110 transition-transform">
-                    {typeof IconComponent === 'function' ? (
-                      <IconComponent size={20} />
-                    ) : (
-                      // Use a simple fallback if the icon is not a valid component
-                      <div className="w-5 h-5"></div>
-                    )}
-                  </div>
-                  
-                  <span className="text-sm font-medium text-center">{shortcut.name}</span>
-                </Card>
-              </TooltipTrigger>
-              {shortcut.description && (
-                <TooltipContent>
-                  <p className="text-sm">{shortcut.description}</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
-        );
-      })}
+      {enabledShortcuts.map((shortcut) => (
+        <TooltipProvider key={shortcut.id}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Card 
+                key={shortcut.id}
+                className="p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent transition-all duration-200 hover:shadow-md relative group h-24"
+                onClick={() => navigate(shortcut.route)}
+              >
+                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {shortcut.badge && (
+                    <Badge variant={shortcut.badge.variant || "default"} className="text-xs">
+                      {shortcut.badge.text}
+                    </Badge>
+                  )}
+                </div>
+                
+                <div className="p-2 bg-primary/10 rounded-full text-primary transform group-hover:scale-110 transition-transform">
+                  {renderIcon(shortcut.icon)}
+                </div>
+                
+                <span className="text-sm font-medium text-center">{shortcut.name}</span>
+              </Card>
+            </TooltipTrigger>
+            {shortcut.description && (
+              <TooltipContent>
+                <p className="text-sm">{shortcut.description}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      ))}
     </div>
   );
 };
