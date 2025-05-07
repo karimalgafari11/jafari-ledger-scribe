@@ -34,7 +34,7 @@ export function useDashboardState() {
       id: "purchase-invoice",
       name: "فاتورة شراء",
       icon: Receipt,
-      route: "/purchases",
+      route: "/purchases/invoices",
       enabled: true,
       description: "إنشاء وتنظيم فواتير المشتريات مع إمكانية تتبع المنتجات والخصومات وتحديد الموردين والدفعات بسهولة"
     },
