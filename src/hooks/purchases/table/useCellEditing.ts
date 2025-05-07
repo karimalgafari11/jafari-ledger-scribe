@@ -8,7 +8,7 @@ interface UseCellEditingProps {
   onUpdateItem: (index: number, item: Partial<PurchaseItem>) => void;
   isAddingItem: boolean;
   editingItemIndex: number | null;
-  setActiveSearchCell: (cellId: string | null) => void;
+  setActiveSearchCell: (cell: { rowIndex: number; cellName: string } | null) => void;
   setIsEditingCell: (isEditing: boolean) => void;
   setLastSelectedRowIndex: (index: number | null) => void;
 }
@@ -24,56 +24,55 @@ export function useCellEditing({
 }: UseCellEditingProps) {
   
   // Handle cell click to start editing
-  const handleCellClick = (index: number, field: string) => {
+  const handleCellClick = (rowIndex: number, cellName: string) => {
     if (isAddingItem || editingItemIndex !== null) return;
     
-    // Generate a unique ID for the cell using consistent format
-    const cellId = `${field}-${index}`;
-    console.log(`Activating search cell: ${cellId}`);
+    console.log(`Activating search cell: rowIndex=${rowIndex}, cellName=${cellName}`);
     
     // If clicking the same cell that's already active, don't reset
     if (setActiveSearchCell) {
-      setActiveSearchCell(cellId);
+      setActiveSearchCell({ rowIndex, cellName });
     }
     
-    setLastSelectedRowIndex(index);
+    setLastSelectedRowIndex(rowIndex);
     setIsEditingCell(true);
   };
 
   // Handle direct edit of cell value
-  const handleDirectEdit = (index: number, field: keyof PurchaseItem, value: any) => {
-    const updatedItem = { ...items[index], [field]: value };
+  const handleDirectEdit = (value: string, rowIndex: number, cellName: string) => {
+    const updatedItem = { ...items[rowIndex], [cellName]: value };
     
     // Recalculate total if quantity or price changed
-    if (field === 'quantity' || field === 'price') {
-      updatedItem.total = updatedItem.quantity * updatedItem.price;
+    if (cellName === 'quantity' || cellName === 'price') {
+      const quantity = cellName === 'quantity' ? Number(value) : items[rowIndex].quantity;
+      const price = cellName === 'price' ? Number(value) : items[rowIndex].price;
+      updatedItem.total = quantity * price;
     }
     
-    onUpdateItem(index, updatedItem);
+    onUpdateItem(rowIndex, updatedItem);
   };
 
   // Handle product selection from search
-  const handleProductSelect = (product: any, index?: number) => {
-    console.log("Product selected:", product, "for index:", index);
+  const handleProductSelect = (product: any, rowIndex?: number) => {
+    console.log("Product selected:", product, "for rowIndex:", rowIndex);
     
-    if (index !== undefined && index >= 0) {
+    if (rowIndex !== undefined && rowIndex >= 0) {
       // Update existing item
       const updatedItem = {
-        ...items[index],
+        ...items[rowIndex],
         productId: product.id,
         code: product.code,
         name: product.name,
         price: product.price,
-        total: items[index].quantity * product.price
+        total: items[rowIndex].quantity * product.price
       };
-      onUpdateItem(index, updatedItem);
+      onUpdateItem(rowIndex, updatedItem);
       toast.success(`تم تحديث المنتج إلى ${product.name}`);
       
       // Move to quantity field after selection
       setTimeout(() => {
-        const quantityCellId = `quantity-${index}`;
-        setActiveSearchCell(quantityCellId);
-        console.log(`Moving to quantity cell: ${quantityCellId}`);
+        setActiveSearchCell({ rowIndex, cellName: "quantity" });
+        console.log(`Moving to quantity cell: rowIndex=${rowIndex}, cellName=quantity`);
       }, 10);
     }
   };

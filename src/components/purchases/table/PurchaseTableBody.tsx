@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { TableBody, TableRow, TableCell } from "@/components/ui/table";
@@ -9,7 +10,7 @@ interface PurchaseTableBodyProps {
   items: PurchaseItem[];
   activeSearchCell: { rowIndex: number; cellName: string } | null;
   handleCellClick: (rowIndex: number, cellName: string) => void;
-  handleProductSelect: (product: any, rowIndex: number) => void;
+  handleProductSelect: (product: any, rowIndex?: number) => void;
   handleDirectEdit: (value: string, rowIndex: number, cellName: string) => void;
   setActiveSearchCell: (cell: { rowIndex: number; cellName: string } | null) => void;
   setEditingItemIndex: (index: number | null) => void;

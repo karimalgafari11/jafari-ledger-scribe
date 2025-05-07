@@ -41,6 +41,7 @@ export interface PurchaseItem {
   tax?: number;
   total: number;
   notes?: string;
+  unit?: string; // Added unit property
 }
 
 export interface PurchaseOrder {
@@ -97,4 +98,3 @@ export interface PurchaseReturnItem {
   reason: string;
   notes?: string;
 }
-
