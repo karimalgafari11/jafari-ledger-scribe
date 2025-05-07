@@ -13,6 +13,7 @@ interface HeaderProps {
   showBack?: boolean;
   onBackClick?: () => void;
   children?: React.ReactNode;
+  description?: string; // Added the description property
 }
 
 // Making Header both a default export and a named export
@@ -20,7 +21,8 @@ const Header = ({
   title,
   showBack = true, // Changed from false to true to show back button by default
   onBackClick,
-  children
+  children,
+  description // Added this parameter
 }: HeaderProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -49,7 +51,12 @@ const Header = ({
             <ArrowLeft className="rotate-180" />
           </Button>
         )}
-        <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>{title || "نظام إدارة الأعمال"}</h1>
+        <div>
+          <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>{title || "نظام إدارة الأعمال"}</h1>
+          {description && (
+            <p className="text-sm opacity-80">{description}</p>
+          )}
+        </div>
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
