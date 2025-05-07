@@ -6,6 +6,7 @@ import Dashboard from "@/pages/Dashboard";
 import Reports from "@/pages/Reports";
 import NotFound from "@/pages/NotFound";
 import LoginPage from "@/pages/auth/LoginPage";
+import NotificationsPage from "@/pages/settings/NotificationsPage";
 
 // Import route modules
 import { settingsRoutes } from "./settingsRoutes";
@@ -36,6 +37,7 @@ export const appRoutes: RouteObject[] = [
       { index: true, element: <Dashboard /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "reports", element: <Reports /> },
+      { path: "notifications", element: <NotificationsPage /> },
       
       // Sub-route modules
       ...settingsRoutes,

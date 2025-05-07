@@ -11,6 +11,7 @@ import NotificationsPage from "@/pages/settings/NotificationsPage";
 import NotificationSettingsPage from "@/pages/settings/NotificationSettingsPage";
 import AiEngineSettingsPage from "@/pages/settings/AiEngineSettingsPage";
 import PageManagementPage from "@/pages/settings/PageManagementPage";
+import SendNotificationPage from "@/pages/settings/SendNotificationPage";
 
 export const settingsRoutes: RouteObject[] = [
   { path: "settings/system", element: <SystemSettingsPage /> },
@@ -22,6 +23,7 @@ export const settingsRoutes: RouteObject[] = [
   { path: "settings/branches", element: <BranchesPage /> },
   { path: "settings/notifications", element: <NotificationsPage /> },
   { path: "settings/notification-settings", element: <NotificationSettingsPage /> },
+  { path: "settings/send-notification", element: <SendNotificationPage /> },
   { path: "settings/ai-engine", element: <AiEngineSettingsPage /> },
   { path: "settings/page-management", element: <PageManagementPage /> }
 ];

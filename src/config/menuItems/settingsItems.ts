@@ -9,7 +9,9 @@ import {
   Building2, 
   File, 
   CheckCircle2,
-  Globe
+  Globe,
+  Bell,
+  Send
 } from "lucide-react";
 import { MenuItem } from "./types";
 
@@ -26,7 +28,12 @@ export const settingsItems: MenuItem[] = [
       {
         label: "الإشعارات",
         path: "/notifications",
-        icon: Calendar,
+        icon: Bell,
+      },
+      {
+        label: "إرسال إشعار",
+        path: "/settings/send-notification",
+        icon: Send,
       },
       {
         label: "إعدادات الإشعارات",
