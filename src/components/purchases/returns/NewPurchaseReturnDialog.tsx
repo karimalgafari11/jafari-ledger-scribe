@@ -211,7 +211,8 @@ const NewPurchaseReturnDialog: React.FC<NewPurchaseReturnDialogProps> = ({ open,
                 <SelectValue placeholder="اختر فاتورة الشراء" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">بدون فاتورة</SelectItem>
+                {/* Fix: Changed from an empty string value to a non-empty string value "none" */}
+                <SelectItem value="none">بدون فاتورة</SelectItem>
                 {filteredInvoices.map(invoice => (
                   <SelectItem key={invoice.id} value={invoice.id}>
                     {invoice.number}
