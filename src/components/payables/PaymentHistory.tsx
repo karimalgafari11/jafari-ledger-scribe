@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/formatters";
-import { Eye, FileText, Printer, Check, X, Search, CreditCard } from "lucide-react";
+import { Eye, FileText, Printer, Check, X, Search, CreditCard, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
