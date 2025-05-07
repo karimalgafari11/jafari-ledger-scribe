@@ -1,9 +1,16 @@
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Grid, List } from "lucide-react";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ProductSearch } from "../ProductSearch";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Product } from "@/types/inventory";
 
 interface TableToolbarProps {
   isAddingItem: boolean;
@@ -20,23 +27,49 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   handleProductSelect,
   toggleGridLines
 }) => {
+  const [open, setOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  
   const handleAddClick = () => {
     if (!isAddingItem && editingItemIndex === null) {
-      setIsAddingItem(true);
+      setOpen(true);
     }
+  };
+  
+  const handleProductSelectAndClose = (product: Product) => {
+    handleProductSelect(product);
+    setOpen(false);
   };
 
   return (
     <div className="flex justify-between items-center mb-2">
       <div>
-        <Button
-          onClick={handleAddClick}
-          disabled={isAddingItem || editingItemIndex !== null}
-          className="bg-blue-600 hover:bg-blue-700 text-base"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          إضافة صنف جديد
-        </Button>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              onClick={handleAddClick}
+              disabled={isAddingItem || editingItemIndex !== null}
+              className="bg-blue-600 hover:bg-blue-700 text-base"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              إضافة صنف جديد
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent 
+            className="w-80 p-4 bg-white border rounded-md shadow-md" 
+            align="start"
+          >
+            <div className="space-y-4" ref={searchRef}>
+              <h4 className="font-medium text-sm">البحث عن صنف</h4>
+              <ProductSearch 
+                onSelect={handleProductSelectAndClose} 
+                autoFocus={true}
+                placeholder="أدخل اسم أو رمز الصنف..."
+                showIcon={true}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       
       <div className="flex items-center space-x-2 rtl:space-x-reverse">

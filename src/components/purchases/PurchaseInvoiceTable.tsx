@@ -7,6 +7,9 @@ import { ItemFormContainer } from "./table/ItemFormContainer";
 import { PurchaseTableBody } from "./table/PurchaseTableBody";
 import { PurchaseTableHeader } from "./table/TableHeader";
 import { usePurchaseTable } from "@/hooks/purchases/table";
+import { Product } from "@/types/inventory";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 
 interface PurchaseInvoiceTableProps {
   items: PurchaseItem[];
@@ -54,13 +57,30 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
     setEditingItemIndex
   });
   
+  // تعامل مع اختيار منتج من البحث في شريط الأدوات
+  const handleToolbarProductSelect = (product: Product) => {
+    const newItem: Partial<PurchaseItem> = {
+      id: uuidv4(),
+      productId: product.id,
+      code: product.code,
+      name: product.name,
+      quantity: 1,
+      price: product.price,
+      unit: product.unit || "قطعة",
+      total: product.price
+    };
+    
+    onAddItem(newItem);
+    toast.success(`تمت إضافة ${product.name} إلى الفاتورة`);
+  };
+  
   return (
     <div className="space-y-3" onClick={handleTableClick} ref={tableRef}>
       <TableToolbar
         isAddingItem={isAddingItem}
         editingItemIndex={editingItemIndex}
         setIsAddingItem={setIsAddingItem}
-        handleProductSelect={handleProductSelect}
+        handleProductSelect={handleToolbarProductSelect}
         toggleGridLines={toggleGridLines}
       />
       
