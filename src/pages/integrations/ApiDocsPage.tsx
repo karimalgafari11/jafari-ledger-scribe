@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Copy, ExternalLink, Play, Server, FileCode, BookOpen, Code, Lock, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label"; // Import Label directly instead of using FormLabel
 
 const ApiDocsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
