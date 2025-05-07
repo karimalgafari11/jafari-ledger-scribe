@@ -42,7 +42,7 @@ export function useDashboardState() {
       id: "sales-invoice",
       name: "فاتورة بيع",
       icon: FileText,
-      route: "/invoices/outgoing",
+      route: "/invoices/outgoing-module",
       enabled: true,
       badge: {
         text: "جديد",
@@ -54,7 +54,7 @@ export function useDashboardState() {
       id: "payment-voucher",
       name: "سند دفع",
       icon: FileDown,
-      route: "/payables/payment",
+      route: "/payables/payment-module",
       enabled: true,
       description: "إنشاء وإدارة سندات الدفع للموردين مع خيارات متعددة لطرق الدفع وربطها مع الفواتير والحسابات المالية"
     },
@@ -62,7 +62,7 @@ export function useDashboardState() {
       id: "receipt-voucher",
       name: "سند قبض",
       icon: FileUp,
-      route: "/receivables/collection",
+      route: "/receivables/receipt-module",
       enabled: true,
       description: "إدارة المبالغ المقبوضة من العملاء مع إمكانية ربطها بالفواتير وتسوية الحسابات وطباعة إيصالات الاستلام"
     },
@@ -70,7 +70,7 @@ export function useDashboardState() {
       id: "general-ledger",
       name: "دفتر الأستاذ",
       icon: Database,
-      route: "/accounting/ledger",
+      route: "/accounting/ledger-module",
       enabled: true,
       description: "عرض وتحليل كافة الحركات المالية في النظام مع إمكانية التصفية حسب الحسابات والتواريخ واستخراج التقارير"
     },
@@ -78,7 +78,7 @@ export function useDashboardState() {
       id: "cash-register",
       name: "الصندوق",
       icon: CreditCard,
-      route: "/accounting/cashregister",
+      route: "/accounting/cashregister-module",
       enabled: true,
       description: "إدارة عمليات النقد وتسجيل عمليات الإيداع والسحب وتتبع أرصدة الصناديق والطباعة الفورية لإيصالات العمليات"
     },
@@ -86,7 +86,7 @@ export function useDashboardState() {
       id: "price-offers",
       name: "عروض الأسعار",
       icon: BarChart,
-      route: "/invoices/quotes",
+      route: "/invoices/quotes-module",
       enabled: true,
       description: "إنشاء وإدارة عروض الأسعار للعملاء مع إمكانية تحويلها لفواتير مبيعات وتتبع حالة الموافقة والطباعة"
     },
@@ -94,7 +94,7 @@ export function useDashboardState() {
       id: "customer-management",
       name: "إدارة العملاء",
       icon: Users,
-      route: "/customers",
+      route: "/customers/module",
       enabled: true,
       description: "إدارة قاعدة بيانات العملاء وتتبع المبيعات والديون ومعلومات التواصل مع إمكانية تصنيفهم وإضافة ملاحظات خاصة"
     },
@@ -102,7 +102,7 @@ export function useDashboardState() {
       id: "vendor-management",
       name: "إدارة الموردين",
       icon: Truck,
-      route: "/vendors",
+      route: "/vendors/module",
       enabled: true,
       description: "تسجيل وإدارة بيانات الموردين وتتبع المشتريات والمدفوعات وإنشاء تقارير تفصيلية عن التعاملات"
     },
@@ -118,7 +118,7 @@ export function useDashboardState() {
       id: "reorder-inventory",
       name: "إعادة الطلب",
       icon: Package,
-      route: "/inventory/reorder",
+      route: "/inventory/reorder-module",
       enabled: true,
       description: "متابعة مستويات المخزون وتنبيهات إعادة الطلب مع إمكانية إنشاء طلبات شراء تلقائية للمنتجات التي وصلت للحد الأدنى"
     },
@@ -126,7 +126,7 @@ export function useDashboardState() {
       id: "inventory-transfer",
       name: "التحويل",
       icon: ArrowLeftRight,
-      route: "/inventory-control/transfer",
+      route: "/inventory-control/transfer-module",
       enabled: true,
       description: "إدارة عمليات تحويل المخزون بين المستودعات مع تتبع حركة البضائع وتوثيق عمليات النقل وطباعة مستندات التحويل"
     },
@@ -134,7 +134,7 @@ export function useDashboardState() {
       id: "ai-assistant",
       name: "مساعد الذكاء",
       icon: Zap,
-      route: "/ai/assistant",
+      route: "/ai/assistant-module",
       enabled: true,
       badge: {
         text: "جديد",
