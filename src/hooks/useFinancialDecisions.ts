@@ -16,27 +16,27 @@ export const useFinancialDecisions = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    // في التطبيق الحقيقي، سيتم استدعاء API لجلب القرارات
+    // In a real app, we would fetch decisions from API
     setDecisions(mockFinancialDecisions);
   }, []);
 
-  // تطبيق قرار مالي
+  // Implement a financial decision
   const implementDecision = (decisionId: string) => {
     setIsLoading(true);
-    // محاكاة طلب API
+    // Simulate API request
     setTimeout(() => {
       const decision = decisions.find(d => d.id === decisionId);
       if (decision) {
-        // تحديث حالة القرار
+        // Update decision status
         setDecisions(prevDecisions => 
           prevDecisions.map(d => 
             d.id === decisionId 
-              ? { ...d, status: 'implemented', implementedAt: new Date() } 
+              ? { ...d, status: 'implemented', implementedAt: new Date().toISOString() } 
               : d
           )
         );
         
-        // إظهار رسالة نجاح مناسبة
+        // Show appropriate success message
         switch(decision.type) {
           case 'journal_entry':
             toast.success('تم إنشاء قيد محاسبي جديد بناءً على الاقتراح');
@@ -58,12 +58,12 @@ export const useFinancialDecisions = () => {
     }, 800);
   };
 
-  // تجاهل قرار مالي
+  // Dismiss a financial decision
   const dismissDecision = (decisionId: string) => {
     setIsLoading(true);
-    // محاكاة طلب API
+    // Simulate API request
     setTimeout(() => {
-      // تحديث حالة القرار
+      // Update decision status
       setDecisions(prevDecisions => 
         prevDecisions.map(d => 
           d.id === decisionId 
@@ -77,16 +77,16 @@ export const useFinancialDecisions = () => {
     }, 500);
   };
 
-  // إنشاء قرار جديد (للعرض التوضيحي)
+  // Create a new decision (for demo)
   const createDecision = (decision: Omit<FinancialDecision, 'id' | 'createdAt' | 'status'>) => {
     setIsLoading(true);
-    // محاكاة طلب API
+    // Simulate API request
     setTimeout(() => {
       const newDecision: FinancialDecision = {
         id: uuidv4(),
         ...decision,
-        createdAt: new Date(),
-        status: 'pending',
+        createdAt: new Date().toISOString(), // Using string instead of Date
+        status: 'suggested', // Using 'suggested' instead of 'pending'
       };
       
       setDecisions(prevDecisions => [...prevDecisions, newDecision]);

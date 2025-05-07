@@ -1,4 +1,3 @@
-
 export interface SystemSettings {
   id: string;
   companyName: string;
@@ -19,6 +18,10 @@ export interface SystemSettings {
   invoicePrefix?: string;
   invoiceStartNumber?: number;
   lockPeriod?: 'day' | 'week' | 'month' | 'quarter';
+  autoSave?: boolean;
+  notifications?: boolean;
+  darkMode?: boolean;
+  compactMode?: boolean;
 }
 
 export interface Branch {

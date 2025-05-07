@@ -40,19 +40,64 @@ export interface AiPerformanceAnalysis {
   }[];
 }
 
+// Base interface for all financial decisions
 export interface FinancialDecision {
   id: string;
   title: string;
   description: string;
-  category: 'expense_reduction' | 'revenue_increase' | 'cash_flow' | 'inventory' | 'pricing';
-  impact: {
-    value: number;
-    period: 'monthly' | 'quarterly' | 'yearly';
-    description: string;
-  };
+  impact: number; // Changed from object to number for simpler comparison
   confidence: number;
-  implementationSteps: string[];
+  suggestedActions: string[];
+  createdAt: string; // Changed from Date to string
   status: 'suggested' | 'accepted' | 'rejected' | 'implemented';
-  createdAt: string;
-  updatedAt: string;
+  type: 'journal_entry' | 'pricing' | 'provision' | 'variance'; // Added type property
+}
+
+// Specific decision types
+export interface JournalEntrySuggestion extends FinancialDecision {
+  type: 'journal_entry';
+  suggestedLines: {
+    accountId: string;
+    accountName: string;
+    debit: number;
+    credit: number;
+    description: string;
+  }[];
+  preventionReason?: string;
+  commonError?: string;
+}
+
+export interface PricingSuggestion extends FinancialDecision {
+  type: 'pricing';
+  productId: string;
+  productName: string;
+  currentPrice: number;
+  suggestedPrice: number;
+  priceChangeReason: 'demand' | 'cost' | 'competition';
+  demandFactor?: number;
+  costFactor?: number;
+  competitionFactor?: number;
+  expectedRevenue: number;
+}
+
+export interface ProvisionSuggestion extends FinancialDecision {
+  type: 'provision';
+  accountId: string;
+  accountName: string;
+  currentAmount: number;
+  suggestedAmount: number;
+  riskFactor: number;
+  category: 'bad_debts' | 'inventory' | 'legal' | 'other';
+}
+
+export interface VarianceAnalysis extends FinancialDecision {
+  type: 'variance';
+  accountId: string;
+  accountName: string;
+  expectedAmount: number;
+  actualAmount: number;
+  variance: number;
+  variancePercentage: number;
+  explanation: string;
+  severity: 'low' | 'medium' | 'high';
 }

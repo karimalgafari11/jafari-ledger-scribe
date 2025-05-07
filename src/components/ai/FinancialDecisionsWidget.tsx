@@ -19,18 +19,18 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
   const [activeType, setActiveType] = useState<'all' | 'journal_entry' | 'pricing' | 'provision' | 'variance'>('all');
   const navigate = useNavigate();
   
-  // تصفية القرارات حسب النوع المحدد
+  // Filter decisions by selected type
   const filteredDecisions = activeType === 'all' 
     ? decisions.slice(0, 3) 
     : decisions.filter(d => d.type === activeType).slice(0, 3);
   
-  // الحصول على عدد القرارات حسب نوعها
+  // Get counts by decision type
   const journalCount = decisions.filter(d => d.type === 'journal_entry').length;
   const pricingCount = decisions.filter(d => d.type === 'pricing').length;
   const provisionCount = decisions.filter(d => d.type === 'provision').length;
   const varianceCount = decisions.filter(d => d.type === 'variance').length;
 
-  // تصنيف القرارات حسب مستوى الثقة
+  // Classify decisions by confidence level
   const getConfidenceBadge = (confidence: number) => {
     if (confidence >= 90) {
       return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">ثقة عالية ({confidence}%)</Badge>;
@@ -41,9 +41,9 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
     }
   };
 
-  // عرض بطاقة قرار مختصرة
+  // Render a decision card
   const renderDecisionCard = (decision: FinancialDecision) => {
-    // الأيقونة حسب نوع القرار
+    // Icon based on decision type
     let decisionIcon;
     let decisionType;
     
@@ -169,5 +169,4 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
   );
 };
 
-// Changed to default export
 export default FinancialDecisionsWidget;

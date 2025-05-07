@@ -8,21 +8,21 @@ import {
   VarianceAnalysis
 } from '@/types/ai-finance';
 
-// إنشاء بيانات تجريبية للعرض
+// Create mock data for display
 const mockJournalEntrySuggestions: JournalEntrySuggestion[] = [
   {
     id: uuidv4(),
     type: 'journal_entry',
     title: 'تسجيل إهلاك لأصول ثابتة',
     description: 'اقتراح لتسجيل قيد الإهلاك الشهري للأصول الثابتة',
-    impact: 12500,
+    impact: 12500, // Changed from object to number
     confidence: 92,
     suggestedActions: [
       'تسجيل القيد كما هو مقترح',
       'مراجعة نسب الإهلاك المطبقة',
     ],
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // قبل ساعتين
-    status: 'pending',
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // Changed to string
+    status: 'suggested', // Changed from 'pending' to 'suggested'
     suggestedLines: [
       {
         accountId: '521',
@@ -52,8 +52,8 @@ const mockJournalEntrySuggestions: JournalEntrySuggestion[] = [
       'تسجيل القيد كما هو مقترح',
       'إجراء جرد للصندوق للتأكد من الفرق',
     ],
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // قبل يوم واحد
-    status: 'pending',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'suggested',
     suggestedLines: [
       {
         accountId: '528',
@@ -88,8 +88,8 @@ const mockPricingSuggestions: PricingSuggestion[] = [
       'تطبيق السعر الجديد تدريجياً',
       'مراجعة هامش الربح',
     ],
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // قبل 4 ساعات
-    status: 'pending',
+    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    status: 'suggested',
     productId: 'P-1001',
     productName: 'قميص قطني',
     currentPrice: 120,
@@ -110,8 +110,8 @@ const mockPricingSuggestions: PricingSuggestion[] = [
       'تطبيق السعر الجديد',
       'عمل عرض ترويجي بالسعر الجديد',
     ],
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // قبل 3 أيام
-    status: 'pending',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'suggested',
     productId: 'P-1005',
     productName: 'بنطلون جينز',
     currentPrice: 180,
@@ -135,8 +135,8 @@ const mockProvisionSuggestions: ProvisionSuggestion[] = [
       'تطبيق المخصص المقترح',
       'مراجعة أعمار الديون بالتفصيل',
     ],
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // قبل 5 أيام
-    status: 'pending',
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'suggested',
     accountId: '129',
     accountName: 'مخصص الديون المشكوك في تحصيلها',
     currentAmount: 50000,
@@ -158,8 +158,8 @@ const mockVarianceAnalyses: VarianceAnalysis[] = [
       'مراجعة عقود الصيانة',
       'البحث عن موردين جدد بأسعار أفضل',
     ],
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // قبل 2 يوم
-    status: 'pending',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'suggested',
     accountId: '525',
     accountName: 'مصروفات الصيانة',
     expectedAmount: 58000,
@@ -181,8 +181,8 @@ const mockVarianceAnalyses: VarianceAnalysis[] = [
       'مراجعة استراتيجية التسعير',
       'تقييم أداء فريق المبيعات',
     ],
-    createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // قبل 6 أيام
-    status: 'pending',
+    createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'suggested',
     accountId: '411',
     accountName: 'إيرادات المبيعات',
     expectedAmount: 375000,
@@ -194,10 +194,10 @@ const mockVarianceAnalyses: VarianceAnalysis[] = [
   },
 ];
 
-// دمج جميع أنواع القرارات في مصفوفة واحدة
+// Merge all decision types into one array
 export const mockFinancialDecisions: FinancialDecision[] = [
   ...mockJournalEntrySuggestions,
   ...mockPricingSuggestions,
   ...mockProvisionSuggestions,
   ...mockVarianceAnalyses
-].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // ترتيب حسب الأحدث
+].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sort by newest
