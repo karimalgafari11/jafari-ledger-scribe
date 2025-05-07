@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { mockProducts } from "@/data/mockProducts";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, Plus } from "lucide-react";
 
 interface QuickProductSearchProps {
   onClose: () => void;
@@ -35,6 +35,7 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   }, [searchTerm]);
 
   const handleSelect = (product: any) => {
+    console.log("Selected product:", product);
     onSelect(product);
     onClose();
   };

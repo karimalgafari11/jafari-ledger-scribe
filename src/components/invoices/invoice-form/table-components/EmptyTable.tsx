@@ -1,21 +1,23 @@
 
 import React from "react";
-import { Plus } from "lucide-react";
+import { TableCell, TableRow } from "@/components/ui/table";
 
 interface EmptyTableProps {
   colSpan: number;
+  message?: string;
 }
 
-export const EmptyTable: React.FC<EmptyTableProps> = ({ colSpan }) => {
+export const EmptyTable: React.FC<EmptyTableProps> = ({
+  colSpan,
+  message = "لا توجد أصناف في الفاتورة - قم بإضافة الأصناف باستخدام زر إضافة صنف"
+}) => {
   return (
-    <tr>
-      <td colSpan={colSpan} className="h-32 text-center align-middle border border-black">
-        <div className="flex flex-col items-center justify-center text-gray-500">
-          <Plus className="h-8 w-8 mb-2 opacity-30" />
-          <p className="text-sm">لا توجد أصناف في الفاتورة</p>
-          <p className="text-xs mt-1">قم بإضافة أصناف باستخدام زر "إضافة صنف"</p>
+    <TableRow>
+      <TableCell colSpan={colSpan} className="h-32 text-center">
+        <div className="flex flex-col items-center justify-center space-y-2 text-gray-500">
+          <p>{message}</p>
         </div>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 };

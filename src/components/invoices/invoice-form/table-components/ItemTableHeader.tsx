@@ -24,56 +24,51 @@ export const ItemTableHeader: React.FC<ItemTableHeaderProps> = ({
   editingItemIndex
 }) => {
   return (
-    <div className="flex justify-between items-center mb-2 print-hide">
-      <div className="flex-1 flex items-center space-x-2 rtl:space-x-reverse">
-        <Button
-          type="button"
-          size="sm"
-          disabled={isAddingItem || editingItemIndex !== null}
-          onClick={() => setIsAddingItem(true)}
-          className="text-xs"
-        >
-          <Plus className="h-4 w-4 ml-1" />
-          إضافة صنف
-        </Button>
-
-        {isSearching ? (
-          <div className="relative flex-1 max-w-sm">
-            <Input
-              type="text"
-              placeholder="ابحث عن منتج..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="pr-8 text-xs h-8"
-              autoFocus
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-0 left-0 h-8 w-8"
-              onClick={toggleSearch}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <Button variant="outline" size="sm" onClick={toggleSearch} className="text-xs">
-            <Search className="h-4 w-4 ml-1" />
-            بحث سريع
-          </Button>
-        )}
-      </div>
+    <div className="flex justify-between items-center mb-2">
+      <h3 className="text-lg font-semibold">الأصناف</h3>
       
-      <div>
-        <span className="text-xs text-muted-foreground">
-          {isAddingItem 
-            ? "جارٍ إضافة صنف جديد..." 
-            : editingItemIndex !== null 
-            ? "جارٍ تعديل الصنف..." 
-            : `عدد الأصناف: ${0}`
-          }
-        </span>
-      </div>
+      {isSearching ? (
+        <div className="flex items-center gap-2 w-1/2">
+          <Input
+            type="text"
+            placeholder="ابحث عن منتج..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="h-8"
+            autoFocus
+          />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSearch} 
+            className="h-8 w-8"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <div className="space-x-2 rtl:space-x-reverse">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSearch}
+            className="flex items-center gap-1"
+            disabled={isAddingItem || editingItemIndex !== null}
+          >
+            <Search className="h-4 w-4" />
+            بحث
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setIsAddingItem(true)}
+            className="flex items-center gap-1"
+            disabled={isAddingItem || editingItemIndex !== null}
+          >
+            <Plus className="h-4 w-4" />
+            إضافة صنف
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
