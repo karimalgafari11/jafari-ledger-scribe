@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -11,7 +10,7 @@ import { mockCustomers } from "@/data/mockCustomers";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerFilters } from "@/types/customers";
-import { Users, UserPlus, FileDownload, FileUp } from "lucide-react";
+import { Users, UserPlus, Download, FileUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -198,7 +197,7 @@ const CustomersManagePage = () => {
             <UserPlus className="mr-2 h-4 w-4" /> عميل جديد
           </Button>
           <Button variant="outline" onClick={handleExportData}>
-            <FileDownload className="mr-2 h-4 w-4" /> تصدير البيانات
+            <Download className="mr-2 h-4 w-4" /> تصدير البيانات
           </Button>
           <Button variant="outline" onClick={handleImportData}>
             <FileUp className="mr-2 h-4 w-4" /> استيراد البيانات
