@@ -80,6 +80,15 @@ export const useDiscounts = () => {
     return matchesSearchTerm && matchesStatusFilter && matchesTypeFilter;
   });
 
+  // حساب قيمة الخصم بناء على نوعه وقيمته
+  const calculateDiscount = (amount: number, discountType: 'percentage' | 'fixed', discountValue: number) => {
+    if (discountType === 'percentage') {
+      return (amount * discountValue) / 100;
+    } else {
+      return Math.min(discountValue, amount); // لا يمكن أن يكون الخصم أكبر من المبلغ
+    }
+  };
+
   // مسح جميع الفلاتر
   const clearFilters = () => {
     setSearchTerm("");
@@ -162,6 +171,7 @@ export const useDiscounts = () => {
     updateDiscount,
     deleteDiscount,
     toggleDiscountStatus,
+    calculateDiscount,
     selectedDiscount,
     setSelectedDiscount,
     isCreateDialogOpen,
