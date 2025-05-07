@@ -34,10 +34,12 @@ export function CountingTable({
     }).format(date);
   };
 
-  const getStatusBadge = (status: 'draft' | 'completed') => {
+  const getStatusBadge = (status: 'draft' | 'in_progress' | 'completed') => {
     switch (status) {
       case 'draft':
         return <Badge className="bg-amber-500">مسودة</Badge>;
+      case 'in_progress':
+        return <Badge className="bg-blue-500">قيد التنفيذ</Badge>;
       case 'completed':
         return <Badge className="bg-green-600">مكتمل</Badge>;
       default:
@@ -93,7 +95,7 @@ export function CountingTable({
                       <FileText className="h-4 w-4" />
                       طباعة
                     </Button>
-                    {count.status === 'draft' && (
+                    {count.status !== 'completed' && (
                       <Button
                         variant="ghost"
                         size="sm"

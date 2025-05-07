@@ -41,11 +41,11 @@ export interface Warehouse {
 
 export interface StockMovement {
   id: string;
-  date: Date; // Changed from string to Date
+  date: Date;
   productId: string;
   productName: string;
   quantity: number;
-  type: 'inbound' | 'outbound' | 'transfer'; // Changed to match usage in code
+  type: 'inbound' | 'outbound' | 'transfer';
   referenceNumber?: string;
   referenceType?: 'purchase' | 'sale' | 'return' | 'transfer' | 'count' | 'adjustment';
   sourceWarehouseId?: string;
@@ -60,6 +60,9 @@ export interface StockMovement {
   itemName?: string; // Alias for productName
   sourceWarehouse?: string; // Alias for sourceWarehouseName
   destinationWarehouse?: string; // Alias for destinationWarehouseName
+  
+  // Adding new property for TransferHistory
+  itemId?: string; // Alias for productId
 }
 
 // Add missing interfaces referenced in errors

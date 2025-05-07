@@ -10,6 +10,7 @@ export const useInventoryProducts = () => {
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     category: "",
     status: "",
+    warehouse: "",
     minPrice: 0,
     maxPrice: 0
   });
@@ -39,7 +40,7 @@ export const useInventoryProducts = () => {
     // Apply filters
     if (filterOptions.category) {
       result = result.filter(item => 
-        item.category.toLowerCase() === filterOptions.category.toLowerCase()
+        item.category?.toLowerCase() === filterOptions.category.toLowerCase()
       );
     }
     

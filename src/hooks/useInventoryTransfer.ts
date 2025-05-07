@@ -11,8 +11,8 @@ export const useInventoryTransfer = () => {
 
   // Create a new transfer
   const createTransfer = (
-    itemId: string,
-    itemName: string,
+    productId: string,
+    productName: string,
     quantity: number,
     sourceWarehouse: string,
     destinationWarehouse: string,
@@ -22,11 +22,16 @@ export const useInventoryTransfer = () => {
       id: uuidv4(),
       date: new Date(),
       type: "transfer",
-      itemId,
-      itemName,
+      productId,
+      productName,
+      itemName: productName, // Set alias for backward compatibility
       quantity,
-      sourceWarehouse,
-      destinationWarehouse,
+      sourceWarehouseName: sourceWarehouse,
+      sourceWarehouse, // Set alias for backward compatibility
+      destinationWarehouseName: destinationWarehouse,
+      destinationWarehouse, // Set alias for backward compatibility
+      userId: "1",
+      userName: "Admin",
       notes,
     };
 
