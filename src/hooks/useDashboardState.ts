@@ -36,7 +36,7 @@ export function useDashboardState() {
       icon: Receipt,
       route: "/purchases",
       enabled: true,
-      description: "إنشاء وإدارة فواتير المشتريات من الموردين"
+      description: "إنشاء وتنظيم فواتير المشتريات مع إمكانية تتبع المنتجات والخصومات وتحديد الموردين والدفعات بسهولة"
     },
     {
       id: "sales-invoice",
@@ -48,7 +48,7 @@ export function useDashboardState() {
         text: "جديد",
         variant: "success" as const
       },
-      description: "إنشاء وإدارة فواتير المبيعات للعملاء"
+      description: "إدارة مبيعاتك مع إمكانية إضافة العملاء والمنتجات وتطبيق الخصومات وطباعة الفواتير وتتبع الدفعات"
     },
     {
       id: "payment-voucher",
@@ -56,7 +56,7 @@ export function useDashboardState() {
       icon: FileDown,
       route: "/payables/payment",
       enabled: true,
-      description: "إنشاء وإدارة سندات الدفع للموردين"
+      description: "إنشاء وإدارة سندات الدفع للموردين مع خيارات متعددة لطرق الدفع وربطها مع الفواتير والحسابات المالية"
     },
     {
       id: "receipt-voucher",
@@ -64,7 +64,7 @@ export function useDashboardState() {
       icon: FileUp,
       route: "/receipt-vouchers",
       enabled: true,
-      description: "إنشاء وإدارة سندات القبض من العملاء"
+      description: "إدارة المبالغ المقبوضة من العملاء مع إمكانية ربطها بالفواتير وتسوية الحسابات وطباعة إيصالات الاستلام"
     },
     {
       id: "general-ledger",
@@ -72,7 +72,7 @@ export function useDashboardState() {
       icon: Database,
       route: "/accounting/general-ledger",
       enabled: true,
-      description: "الاطلاع على الحسابات وحركات دفتر الأستاذ"
+      description: "عرض وتحليل كافة الحركات المالية في النظام مع إمكانية التصفية حسب الحسابات والتواريخ واستخراج التقارير"
     },
     {
       id: "cash-register",
@@ -80,7 +80,7 @@ export function useDashboardState() {
       icon: CreditCard,
       route: "/accounting/cash-registers",
       enabled: true,
-      description: "إدارة عمليات الصندوق والإيداع والسحب"
+      description: "إدارة عمليات النقد وتسجيل عمليات الإيداع والسحب وتتبع أرصدة الصناديق والطباعة الفورية لإيصالات العمليات"
     },
     {
       id: "price-offers",
@@ -88,7 +88,7 @@ export function useDashboardState() {
       icon: BarChart,
       route: "/invoices/quotes",
       enabled: false,
-      description: "إنشاء وإدارة عروض الأسعار للعملاء"
+      description: "إنشاء وإدارة عروض الأسعار للعملاء مع إمكانية تحويلها لفواتير مبيعات وتتبع حالة الموافقة والطباعة"
     },
     {
       id: "customer-management",
@@ -96,7 +96,7 @@ export function useDashboardState() {
       icon: Users,
       route: "/customers",
       enabled: true,
-      description: "إدارة بيانات العملاء وحساباتهم"
+      description: "إدارة قاعدة بيانات العملاء وتتبع المبيعات والديون ومعلومات التواصل مع إمكانية تصنيفهم وإضافة ملاحظات خاصة"
     },
     {
       id: "vendor-management",
@@ -104,7 +104,7 @@ export function useDashboardState() {
       icon: Truck,
       route: "/vendors",
       enabled: true,
-      description: "إدارة بيانات الموردين وحساباتهم"
+      description: "تسجيل وإدارة بيانات الموردين وتتبع المشتريات والمدفوعات وإنشاء تقارير تفصيلية عن التعاملات"
     },
     {
       id: "vendor-reports",
@@ -112,7 +112,7 @@ export function useDashboardState() {
       icon: FileText,
       route: "/reports/vendors",
       enabled: false,
-      description: "عرض وتحليل تقارير الموردين"
+      description: "استخراج تقارير متنوعة عن الموردين تشمل المشتريات والدفعات والديون المستحقة مع خيارات التصفية والتصدير"
     },
     {
       id: "reorder-inventory",
@@ -120,7 +120,7 @@ export function useDashboardState() {
       icon: Package,
       route: "/inventory/reorder",
       enabled: false,
-      description: "إدارة الطلبيات وإعادة طلب المنتجات"
+      description: "متابعة مستويات المخزون وتنبيهات إعادة الطلب مع إمكانية إنشاء طلبات شراء تلقائية للمنتجات التي وصلت للحد الأدنى"
     },
     {
       id: "inventory-transfer",
@@ -128,7 +128,7 @@ export function useDashboardState() {
       icon: ArrowLeftRight,
       route: "/inventory-control/transfers",
       enabled: false,
-      description: "تحويل المخزون بين المستودعات"
+      description: "إدارة عمليات تحويل المخزون بين المستودعات مع تتبع حركة البضائع وتوثيق عمليات النقل وطباعة مستندات التحويل"
     },
     {
       id: "ai-assistant",
@@ -140,7 +140,7 @@ export function useDashboardState() {
         text: "جديد",
         variant: "secondary" as const
       },
-      description: "الاستفادة من مساعد الذكاء الاصطناعي"
+      description: "مساعد ذكاء اصطناعي متطور يقدم تحليلات للبيانات المالية ويساعد في اتخاذ القرارات واقتراح إجراءات لتحسين الأداء"
     }
   ]);
   
