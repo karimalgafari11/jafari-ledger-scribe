@@ -74,15 +74,15 @@ export function usePurchaseTable({
     });
   }, [items.length, isAddingItem, editingItemIndex, activeSearchCell, isEditingCell]);
 
-  // Help message for users
-  useEffect(() => {
-    if (items.length > 0 && !isAddingItem && !editingItemIndex && !isEditingCell) {
-      toast.info("يمكنك الضغط على الخلايا لتعديلها أو إضافة منتج جديد", {
-        id: "table-help",
-        duration: 3000,
-      });
-    }
-  }, [items.length, isAddingItem, editingItemIndex, isEditingCell]);
+  // إزالة المساعدة التي قد تفتح المربع المنبثق تلقائيًا
+  // useEffect(() => {
+  //   if (items.length > 0 && !isAddingItem && !editingItemIndex && !isEditingCell) {
+  //     toast.info("يمكنك الضغط على الخلايا لتعديلها أو إضافة منتج جديد", {
+  //       id: "table-help",
+  //       duration: 3000,
+  //     });
+  //   }
+  // }, [items.length, isAddingItem, editingItemIndex, isEditingCell]);
 
   return {
     activeSearchCell,

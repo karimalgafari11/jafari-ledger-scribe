@@ -17,12 +17,12 @@ export const useInvoiceItemsTable = (
   const [showItemForm, setShowItemForm] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState<InvoiceItem | null>(null);
   
-  // Auto-open item form when there are no items
-  useEffect(() => {
-    if (items.length === 0 && !isSearching && !quickSearchActive && !showItemForm) {
-      setQuickSearchActive(true);
-    }
-  }, [items.length, isSearching, quickSearchActive, showItemForm]);
+  // إزالة الجزء الذي يفتح المربع تلقائيًا
+  // useEffect(() => {
+  //   if (items.length === 0 && !isSearching && !quickSearchActive && !showItemForm) {
+  //     setQuickSearchActive(true);
+  //   }
+  // }, [items.length, isSearching, quickSearchActive, showItemForm]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
