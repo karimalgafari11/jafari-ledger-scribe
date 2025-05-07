@@ -2,16 +2,17 @@
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { mockVendors } from '@/data/mockVendors';
+import { Expense } from '@/types/expenses';
 
 // سنستخدم بيانات وهمية للتجربة
-const MOCK_EXPENSES = [
+const MOCK_EXPENSES: Expense[] = [
   {
     id: "1",
     description: "طلبية مستلزمات مكتبية",
     amount: 1200,
     date: new Date('2023-07-15'),
     category: "مستلزمات مكتبية",
-    paymentMethod: "cash",
+    paymentMethod: "cash", // تعديل القيمة للتوافق مع النوع المطلوب
     vendor: "شركة المستلزمات المكتبية",
     vendorId: "1"
   },
@@ -21,7 +22,7 @@ const MOCK_EXPENSES = [
     amount: 3500,
     date: new Date('2023-08-20'),
     category: "معدات إلكترونية",
-    paymentMethod: "bank",
+    paymentMethod: "bank", // تعديل القيمة للتوافق مع النوع المطلوب
     vendor: "مؤسسة الإمداد التجارية",
     vendorId: "2"
   },
@@ -31,7 +32,7 @@ const MOCK_EXPENSES = [
     amount: 5000,
     date: new Date('2023-09-05'),
     category: "أثاث مكتبي",
-    paymentMethod: "credit",
+    paymentMethod: "credit", // تعديل القيمة للتوافق مع النوع المطلوب
     vendor: "مؤسسة نور للتجهيزات",
     vendorId: "3"
   },
@@ -41,7 +42,7 @@ const MOCK_EXPENSES = [
     amount: 7500,
     date: new Date('2023-09-15'),
     category: "أجهزة وتقنية",
-    paymentMethod: "bank",
+    paymentMethod: "bank", // تعديل القيمة للتوافق مع النوع المطلوب
     vendor: "شركة تقنيات المستقبل",
     vendorId: "4"
   },
@@ -51,7 +52,7 @@ const MOCK_EXPENSES = [
     amount: 750,
     date: new Date('2023-09-25'),
     category: "منتجات ورقية",
-    paymentMethod: "cash",
+    paymentMethod: "cash", // تعديل القيمة للتوافق مع النوع المطلوب
     vendor: "مصنع الجودة للمنتجات الورقية",
     vendorId: "5"
   }
