@@ -25,6 +25,11 @@ interface PurchaseInvoiceFormProps {
   onWhatsAppSend: () => void;
   isLoading: boolean;
   isPrintPreview?: boolean;
+  // Add these new props
+  isAddingItem: boolean;
+  setIsAddingItem: (isAdding: boolean) => void;
+  editingItemIndex: number | null;
+  setEditingItemIndex: (index: number | null) => void;
 }
 
 export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({ 
@@ -43,7 +48,12 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({
   onPrint,
   onWhatsAppSend,
   isLoading,
-  isPrintPreview = false
+  isPrintPreview = false,
+  // Add new props here
+  isAddingItem,
+  setIsAddingItem,
+  editingItemIndex,
+  setEditingItemIndex
 }) => {
   // Show help toast when the form loads (but not in print preview mode)
   React.useEffect(() => {
@@ -83,10 +93,10 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({
       
       <PurchaseInvoiceTable
         items={invoice.items}
-        isAddingItem={false}
-        editingItemIndex={null}
-        setIsAddingItem={() => {}}
-        setEditingItemIndex={() => {}}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        setIsAddingItem={setIsAddingItem}
+        setEditingItemIndex={setEditingItemIndex}
         onAddItem={addItem}
         onUpdateItem={updateItem}
         onRemoveItem={removeItem}
@@ -141,4 +151,3 @@ export const PurchaseInvoiceForm: React.FC<PurchaseInvoiceFormProps> = ({
     </div>
   );
 };
-

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -50,7 +49,11 @@ const PurchaseInvoicePage = () => {
     saveInvoice,
     printInvoice,
     sendViaWhatsApp,
-    isLoading
+    isLoading,
+    isAddingItem,
+    setIsAddingItem,
+    editingItemIndex,
+    setEditingItemIndex
   } = usePurchaseInvoice({ pdfData: pdfInvoiceData });
 
   useEffect(() => {
@@ -308,6 +311,11 @@ const PurchaseInvoicePage = () => {
                         onPrint={printInvoice}
                         onWhatsAppSend={sendViaWhatsApp}
                         isLoading={isLoading}
+                        // Add the new props here
+                        isAddingItem={isAddingItem}
+                        setIsAddingItem={setIsAddingItem}
+                        editingItemIndex={editingItemIndex}
+                        setEditingItemIndex={setEditingItemIndex}
                       />
                     </CardContent>
                   </Card>
@@ -357,6 +365,11 @@ const PurchaseInvoicePage = () => {
                     onWhatsAppSend={sendViaWhatsApp}
                     isLoading={isLoading}
                     isPrintPreview={true}
+                    // Add the new props to the preview form too
+                    isAddingItem={isAddingItem}
+                    setIsAddingItem={setIsAddingItem}
+                    editingItemIndex={editingItemIndex}
+                    setEditingItemIndex={setEditingItemIndex}
                   />
                 </CardContent>
               </Card>
@@ -382,4 +395,3 @@ const PurchaseInvoicePage = () => {
 };
 
 export default PurchaseInvoicePage;
-
