@@ -2,10 +2,10 @@
 import React from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table } from "@/components/ui/table";
-import { PurchaseTableHeader } from "./table/TableHeader";
 import { TableToolbar } from "./table/TableToolbar";
 import { ItemFormContainer } from "./table/ItemFormContainer";
 import { PurchaseTableBody } from "./table/PurchaseTableBody";
+import { PurchaseTableHeader } from "./table/TableHeader";
 import { usePurchaseTable } from "@/hooks/purchases/table";
 
 interface PurchaseInvoiceTableProps {
@@ -38,20 +38,20 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
     showGridLines,
     searchInputRef,
     tableRef,
-    isEditingCell,
     handleCellClick,
     handleProductSelect,
     handleDirectEdit,
     handleTableClick,
     toggleGridLines,
-    setActiveSearchCell
+    isEditingCell
   } = usePurchaseTable({
     items,
     onAddItem,
     onUpdateItem,
     onRemoveItem,
     isAddingItem,
-    editingItemIndex
+    editingItemIndex,
+    setEditingItemIndex
   });
   
   return (
@@ -77,15 +77,18 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
       
       {/* Items table */}
       <div className="border rounded overflow-auto rtl">
-        <Table className="min-w-full border-collapse" gridLines={showGridLines} striped bordered hoverable>
-          <PurchaseTableHeader showItemCodes={showItemCodes} showItemNotes={showItemNotes} />
+        <Table className={`min-w-full border-collapse ${showGridLines ? 'table-with-grid' : ''}`}>
+          <PurchaseTableHeader 
+            showItemCodes={showItemCodes} 
+            showItemNotes={showItemNotes} 
+          />
           <PurchaseTableBody
             items={items}
             activeSearchCell={activeSearchCell}
             handleCellClick={handleCellClick}
             handleProductSelect={handleProductSelect}
             handleDirectEdit={handleDirectEdit}
-            setActiveSearchCell={setActiveSearchCell}
+            setActiveSearchCell={cell => {}}
             setEditingItemIndex={setEditingItemIndex}
             onRemoveItem={onRemoveItem}
             isAddingItem={isAddingItem}

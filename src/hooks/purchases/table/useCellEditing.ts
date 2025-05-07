@@ -39,7 +39,7 @@ export function useCellEditing({
   };
 
   // Handle direct edit of cell value
-  const handleDirectEdit = (value: string, rowIndex: number, cellName: string) => {
+  const handleDirectEdit = (rowIndex: number, cellName: string, value: any) => {
     const updatedItem = { ...items[rowIndex], [cellName]: value };
     
     // Recalculate total if quantity or price changed
@@ -64,6 +64,7 @@ export function useCellEditing({
         code: product.code,
         name: product.name,
         price: product.price,
+        unit: product.unit || "قطعة", // Default to piece if unit not provided
         total: items[rowIndex].quantity * product.price
       };
       onUpdateItem(rowIndex, updatedItem);

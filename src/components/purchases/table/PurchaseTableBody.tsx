@@ -1,17 +1,19 @@
 
 import React from "react";
-import { PurchaseItem } from "@/types/purchases";
 import { TableBody, TableRow, TableCell } from "@/components/ui/table";
+import { PurchaseItem } from "@/types/purchases";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
-import { formatCurrency } from "@/utils/formatters";
+import { Edit, Trash, Plus, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ItemCodeCell } from "./cells/ItemCodeCell";
+import { ItemNameCell } from "./cells/ItemNameCell";
 
 interface PurchaseTableBodyProps {
   items: PurchaseItem[];
   activeSearchCell: { rowIndex: number; cellName: string } | null;
   handleCellClick: (rowIndex: number, cellName: string) => void;
-  handleProductSelect: (product: any, rowIndex?: number) => void;
-  handleDirectEdit: (value: string, rowIndex: number, cellName: string) => void;
+  handleProductSelect: (product: any, index?: number) => void;
+  handleDirectEdit: (index: number, field: string, value: any) => void;
   setActiveSearchCell: (cell: { rowIndex: number; cellName: string } | null) => void;
   setEditingItemIndex: (index: number | null) => void;
   onRemoveItem: (index: number) => void;
@@ -41,180 +43,211 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
   showItemCodes = true,
   showItemNotes = true
 }) => {
+  const handleEditRow = (index: number) => {
+    if (!isAddingItem && editingItemIndex === null) {
+      setEditingItemIndex(index);
+    }
+  };
+
+  const handleDeleteRow = (index: number) => {
+    onRemoveItem(index);
+  };
+
+  const currentlyEditing = (index: number): boolean => {
+    return editingItemIndex === index;
+  };
+
+  const isActive = (rowIndex: number, cellName: string): boolean => {
+    return activeSearchCell !== null && 
+           activeSearchCell.rowIndex === rowIndex && 
+           activeSearchCell.cellName === cellName;
+  };
+
+  const handleNormalCellChange = (index: number, field: keyof PurchaseItem, e: React.ChangeEvent<HTMLInputElement>) => {
+    let value: string | number = e.target.value;
+    
+    // Convert to numbers for numeric fields
+    if (field === 'quantity' || field === 'price') {
+      value = parseFloat(value) || 0;
+      // Recalculate total
+      const item = items[index];
+      const newTotal = field === 'quantity' 
+        ? value * item.price 
+        : item.quantity * value;
+      
+      // Update total along with the changed field
+      handleDirectEdit(index, field, value);
+      handleDirectEdit(index, 'total', newTotal);
+    } else {
+      // For non-numeric fields just update the field
+      handleDirectEdit(index, field, value);
+    }
+  };
+
   return (
     <TableBody>
       {items.length === 0 ? (
         <TableRow>
-          <TableCell colSpan={showItemNotes ? (showItemCodes ? 10 : 9) : (showItemCodes ? 9 : 8)} className="h-32 text-center">
-            لا توجد أصناف مضافة بعد. اضغط على "إضافة صنف جديد" لإضافة الأصناف.
+          <TableCell colSpan={showItemCodes && showItemNotes ? 9 : showItemCodes || showItemNotes ? 8 : 7} className="text-center h-24 text-muted-foreground">
+            {isAddingItem ? (
+              "يتم إضافة صنف جديد..."
+            ) : (
+              <div className="flex flex-col items-center">
+                <p>لا توجد أصناف في الفاتورة</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-2"
+                  onClick={() => setIsAddingItem(true)}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  إضافة صنف جديد
+                </Button>
+              </div>
+            )}
           </TableCell>
         </TableRow>
       ) : (
         items.map((item, index) => (
-          <TableRow key={index} className={editingItemIndex === index ? "bg-muted/20" : ""}>
+          <TableRow 
+            key={item.id || index} 
+            className={`
+              ${currentlyEditing(index) ? 'bg-blue-50' : ''}
+              ${activeSearchCell?.rowIndex === index ? 'bg-blue-50' : ''}
+            `}
+          >
             <TableCell className="text-center">{index + 1}</TableCell>
             
             {showItemCodes && (
-              <TableCell
-                className="cursor-pointer"
-                onClick={() => handleCellClick(index, 'code')}
-              >
-                {isEditingCell(index, 'code') ? (
-                  <input
-                    ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'code' ? searchInputRef : null}
-                    type="text"
-                    className="w-full p-1 border rounded"
-                    value={item.code || ''}
-                    onChange={(e) => handleDirectEdit(e.target.value, index, 'code')}
-                    onBlur={() => setActiveSearchCell(null)}
-                  />
-                ) : (
-                  item.code || '-'
-                )}
-              </TableCell>
+              <ItemCodeCell
+                code={item.code}
+                index={index}
+                handleProductSelect={handleProductSelect}
+                isAddingItem={isAddingItem}
+                editingItemIndex={editingItemIndex}
+                handleDirectEdit={(index, field, value) => handleDirectEdit(index, field, value)}
+              />
             )}
             
-            <TableCell
-              className="cursor-pointer"
-              onClick={() => handleCellClick(index, 'name')}
-            >
-              {isEditingCell(index, 'name') ? (
-                <input
-                  ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'name' ? searchInputRef : null}
-                  type="text"
-                  className="w-full p-1 border rounded"
-                  value={item.name || ''}
-                  onChange={(e) => handleDirectEdit(e.target.value, index, 'name')}
-                  onBlur={() => setActiveSearchCell(null)}
-                />
-              ) : (
-                item.name || '-'
-              )}
-            </TableCell>
+            <ItemNameCell
+              name={item.name}
+              index={index}
+              handleProductSelect={handleProductSelect}
+              isAddingItem={isAddingItem}
+              editingItemIndex={editingItemIndex}
+              handleDirectEdit={(index, field, value) => handleDirectEdit(index, field, value)}
+            />
             
-            <TableCell
-              className="cursor-pointer text-center"
-              onClick={() => handleCellClick(index, 'unit')}
-            >
-              {isEditingCell(index, 'unit') ? (
-                <input
-                  ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'unit' ? searchInputRef : null}
-                  type="text"
-                  className="w-full p-1 border rounded text-center"
-                  value={item.unit || ''}
-                  onChange={(e) => handleDirectEdit(e.target.value, index, 'unit')}
-                  onBlur={() => setActiveSearchCell(null)}
-                />
-              ) : (
-                item.unit || '-'
-              )}
-            </TableCell>
-            
-            <TableCell
-              className="cursor-pointer text-center"
-              onClick={() => handleCellClick(index, 'quantity')}
-            >
-              {isEditingCell(index, 'quantity') ? (
-                <input
-                  ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'quantity' ? searchInputRef : null}
-                  type="number"
-                  className="w-full p-1 border rounded text-center"
-                  value={item.quantity || ''}
-                  onChange={(e) => handleDirectEdit(e.target.value, index, 'quantity')}
-                  onBlur={() => setActiveSearchCell(null)}
-                />
-              ) : (
-                item.quantity
-              )}
-            </TableCell>
-            
-            <TableCell
-              className="cursor-pointer text-center"
-              onClick={() => handleCellClick(index, 'price')}
-            >
-              {isEditingCell(index, 'price') ? (
-                <input
-                  ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'price' ? searchInputRef : null}
-                  type="number"
-                  className="w-full p-1 border rounded text-center"
-                  value={item.price || ''}
-                  onChange={(e) => handleDirectEdit(e.target.value, index, 'price')}
-                  onBlur={() => setActiveSearchCell(null)}
-                />
-              ) : (
-                formatCurrency(item.price || 0)
-              )}
-            </TableCell>
-            
-            <TableCell
-              className="cursor-pointer text-center"
-              onClick={() => handleCellClick(index, 'tax')}
-            >
-              {isEditingCell(index, 'tax') ? (
-                <input
-                  ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'tax' ? searchInputRef : null}
-                  type="number"
-                  className="w-full p-1 border rounded text-center"
-                  value={item.tax || ''}
-                  onChange={(e) => handleDirectEdit(e.target.value, index, 'tax')}
-                  onBlur={() => setActiveSearchCell(null)}
-                />
-              ) : (
-                `${item.tax || 0}%`
-              )}
-            </TableCell>
-            
-            <TableCell
-              className="cursor-pointer text-center"
-              onClick={() => handleCellClick(index, 'discount')}
-            >
-              {isEditingCell(index, 'discount') ? (
-                <input
-                  ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'discount' ? searchInputRef : null}
-                  type="number"
-                  className="w-full p-1 border rounded text-center"
-                  value={item.discount || ''}
-                  onChange={(e) => handleDirectEdit(e.target.value, index, 'discount')}
-                  onBlur={() => setActiveSearchCell(null)}
-                />
-              ) : (
-                `${item.discount || 0}%`
-              )}
-            </TableCell>
-            
-            <TableCell className="text-center font-medium">
-              {formatCurrency(item.total || 0)}
-            </TableCell>
-            
-            {showItemNotes && (
-              <TableCell
-                className="cursor-pointer"
-                onClick={() => handleCellClick(index, 'notes')}
-              >
-                {isEditingCell(index, 'notes') ? (
-                  <input
-                    ref={activeSearchCell?.rowIndex === index && activeSearchCell?.cellName === 'notes' ? searchInputRef : null}
-                    type="text"
-                    className="w-full p-1 border rounded"
-                    value={item.notes || ''}
-                    onChange={(e) => handleDirectEdit(e.target.value, index, 'notes')}
-                    onBlur={() => setActiveSearchCell(null)}
-                  />
-                ) : (
-                  item.notes || '-'
-                )}
-              </TableCell>
-            )}
-            
+            {/* وحدة القياس */}
             <TableCell className="text-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={() => onRemoveItem(index)}
-              >
-                <Trash className="h-4 w-4 text-destructive" />
-              </Button>
+              {isEditingCell(index, 'unit') ? (
+                <Input
+                  value={item.unit || ''}
+                  onChange={(e) => handleNormalCellChange(index, 'unit', e)}
+                  className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <div 
+                  className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
+                  onClick={() => handleCellClick(index, 'unit')}
+                >
+                  {item.unit || 'قطعة'}
+                </div>
+              )}
+            </TableCell>
+            
+            {/* الكمية */}
+            <TableCell className="text-center">
+              {isEditingCell(index, 'quantity') ? (
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={item.quantity}
+                  onChange={(e) => handleNormalCellChange(index, 'quantity', e)}
+                  className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <div 
+                  className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
+                  onClick={() => handleCellClick(index, 'quantity')}
+                >
+                  {item.quantity}
+                </div>
+              )}
+            </TableCell>
+            
+            {/* السعر */}
+            <TableCell className="text-center">
+              {isEditingCell(index, 'price') ? (
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={item.price}
+                  onChange={(e) => handleNormalCellChange(index, 'price', e)}
+                  className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <div 
+                  className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
+                  onClick={() => handleCellClick(index, 'price')}
+                >
+                  {item.price.toFixed(2)}
+                </div>
+              )}
+            </TableCell>
+            
+            {/* المجموع */}
+            <TableCell className="text-center font-semibold">
+              {item.total.toFixed(2)}
+            </TableCell>
+            
+            {/* ملاحظات */}
+            {showItemNotes && (
+              <TableCell>
+                {isEditingCell(index, 'notes') ? (
+                  <Input
+                    value={item.notes || ''}
+                    onChange={(e) => handleNormalCellChange(index, 'notes', e)}
+                    className="w-full h-full border-none p-0 focus:ring-2 focus:ring-blue-500"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <div 
+                    className="w-full h-full min-h-[24px] cursor-pointer flex items-center"
+                    onClick={() => handleCellClick(index, 'notes')}
+                  >
+                    {item.notes || ''}
+                  </div>
+                )}
+              </TableCell>
+            )}
+            
+            {/* الإجراءات */}
+            <TableCell className="text-center">
+              <div className="flex justify-center space-x-1 rtl:space-x-reverse">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => handleEditRow(index)}
+                  disabled={isAddingItem || editingItemIndex !== null}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-red-500 hover:text-red-700"
+                  onClick={() => handleDeleteRow(index)}
+                  disabled={isAddingItem || editingItemIndex !== null}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
             </TableCell>
           </TableRow>
         ))

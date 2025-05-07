@@ -1,4 +1,3 @@
-
 export interface PurchaseInvoice {
   id: string;
   invoiceNumber: string;

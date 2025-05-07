@@ -1,40 +1,66 @@
 
+import { useRef, useEffect } from 'react';
 import { PurchaseItem } from "@/types/purchases";
-import { RefObject } from "react";
 
 interface UseTableEventsProps {
   activeSearchCell: { rowIndex: number; cellName: string } | null;
-  tableRef: RefObject<HTMLDivElement>;
+  tableRef: React.RefObject<HTMLDivElement>;
   setActiveSearchCell: (cell: { rowIndex: number; cellName: string } | null) => void;
   setIsEditingCell: (isEditing: boolean) => void;
   items: PurchaseItem[];
 }
 
-export function useTableEvents({
-  activeSearchCell,
-  tableRef,
-  setActiveSearchCell,
+export function useTableEvents({ 
+  activeSearchCell, 
+  tableRef, 
+  setActiveSearchCell, 
   setIsEditingCell,
   items
 }: UseTableEventsProps) {
+  const clickOutsideRef = useRef<boolean>(false);
   
-  // Handle clicks outside of active cells to close edit mode
-  const handleTableClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // If no active search cell, nothing to do
+  // Handle click outside active cell
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (clickOutsideRef.current) {
+        clickOutsideRef.current = false;
+        return;
+      }
+      
+      if (activeSearchCell && tableRef.current && !tableRef.current.contains(e.target as Node)) {
+        console.log("Click outside table - finishing editing");
+        setActiveSearchCell(null);
+        setIsEditingCell(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeSearchCell, setActiveSearchCell, setIsEditingCell, tableRef]);
+  
+  // Function to detect clicks inside the table but outside the active cell
+  const handleTableClick = (e: React.MouseEvent) => {
     if (!activeSearchCell) return;
     
-    // Check if clicked element is within the search cell
-    const activeCell = document.querySelector(`.editable-cell.active`);
-    if (activeCell && activeCell.contains(e.target as Node)) {
-      return; // Click was inside active cell, don't close
+    // Check if click is on a table cell
+    const target = e.target as HTMLElement;
+    const isCellElement = target.tagName === 'TD' || 
+                          target.closest('td') || 
+                          target.tagName === 'TR' || 
+                          target.closest('tr');
+    
+    if (isCellElement) {
+      // Let the cell click handler deal with this
+      return;
     }
     
-    // Check if click was inside the table
-    if (tableRef.current && tableRef.current.contains(e.target as Node)) {
-      // If not in an active cell but within the table, close the active cell
-      setActiveSearchCell(null);
-      setIsEditingCell(false);
-    }
+    // Click inside table but not on a cell - finish editing
+    console.log("Click inside table but not on cell - finishing editing");
+    setActiveSearchCell(null);
+    setIsEditingCell(false);
   };
   
   return {

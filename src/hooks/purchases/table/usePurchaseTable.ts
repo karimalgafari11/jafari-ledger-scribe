@@ -13,6 +13,7 @@ export interface UsePurchaseTableProps {
   onRemoveItem: (index: number) => void;
   isAddingItem: boolean;
   editingItemIndex: number | null;
+  setEditingItemIndex: (index: number | null) => void;
 }
 
 export function usePurchaseTable({
@@ -21,7 +22,8 @@ export function usePurchaseTable({
   onUpdateItem,
   onRemoveItem,
   isAddingItem,
-  editingItemIndex
+  editingItemIndex,
+  setEditingItemIndex
 }: UsePurchaseTableProps) {
   // Use our smaller hooks
   const {
@@ -87,7 +89,6 @@ export function usePurchaseTable({
     handleDirectEdit,
     handleTableClick,
     toggleGridLines,
-    setActiveSearchCell,
     finishEditing,
   };
 }
