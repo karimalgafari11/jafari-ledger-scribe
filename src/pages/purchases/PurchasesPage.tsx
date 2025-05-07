@@ -14,9 +14,10 @@ const PurchasesPage = () => {
     <Layout>
       <Header 
         title="نظام المشتريات" 
-        subtitle="إدارة عمليات الشراء والموردين والمخزون"
         showBack={false}
-      />
+      >
+        <span className="text-sm text-gray-300">إدارة عمليات الشراء والموردين والمخزون</span>
+      </Header>
 
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
