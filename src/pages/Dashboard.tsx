@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Layout } from "@/components/Layout";
 import { ZoomProvider } from "@/components/interactive/ZoomControl";
@@ -11,7 +12,9 @@ import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { useDashboardState } from "@/hooks/useDashboardState";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-import { CreditCard, Database, Users } from "lucide-react";
+import { CreditCard, Database, Users, Settings2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // إضافة اختصار جديد لصفحة تسجيل الدفعات
 const paymentShortcut: ShortcutItem = {
@@ -58,6 +61,7 @@ const customersShortcut: ShortcutItem = {
 const Dashboard = () => {
   // استدعاء بيانات المساعد الذكي للحصول على التنبيهات النظامية
   const { systemAlerts } = useAiAssistant();
+  const navigate = useNavigate();
   
   // استدعاء حالة لوحة التحكم
   const {
@@ -124,6 +128,22 @@ const Dashboard = () => {
     }
   }, [shortcuts, handleShortcutsChange]);
 
+  // التنقل إلى صفحات الإعدادات المختلفة
+  const handleNavigateToSettings = (path: string) => {
+    navigate(path);
+    toast.success(`جاري الانتقال إلى ${path}`);
+  };
+
+  // فتح إعدادات النظام
+  const handleOpenSystemSettings = () => {
+    handleNavigateToSettings("/settings/system");
+  };
+
+  // فتح إعدادات محرك الذكاء الاصطناعي
+  const handleOpenAiSettings = () => {
+    handleNavigateToSettings("/settings/ai-engine");
+  };
+
   return (
     <Layout>
       <div className="flex flex-col h-full">
@@ -141,6 +161,8 @@ const Dashboard = () => {
               onDisplayOptionsChange={handleDisplayOptionsChange}
               shortcuts={shortcuts}
               onShortcutsChange={handleShortcutsChange}
+              onOpenSystemSettings={handleOpenSystemSettings}
+              onOpenAiSettings={handleOpenAiSettings}
             />
             
             <Button 
