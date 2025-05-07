@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceItem } from "@/types/invoices";
@@ -8,6 +7,13 @@ import { QuickProductSearch } from "./QuickProductSearch";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 
 // Import new components
 import { ItemTableHeader } from "./table-components/ItemTableHeader";
