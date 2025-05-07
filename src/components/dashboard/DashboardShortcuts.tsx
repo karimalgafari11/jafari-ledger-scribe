@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShortcutItem } from "@/types/dashboard";
+import { LucideIcon } from "lucide-react";
 
 interface DashboardShortcutsProps {
   shortcuts: ShortcutItem[];
@@ -21,7 +22,7 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
       {enabledShortcuts.map((shortcut) => {
-        const IconComponent = shortcut.icon;
+        const IconComponent = shortcut.icon as LucideIcon;
         return (
           <TooltipProvider key={shortcut.id}>
             <Tooltip>
@@ -40,7 +41,7 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
                   </div>
                   
                   <div className="p-2 bg-primary/10 rounded-full text-primary transform group-hover:scale-110 transition-transform">
-                    <IconComponent size={20} />
+                    {IconComponent && React.createElement(IconComponent, { size: 20 })}
                   </div>
                   
                   <span className="text-sm font-medium text-center">{shortcut.name}</span>
