@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Settings, FileText, Plus, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -13,28 +14,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-
-// تعريف نوع العنصر المخصص
-interface ShortcutItem {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  route: string;
-  enabled: boolean;
-  badge?: {
-    text: string;
-    variant?: "default" | "secondary" | "outline" | "destructive" | "success";
-  };
-  description?: string;
-}
-
-// تعريف نوع خيارات العرض
-interface DisplayOptions {
-  showStats: boolean;
-  showKpis: boolean;
-  showCharts: boolean;
-  showAiWidget: boolean;
-}
 
 export const DashboardSettings: React.FC<{
   displayOptions: DisplayOptions;
@@ -81,7 +60,7 @@ export const DashboardSettings: React.FC<{
       {
         id,
         name: newShortcut.name,
-        icon: <FileText size={20} />,
+        icon: FileText,
         route: newShortcut.route,
         enabled: true
       }
@@ -196,7 +175,7 @@ export const DashboardSettings: React.FC<{
                         >
                           <div className="flex items-center gap-2">
                             <div className="p-1.5 bg-muted rounded-md">
-                              {shortcut.icon}
+                              {React.createElement(shortcut.icon, { size: 20 })}
                             </div>
                             <div>
                               <p className="font-medium">{shortcut.name}</p>

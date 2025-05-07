@@ -11,6 +11,7 @@ import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { useDashboardState } from "@/hooks/useDashboardState";
+import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 
 const Dashboard = () => {
   // استدعاء بيانات المساعد الذكي للحصول على التنبيهات النظامية
@@ -83,7 +84,7 @@ const Dashboard = () => {
         </div>
         
         <div className="container p-4 mx-auto">
-          <DashboardShortcuts shortcuts={shortcuts.filter(shortcut => shortcut.enabled)} />
+          <DashboardShortcuts shortcuts={shortcuts} />
         </div>
 
         {interactiveMode ? (
