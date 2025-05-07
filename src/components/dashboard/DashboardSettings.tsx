@@ -5,10 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { toast } from "sonner";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import { SettingsContent } from "./settings/SettingsContent";
-import { FileText } from "lucide-react";
+import { useDashboardSettings } from "@/hooks/useDashboardSettings";
 
 export const DashboardSettings: React.FC<{
   displayOptions: DisplayOptions;
@@ -23,50 +22,19 @@ export const DashboardSettings: React.FC<{
 }) => {
   const isMobile = useIsMobile();
   
-  const handleDisplayOptionChange = (key: keyof DisplayOptions) => {
-    onDisplayOptionsChange({
-      ...displayOptions,
-      [key]: !displayOptions[key]
-    });
-  };
-  
-  const handleShortcutToggle = (id: string) => {
-    onShortcutsChange(
-      shortcuts.map(shortcut => 
-        shortcut.id === id ? { ...shortcut, enabled: !shortcut.enabled } : shortcut
-      )
-    );
-  };
-  
-  const handleAddShortcut = (shortcutData: Omit<ShortcutItem, "id" | "icon" | "enabled">) => {
-    const id = `custom-${Date.now()}`;
-    onShortcutsChange([
-      ...shortcuts,
-      {
-        id,
-        name: shortcutData.name,
-        icon: FileText,
-        route: shortcutData.route,
-        enabled: true,
-        description: shortcutData.description
-      }
-    ]);
-  };
-  
-  const handleDeleteShortcut = (id: string) => {
-    onShortcutsChange(shortcuts.filter(shortcut => shortcut.id !== id));
-    toast.success("تم حذف الاختصار بنجاح");
-  };
-  
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-    
-    const items = Array.from(shortcuts);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    
-    onShortcutsChange(items);
-  };
+  const {
+    handleDisplayOptionChange,
+    handleShortcutToggle,
+    handleDeleteShortcut,
+    handleDragEnd,
+    handleAddShortcut,
+    handleSaveSettings
+  } = useDashboardSettings({
+    initialDisplayOptions: displayOptions,
+    initialShortcuts: shortcuts,
+    onDisplayOptionsChange,
+    onShortcutsChange
+  });
   
   const settingsContentProps = {
     displayOptions,
@@ -108,7 +76,7 @@ export const DashboardSettings: React.FC<{
         </DialogHeader>
         <SettingsContent {...settingsContentProps} />
         <DialogFooter>
-          <Button type="submit" onClick={() => toast.success("تم حفظ الإعدادات")}>
+          <Button type="submit" onClick={handleSaveSettings}>
             حفظ الإعدادات
           </Button>
         </DialogFooter>
