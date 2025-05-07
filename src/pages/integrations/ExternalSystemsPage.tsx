@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -34,6 +33,7 @@ import {
 import { IntegrationStatCards } from "@/components/integrations/IntegrationStatCards";
 import { IntegrationActivityChart } from "@/components/integrations/IntegrationActivityChart";
 import { SystemConnectionHealth } from "@/components/integrations/SystemConnectionHealth";
+import { Label } from "@/components/ui/label";
 
 // تعريف أنواع البيانات للاتصالات الخارجية
 interface ExternalSystem {
@@ -315,7 +315,7 @@ const ExternalSystemsPage = () => {
         <TabsList className="grid w-full grid-cols-5 rtl">
           <TabsTrigger value="dashboard" className="flex justify-center gap-2">
             <Server className="h-4 w-4" />
-            لوحة التحكم
+            لوحة ��لتحكم
           </TabsTrigger>
           <TabsTrigger value="systems" className="flex justify-center gap-2">
             <Database className="h-4 w-4" />
@@ -584,62 +584,64 @@ const ExternalSystemsPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={form.handleSubmit(handleAddSystem)} className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleAddSystem)} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>اسم النظام</Label>
+                      <Input
+                        placeholder="أدخل اسم النظام الخارجي"
+                        {...form.register("name", { required: true })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>نوع النظام</Label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        {...form.register("type", { required: true })}
+                      >
+                        <option value="erp">نظام إدارة الموارد (ERP)</option>
+                        <option value="accounting">نظام محاسبي</option>
+                        <option value="banking">نظام بنكي</option>
+                        <option value="ecommerce">نظام تجارة إلكترونية</option>
+                        <option value="payment">نظام دفع إلكتروني</option>
+                        <option value="custom">نظام مخصص</option>
+                      </select>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-2">
-                    <FormLabel>اسم النظام</FormLabel>
+                    <Label>عنوان الواجهة البرمجية (API URL)</Label>
                     <Input
-                      placeholder="أدخل اسم النظام الخارجي"
-                      {...form.register("name", { required: true })}
+                      placeholder="https://example.com/api"
+                      {...form.register("url")}
                     />
                   </div>
+                  
                   <div className="space-y-2">
-                    <FormLabel>نوع النظام</FormLabel>
-                    <select
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      {...form.register("type", { required: true })}
-                    >
-                      <option value="erp">نظام إدارة الموارد (ERP)</option>
-                      <option value="accounting">نظام محاسبي</option>
-                      <option value="banking">نظام بنكي</option>
-                      <option value="ecommerce">نظام تجارة إلكترونية</option>
-                      <option value="payment">نظام دفع إلكتروني</option>
-                      <option value="custom">نظام مخصص</option>
-                    </select>
+                    <Label>مفتاح الواجهة البرمجية (API Key)</Label>
+                    <Input
+                      type="password"
+                      placeholder="أدخل مفتاح الواجهة البرمجية"
+                      {...form.register("apiKey")}
+                    />
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <FormLabel>عنوان الواجهة البرمجية (API URL)</FormLabel>
-                  <Input
-                    placeholder="https://example.com/api"
-                    {...form.register("url")}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <FormLabel>مفتاح الواجهة البرمجية (API Key)</FormLabel>
-                  <Input
-                    type="password"
-                    placeholder="أدخل مفتاح الواجهة البرمجية"
-                    {...form.register("apiKey")}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <FormLabel>وصف النظام</FormLabel>
-                  <Input
-                    placeholder="أدخل وصفًا مختصرًا للنظام الخارجي"
-                    {...form.register("description")}
-                  />
-                </div>
-                
-                <div className="pt-4">
-                  <Button type="submit" className="w-full md:w-auto">
-                    إضافة النظام
-                  </Button>
-                </div>
-              </form>
+                  
+                  <div className="space-y-2">
+                    <Label>وصف النظام</Label>
+                    <Input
+                      placeholder="أدخل وصفًا مختصرًا للنظام الخارجي"
+                      {...form.register("description")}
+                    />
+                  </div>
+                  
+                  <div className="pt-4">
+                    <Button type="submit" className="w-full md:w-auto">
+                      إضافة النظام
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             </CardContent>
           </Card>
         </TabsContent>
@@ -662,7 +664,7 @@ const ExternalSystemsPage = () => {
 
               <form onSubmit={handleWebhookTrigger} className="space-y-4">
                 <div className="space-y-2">
-                  <FormLabel>عنوان Webhook</FormLabel>
+                  <Label>عنوان Webhook</Label>
                   <Input
                     placeholder="https://example.com/webhook"
                     value={webhookUrl}
