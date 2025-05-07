@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,15 @@ import {
   CreditCard, 
   Zap, 
   AlertTriangle,
-  Check
+  Check,
+  Link,
+  Server,
+  Webhook,
+  PlugZap
 } from "lucide-react";
+import { IntegrationStatCards } from "@/components/integrations/IntegrationStatCards";
+import { IntegrationActivityChart } from "@/components/integrations/IntegrationActivityChart";
+import { SystemConnectionHealth } from "@/components/integrations/SystemConnectionHealth";
 
 // تعريف أنواع البيانات للاتصالات الخارجية
 interface ExternalSystem {
@@ -38,6 +45,9 @@ interface ExternalSystem {
   url?: string;
   apiKey?: string;
   description?: string;
+  connections?: number;
+  dataTransferred?: string;
+  successRate?: number;
 }
 
 // بيانات تجريبية للأنظمة المتكاملة
@@ -49,7 +59,10 @@ const mockExternalSystems: ExternalSystem[] = [
     status: "active",
     lastSync: new Date(2023, 4, 15),
     url: "https://erp.example.com/api",
-    description: "نظام إدارة الموارد الرئيسي للشركة"
+    description: "نظام إدارة الموارد الرئيسي للشركة",
+    connections: 524,
+    dataTransferred: "1.2 GB",
+    successRate: 98.7
   },
   {
     id: "sys-2",
@@ -58,7 +71,10 @@ const mockExternalSystems: ExternalSystem[] = [
     status: "active",
     lastSync: new Date(2023, 4, 18),
     url: "https://payments.example.com/api",
-    description: "نظام معالجة المدفوعات والمعاملات المالية"
+    description: "نظام معالجة المدفوعات والمعاملات المالية",
+    connections: 872,
+    dataTransferred: "756 MB",
+    successRate: 99.5
   },
   {
     id: "sys-3",
@@ -67,7 +83,10 @@ const mockExternalSystems: ExternalSystem[] = [
     status: "error",
     lastSync: new Date(2023, 4, 10),
     url: "https://shop.example.com/integration",
-    description: "منصة المتجر الإلكتروني للشركة"
+    description: "منصة المتجر الإلكتروني للشركة",
+    connections: 142,
+    dataTransferred: "3.5 GB",
+    successRate: 85.2
   },
   {
     id: "sys-4",
@@ -75,7 +94,10 @@ const mockExternalSystems: ExternalSystem[] = [
     type: "banking",
     status: "inactive",
     url: "https://bank.example.com/api",
-    description: "واجهة الربط مع النظام البنكي للتحويلات والتسويات"
+    description: "واجهة الربط مع النظام البنكي للتحويلات والتسويات",
+    connections: 0,
+    dataTransferred: "0 KB",
+    successRate: 0
   },
   {
     id: "sys-5",
@@ -83,16 +105,30 @@ const mockExternalSystems: ExternalSystem[] = [
     type: "accounting",
     status: "pending",
     url: "https://e-invoicing.example.com/api",
-    description: "نظام إدارة وإصدار الفواتير الإلكترونية"
+    description: "نظام إدارة وإصدار الفواتير الإلكترونية",
+    connections: 68,
+    dataTransferred: "425 MB",
+    successRate: 92.3
   }
 ];
 
+// بيانات تجريبية لسجل الاتصالات
+const connectionLogs = [
+  { timestamp: new Date(2023, 5, 20, 10, 15), system: "نظام إدارة الموارد (ERP)", status: "success", message: "تمت مزامنة البيانات بنجاح", dataSize: "2.3 MB" },
+  { timestamp: new Date(2023, 5, 20, 9, 30), system: "بوابة الدفع الإلكتروني", status: "success", message: "تم تحديث معلومات المدفوعات", dataSize: "450 KB" },
+  { timestamp: new Date(2023, 5, 20, 8, 45), system: "منصة التجارة الإلكترونية", status: "error", message: "فشل في الاتصال - خطأ في المصادقة", dataSize: "0 KB" },
+  { timestamp: new Date(2023, 5, 19, 22, 0), system: "نظام إدارة الموارد (ERP)", status: "success", message: "تمت مزامنة البيانات بنجاح", dataSize: "1.7 MB" },
+  { timestamp: new Date(2023, 5, 19, 18, 30), system: "نظام الفواتير الإلكترونية", status: "warning", message: "تأخر في الاستجابة - تمت المزامنة جزئياً", dataSize: "820 KB" }
+];
+
 const ExternalSystemsPage = () => {
-  const [activeTab, setActiveTab] = useState("systems");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [systems, setSystems] = useState<ExternalSystem[]>(mockExternalSystems);
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isWebhookLoading, setIsWebhookLoading] = useState(false);
+  const [healthCheckStatus, setHealthCheckStatus] = useState<{[key: string]: 'healthy' | 'degraded' | 'error'}>({});
 
+  // نموذج إضافة نظام خارجي
   const form = useForm({
     defaultValues: {
       name: "",
@@ -103,6 +139,31 @@ const ExternalSystemsPage = () => {
     }
   });
 
+  // محاكاة فحص حالة الأنظمة عند تحميل الصفحة
+  useEffect(() => {
+    const checkSystemsHealth = () => {
+      const newHealthStatus: {[key: string]: 'healthy' | 'degraded' | 'error'} = {};
+      
+      systems.forEach(system => {
+        if (system.status === 'active') {
+          newHealthStatus[system.id] = Math.random() > 0.8 ? 'degraded' : 'healthy';
+        } else if (system.status === 'error') {
+          newHealthStatus[system.id] = 'error';
+        } else {
+          newHealthStatus[system.id] = 'degraded';
+        }
+      });
+      
+      setHealthCheckStatus(newHealthStatus);
+    };
+    
+    checkSystemsHealth();
+    
+    // فحص الصحة كل 30 ثانية
+    const intervalId = setInterval(checkSystemsHealth, 30000);
+    return () => clearInterval(intervalId);
+  }, [systems]);
+
   // إضافة نظام خارجي جديد
   const handleAddSystem = (data: any) => {
     const newSystem: ExternalSystem = {
@@ -112,7 +173,10 @@ const ExternalSystemsPage = () => {
       status: "inactive",
       url: data.url,
       apiKey: data.apiKey,
-      description: data.description
+      description: data.description,
+      connections: 0,
+      dataTransferred: "0 KB",
+      successRate: 0
     };
 
     setSystems([...systems, newSystem]);
@@ -149,10 +213,21 @@ const ExternalSystemsPage = () => {
     setTimeout(() => {
       setSystems(systems.map(sys => {
         if (sys.id === id) {
+          // تحسين قيم البيانات والاتصالات بشكل عشوائي
+          const connections = sys.connections || 0;
+          const dataSize = parseFloat((sys.dataTransferred || "0").split(" ")[0]);
+          const dataUnit = (sys.dataTransferred || "KB").split(" ")[1];
+          
+          const newConnections = connections + Math.floor(Math.random() * 10 + 5);
+          const newDataSize = dataSize + (Math.random() * 0.5).toFixed(1);
+          
           return {
             ...sys,
             lastSync: new Date(),
-            status: "active"
+            status: "active",
+            connections: newConnections,
+            dataTransferred: `${newDataSize} ${dataUnit}`,
+            successRate: Math.min(99.9, (sys.successRate || 80) + Math.random() * 2)
           };
         }
         return sys;
@@ -223,6 +298,12 @@ const ExternalSystemsPage = () => {
       default: return <ExternalLink className="h-4 w-4" />;
     }
   };
+  
+  // تحويل رقم إلى نسبة مئوية معروضة
+  const formatPercentage = (value: number | undefined) => {
+    if (value === undefined) return '0%';
+    return `${value.toFixed(1)}%`;
+  };
 
   return (
     <div className="container p-6 mx-auto">
@@ -231,21 +312,177 @@ const ExternalSystemsPage = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList className="grid w-full grid-cols-3 rtl">
+        <TabsList className="grid w-full grid-cols-5 rtl">
+          <TabsTrigger value="dashboard" className="flex justify-center gap-2">
+            <Server className="h-4 w-4" />
+            لوحة التحكم
+          </TabsTrigger>
           <TabsTrigger value="systems" className="flex justify-center gap-2">
             <Database className="h-4 w-4" />
             الأنظمة المتكاملة
           </TabsTrigger>
           <TabsTrigger value="add" className="flex justify-center gap-2">
             <ExternalLink className="h-4 w-4" />
-            إضافة نظام جديد
+            إضافة نظام
           </TabsTrigger>
           <TabsTrigger value="webhook" className="flex justify-center gap-2">
-            <Zap className="h-4 w-4" />
+            <Webhook className="h-4 w-4" />
             Webhook
+          </TabsTrigger>
+          <TabsTrigger value="logs" className="flex justify-center gap-2">
+            <FileText className="h-4 w-4" />
+            سجل الاتصالات
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="dashboard" className="mt-4">
+          <div className="grid grid-cols-1 gap-6">
+            {/* بطاقات الإحصائيات */}
+            <IntegrationStatCards systems={systems} />
+            
+            {/* حالة اتصال الأنظمة */}
+            <SystemConnectionHealth systems={systems} healthStatus={healthCheckStatus} />
+            
+            {/* الرسم البياني للأنشطة */}
+            <IntegrationActivityChart systems={systems} />
+
+            {/* بطاقة النظرة العامة */}
+            <Card>
+              <CardHeader>
+                <CardTitle>النظرة العامة للتكاملات</CardTitle>
+                <CardDescription>
+                  تفاصيل حالة التكاملات والأداء العام للأنظمة الخارجية
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <Card className="bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-blue-700">متوسط نسبة النجاح</p>
+                          <p className="text-2xl font-bold text-blue-800">
+                            {formatPercentage(systems.reduce((acc, sys) => acc + (sys.successRate || 0), 0) / 
+                                            systems.filter(sys => sys.successRate !== undefined).length)}
+                          </p>
+                        </div>
+                        <div className="p-2 bg-blue-200 rounded-full">
+                          <Check className="h-5 w-5 text-blue-700" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-b from-green-50 to-green-100 border-green-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-green-700">إجمالي البيانات المنقولة</p>
+                          <p className="text-2xl font-bold text-green-800">5.8 GB</p>
+                        </div>
+                        <div className="p-2 bg-green-200 rounded-full">
+                          <Database className="h-5 w-5 text-green-700" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-b from-purple-50 to-purple-100 border-purple-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-purple-700">عدد الاتصالات (24 ساعة)</p>
+                          <p className="text-2xl font-bold text-purple-800">1,204</p>
+                        </div>
+                        <div className="p-2 bg-purple-200 rounded-full">
+                          <Link className="h-5 w-5 text-purple-700" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* التنبيهات والمشكلات الهامة */}
+            <Card>
+              <CardHeader className="bg-amber-50">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-amber-600" />
+                    المشكلات والتنبيهات
+                  </CardTitle>
+                  <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
+                    3 مشكلات نشطة
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y">
+                  <div className="p-4 hover:bg-muted/30">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">خطأ في الاتصال مع منصة التجارة الإلكترونية</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          فشل في المصادقة - تحقق من صلاحية مفتاح API
+                        </p>
+                      </div>
+                      <Badge variant="destructive">عالي</Badge>
+                    </div>
+                    <div className="flex justify-between items-center mt-3">
+                      <span className="text-xs text-muted-foreground">منذ 3 ساعات</span>
+                      <Button variant="outline" size="sm" className="h-7">
+                        إصلاح
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 hover:bg-muted/30">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">تأخر في استجابة نظام الفواتير الإلكترونية</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          زمن الاستجابة يتجاوز 3 ثوان - قد يؤثر على أداء النظام
+                        </p>
+                      </div>
+                      <Badge variant="warning" className="bg-amber-100 text-amber-800 hover:bg-amber-200">متوسط</Badge>
+                    </div>
+                    <div className="flex justify-between items-center mt-3">
+                      <span className="text-xs text-muted-foreground">منذ 12 ساعة</span>
+                      <Button variant="outline" size="sm" className="h-7">
+                        فحص
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 hover:bg-muted/30">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">تحذير: غياب المزامنة لأكثر من يومين</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          النظام البنكي لم تتم مزامنته منذ 48 ساعة
+                        </p>
+                      </div>
+                      <Badge variant="default">منخفض</Badge>
+                    </div>
+                    <div className="flex justify-between items-center mt-3">
+                      <span className="text-xs text-muted-foreground">منذ 2 يوم</span>
+                      <Button variant="outline" size="sm" className="h-7">
+                        مزامنة
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="bg-muted/30 px-4 py-3 flex justify-center">
+                <Button variant="ghost" size="sm" className="text-xs w-full">
+                  عرض كافة المشكلات (8)
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </TabsContent>
+        
         <TabsContent value="systems" className="mt-4">
           <Card>
             <CardHeader>
@@ -262,7 +499,8 @@ const ExternalSystemsPage = () => {
                     <TableHead>النوع</TableHead>
                     <TableHead>الحالة</TableHead>
                     <TableHead>آخر مزامنة</TableHead>
-                    <TableHead>عنوان الواجهة</TableHead>
+                    <TableHead>عدد الاتصالات</TableHead>
+                    <TableHead>نسبة النجاح</TableHead>
                     <TableHead>الإجراءات</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -293,8 +531,24 @@ const ExternalSystemsPage = () => {
                       <TableCell>
                         {system.lastSync ? new Date(system.lastSync).toLocaleString('ar-SA') : '-'}
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
-                        {system.url || '-'}
+                      <TableCell>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 font-medium">
+                          {system.connections || 0}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full ${
+                                (system.successRate || 0) > 95 ? 'bg-green-500' : 
+                                (system.successRate || 0) > 80 ? 'bg-amber-500' : 'bg-red-500'
+                              }`}
+                              style={{ width: `${system.successRate || 0}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-xs">{formatPercentage(system.successRate)}</span>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
@@ -473,80 +727,90 @@ const ExternalSystemsPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
+        
+        <TabsContent value="logs" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>سجل الاتصالات</CardTitle>
+              <CardDescription>
+                عرض سجل الاتصالات والعمليات مع الأنظمة الخارجية
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* فلترة السجلات */}
+                <div className="flex flex-wrap gap-2 justify-between items-center bg-muted/20 p-3 rounded-lg mb-4">
+                  <div className="flex gap-2 items-center">
+                    <Button variant="outline" size="sm">اليوم</Button>
+                    <Button variant="ghost" size="sm">آخر 7 أيام</Button>
+                    <Button variant="ghost" size="sm">الشهر الحالي</Button>
+                    <Button variant="ghost" size="sm">مخصص</Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">تصدير السجل</Button>
+                  </div>
+                </div>
+                
+                {/* جدول السجلات */}
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>التاريخ والوقت</TableHead>
+                      <TableHead>النظام</TableHead>
+                      <TableHead>الحالة</TableHead>
+                      <TableHead>الرسالة</TableHead>
+                      <TableHead>حجم البيانات</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {connectionLogs.map((log, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{log.timestamp.toLocaleString('ar-SA')}</TableCell>
+                        <TableCell>{log.system}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            log.status === 'success' ? 'success' : 
+                            log.status === 'warning' ? 'warning' : 
+                            'destructive'
+                          } className={
+                            log.status === 'success' ? 'bg-green-100 text-green-800' : 
+                            log.status === 'warning' ? 'bg-amber-100 text-amber-800' : 
+                            'bg-red-100 text-red-800'
+                          }>
+                            {log.status === 'success' ? 'نجاح' : 
+                             log.status === 'warning' ? 'تحذير' : 'خطأ'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{log.message}</TableCell>
+                        <TableCell>{log.dataSize}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                
+                {/* ترقيم الصفحات */}
+                <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse mt-4">
+                  <Button variant="outline" size="sm" disabled>
+                    السابق
+                  </Button>
+                  <Button variant="outline" size="sm" className="bg-primary/10 border-primary">
+                    1
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    2
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    3
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    التالي
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
-      
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>حالة الاتصال بالأنظمة الخارجية</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-green-700">أنظمة متصلة</p>
-                    <p className="text-2xl font-bold text-green-800">
-                      {systems.filter(s => s.status === 'active').length}
-                    </p>
-                  </div>
-                  <div className="p-2 bg-green-200 rounded-full">
-                    <Check className="h-5 w-5 text-green-700" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-red-50 border-red-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-red-700">أنظمة بها أخطاء</p>
-                    <p className="text-2xl font-bold text-red-800">
-                      {systems.filter(s => s.status === 'error').length}
-                    </p>
-                  </div>
-                  <div className="p-2 bg-red-200 rounded-full">
-                    <AlertTriangle className="h-5 w-5 text-red-700" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-yellow-50 border-yellow-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-yellow-700">أنظمة قيد الانتظار</p>
-                    <p className="text-2xl font-bold text-yellow-800">
-                      {systems.filter(s => s.status === 'pending').length}
-                    </p>
-                  </div>
-                  <div className="p-2 bg-yellow-200 rounded-full">
-                    <Database className="h-5 w-5 text-yellow-700" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-blue-700">إجمالي الأنظمة</p>
-                    <p className="text-2xl font-bold text-blue-800">
-                      {systems.length}
-                    </p>
-                  </div>
-                  <div className="p-2 bg-blue-200 rounded-full">
-                    <Globe className="h-5 w-5 text-blue-700" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
