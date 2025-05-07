@@ -12,7 +12,7 @@ const MOCK_EXPENSES: Expense[] = [
     amount: 1200,
     date: new Date('2023-07-15'),
     category: "مستلزمات مكتبية",
-    paymentMethod: "cash", // تعديل القيمة للتوافق مع النوع المطلوب
+    paymentMethod: "cash",
     vendor: "شركة المستلزمات المكتبية",
     vendorId: "1"
   },
@@ -22,7 +22,7 @@ const MOCK_EXPENSES: Expense[] = [
     amount: 3500,
     date: new Date('2023-08-20'),
     category: "معدات إلكترونية",
-    paymentMethod: "bank", // تعديل القيمة للتوافق مع النوع المطلوب
+    paymentMethod: "bank",
     vendor: "مؤسسة الإمداد التجارية",
     vendorId: "2"
   },
@@ -32,7 +32,7 @@ const MOCK_EXPENSES: Expense[] = [
     amount: 5000,
     date: new Date('2023-09-05'),
     category: "أثاث مكتبي",
-    paymentMethod: "credit", // تعديل القيمة للتوافق مع النوع المطلوب
+    paymentMethod: "credit",
     vendor: "مؤسسة نور للتجهيزات",
     vendorId: "3"
   },
@@ -42,7 +42,7 @@ const MOCK_EXPENSES: Expense[] = [
     amount: 7500,
     date: new Date('2023-09-15'),
     category: "أجهزة وتقنية",
-    paymentMethod: "bank", // تعديل القيمة للتوافق مع النوع المطلوب
+    paymentMethod: "bank",
     vendor: "شركة تقنيات المستقبل",
     vendorId: "4"
   },
@@ -52,7 +52,7 @@ const MOCK_EXPENSES: Expense[] = [
     amount: 750,
     date: new Date('2023-09-25'),
     category: "منتجات ورقية",
-    paymentMethod: "cash", // تعديل القيمة للتوافق مع النوع المطلوب
+    paymentMethod: "cash",
     vendor: "مصنع الجودة للمنتجات الورقية",
     vendorId: "5"
   }
@@ -134,7 +134,7 @@ export const useVendorReports = () => {
       const matchesCategory = category === 'all' || expense.category === category;
       const matchesSearch = !searchQuery || 
         expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        expense.vendor.toLowerCase().includes(searchQuery.toLowerCase());
+        (expense.vendor && expense.vendor.toLowerCase().includes(searchQuery.toLowerCase()));
       
       return matchesDate && matchesCategory && matchesSearch;
     });

@@ -1,4 +1,3 @@
-
 export interface Expense {
   id: string;
   date: Date;
@@ -10,6 +9,8 @@ export interface Expense {
   attachments?: string[];
   reference?: string;
   notes?: string;
+  vendor?: string;
+  vendorId?: string;
 }
 
 export interface ExpenseCategory {

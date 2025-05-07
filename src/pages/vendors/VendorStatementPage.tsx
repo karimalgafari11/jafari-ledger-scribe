@@ -110,9 +110,9 @@ const VendorStatementPage = () => {
     address: vendor.address || "",
     balance: vendor.balance,
     status: vendor.status === "نشط" ? "active" : "inactive",
-    type: "company", // إضافة القيم المطلوبة التي تنقص من كائن المورد
-    updatedAt: new Date(), // إضافة تاريخ محدث افتراضي
-    createdAt: new Date(vendor.createdAt) // تحويل تاريخ الإنشاء من نص إلى كائن Date
+    type: "company" as const, // تعديل النوع ليكون متوافقًا مع النوع المتوقع
+    updatedAt: new Date(),
+    createdAt: new Date(vendor.createdAt)
   };
 
   return (
