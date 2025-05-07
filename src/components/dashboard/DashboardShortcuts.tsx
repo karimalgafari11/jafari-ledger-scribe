@@ -22,7 +22,9 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
       {enabledShortcuts.map((shortcut) => {
-        const IconComponent = shortcut.icon as LucideIcon;
+        // Create a proper component reference that React can use
+        const IconComponent = shortcut.icon;
+        
         return (
           <TooltipProvider key={shortcut.id}>
             <Tooltip>
@@ -41,7 +43,12 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
                   </div>
                   
                   <div className="p-2 bg-primary/10 rounded-full text-primary transform group-hover:scale-110 transition-transform">
-                    {IconComponent && React.createElement(IconComponent, { size: 20 })}
+                    {typeof IconComponent === 'function' ? (
+                      <IconComponent size={20} />
+                    ) : (
+                      // Use a simple fallback if the icon is not a valid component
+                      <div className="w-5 h-5"></div>
+                    )}
                   </div>
                   
                   <span className="text-sm font-medium text-center">{shortcut.name}</span>
