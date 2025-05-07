@@ -10,6 +10,7 @@ import { usePurchaseTable } from "@/hooks/purchases/table";
 import { Product } from "@/types/inventory";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface PurchaseInvoiceTableProps {
   items: PurchaseItem[];
@@ -59,6 +60,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   
   // تعامل مع اختيار منتج من البحث في شريط الأدوات
   const handleToolbarProductSelect = (product: Product) => {
+    console.log("Product selected from toolbar:", product);
     const newItem: Partial<PurchaseItem> = {
       id: uuidv4(),
       productId: product.id,
@@ -75,52 +77,54 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   };
   
   return (
-    <div className="space-y-3" onClick={handleTableClick} ref={tableRef}>
-      <TableToolbar
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-        setIsAddingItem={setIsAddingItem}
-        handleProductSelect={handleToolbarProductSelect}
-        toggleGridLines={toggleGridLines}
-      />
-      
-      {/* Form for adding or editing items */}
-      <ItemFormContainer
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-        items={items}
-        onAddItem={onAddItem}
-        onUpdateItem={onUpdateItem}
-        setIsAddingItem={setIsAddingItem}
-        setEditingItemIndex={setEditingItemIndex}
-      />
-      
-      {/* Items table */}
-      <div className="border rounded overflow-auto rtl">
-        <Table className={`min-w-full border-collapse ${showGridLines ? 'table-with-grid' : ''}`}>
-          <PurchaseTableHeader 
-            showItemCodes={showItemCodes} 
-            showItemNotes={showItemNotes} 
-          />
-          <PurchaseTableBody
-            items={items}
-            activeSearchCell={activeSearchCell}
-            handleCellClick={handleCellClick}
-            handleProductSelect={handleProductSelect}
-            handleDirectEdit={handleDirectEdit}
-            setActiveSearchCell={cell => {}}
-            setEditingItemIndex={setEditingItemIndex}
-            onRemoveItem={onRemoveItem}
-            isAddingItem={isAddingItem}
-            editingItemIndex={editingItemIndex}
-            searchInputRef={searchInputRef}
-            setIsAddingItem={setIsAddingItem}
-            isEditingCell={isEditingCell}
-            showItemCodes={showItemCodes}
-            showItemNotes={showItemNotes}
-          />
-        </Table>
+    <TooltipProvider>
+      <div className="space-y-3" onClick={handleTableClick} ref={tableRef}>
+        <TableToolbar
+          isAddingItem={isAddingItem}
+          editingItemIndex={editingItemIndex}
+          setIsAddingItem={setIsAddingItem}
+          handleProductSelect={handleToolbarProductSelect}
+          toggleGridLines={toggleGridLines}
+        />
+        
+        {/* Form for adding or editing items */}
+        <ItemFormContainer
+          isAddingItem={isAddingItem}
+          editingItemIndex={editingItemIndex}
+          items={items}
+          onAddItem={onAddItem}
+          onUpdateItem={onUpdateItem}
+          setIsAddingItem={setIsAddingItem}
+          setEditingItemIndex={setEditingItemIndex}
+        />
+        
+        {/* Items table */}
+        <div className="border rounded overflow-auto rtl">
+          <Table className={`min-w-full border-collapse ${showGridLines ? 'table-with-grid' : ''}`}>
+            <PurchaseTableHeader 
+              showItemCodes={showItemCodes} 
+              showItemNotes={showItemNotes} 
+            />
+            <PurchaseTableBody
+              items={items}
+              activeSearchCell={activeSearchCell}
+              handleCellClick={handleCellClick}
+              handleProductSelect={handleProductSelect}
+              handleDirectEdit={handleDirectEdit}
+              setActiveSearchCell={cell => {}}
+              setEditingItemIndex={setEditingItemIndex}
+              onRemoveItem={onRemoveItem}
+              isAddingItem={isAddingItem}
+              editingItemIndex={editingItemIndex}
+              searchInputRef={searchInputRef}
+              setIsAddingItem={setIsAddingItem}
+              isEditingCell={isEditingCell}
+              showItemCodes={showItemCodes}
+              showItemNotes={showItemNotes}
+            />
+          </Table>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };

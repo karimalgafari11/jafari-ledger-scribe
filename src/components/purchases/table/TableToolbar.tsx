@@ -2,8 +2,12 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Grid, List } from "lucide-react";
-import { Tooltip } from "@/components/ui/tooltip";
-import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider
+} from "@/components/ui/tooltip";
 import { ProductSearch } from "../ProductSearch";
 import { 
   Popover,
@@ -30,13 +34,16 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   const [open, setOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   
+  // تحسين التعامل مع الضغط على زر الإضافة
   const handleAddClick = () => {
     if (!isAddingItem && editingItemIndex === null) {
-      setOpen(true);
+      // فقط تغيير حالة الـ Popover
+      console.log("Opening product search popover");
     }
   };
   
   const handleProductSelectAndClose = (product: Product) => {
+    console.log("Product selected:", product);
     handleProductSelect(product);
     setOpen(false);
   };
@@ -56,8 +63,10 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-80 p-4 bg-white border rounded-md shadow-md" 
+            className="w-80 p-4 bg-white border rounded-md shadow-md z-[1000]" 
             align="start"
+            side="bottom"
+            sideOffset={5}
           >
             <div className="space-y-4" ref={searchRef}>
               <h4 className="font-medium text-sm">البحث عن صنف</h4>
@@ -73,19 +82,21 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
       </div>
       
       <div className="flex items-center space-x-2 rtl:space-x-reverse">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={toggleGridLines}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>إظهار/إخفاء الخطوط الشبكية</TooltipContent>
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={toggleGridLines}
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>إظهار/إخفاء الخطوط الشبكية</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         
         {/* يمكن إضافة المزيد من أزرار الأدوات هنا */}
       </div>
