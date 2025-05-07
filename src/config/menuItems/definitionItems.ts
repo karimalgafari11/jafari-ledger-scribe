@@ -9,7 +9,7 @@ export const definitionItems: MenuItem[] = [
     children: [
       {
         label: "التعاريف الأساسية",
-        path: "/definitions",
+        path: "/definitions/basic",
         icon: CaseSensitive,
       },
       {

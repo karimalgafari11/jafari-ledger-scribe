@@ -1,322 +1,254 @@
 
 import React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Discount } from "@/types/definitions";
-import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { format } from "date-fns";
 
 interface DiscountDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  discount?: Discount;
-  onSave: (data: any) => void;
-  isLoading: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+  discount: Discount | null;
+  mode: "create" | "edit";
 }
 
-const formSchema = z.object({
-  code: z.string().min(2, "يجب أن يكون الرمز أكثر من حرفين"),
-  name: z.string().min(2, "يجب أن يكون الاسم أكثر من حرفين"),
+const discountSchema = z.object({
+  code: z.string().min(1, "الرمز مطلوب"),
+  name: z.string().min(1, "الاسم مطلوب"),
   type: z.enum(["percentage", "fixed"]),
-  value: z.coerce.number().positive("يجب أن تكون القيمة أكبر من صفر"),
-  startDate: z.date(),
-  endDate: z.date().optional(),
+  value: z.preprocess(
+    (val) => (val === "" ? 0 : Number(val)),
+    z.number().min(0, "القيمة يجب أن تكون أكبر من أو تساوي صفر")
+  ),
+  startDate: z.string().min(1, "تاريخ البداية مطلوب"),
+  endDate: z.string().optional(),
+  minimumAmount: z.preprocess(
+    (val) => (val === "" ? undefined : Number(val)),
+    z.number().optional()
+  ),
+  maximumAmount: z.preprocess(
+    (val) => (val === "" ? undefined : Number(val)),
+    z.number().optional()
+  ),
   isActive: z.boolean().default(true),
-  minimumAmount: z.coerce.number().optional(),
-  maximumAmount: z.coerce.number().optional(),
 });
 
 export const DiscountDialog: React.FC<DiscountDialogProps> = ({
-  open,
-  onOpenChange,
+  isOpen,
+  onClose,
+  onSubmit,
   discount,
-  onSave,
-  isLoading,
+  mode,
 }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: discount
-      ? {
-          ...discount,
-          startDate: new Date(discount.startDate),
-          endDate: discount.endDate ? new Date(discount.endDate) : undefined,
-        }
-      : {
-          code: "",
-          name: "",
-          type: "percentage",
-          value: 0,
-          startDate: new Date(),
-          isActive: true,
-        },
-  });
-
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values);
+  const defaultValues = {
+    code: discount?.code || "",
+    name: discount?.name || "",
+    type: discount?.type || "percentage",
+    value: discount?.value || 0,
+    startDate: discount?.startDate 
+      ? format(new Date(discount.startDate), "yyyy-MM-dd")
+      : format(new Date(), "yyyy-MM-dd"),
+    endDate: discount?.endDate 
+      ? format(new Date(discount.endDate), "yyyy-MM-dd")
+      : "",
+    minimumAmount: discount?.minimumAmount || undefined,
+    maximumAmount: discount?.maximumAmount || undefined,
+    isActive: discount?.isActive ?? true,
   };
 
-  const title = discount ? "تعديل خصم" : "إضافة خصم جديد";
-  const submitLabel = discount ? "حفظ التغييرات" : "إضافة خصم";
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(discountSchema),
+    defaultValues,
+  });
+
+  React.useEffect(() => {
+    if (isOpen) {
+      reset(defaultValues);
+    }
+  }, [isOpen, reset, discount]);
+
+  const onFormSubmit = (data: any) => {
+    const formattedData = {
+      ...data,
+      startDate: new Date(data.startDate),
+      endDate: data.endDate ? new Date(data.endDate) : undefined,
+    };
+    onSubmit(formattedData);
+  };
+
+  const discountType = watch("type");
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] rtl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">{title}</DialogTitle>
+          <DialogTitle>
+            {mode === "create" ? "إضافة خصم جديد" : "تعديل الخصم"}
+          </DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>رمز الخصم</FormLabel>
-                    <FormControl>
-                      <Input placeholder="SUMMER25" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="code" className={errors.code ? "text-destructive" : ""}>
+                رمز الخصم*
+              </Label>
+              <Input
+                id="code"
+                {...register("code")}
+                className={errors.code ? "border-destructive" : ""}
+                placeholder="مثال: DIS-001"
               />
-
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>اسم الخصم</FormLabel>
-                    <FormControl>
-                      <Input placeholder="خصم الصيف" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>نوع الخصم</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="نوع الخصم" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="percentage">نسبة مئوية</SelectItem>
-                        <SelectItem value="fixed">قيمة ثابتة</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="value"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>قيمة الخصم</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder={field.value.toString()}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>تاريخ البداية</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-right font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "yyyy-MM-dd")
-                            ) : (
-                              <span>اختر تاريخًا</span>
-                            )}
-                            <CalendarIcon className="mr-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>تاريخ النهاية (اختياري)</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-right font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "yyyy-MM-dd")
-                            ) : (
-                              <span>اختر تاريخًا</span>
-                            )}
-                            <CalendarIcon className="mr-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date <= form.getValues("startDate")
-                          }
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="minimumAmount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>الحد الأدنى للطلب (اختياري)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => {
-                          const value = e.target.value
-                            ? Number(e.target.value)
-                            : undefined;
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="maximumAmount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>الحد الأقصى للخصم (اختياري)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => {
-                          const value = e.target.value
-                            ? Number(e.target.value)
-                            : undefined;
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel>فعال</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
+              {errors.code && (
+                <p className="text-xs text-destructive mt-1">{String(errors.code.message)}</p>
               )}
-            />
+            </div>
 
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
+            <div>
+              <Label htmlFor="name" className={errors.name ? "text-destructive" : ""}>
+                اسم الخصم*
+              </Label>
+              <Input
+                id="name"
+                {...register("name")}
+                className={errors.name ? "border-destructive" : ""}
+                placeholder="مثال: خصم شهر رمضان"
+              />
+              {errors.name && (
+                <p className="text-xs text-destructive mt-1">{String(errors.name.message)}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="type">نوع الخصم*</Label>
+              <Select
+                onValueChange={(value) => setValue("type", value as "percentage" | "fixed")}
+                value={watch("type")}
               >
-                إلغاء
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "جاري الحفظ..." : submitLabel}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="اختر نوع الخصم" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="percentage">نسبة مئوية (%)</SelectItem>
+                  <SelectItem value="fixed">قيمة ثابتة</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="value" className={errors.value ? "text-destructive" : ""}>
+                {discountType === "percentage" ? "نسبة الخصم (%)*" : "قيمة الخصم*"}
+              </Label>
+              <Input
+                id="value"
+                type="number"
+                {...register("value")}
+                className={errors.value ? "border-destructive" : ""}
+                placeholder={discountType === "percentage" ? "مثال: 10" : "مثال: 50"}
+              />
+              {errors.value && (
+                <p className="text-xs text-destructive mt-1">{String(errors.value.message)}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="startDate" className={errors.startDate ? "text-destructive" : ""}>
+                تاريخ البداية*
+              </Label>
+              <Input
+                id="startDate"
+                type="date"
+                {...register("startDate")}
+                className={errors.startDate ? "border-destructive" : ""}
+              />
+              {errors.startDate && (
+                <p className="text-xs text-destructive mt-1">{String(errors.startDate.message)}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="endDate">
+                تاريخ الانتهاء <span className="text-muted-foreground text-xs">(اختياري)</span>
+              </Label>
+              <Input
+                id="endDate"
+                type="date"
+                {...register("endDate")}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="minimumAmount">
+                الحد الأدنى للطلب <span className="text-muted-foreground text-xs">(اختياري)</span>
+              </Label>
+              <Input
+                id="minimumAmount"
+                type="number"
+                {...register("minimumAmount")}
+                placeholder="مثال: 100"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="maximumAmount">
+                الحد الأقصى للخصم <span className="text-muted-foreground text-xs">(اختياري)</span>
+              </Label>
+              <Input
+                id="maximumAmount"
+                type="number"
+                {...register("maximumAmount")}
+                placeholder="مثال: 1000"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 space-x-reverse">
+            <Switch
+              id="isActive"
+              checked={watch("isActive")}
+              onCheckedChange={(checked) => setValue("isActive", checked)}
+            />
+            <Label htmlFor="isActive" className="cursor-pointer">
+              فعال
+            </Label>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" type="button" onClick={onClose}>
+              إلغاء
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {mode === "create" ? "إضافة" : "تحديث"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
