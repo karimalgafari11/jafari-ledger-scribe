@@ -201,7 +201,7 @@ export const DashboardSettings: React.FC<{
                             <div>
                               <p className="font-medium">{shortcut.name}</p>
                               <p className="text-sm text-muted-foreground">
-                                {shortcut.route}
+                                {shortcut.description || shortcut.route}
                               </p>
                             </div>
                           </div>

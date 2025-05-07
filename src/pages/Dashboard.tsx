@@ -11,9 +11,21 @@ import ZoomControl from "@/components/interactive/ZoomControl";
 import { Button } from "@/components/ui/button";
 import { DashboardSettings } from "@/components/dashboard/DashboardSettings";
 import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
-import ShortcutsSettings from "@/components/dashboard/ShortcutsSettings";
 import { FileText, Receipt, FileDown, FileUp, Database, Users, Truck, Calculator, CreditCard, BarChart, Package, ArrowLeftRight, Zap } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
+
+interface ShortcutItem {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  route: string;
+  enabled: boolean;
+  badge?: {
+    text: string;
+    variant?: "default" | "secondary" | "outline" | "destructive" | "success";
+  };
+  description?: string;
+}
 
 const Dashboard = () => {
   // استدعاء بيانات المساعد الذكي للحصول على التنبيهات النظامية
@@ -55,7 +67,7 @@ const Dashboard = () => {
   });
   
   // اختصارات لوحة التحكم
-  const [shortcuts, setShortcuts] = useState([
+  const [shortcuts, setShortcuts] = useState<ShortcutItem[]>([
     {
       id: "purchase-invoice",
       name: "فاتورة شراء",
@@ -198,7 +210,7 @@ const Dashboard = () => {
     }
   };
   
-  const handleShortcutsChange = (newShortcuts: typeof shortcuts) => {
+  const handleShortcutsChange = (newShortcuts: ShortcutItem[]) => {
     setShortcuts(newShortcuts);
     try {
       localStorage.setItem('dashboardShortcuts', JSON.stringify(newShortcuts));
@@ -219,11 +231,6 @@ const Dashboard = () => {
             branch={branch} 
             onBranchChange={setBranch}
           >
-            <ShortcutsSettings 
-              shortcuts={shortcuts}
-              onShortcutsChange={handleShortcutsChange}
-            />
-            
             <DashboardSettings 
               displayOptions={displayOptions}
               onDisplayOptionsChange={handleDisplayOptionsChange}

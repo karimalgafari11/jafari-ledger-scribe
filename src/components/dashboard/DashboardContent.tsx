@@ -7,7 +7,6 @@ import ChartsGrid from "@/components/dashboard/ChartsGrid";
 import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
-import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 
 interface ShortcutItem {
@@ -78,9 +77,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
   const dashboardContent = (
     <>
-      {/* اختصارات سريعة */}
-      <DashboardShortcuts shortcuts={shortcuts.filter(shortcut => shortcut.enabled)} />
-
       {/* بطاقات الإحصائيات الرئيسية */}
       {displayOptions.showStats && (
         <StatsCards 
