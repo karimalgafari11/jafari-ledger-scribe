@@ -12,7 +12,7 @@ import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { useDashboardState } from "@/hooks/useDashboardState";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Database } from "lucide-react";
 
 // إضافة اختصار جديد لصفحة تسجيل الدفعات
 const paymentShortcut: ShortcutItem = {
@@ -25,6 +25,20 @@ const paymentShortcut: ShortcutItem = {
   badge: {
     text: "جديد",
     variant: "outline"
+  }
+};
+
+// إضافة اختصار جديد لصفحة دفتر الأستاذ
+const ledgerShortcut: ShortcutItem = {
+  id: "ledger-shortcut",
+  name: "دفتر الأستاذ",
+  description: "عرض وإدارة دفتر الأستاذ العام والقيود المحاسبية",
+  route: "/accounting/ledger",
+  icon: Database,
+  enabled: true,
+  badge: {
+    text: "محاسبة",
+    variant: "success"
   }
 };
 
@@ -65,11 +79,27 @@ const Dashboard = () => {
     dailySalesData,
   } = useDashboardMetrics();
 
-  // إضافة اختصار المدفوعات إلى قائمة الاختصارات إذا لم يكن موجودًا بالفعل
+  // إضافة اختصارات جديدة إلى قائمة الاختصارات إذا لم تكن موجودة بالفعل
   React.useEffect(() => {
+    let updatedShortcuts = [...shortcuts];
+    let hasChanges = false;
+    
+    // التحقق من وجود اختصار المدفوعات
     const hasPaymentShortcut = shortcuts.some(shortcut => shortcut.id === paymentShortcut.id);
     if (!hasPaymentShortcut) {
-      const updatedShortcuts = [...shortcuts, paymentShortcut];
+      updatedShortcuts.push(paymentShortcut);
+      hasChanges = true;
+    }
+    
+    // التحقق من وجود اختصار دفتر الأستاذ
+    const hasLedgerShortcut = shortcuts.some(shortcut => shortcut.id === ledgerShortcut.id);
+    if (!hasLedgerShortcut) {
+      updatedShortcuts.push(ledgerShortcut);
+      hasChanges = true;
+    }
+    
+    // تحديث الاختصارات إذا كان هناك تغييرات
+    if (hasChanges) {
       handleShortcutsChange(updatedShortcuts);
     }
   }, [shortcuts, handleShortcutsChange]);

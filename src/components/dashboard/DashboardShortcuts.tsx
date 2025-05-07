@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShortcutItem } from "@/types/dashboard";
-import { FileText, CreditCard } from "lucide-react";
+import { FileText, CreditCard, Database } from "lucide-react";
 
 interface DashboardShortcutsProps {
   shortcuts: ShortcutItem[];
@@ -28,6 +28,12 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
     try {
       // Check if icon is a valid component
       if (typeof icon === 'function') {
+        // Create mapping for common icons to ensure proper rendering
+        if (icon.name === 'Database' || icon === Database) {
+          return <Database size={20} />;
+        } else if (icon.name === 'CreditCard' || icon === CreditCard) {
+          return <CreditCard size={20} />;
+        }
         return React.createElement(icon, { size: 20 });
       }
       // Fallback to FileText icon for invalid icons

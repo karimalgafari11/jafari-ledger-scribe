@@ -30,6 +30,10 @@ export const accountingRoutes: RouteObject[] = [
     element: <LedgerPage />,
   },
   {
+    path: "accounting/journals/new",
+    element: <JournalEntriesPage />,
+  },
+  {
     path: "accounting/cost-centers",
     element: <CostCentersPage />,
   },

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Trash2, FileText } from "lucide-react";
+import { Trash2, FileText, Database, CreditCard } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -28,6 +28,12 @@ export const ShortcutList: React.FC<ShortcutListProps> = ({
     try {
       // Check if icon is a valid component
       if (typeof icon === 'function') {
+        // Special handling for specific icons
+        if (icon.name === 'Database' || icon === Database) {
+          return <Database size={20} />;
+        } else if (icon.name === 'CreditCard' || icon === CreditCard) {
+          return <CreditCard size={20} />;
+        }
         return React.createElement(icon, { size: 20 });
       }
       // Fallback for invalid icons
