@@ -12,7 +12,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   onToggleSearch
 }) => {
   return (
-    <div className="flex justify-between items-center mb-2">
+    <div className="flex justify-between items-center mb-2 rtl">
       <h3 className="text-lg font-semibold">الأصناف</h3>
       <TableActionButtons 
         onAddNewItem={onAddNewItem}

@@ -85,7 +85,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
       
       <div 
         ref={tableRef} 
-        className="border border-gray-300 rounded-sm overflow-x-auto relative invoice-item-table" 
+        className="border border-gray-300 rounded-sm overflow-x-auto relative invoice-item-table rtl" 
         style={{
           width: `${tableWidth}%`
         }}
@@ -94,29 +94,29 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         
         <Table className="w-full text-base invoice-table" bordered>
           <TableHeader>
-            <TableRow>
-              {columns.includes('serial') && 
-                <TableHead className="w-12 border border-black text-center font-semibold py-1.5 text-lg">#</TableHead>
-              }
-              {columns.includes('code') && 
-                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">رمز الصنف</TableHead>
-              }
-              {columns.includes('name') && 
-                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-2/5">اسم الصنف</TableHead>
-              }
-              {columns.includes('quantity') && 
-                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-16">الكمية</TableHead>
-              }
-              {columns.includes('price') && 
-                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">السعر</TableHead>
+            <TableRow className="rtl">
+              <TableHead className="text-center border border-black font-semibold print-hide py-1.5 text-lg w-16">الإجراءات</TableHead>
+              {columns.includes('notes') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-32">ملاحظات</TableHead>
               }
               {columns.includes('total') && 
                 <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">الإجمالي</TableHead>
               }
-              {columns.includes('notes') && 
-                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-32">ملاحظات</TableHead>
+              {columns.includes('price') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">السعر</TableHead>
               }
-              <TableHead className="text-center border border-black font-semibold print-hide py-1.5 text-lg w-16">الإجراءات</TableHead>
+              {columns.includes('quantity') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-16">الكمية</TableHead>
+              }
+              {columns.includes('name') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-2/5">اسم الصنف</TableHead>
+              }
+              {columns.includes('code') && 
+                <TableHead className="border border-black text-center font-semibold py-1.5 text-lg w-28">رمز الصنف</TableHead>
+              }
+              {columns.includes('serial') && 
+                <TableHead className="w-12 border border-black text-center font-semibold py-1.5 text-lg">#</TableHead>
+              }
             </TableRow>
           </TableHeader>
           <TableBody>
