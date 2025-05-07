@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -13,10 +14,13 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 import { 
+  ArrowLeft,
   ExternalLink, 
   Globe, 
   Database, 
@@ -33,7 +37,7 @@ import {
 import { IntegrationStatCards } from "@/components/integrations/IntegrationStatCards";
 import { IntegrationActivityChart } from "@/components/integrations/IntegrationActivityChart";
 import { SystemConnectionHealth } from "@/components/integrations/SystemConnectionHealth";
-import { Label } from "@/components/ui/label";
+import Header from "@/components/Header";
 
 // تعريف أنواع البيانات للاتصالات الخارجية
 interface ExternalSystem {
@@ -127,6 +131,7 @@ const ExternalSystemsPage = () => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isWebhookLoading, setIsWebhookLoading] = useState(false);
   const [healthCheckStatus, setHealthCheckStatus] = useState<{[key: string]: 'healthy' | 'degraded' | 'error'}>({});
+  const navigate = useNavigate();
 
   // نموذج إضافة نظام خارجي
   const form = useForm({
@@ -250,7 +255,7 @@ const ExternalSystemsPage = () => {
     console.log("Triggering webhook:", webhookUrl);
 
     try {
-      const response = await fetch(webhookUrl, {
+      await fetch(webhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -273,6 +278,11 @@ const ExternalSystemsPage = () => {
     } finally {
       setIsWebhookLoading(false);
     }
+  };
+
+  // التنقل إلى صفحة API
+  const handleNavigateToApiDocs = () => {
+    navigate('/integrations/api-docs');
   };
 
   // تحديد لون حالة النظام الخارجي
@@ -305,515 +315,538 @@ const ExternalSystemsPage = () => {
     return `${value.toFixed(1)}%`;
   };
 
+  // الرجوع إلى الصفحة السابقة
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <div className="container p-6 mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">الربط مع الأنظمة الخارجية</h1>
-      </div>
+    <>
+      <Header showBack={true} onBackClick={handleGoBack} title="الربط مع الأنظمة الخارجية">
+        <Button variant="outline" onClick={handleNavigateToApiDocs}>
+          <FileText className="h-4 w-4 me-2" />
+          توثيق API
+        </Button>
+      </Header>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList className="grid w-full grid-cols-5 rtl">
-          <TabsTrigger value="dashboard" className="flex justify-center gap-2">
-            <Server className="h-4 w-4" />
-            لوحة ��لتحكم
-          </TabsTrigger>
-          <TabsTrigger value="systems" className="flex justify-center gap-2">
-            <Database className="h-4 w-4" />
-            الأنظمة المتكاملة
-          </TabsTrigger>
-          <TabsTrigger value="add" className="flex justify-center gap-2">
-            <ExternalLink className="h-4 w-4" />
-            إضافة نظام
-          </TabsTrigger>
-          <TabsTrigger value="webhook" className="flex justify-center gap-2">
-            <Webhook className="h-4 w-4" />
-            Webhook
-          </TabsTrigger>
-          <TabsTrigger value="logs" className="flex justify-center gap-2">
-            <FileText className="h-4 w-4" />
-            سجل الاتصالات
-          </TabsTrigger>
-        </TabsList>
+      <div className="container p-6 mx-auto">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-5 rtl">
+            <TabsTrigger value="dashboard" className="flex justify-center gap-2">
+              <Server className="h-4 w-4" />
+              لوحة التحكم
+            </TabsTrigger>
+            <TabsTrigger value="systems" className="flex justify-center gap-2">
+              <Database className="h-4 w-4" />
+              الأنظمة المتكاملة
+            </TabsTrigger>
+            <TabsTrigger value="add" className="flex justify-center gap-2">
+              <ExternalLink className="h-4 w-4" />
+              إضافة نظام
+            </TabsTrigger>
+            <TabsTrigger value="webhook" className="flex justify-center gap-2">
+              <Webhook className="h-4 w-4" />
+              Webhook
+            </TabsTrigger>
+            <TabsTrigger value="logs" className="flex justify-center gap-2">
+              <FileText className="h-4 w-4" />
+              سجل الاتصالات
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="dashboard" className="mt-4">
-          <div className="grid grid-cols-1 gap-6">
-            {/* بطاقات الإحصائيات */}
-            <IntegrationStatCards systems={systems} />
-            
-            {/* حالة اتصال الأنظمة */}
-            <SystemConnectionHealth systems={systems} healthStatus={healthCheckStatus} />
-            
-            {/* الرسم البياني للأنشطة */}
-            <IntegrationActivityChart systems={systems} />
+          <TabsContent value="dashboard" className="mt-4">
+            <div className="grid grid-cols-1 gap-6">
+              {/* بطاقات الإحصائيات */}
+              <IntegrationStatCards systems={systems} />
+              
+              {/* حالة اتصال الأنظمة */}
+              <SystemConnectionHealth systems={systems} healthStatus={healthCheckStatus} />
+              
+              {/* الرسم البياني للأنشطة */}
+              <IntegrationActivityChart systems={systems} />
 
-            {/* بطاقة النظرة العامة */}
+              {/* بطاقة النظرة العامة */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>النظرة العامة للتكاملات</CardTitle>
+                  <CardDescription>
+                    تفاصيل حالة التكاملات والأداء العام للأنظمة الخارجية
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <Card className="bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-blue-700">متوسط نسبة النجاح</p>
+                            <p className="text-2xl font-bold text-blue-800">
+                              {formatPercentage(systems.reduce((acc, sys) => acc + (sys.successRate || 0), 0) / 
+                                              systems.filter(sys => sys.successRate !== undefined).length)}
+                            </p>
+                          </div>
+                          <div className="p-2 bg-blue-200 rounded-full">
+                            <Check className="h-5 w-5 text-blue-700" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-gradient-to-b from-green-50 to-green-100 border-green-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-green-700">إجمالي البيانات المنقولة</p>
+                            <p className="text-2xl font-bold text-green-800">5.8 GB</p>
+                          </div>
+                          <div className="p-2 bg-green-200 rounded-full">
+                            <Database className="h-5 w-5 text-green-700" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-gradient-to-b from-purple-50 to-purple-100 border-purple-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-purple-700">عدد الاتصالات (24 ساعة)</p>
+                            <p className="text-2xl font-bold text-purple-800">1,204</p>
+                          </div>
+                          <div className="p-2 bg-purple-200 rounded-full">
+                            <Link className="h-5 w-5 text-purple-700" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* التنبيهات والمشكلات الهامة */}
+              <Card>
+                <CardHeader className="bg-amber-50">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="flex items-center">
+                      <AlertTriangle className="h-5 w-5 mr-2 text-amber-600" />
+                      المشكلات والتنبيهات
+                    </CardTitle>
+                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
+                      3 مشكلات نشطة
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="divide-y">
+                    <div className="p-4 hover:bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">خطأ في الاتصال مع منصة التجارة الإلكترونية</h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            فشل في المصادقة - تحقق من صلاحية مفتاح API
+                          </p>
+                        </div>
+                        <Badge variant="destructive">عالي</Badge>
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <span className="text-xs text-muted-foreground">منذ 3 ساعات</span>
+                        <Button variant="outline" size="sm" className="h-7">
+                          إصلاح
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 hover:bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">تأخر في استجابة نظام الفواتير الإلكترونية</h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            زمن الاستجابة يتجاوز 3 ثوان - قد يؤثر على أداء النظام
+                          </p>
+                        </div>
+                        <Badge variant="warning" className="bg-amber-100 text-amber-800 hover:bg-amber-200">متوسط</Badge>
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <span className="text-xs text-muted-foreground">منذ 12 ساعة</span>
+                        <Button variant="outline" size="sm" className="h-7">
+                          فحص
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 hover:bg-muted/30">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">تحذير: غياب المزامنة لأكثر من يومين</h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            النظام البنكي لم تتم مزامنته منذ 48 ساعة
+                          </p>
+                        </div>
+                        <Badge variant="default">منخفض</Badge>
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <span className="text-xs text-muted-foreground">منذ 2 يوم</span>
+                        <Button variant="outline" size="sm" className="h-7" onClick={() => handleSyncSystem("sys-4")}>
+                          مزامنة
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="bg-muted/30 px-4 py-3 flex justify-center">
+                  <Button variant="ghost" size="sm" className="text-xs w-full">
+                    عرض كافة المشكلات (8)
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="systems" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle>النظرة العامة للتكاملات</CardTitle>
+                <CardTitle>الأنظمة المتكاملة</CardTitle>
                 <CardDescription>
-                  تفاصيل حالة التكاملات والأداء العام للأنظمة الخارجية
+                  إدارة الأنظمة الخارجية المتكاملة مع نظام المحاسبة الخاص بك
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <Card className="bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-blue-700">متوسط نسبة النجاح</p>
-                          <p className="text-2xl font-bold text-blue-800">
-                            {formatPercentage(systems.reduce((acc, sys) => acc + (sys.successRate || 0), 0) / 
-                                            systems.filter(sys => sys.successRate !== undefined).length)}
-                          </p>
-                        </div>
-                        <div className="p-2 bg-blue-200 rounded-full">
-                          <Check className="h-5 w-5 text-blue-700" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-gradient-to-b from-green-50 to-green-100 border-green-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-green-700">إجمالي البيانات المنقولة</p>
-                          <p className="text-2xl font-bold text-green-800">5.8 GB</p>
-                        </div>
-                        <div className="p-2 bg-green-200 rounded-full">
-                          <Database className="h-5 w-5 text-green-700" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-gradient-to-b from-purple-50 to-purple-100 border-purple-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-purple-700">عدد الاتصالات (24 ساعة)</p>
-                          <p className="text-2xl font-bold text-purple-800">1,204</p>
-                        </div>
-                        <div className="p-2 bg-purple-200 rounded-full">
-                          <Link className="h-5 w-5 text-purple-700" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* التنبيهات والمشكلات الهامة */}
-            <Card>
-              <CardHeader className="bg-amber-50">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="flex items-center">
-                    <AlertTriangle className="h-5 w-5 mr-2 text-amber-600" />
-                    المشكلات والتنبيهات
-                  </CardTitle>
-                  <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
-                    3 مشكلات نشطة
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  <div className="p-4 hover:bg-muted/30">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium">خطأ في الاتصال مع منصة التجارة الإلكترونية</h4>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          فشل في المصادقة - تحقق من صلاحية مفتاح API
-                        </p>
-                      </div>
-                      <Badge variant="destructive">عالي</Badge>
-                    </div>
-                    <div className="flex justify-between items-center mt-3">
-                      <span className="text-xs text-muted-foreground">منذ 3 ساعات</span>
-                      <Button variant="outline" size="sm" className="h-7">
-                        إصلاح
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 hover:bg-muted/30">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium">تأخر في استجابة نظام الفواتير الإلكترونية</h4>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          زمن الاستجابة يتجاوز 3 ثوان - قد يؤثر على أداء النظام
-                        </p>
-                      </div>
-                      <Badge variant="warning" className="bg-amber-100 text-amber-800 hover:bg-amber-200">متوسط</Badge>
-                    </div>
-                    <div className="flex justify-between items-center mt-3">
-                      <span className="text-xs text-muted-foreground">منذ 12 ساعة</span>
-                      <Button variant="outline" size="sm" className="h-7">
-                        فحص
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 hover:bg-muted/30">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium">تحذير: غياب المزامنة لأكثر من يومين</h4>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          النظام البنكي لم تتم مزامنته منذ 48 ساعة
-                        </p>
-                      </div>
-                      <Badge variant="default">منخفض</Badge>
-                    </div>
-                    <div className="flex justify-between items-center mt-3">
-                      <span className="text-xs text-muted-foreground">منذ 2 يوم</span>
-                      <Button variant="outline" size="sm" className="h-7">
-                        مزامنة
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="bg-muted/30 px-4 py-3 flex justify-center">
-                <Button variant="ghost" size="sm" className="text-xs w-full">
-                  عرض كافة المشكلات (8)
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="systems" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>الأنظمة المتكاملة</CardTitle>
-              <CardDescription>
-                إدارة الأنظمة الخارجية المتكاملة مع نظام المحاسبة الخاص بك
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>النظام</TableHead>
-                    <TableHead>النوع</TableHead>
-                    <TableHead>الحالة</TableHead>
-                    <TableHead>آخر مزامنة</TableHead>
-                    <TableHead>عدد الاتصالات</TableHead>
-                    <TableHead>نسبة النجاح</TableHead>
-                    <TableHead>الإجراءات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {systems.map((system) => (
-                    <TableRow key={system.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex flex-col">
-                          {system.name}
-                          {system.description && (
-                            <span className="text-xs text-muted-foreground">{system.description}</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          {getSystemTypeIcon(system.type)}
-                          <span>{system.type}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusBadgeVariant(system.status) as any}>
-                          {system.status === 'active' ? 'نشط' : 
-                           system.status === 'inactive' ? 'غير نشط' : 
-                           system.status === 'pending' ? 'قيد الانتظار' : 'خطأ'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {system.lastSync ? new Date(system.lastSync).toLocaleString('ar-SA') : '-'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 font-medium">
-                          {system.connections || 0}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full ${
-                                (system.successRate || 0) > 95 ? 'bg-green-500' : 
-                                (system.successRate || 0) > 80 ? 'bg-amber-500' : 'bg-red-500'
-                              }`}
-                              style={{ width: `${system.successRate || 0}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs">{formatPercentage(system.successRate)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" onClick={() => handleSyncSystem(system.id)}>
-                            مزامنة
-                          </Button>
-                          <Button 
-                            variant={system.status === 'active' ? 'destructive' : 'default'} 
-                            size="sm"
-                            onClick={() => handleToggleSystemStatus(system.id)}
-                          >
-                            {system.status === 'active' ? 'إيقاف' : 'تفعيل'}
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDeleteSystem(system.id)}>
-                            حذف
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="add" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>إضافة نظام خارجي جديد</CardTitle>
-              <CardDescription>
-                قم بإضافة بيانات الاتصال بنظام خارجي للتكامل معه
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleAddSystem)} className="space-y-4">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label>اسم النظام</Label>
-                      <Input
-                        placeholder="أدخل اسم النظام الخارجي"
-                        {...form.register("name", { required: true })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>نوع النظام</Label>
-                      <select
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        {...form.register("type", { required: true })}
-                      >
-                        <option value="erp">نظام إدارة الموارد (ERP)</option>
-                        <option value="accounting">نظام محاسبي</option>
-                        <option value="banking">نظام بنكي</option>
-                        <option value="ecommerce">نظام تجارة إلكترونية</option>
-                        <option value="payment">نظام دفع إلكتروني</option>
-                        <option value="custom">نظام مخصص</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>عنوان الواجهة البرمجية (API URL)</Label>
-                    <Input
-                      placeholder="https://example.com/api"
-                      {...form.register("url")}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>مفتاح الواجهة البرمجية (API Key)</Label>
-                    <Input
-                      type="password"
-                      placeholder="أدخل مفتاح الواجهة البرمجية"
-                      {...form.register("apiKey")}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>وصف النظام</Label>
-                    <Input
-                      placeholder="أدخل وصفًا مختصرًا للنظام الخارجي"
-                      {...form.register("description")}
-                    />
-                  </div>
-                  
-                  <div className="pt-4">
-                    <Button type="submit" className="w-full md:w-auto">
-                      إضافة النظام
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="webhook" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>إعداد Webhook</CardTitle>
-              <CardDescription>
-                استخدم Webhook لإرسال بيانات من النظام المحاسبي إلى أنظمة خارجية عند حدوث أحداث معينة
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
-                <p className="text-sm text-amber-700">
-                  Webhook يسمح بإرسال بيانات إلى أنظمة خارجية. تأكد من صحة عنوان URL المستخدم.
-                </p>
-              </div>
-
-              <form onSubmit={handleWebhookTrigger} className="space-y-4">
-                <div className="space-y-2">
-                  <Label>عنوان Webhook</Label>
-                  <Input
-                    placeholder="https://example.com/webhook"
-                    value={webhookUrl}
-                    onChange={(e) => setWebhookUrl(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    أدخل عنوان URL الذي ترغب في إرسال البيانات إليه
-                  </p>
-                </div>
-                
-                <div className="pt-4">
-                  <Button 
-                    type="submit" 
-                    disabled={isWebhookLoading || !webhookUrl}
-                    className="w-full md:w-auto"
-                  >
-                    {isWebhookLoading ? "جاري الإرسال..." : "اختبار Webhook"}
-                  </Button>
-                </div>
-              </form>
-
-              <div className="mt-8">
-                <h3 className="font-medium mb-2">عنوان Webhook الخاص بنظامك</h3>
-                <div className="p-4 bg-muted rounded-md flex items-center justify-between">
-                  <code className="text-sm">https://yourapp.example.com/api/webhook</code>
-                  <Button variant="ghost" size="sm">
-                    نسخ
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  يمكن للأنظمة الخارجية استخدام هذا العنوان لإرسال بيانات إلى نظامك المحاسبي
-                </p>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                <h3 className="font-medium">إعدادات الإشعارات</h3>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">إشعار عند إضافة فاتورة جديدة</p>
-                    <p className="text-xs text-muted-foreground">إرسال بيانات الفواتير الجديدة إلى الأنظمة الخارجية</p>
-                  </div>
-                  <Switch />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">إشعار عند تسجيل دفعة جديدة</p>
-                    <p className="text-xs text-muted-foreground">إرسال بيانات المدفوعات إلى الأنظمة الخارجية</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">إشعار عند تغيير حالة الفاتورة</p>
-                    <p className="text-xs text-muted-foreground">إرسال إشعار عند تحديث حالة الفواتير</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="logs" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>سجل الاتصالات</CardTitle>
-              <CardDescription>
-                عرض سجل الاتصالات والعمليات مع الأنظمة الخارجية
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* فلترة السجلات */}
-                <div className="flex flex-wrap gap-2 justify-between items-center bg-muted/20 p-3 rounded-lg mb-4">
-                  <div className="flex gap-2 items-center">
-                    <Button variant="outline" size="sm">اليوم</Button>
-                    <Button variant="ghost" size="sm">آخر 7 أيام</Button>
-                    <Button variant="ghost" size="sm">الشهر الحالي</Button>
-                    <Button variant="ghost" size="sm">مخصص</Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">تصدير السجل</Button>
-                  </div>
-                </div>
-                
-                {/* جدول السجلات */}
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>التاريخ والوقت</TableHead>
                       <TableHead>النظام</TableHead>
+                      <TableHead>النوع</TableHead>
                       <TableHead>الحالة</TableHead>
-                      <TableHead>الرسالة</TableHead>
-                      <TableHead>حجم البيانات</TableHead>
+                      <TableHead>آخر مزامنة</TableHead>
+                      <TableHead>عدد الاتصالات</TableHead>
+                      <TableHead>نسبة النجاح</TableHead>
+                      <TableHead>الإجراءات</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {connectionLogs.map((log, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{log.timestamp.toLocaleString('ar-SA')}</TableCell>
-                        <TableCell>{log.system}</TableCell>
+                    {systems.map((system) => (
+                      <TableRow key={system.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex flex-col">
+                            {system.name}
+                            {system.description && (
+                              <span className="text-xs text-muted-foreground">{system.description}</span>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>
-                          <Badge variant={
-                            log.status === 'success' ? 'success' : 
-                            log.status === 'warning' ? 'warning' : 
-                            'destructive'
-                          } className={
-                            log.status === 'success' ? 'bg-green-100 text-green-800' : 
-                            log.status === 'warning' ? 'bg-amber-100 text-amber-800' : 
-                            'bg-red-100 text-red-800'
-                          }>
-                            {log.status === 'success' ? 'نجاح' : 
-                             log.status === 'warning' ? 'تحذير' : 'خطأ'}
+                          <div className="flex items-center gap-1">
+                            {getSystemTypeIcon(system.type)}
+                            <span>{system.type}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusBadgeVariant(system.status) as any}>
+                            {system.status === 'active' ? 'نشط' : 
+                             system.status === 'inactive' ? 'غير نشط' : 
+                             system.status === 'pending' ? 'قيد الانتظار' : 'خطأ'}
                           </Badge>
                         </TableCell>
-                        <TableCell>{log.message}</TableCell>
-                        <TableCell>{log.dataSize}</TableCell>
+                        <TableCell>
+                          {system.lastSync ? new Date(system.lastSync).toLocaleString('ar-SA') : '-'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 font-medium">
+                            {system.connections || 0}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full ${
+                                  (system.successRate || 0) > 95 ? 'bg-green-500' : 
+                                  (system.successRate || 0) > 80 ? 'bg-amber-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${system.successRate || 0}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs">{formatPercentage(system.successRate)}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleSyncSystem(system.id)}>
+                              مزامنة
+                            </Button>
+                            <Button 
+                              variant={system.status === 'active' ? 'destructive' : 'default'} 
+                              size="sm"
+                              onClick={() => handleToggleSystemStatus(system.id)}
+                            >
+                              {system.status === 'active' ? 'إيقاف' : 'تفعيل'}
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => handleDeleteSystem(system.id)}>
+                              حذف
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-                
-                {/* ترقيم الصفحات */}
-                <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse mt-4">
-                  <Button variant="outline" size="sm" disabled>
-                    السابق
-                  </Button>
-                  <Button variant="outline" size="sm" className="bg-primary/10 border-primary">
-                    1
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    2
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    3
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    التالي
-                  </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="add" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>إضافة نظام خارجي جديد</CardTitle>
+                <CardDescription>
+                  قم بإضافة بيانات الاتصال بنظام خارجي للتكامل معه
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleAddSystem)} className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>اسم النظام</Label>
+                        <Input
+                          placeholder="أدخل اسم النظام الخارجي"
+                          {...form.register("name", { required: true })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>نوع النظام</Label>
+                        <select
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          {...form.register("type", { required: true })}
+                        >
+                          <option value="erp">نظام إدارة الموارد (ERP)</option>
+                          <option value="accounting">نظام محاسبي</option>
+                          <option value="banking">نظام بنكي</option>
+                          <option value="ecommerce">نظام تجارة إلكترونية</option>
+                          <option value="payment">نظام دفع إلكتروني</option>
+                          <option value="custom">نظام مخصص</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>عنوان الواجهة البرمجية (API URL)</Label>
+                      <Input
+                        placeholder="https://example.com/api"
+                        {...form.register("url")}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>مفتاح الواجهة البرمجية (API Key)</Label>
+                      <Input
+                        type="password"
+                        placeholder="أدخل مفتاح الواجهة البرمجية"
+                        {...form.register("apiKey")}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>وصف النظام</Label>
+                      <Input
+                        placeholder="أدخل وصفًا مختصرًا للنظام الخارجي"
+                        {...form.register("description")}
+                      />
+                    </div>
+                    
+                    <div className="pt-4">
+                      <Button type="submit" className="w-full md:w-auto">
+                        إضافة النظام
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="webhook" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>إعداد Webhook</CardTitle>
+                <CardDescription>
+                  استخدم Webhook لإرسال بيانات من النظام المحاسبي إلى أنظمة خارجية عند حدوث أحداث معينة
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md flex items-center gap-3">
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
+                  <p className="text-sm text-amber-700">
+                    Webhook يسمح بإرسال بيانات إلى أنظمة خارجية. تأكد من صحة عنوان URL المستخدم.
+                  </p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+
+                <form onSubmit={handleWebhookTrigger} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>عنوان Webhook</Label>
+                    <Input
+                      placeholder="https://example.com/webhook"
+                      value={webhookUrl}
+                      onChange={(e) => setWebhookUrl(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      أدخل عنوان URL الذي ترغب في إرسال البيانات إليه
+                    </p>
+                  </div>
+                  
+                  <div className="pt-4">
+                    <Button 
+                      type="submit" 
+                      disabled={isWebhookLoading || !webhookUrl}
+                      className="w-full md:w-auto"
+                    >
+                      {isWebhookLoading ? "جاري الإرسال..." : "اختبار Webhook"}
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="mt-8">
+                  <h3 className="font-medium mb-2">عنوان Webhook الخاص بنظامك</h3>
+                  <div className="p-4 bg-muted rounded-md flex items-center justify-between">
+                    <code className="text-sm">https://yourapp.example.com/api/webhook</code>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText("https://yourapp.example.com/api/webhook");
+                        toast.success("تم نسخ عنوان Webhook");
+                      }}
+                    >
+                      نسخ
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    يمكن للأنظمة الخارجية استخدام هذا العنوان لإرسال بيانات إلى نظامك المحاسبي
+                  </p>
+                </div>
+
+                <div className="mt-8 space-y-4">
+                  <h3 className="font-medium">إعدادات الإشعارات</h3>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">إشعار عند إضافة فاتورة جديدة</p>
+                      <p className="text-xs text-muted-foreground">إرسال بيانات الفواتير الجديدة إلى الأنظمة الخارجية</p>
+                    </div>
+                    <Switch />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">إشعار عند تسجيل دفعة جديدة</p>
+                      <p className="text-xs text-muted-foreground">إرسال بيانات المدفوعات إلى الأنظمة الخارجية</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">إشعار عند تغيير حالة الفاتورة</p>
+                      <p className="text-xs text-muted-foreground">إرسال إشعار عند تحديث حالة الفواتير</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="logs" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>سجل الاتصالات</CardTitle>
+                <CardDescription>
+                  عرض سجل الاتصالات والعمليات مع الأنظمة الخارجية
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* فلترة السجلات */}
+                  <div className="flex flex-wrap gap-2 justify-between items-center bg-muted/20 p-3 rounded-lg mb-4">
+                    <div className="flex gap-2 items-center">
+                      <Button variant="outline" size="sm">اليوم</Button>
+                      <Button variant="ghost" size="sm">آخر 7 أيام</Button>
+                      <Button variant="ghost" size="sm">الشهر الحالي</Button>
+                      <Button variant="ghost" size="sm">مخصص</Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => toast.success("تم تصدير السجل بنجاح")}
+                      >
+                        تصدير السجل
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* جدول السجلات */}
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>التاريخ والوقت</TableHead>
+                        <TableHead>النظام</TableHead>
+                        <TableHead>الحالة</TableHead>
+                        <TableHead>الرسالة</TableHead>
+                        <TableHead>حجم البيانات</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {connectionLogs.map((log, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{log.timestamp.toLocaleString('ar-SA')}</TableCell>
+                          <TableCell>{log.system}</TableCell>
+                          <TableCell>
+                            <Badge variant={
+                              log.status === 'success' ? 'success' : 
+                              log.status === 'warning' ? 'warning' : 
+                              'destructive'
+                            } className={
+                              log.status === 'success' ? 'bg-green-100 text-green-800' : 
+                              log.status === 'warning' ? 'bg-amber-100 text-amber-800' : 
+                              'bg-red-100 text-red-800'
+                            }>
+                              {log.status === 'success' ? 'نجاح' : 
+                               log.status === 'warning' ? 'تحذير' : 'خطأ'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{log.message}</TableCell>
+                          <TableCell>{log.dataSize}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  
+                  {/* ترقيم الصفحات */}
+                  <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse mt-4">
+                    <Button variant="outline" size="sm" disabled>
+                      السابق
+                    </Button>
+                    <Button variant="outline" size="sm" className="bg-primary/10 border-primary">
+                      1
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      2
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      3
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      التالي
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
   );
 };
 
