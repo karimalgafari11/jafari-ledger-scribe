@@ -109,8 +109,8 @@ const VendorStatementPage = () => {
     phone: vendor.phone || "",
     address: vendor.address || "",
     balance: vendor.balance,
-    status: vendor.status === "نشط" ? "active" : "inactive",
-    type: "company" as const, // تعديل النوع ليكون متوافقًا مع النوع المتوقع
+    status: vendor.status === "نشط" ? "active" as const : "inactive" as const,
+    type: "company" as const,
     updatedAt: new Date(),
     createdAt: new Date(vendor.createdAt)
   };
