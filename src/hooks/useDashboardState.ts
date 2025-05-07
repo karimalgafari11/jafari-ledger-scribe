@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-import { FileText, Receipt, FileDown, FileUp, Database, Users, Truck, Calculator, CreditCard, BarChart, Package, ArrowLeftRight, Zap } from "lucide-react";
+import { 
+  FileText, Receipt, FileDown, FileUp, Database, 
+  Users, Truck, Calculator, CreditCard, BarChart, 
+  Package, ArrowLeftRight, Zap
+} from "lucide-react";
 
 export function useDashboardState() {
   // حالة التاريخ والفترة والفرع
@@ -29,7 +33,7 @@ export function useDashboardState() {
     {
       id: "purchase-invoice",
       name: "فاتورة شراء",
-      icon: <Receipt size={20} />,
+      icon: Receipt,
       route: "/purchases",
       enabled: true,
       description: "إنشاء وإدارة فواتير المشتريات من الموردين"
@@ -37,7 +41,7 @@ export function useDashboardState() {
     {
       id: "sales-invoice",
       name: "فاتورة بيع",
-      icon: <FileText size={20} />,
+      icon: FileText,
       route: "/invoices/outgoing",
       enabled: true,
       badge: {
@@ -49,7 +53,7 @@ export function useDashboardState() {
     {
       id: "payment-voucher",
       name: "سند دفع",
-      icon: <FileDown size={20} />,
+      icon: FileDown,
       route: "/payables/payment",
       enabled: true,
       description: "إنشاء وإدارة سندات الدفع للموردين"
@@ -57,7 +61,7 @@ export function useDashboardState() {
     {
       id: "receipt-voucher",
       name: "سند قبض",
-      icon: <FileUp size={20} />,
+      icon: FileUp,
       route: "/receipt-vouchers",
       enabled: true,
       description: "إنشاء وإدارة سندات القبض من العملاء"
@@ -65,7 +69,7 @@ export function useDashboardState() {
     {
       id: "general-ledger",
       name: "دفتر الأستاذ",
-      icon: <Database size={20} />,
+      icon: Database,
       route: "/accounting/general-ledger",
       enabled: true,
       description: "الاطلاع على الحسابات وحركات دفتر الأستاذ"
@@ -73,7 +77,7 @@ export function useDashboardState() {
     {
       id: "cash-register",
       name: "الصندوق",
-      icon: <CreditCard size={20} />,
+      icon: CreditCard,
       route: "/accounting/cash-registers",
       enabled: true,
       description: "إدارة عمليات الصندوق والإيداع والسحب"
@@ -81,7 +85,7 @@ export function useDashboardState() {
     {
       id: "price-offers",
       name: "عروض الأسعار",
-      icon: <BarChart size={20} />,
+      icon: BarChart,
       route: "/invoices/quotes",
       enabled: false,
       description: "إنشاء وإدارة عروض الأسعار للعملاء"
@@ -89,7 +93,7 @@ export function useDashboardState() {
     {
       id: "customer-management",
       name: "إدارة العملاء",
-      icon: <Users size={20} />,
+      icon: Users,
       route: "/customers",
       enabled: true,
       description: "إدارة بيانات العملاء وحساباتهم"
@@ -97,7 +101,7 @@ export function useDashboardState() {
     {
       id: "vendor-management",
       name: "إدارة الموردين",
-      icon: <Truck size={20} />,
+      icon: Truck,
       route: "/vendors",
       enabled: true,
       description: "إدارة بيانات الموردين وحساباتهم"
@@ -105,7 +109,7 @@ export function useDashboardState() {
     {
       id: "vendor-reports",
       name: "تقارير الموردين",
-      icon: <FileText size={20} />,
+      icon: FileText,
       route: "/reports/vendors",
       enabled: false,
       description: "عرض وتحليل تقارير الموردين"
@@ -113,7 +117,7 @@ export function useDashboardState() {
     {
       id: "reorder-inventory",
       name: "إعادة الطلب",
-      icon: <Package size={20} />,
+      icon: Package,
       route: "/inventory/reorder",
       enabled: false,
       description: "إدارة الطلبيات وإعادة طلب المنتجات"
@@ -121,7 +125,7 @@ export function useDashboardState() {
     {
       id: "inventory-transfer",
       name: "التحويل",
-      icon: <ArrowLeftRight size={20} />,
+      icon: ArrowLeftRight,
       route: "/inventory-control/transfers",
       enabled: false,
       description: "تحويل المخزون بين المستودعات"
@@ -129,7 +133,7 @@ export function useDashboardState() {
     {
       id: "ai-assistant",
       name: "مساعد الذكاء",
-      icon: <Zap size={20} />,
+      icon: Zap,
       route: "/ai/assistant",
       enabled: true,
       badge: {

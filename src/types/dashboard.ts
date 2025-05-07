@@ -1,11 +1,11 @@
 
-import { ReactNode } from "react";
+import { LucideIcon } from "lucide-react";
 import { SystemAlert } from "@/types/ai";
 
 export interface ShortcutItem {
   id: string;
   name: string;
-  icon: ReactNode;
+  icon: LucideIcon;
   route: string;
   enabled: boolean;
   badge?: {
