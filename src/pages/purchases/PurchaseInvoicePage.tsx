@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -11,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PurchaseInvoiceForm } from "@/components/purchases/PurchaseInvoiceForm";
 import { PurchaseInvoiceSettings } from "@/components/purchases/PurchaseInvoiceSettings";
-import { PurchaseInvoiceQuickInfo } from "@/components/purchases/PurchaseInvoiceQuickInfo";
 import { PDFInvoiceUploader } from "@/components/purchases/PDFInvoiceUploader";
 
 // Define default settings
@@ -297,45 +297,32 @@ const PurchaseInvoicePage = () => {
 
             {/* Main content area */}
             <TabsContent value="editor" className="tab-content">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Main invoice form */}
-                <div className="md:col-span-3">
-                  <Card className="mb-2 print:shadow-none print:border-none">
-                    <CardContent className="p-4 bg-white">
-                      <PurchaseInvoiceForm
-                        initialData={pdfInvoiceData}
-                        settings={invoiceSettings}
-                        invoice={invoice}
-                        onFieldChange={updateField}
-                        onDateChange={updateDate}
-                        addItem={addItem}
-                        updateItem={updateItem}
-                        removeItem={removeItem}
-                        applyDiscount={applyDiscount}
-                        applyExpenses={applyExpenses}
-                        calculateRemaining={calculateRemaining}
-                        onSave={handleSave}
-                        onPrint={printInvoice}
-                        onWhatsAppSend={sendViaWhatsApp}
-                        isLoading={isLoading}
-                        // Add the new props here
-                        isAddingItem={isAddingItem}
-                        setIsAddingItem={setIsAddingItem}
-                        editingItemIndex={editingItemIndex}
-                        setEditingItemIndex={setEditingItemIndex}
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                {/* Sidebar with additional information */}
-                <div className="md:col-span-1 print-hide">
-                  <PurchaseInvoiceQuickInfo 
-                    invoice={invoice} 
+              {/* تمت إزالة تقسيم الشاشة إلى عمودين وإزالة المربعات الجانبية */}
+              <Card className="mb-2 print:shadow-none print:border-none">
+                <CardContent className="p-4 bg-white">
+                  <PurchaseInvoiceForm
+                    initialData={pdfInvoiceData}
+                    settings={invoiceSettings}
+                    invoice={invoice}
                     onFieldChange={updateField}
+                    onDateChange={updateDate}
+                    addItem={addItem}
+                    updateItem={updateItem}
+                    removeItem={removeItem}
+                    applyDiscount={applyDiscount}
+                    applyExpenses={applyExpenses}
+                    calculateRemaining={calculateRemaining}
+                    onSave={handleSave}
+                    onPrint={printInvoice}
+                    onWhatsAppSend={sendViaWhatsApp}
+                    isLoading={isLoading}
+                    isAddingItem={isAddingItem}
+                    setIsAddingItem={setIsAddingItem}
+                    editingItemIndex={editingItemIndex}
+                    setEditingItemIndex={setEditingItemIndex}
                   />
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="upload" className="tab-content">
@@ -372,7 +359,6 @@ const PurchaseInvoicePage = () => {
                     onWhatsAppSend={sendViaWhatsApp}
                     isLoading={isLoading}
                     isPrintPreview={true}
-                    // Add the new props to the preview form too
                     isAddingItem={isAddingItem}
                     setIsAddingItem={setIsAddingItem}
                     editingItemIndex={editingItemIndex}
