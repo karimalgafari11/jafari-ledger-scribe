@@ -1,6 +1,7 @@
 
 import React from "react";
 import { SystemAlert } from "@/types/ai";
+import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import StatsCards from "@/components/dashboard/StatsCards";
 import KpiMetricsGrid from "@/components/dashboard/KpiMetricsGrid";
 import ChartsGrid from "@/components/dashboard/ChartsGrid";
@@ -8,19 +9,6 @@ import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
-
-interface ShortcutItem {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  route: string;
-  enabled: boolean;
-  badge?: {
-    text: string;
-    variant?: "default" | "secondary" | "outline" | "destructive" | "success";
-  };
-  description?: string;
-}
 
 interface DashboardContentProps {
   totalSales: number;
@@ -43,12 +31,7 @@ interface DashboardContentProps {
   dailySalesData: any[];
   systemAlerts: SystemAlert[];
   interactiveMode?: boolean;
-  displayOptions: {
-    showStats: boolean;
-    showKpis: boolean;
-    showCharts: boolean;
-    showAiWidget: boolean;
-  };
+  displayOptions: DisplayOptions;
   shortcuts: ShortcutItem[];
 }
 

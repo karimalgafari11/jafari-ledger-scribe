@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { Settings, FileText, Receipt, FileDown, FileUp, Plus, Trash2 } from "lucide-react";
+import { Settings, FileText, Plus, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +12,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 
 // تعريف نوع العنصر المخصص
 interface ShortcutItem {

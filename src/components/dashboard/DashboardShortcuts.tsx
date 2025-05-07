@@ -4,19 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-interface ShortcutItem {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  route: string;
-  enabled: boolean;
-  badge?: {
-    text: string;
-    variant?: "default" | "secondary" | "outline" | "destructive" | "success";
-  };
-  description?: string;
-}
+import { ShortcutItem } from "@/types/dashboard";
 
 interface DashboardShortcutsProps {
   shortcuts: ShortcutItem[];
