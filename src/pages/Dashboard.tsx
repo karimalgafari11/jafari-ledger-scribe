@@ -12,6 +12,21 @@ import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { useDashboardState } from "@/hooks/useDashboardState";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
+import { CreditCard } from "lucide-react";
+
+// إضافة اختصار جديد لصفحة تسجيل الدفعات
+const paymentShortcut: ShortcutItem = {
+  id: "payment-shortcut",
+  name: "تسجيل دفعة جديدة",
+  description: "إضافة عملية دفع جديدة للموردين",
+  route: "/payables/payment",
+  icon: CreditCard,
+  enabled: true,
+  badge: {
+    text: "جديد",
+    variant: "outline"
+  }
+};
 
 const Dashboard = () => {
   // استدعاء بيانات المساعد الذكي للحصول على التنبيهات النظامية
@@ -49,6 +64,15 @@ const Dashboard = () => {
     costCenterData,
     dailySalesData,
   } = useDashboardMetrics();
+
+  // إضافة اختصار المدفوعات إلى قائمة الاختصارات إذا لم يكن موجودًا بالفعل
+  React.useEffect(() => {
+    const hasPaymentShortcut = shortcuts.some(shortcut => shortcut.id === paymentShortcut.id);
+    if (!hasPaymentShortcut) {
+      const updatedShortcuts = [...shortcuts, paymentShortcut];
+      handleShortcutsChange(updatedShortcuts);
+    }
+  }, [shortcuts, handleShortcutsChange]);
 
   return (
     <Layout>

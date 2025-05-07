@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShortcutItem } from "@/types/dashboard";
-import { FileText } from "lucide-react";
+import { FileText, CreditCard } from "lucide-react";
 
 interface DashboardShortcutsProps {
   shortcuts: ShortcutItem[];
@@ -38,6 +38,13 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
     }
   };
   
+  const handleShortcutClick = (route: string) => {
+    // Добавляем плавную прокрутку наверх перед переходом
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // После небольшой задержки выполняем переход
+    setTimeout(() => navigate(route), 100);
+  };
+  
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
       {enabledShortcuts.map((shortcut) => (
@@ -46,7 +53,7 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
             <TooltipTrigger asChild>
               <Card 
                 className="p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent transition-all duration-200 hover:shadow-md relative group h-24"
-                onClick={() => navigate(shortcut.route)}
+                onClick={() => handleShortcutClick(shortcut.route)}
               >
                 <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {shortcut.badge && (
@@ -60,7 +67,7 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
                   {renderIcon(shortcut.icon)}
                 </div>
                 
-                <span className="text-sm font-medium text-center">{shortcut.name}</span>
+                <span className="text-sm font-medium text-center line-clamp-2">{shortcut.name}</span>
               </Card>
             </TooltipTrigger>
             {shortcut.description && (
