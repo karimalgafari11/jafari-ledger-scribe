@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { FileText } from "lucide-react";
 
 export function useDashboardSettings({
@@ -15,7 +16,7 @@ export function useDashboardSettings({
   onDisplayOptionsChange: (options: DisplayOptions) => void;
   onShortcutsChange: (shortcuts: ShortcutItem[]) => void;
 }) {
-  const [isMobile] = useState(false);
+  const isMobile = useIsMobile();
   
   const handleDisplayOptionChange = (key: keyof DisplayOptions) => {
     onDisplayOptionsChange({
@@ -67,6 +68,7 @@ export function useDashboardSettings({
   };
   
   return {
+    isMobile,
     handleDisplayOptionChange,
     handleShortcutToggle,
     handleDeleteShortcut,

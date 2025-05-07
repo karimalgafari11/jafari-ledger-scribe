@@ -4,7 +4,6 @@ import { Settings } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import { SettingsContent } from "./settings/SettingsContent";
 import { useDashboardSettings } from "@/hooks/useDashboardSettings";
@@ -20,9 +19,8 @@ export const DashboardSettings: React.FC<{
   shortcuts,
   onShortcutsChange
 }) => {
-  const isMobile = useIsMobile();
-  
   const {
+    isMobile,
     handleDisplayOptionChange,
     handleShortcutToggle,
     handleDeleteShortcut,
