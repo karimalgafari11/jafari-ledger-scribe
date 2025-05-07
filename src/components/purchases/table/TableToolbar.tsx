@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Grid, List } from "lucide-react";
+import { Grid } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +15,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Product } from "@/types/inventory";
+import { TableHeader } from "./TableHeader";
+import { QuickProductSearch } from "../QuickProductSearch";
 
 interface TableToolbarProps {
   isAddingItem: boolean;
@@ -32,14 +34,15 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   toggleGridLines
 }) => {
   const [open, setOpen] = useState(false);
+  const [quickSearchActive, setQuickSearchActive] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   
-  // تحسين التعامل مع الضغط على زر الإضافة
   const handleAddClick = () => {
-    if (!isAddingItem && editingItemIndex === null) {
-      // فقط تغيير حالة الـ Popover
-      console.log("Opening product search popover");
-    }
+    setQuickSearchActive(true);
+  };
+  
+  const handleToggleSearch = () => {
+    setOpen(!open);
   };
   
   const handleProductSelectAndClose = (product: Product) => {
@@ -49,39 +52,21 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   };
 
   return (
-    <div className="flex justify-between items-center mb-2">
-      <div>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              onClick={handleAddClick}
-              disabled={isAddingItem || editingItemIndex !== null}
-              className="bg-blue-600 hover:bg-blue-700 text-base"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              إضافة صنف جديد
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent 
-            className="w-80 p-4 bg-white border rounded-md shadow-md z-[1000]" 
-            align="start"
-            side="bottom"
-            sideOffset={5}
-          >
-            <div className="space-y-4" ref={searchRef}>
-              <h4 className="font-medium text-sm">البحث عن صنف</h4>
-              <ProductSearch 
-                onSelect={handleProductSelectAndClose} 
-                autoFocus={true}
-                placeholder="أدخل اسم أو رمز الصنف..."
-                showIcon={true}
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
+    <div>
+      <TableHeader 
+        onAddNewItem={handleAddClick}
+        onToggleSearch={handleToggleSearch}
+      />
       
-      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+      {/* Display the quick search dialog when active */}
+      {quickSearchActive && (
+        <QuickProductSearch
+          onClose={() => setQuickSearchActive(false)}
+          onSelect={handleProductSelect}
+        />
+      )}
+      
+      <div className="flex justify-end items-center space-x-2 rtl:space-x-reverse">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -97,8 +82,6 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
             <TooltipContent>إظهار/إخفاء الخطوط الشبكية</TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        
-        {/* يمكن إضافة المزيد من أزرار الأدوات هنا */}
       </div>
     </div>
   );

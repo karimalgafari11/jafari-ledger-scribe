@@ -1,29 +1,23 @@
 
 import React from "react";
-import { TableHeader, TableRow, TableHead } from "@/components/ui/table";
+import { TableActionButtons } from "./TableActionButtons";
 
-interface PurchaseTableHeaderProps {
-  showItemCodes?: boolean;
-  showItemNotes?: boolean;
+interface TableHeaderProps {
+  onAddNewItem: () => void;
+  onToggleSearch: () => void;
 }
 
-export const PurchaseTableHeader: React.FC<PurchaseTableHeaderProps> = ({
-  showItemCodes = true,
-  showItemNotes = true
+export const TableHeader: React.FC<TableHeaderProps> = ({
+  onAddNewItem,
+  onToggleSearch
 }) => {
   return (
-    <TableHeader>
-      <TableRow>
-        <TableHead className="w-14 text-center">#</TableHead>
-        {showItemCodes && <TableHead className="text-center w-28">رمز الصنف</TableHead>}
-        <TableHead className="text-right">اسم الصنف</TableHead>
-        <TableHead className="w-24 text-center">الوحدة</TableHead>
-        <TableHead className="w-24 text-center">الكمية</TableHead>
-        <TableHead className="w-28 text-center">سعر الوحدة</TableHead>
-        <TableHead className="w-28 text-center">المجموع</TableHead>
-        {showItemNotes && <TableHead className="text-right">ملاحظات</TableHead>}
-        <TableHead className="w-24 text-center">الإجراءات</TableHead>
-      </TableRow>
-    </TableHeader>
+    <div className="flex justify-between items-center mb-2 rtl">
+      <h3 className="text-lg font-semibold">الأصناف</h3>
+      <TableActionButtons 
+        onAddNewItem={onAddNewItem}
+        onToggleSearch={onToggleSearch}
+      />
+    </div>
   );
 };

@@ -58,9 +58,9 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
     setEditingItemIndex
   });
   
-  // تعامل مع اختيار منتج من البحث في شريط الأدوات
+  // Handle product selection from the toolbar or quick search
   const handleToolbarProductSelect = (product: Product) => {
-    console.log("Product selected from toolbar:", product);
+    console.log("Product selected from toolbar or quick search:", product);
     const newItem: Partial<PurchaseItem> = {
       id: uuidv4(),
       productId: product.id,
