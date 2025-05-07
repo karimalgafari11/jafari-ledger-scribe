@@ -1,9 +1,11 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X, Search, ArrowRight } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { mockProducts } from "@/data/mockProducts";
+import { SearchIcon } from "lucide-react";
 
 interface QuickProductSearchProps {
   onClose: () => void;
@@ -15,123 +17,77 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   onSelect
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<typeof mockProducts>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  
+  const [filteredProducts, setFilteredProducts] = useState(mockProducts);
+
   useEffect(() => {
-    // Focus on input when opened
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-    
-    // Add event listener to detect clicks outside
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-    
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onClose]);
-  
-  useEffect(() => {
-    if (searchTerm.length > 0) {
-      const results = mockProducts.filter(
-        product => 
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.code.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setSearchResults(results);
+    if (searchTerm.trim() === "") {
+      setFilteredProducts(mockProducts);
     } else {
-      // Show all products when no search term
-      setSearchResults(mockProducts.slice(0, 10)); // Show first 10 for performance
+      const term = searchTerm.toLowerCase().trim();
+      const filtered = mockProducts.filter(
+        product => 
+          product.name.toLowerCase().includes(term) ||
+          product.code.toLowerCase().includes(term) ||
+          (product.category && product.category.toLowerCase().includes(term))
+      );
+      setFilteredProducts(filtered);
     }
   }, [searchTerm]);
-  
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+
+  const handleSelect = (product: any) => {
+    onSelect(product);
+    onClose();
   };
-  
+
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div 
-        ref={containerRef}
-        className="bg-white rounded-md p-4 w-full max-w-2xl max-h-[600px] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold">بحث عن منتج</h3>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>إضافة منتج للفاتورة</DialogTitle>
+        </DialogHeader>
+
         <div className="relative mb-4">
           <Input
-            ref={inputRef}
+            type="text"
+            placeholder="ابحث عن منتج بالاسم أو الرمز..."
             value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="أدخل اسم المنتج أو رمزه للبحث..."
-            className="pr-10"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 h-10"
+            autoFocus
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <SearchIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
         </div>
-        
-        <div className="overflow-y-auto flex-1">
-          {searchResults.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">
+
+        <ScrollArea className="max-h-[400px] overflow-y-auto">
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
               لا توجد منتجات مطابقة للبحث
             </div>
           ) : (
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="p-2 text-right">رمز الصنف</th>
-                  <th className="p-2 text-right">اسم الصنف</th>
-                  <th className="p-2 text-right">السعر</th>
-                  <th className="p-2 text-right">الكمية المتوفرة</th>
-                  <th className="p-2 text-right">الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.map((product) => (
-                  <tr 
-                    key={product.id} 
-                    className="border-b border-gray-200 hover:bg-gray-50"
-                  >
-                    <td className="p-2">{product.code}</td>
-                    <td className="p-2">{product.name}</td>
-                    <td className="p-2">{product.price.toFixed(2)} ر.س</td>
-                    <td className="p-2">
-                      <span className={`${product.quantity <= 0 ? 'text-red-600' : product.quantity < product.reorderLevel ? 'text-amber-600' : 'text-green-600'}`}>
-                        {product.quantity}
-                      </span>
-                    </td>
-                    <td className="p-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="h-8"
-                        onClick={() => onSelect(product)}
-                      >
-                        <ArrowRight className="h-4 w-4 ml-1" />
-                        إضافة
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="grid grid-cols-1 gap-2">
+              {filteredProducts.map((product) => (
+                <Button
+                  key={product.id}
+                  variant="outline"
+                  className="h-auto py-3 px-4 justify-between flex flex-row items-start text-right"
+                  onClick={() => handleSelect(product)}
+                >
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">{product.code}</span>
+                    {product.category && (
+                      <span className="text-xs text-gray-500 mt-1">{product.category}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="font-medium">{product.name}</span>
+                    <span className="text-sm font-bold">{product.price.toFixed(2)} ر.س</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
           )}
-        </div>
-      </div>
-    </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 };

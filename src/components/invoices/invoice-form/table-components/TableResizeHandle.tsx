@@ -8,10 +8,9 @@ interface TableResizeHandleProps {
 export const TableResizeHandle: React.FC<TableResizeHandleProps> = ({ onMouseDown }) => {
   return (
     <div 
-      className="absolute top-0 bottom-0 right-0 w-1 cursor-ew-resize bg-primary/10 hover:bg-primary/20 transition-colors" 
+      className="absolute top-0 bottom-0 right-0 w-2 cursor-ew-resize hover:bg-blue-300 opacity-0 hover:opacity-100 transition-opacity print-hide"
       onMouseDown={onMouseDown}
-      title="اسحب لتغيير حجم الجدول" 
-      aria-label="تغيير حجم الجدول"
+      title="اضغط وحرك لتغيير حجم الجدول"
     />
   );
 };

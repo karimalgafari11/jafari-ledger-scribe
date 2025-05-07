@@ -3,57 +3,52 @@ export interface Product {
   id: string;
   code: string;
   name: string;
+  description?: string;
+  category?: string;
   price: number;
-  category: string;
+  purchasePrice?: number;
   quantity: number;
-  reorderLevel: number;
-  isActive: boolean;
+  inStock: boolean;
+  minQuantity?: number;
+  maxQuantity?: number;
+  unit?: string;
+  barcode?: string;
+  image?: string;
+  status: 'active' | 'inactive' | 'out_of_stock';
+  vendorId?: string;
+  vendorName?: string;
+  warehouseId?: string;
+  warehouseName?: string;
+  tags?: string[];
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface FilterOptions {
-  category: string;
-  status: string;
-  minPrice: number;
-  maxPrice: number;
+export interface Warehouse {
+  id: string;
+  name: string;
+  location: string;
+  manager?: string;
+  contactInfo?: string;
+  status: 'active' | 'inactive';
+  notes?: string;
 }
 
 export interface StockMovement {
   id: string;
-  date: Date;
-  type: 'inbound' | 'outbound' | 'transfer';
-  itemId: string;
-  itemName: string;
+  date: string;
+  productId: string;
+  productName: string;
   quantity: number;
-  sourceWarehouse: string;
-  destinationWarehouse: string;
-  notes: string;
-}
-
-export interface InventoryCount {
-  id: string;
-  date: Date;
-  warehouseId: string;
-  warehouseName: string;
-  status: 'draft' | 'completed';
-  items: InventoryCountItem[];
-  notes: string;
-}
-
-export interface InventoryCountItem {
-  itemId: string;
-  itemName: string;
-  expectedQuantity: number;
-  actualQuantity: number;
-  difference: number;
-  notes: string;
-}
-
-export interface ReorderItem {
-  itemId: string;
-  itemName: string;
-  availableQuantity: number;
-  reorderThreshold: number;
-  suggestedOrderQuantity: number;
-  warehouseId: string;
-  warehouseName: string;
+  type: 'in' | 'out' | 'transfer' | 'adjustment';
+  referenceNumber?: string;
+  referenceType?: 'purchase' | 'sale' | 'return' | 'transfer' | 'count' | 'adjustment';
+  sourceWarehouseId?: string;
+  sourceWarehouseName?: string;
+  destinationWarehouseId?: string;
+  destinationWarehouseName?: string;
+  userId: string;
+  userName: string;
+  notes?: string;
 }
