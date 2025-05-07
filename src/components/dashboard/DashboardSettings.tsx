@@ -44,7 +44,10 @@ export const DashboardSettings: React.FC<{
     onAddShortcut: handleAddShortcut
   };
   
-  return isMobile ? (
+  // Ensure we're using a boolean value for the conditional rendering
+  const showMobileView = isMobile === true;
+  
+  return showMobileView ? (
     <Drawer>
       <DrawerTrigger asChild>
         <Button variant="outline" size="icon">
