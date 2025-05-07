@@ -71,7 +71,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
       <TableCell className="px-3 py-2">
         <EditableCell
           value={item.notes || ""}
-          isActive={isCellActive("notes")}
+          active={isCellActive("notes")}
           onActivate={() => handleCellClick(index, "notes")}
           onChange={(value) => handleDirectEdit(index, "notes", value)}
           inputRef={isCellActive("notes") ? searchInputRef : undefined}
@@ -88,7 +88,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
       <TableCell className="px-3 py-2">
         <EditableCell
           value={item.price.toString()}
-          isActive={isCellActive("price")}
+          active={isCellActive("price")}
           onActivate={() => handleCellClick(index, "price")}
           onChange={(value) => handleDirectEdit(index, "price", parseFloat(value) || 0)}
           inputRef={isCellActive("price") ? searchInputRef : undefined}
@@ -101,7 +101,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
       <TableCell className="px-3 py-2">
         <EditableCell
           value={item.quantity.toString()}
-          isActive={isCellActive("quantity")}
+          active={isCellActive("quantity")}
           onActivate={() => handleCellClick(index, "quantity")}
           onChange={(value) => handleDirectEdit(index, "quantity", parseFloat(value) || 0)}
           inputRef={isCellActive("quantity") ? searchInputRef : undefined}
@@ -127,7 +127,7 @@ export const ItemRow: React.FC<ItemRowProps> = ({
       <TableCell className="px-3 py-2">
         <EditableCell
           value={item.code}
-          isActive={isCellActive("code")}
+          active={isCellActive("code")}
           onActivate={() => handleCellClick(index, "code")}
           onChange={(value) => handleDirectEdit(index, "code", value)}
           inputRef={isCellActive("code") ? searchInputRef : undefined}

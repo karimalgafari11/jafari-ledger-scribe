@@ -39,7 +39,7 @@ export const PurchaseInvoiceHeader: React.FC<PurchaseInvoiceHeaderProps> = ({
                 <Label htmlFor="date" className="text-base">تاريخ الفاتورة</Label>
                 <DatePicker
                   date={invoice.date ? new Date(invoice.date) : new Date()}
-                  onSelect={(date) => onDateChange(date)}
+                  onDateChange={onDateChange}
                   className="w-full"
                 />
               </div>
