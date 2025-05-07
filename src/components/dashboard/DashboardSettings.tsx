@@ -11,6 +11,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 interface DashboardSettingsProps {
   displayOptions: DisplayOptions;
@@ -58,7 +60,14 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
   
   // التنقل إلى صفحات الإعدادات
   const navigateToSettings = (path: string) => {
-    navigate(path);
+    try {
+      console.log(`محاولة التنقل إلى: ${path}`);
+      navigate(path);
+      toast.success(`تم الانتقال إلى ${path}`);
+    } catch (error) {
+      console.error(`خطأ في التنقل إلى ${path}:`, error);
+      toast.error("حدث خطأ أثناء محاولة فتح الإعدادات");
+    }
   };
   
   // قائمة خيارات الإعدادات المتقدمة
@@ -137,43 +146,24 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
     }
   ];
   
-  // Ensure we're using a boolean value for the conditional rendering
-  const showMobileView = isMobile === true;
+  // Making sure isMobile is a boolean value
+  const showMobileView = Boolean(isMobile);
   
-  const SettingsButton = () => (
-    <Button 
-      variant="outline" 
-      size="icon" 
-      className="relative group overflow-hidden"
-    >
-      <Settings2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300 group-hover:rotate-45 transform" />
-      <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-    </Button>
-  );
-  
-  // عرض قائمة منسدلة للإعدادات السريعة
-  const SettingsPopover = () => (
-    <Popover>
-      <PopoverTrigger asChild>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="relative group overflow-hidden"
-              >
-                <Settings2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300 group-hover:rotate-45 transform" />
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p className="text-sm font-medium">إعدادات النظام</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
+  // أسلوب بديل باستخدام DropdownMenu بدلاً من Popover
+  const SettingsDropdown = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="relative group overflow-hidden hover:bg-white/20 bg-white/10 border-white/20"
+          aria-label="إعدادات النظام"
+        >
+          <Settings2 className="h-5 w-5 text-white group-hover:rotate-90 transition-transform duration-300" />
+          <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80 p-0 z-50" align="end">
         <div className="p-4 border-b">
           <h4 className="font-medium text-lg">إعدادات النظام</h4>
           <p className="text-sm text-gray-500">إدارة وتخصيص إعدادات النظام</p>
@@ -217,15 +207,19 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
           ))}
         </div>
         
-        <Separator />
+        <DropdownMenuSeparator />
         
         <div className="p-2">
-          <h5 className="text-xs text-gray-500 p-2">إعدادات النظام</h5>
+          <div className="text-xs text-gray-500 p-2">إعدادات النظام</div>
           {settingsOptions.map((option, index) => (
             <Button
               key={index}
               variant="ghost"
-              onClick={option.onClick}
+              onClick={(e) => {
+                e.preventDefault();
+                console.log(`تم النقر على خيار: ${option.title}`);
+                option.onClick();
+              }}
               className="w-full justify-start text-right flex items-center p-2 hover:bg-gray-100 rounded-md"
             >
               {option.icon}
@@ -236,8 +230,8 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
             </Button>
           ))}
         </div>
-      </PopoverContent>
-    </Popover>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
   
   return showMobileView ? (
@@ -246,8 +240,13 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="icon" className="relative group">
-                <Settings2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="relative group bg-white/10 border-white/20 hover:bg-white/20"
+                aria-label="إعدادات النظام"
+              >
+                <Settings2 className="h-5 w-5 text-white group-hover:text-white transition-colors duration-200" />
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
               </Button>
             </TooltipTrigger>
@@ -270,7 +269,11 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
               <Button
                 key={index}
                 variant="ghost"
-                onClick={option.onClick}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log(`تم النقر على خيار: ${option.title}`);
+                  option.onClick();
+                }}
                 className="w-full justify-start text-right flex items-center p-2"
               >
                 {option.icon}
@@ -282,6 +285,6 @@ export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
       </DrawerContent>
     </Drawer>
   ) : (
-    <SettingsPopover />
+    <SettingsDropdown />
   );
 };

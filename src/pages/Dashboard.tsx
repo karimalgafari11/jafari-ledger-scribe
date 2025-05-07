@@ -130,8 +130,14 @@ const Dashboard = () => {
 
   // التنقل إلى صفحات الإعدادات المختلفة
   const handleNavigateToSettings = (path: string) => {
-    navigate(path);
-    toast.success(`جاري الانتقال إلى ${path}`);
+    try {
+      navigate(path);
+      toast.success(`جاري الانتقال إلى ${path}`);
+      console.log(`تم التنقل إلى: ${path}`);
+    } catch (error) {
+      console.error(`خطأ في التنقل إلى: ${path}`, error);
+      toast.error(`حدث خطأ أثناء محاولة الانتقال. الرجاء المحاولة مرة أخرى.`);
+    }
   };
 
   // فتح إعدادات النظام

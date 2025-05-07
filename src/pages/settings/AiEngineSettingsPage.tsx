@@ -1,535 +1,409 @@
 
-import React from 'react';
-import { Layout } from "@/components/Layout";
+import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from "react-router-dom";
+import { useAiEngineSettings } from "@/hooks/useAiEngineSettings";
+import { AIEngineSettings } from "@/types/ai-finance";
 import { toast } from "sonner";
-import { AlertCircle, CloudCog, Settings2, Zap, Database, UserPlus2, LineChart, Brain, Clipboard, ShieldAlert } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const AiEngineSettingsPage = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [aiSettings, setAiSettings] = React.useState({
-    enabled: true,
-    model: "gpt-4",
-    apiKey: "••••••••••••••••••••••••••",
-    maxTokens: 2000,
-    temperature: 0.7,
-    suggestionsEnabled: true,
-    alertsEnabled: true,
-    dataAccess: "all",
-    privacyLevel: "high",
-    retentionDays: 30,
-    customPrompt: "",
-    autoAnalysis: true,
-    financialInsights: true,
-    inventoryPredictions: true,
-    customerSegmentation: true
-  });
+const AiEngineSettingsPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { settings, updateSettings, resetSettings, isLoading } = useAiEngineSettings();
   
-  const handleChange = (key: string, value: any) => {
-    setAiSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
+  const handleSliderChange = (
+    module: keyof AIEngineSettings,
+    field: string,
+    value: number[]
+  ) => {
+    updateSettings({
+      ...settings,
+      [module]: {
+        ...settings[module],
+        [field]: value[0]
+      }
+    });
   };
   
-  const handleSaveChanges = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("تم حفظ إعدادات الذكاء الاصطناعي بنجاح");
-    }, 1000);
+  const handleToggleChange = (
+    module: keyof AIEngineSettings,
+    field: string,
+    value: boolean
+  ) => {
+    updateSettings({
+      ...settings,
+      [module]: {
+        ...settings[module],
+        [field]: value
+      }
+    });
   };
   
-  const handleResetDefaults = () => {
-    if (window.confirm("هل أنت متأكد من إعادة ضبط جميع إعدادات الذكاء الاصطناعي؟")) {
-      setAiSettings({
-        enabled: true,
-        model: "gpt-4",
-        apiKey: "••••••••••••••••••••••••••",
-        maxTokens: 2000,
-        temperature: 0.7,
-        suggestionsEnabled: true,
-        alertsEnabled: true,
-        dataAccess: "all",
-        privacyLevel: "high",
-        retentionDays: 30,
-        customPrompt: "",
-        autoAnalysis: true,
-        financialInsights: true,
-        inventoryPredictions: true,
-        customerSegmentation: true
-      });
-      toast.success("تم إعادة ضبط إعدادات الذكاء الاصطناعي للقيم الافتراضية");
-    }
+  const handleResetSettings = () => {
+    resetSettings();
+    toast.success("تم إعادة ضبط إعدادات محرك الذكاء الاصطناعي بنجاح");
   };
   
-  const handleRegenerateApiKey = () => {
-    if (window.confirm("هل أنت متأكد من إعادة إنشاء مفتاح API؟ سيتم إلغاء المفتاح الحالي.")) {
-      toast.success("تم إعادة إنشاء مفتاح API بنجاح");
-    }
+  const handleSaveSettings = () => {
+    toast.success("تم حفظ إعدادات محرك الذكاء الاصطناعي بنجاح");
   };
-
+  
   return (
-    <Layout>
+    <div className="container mx-auto p-6 rtl">
       <Header 
         title="إعدادات محرك الذكاء الاصطناعي" 
-        description="تخصيص وإدارة إعدادات محرك الذكاء الاصطناعي المدمج"
-        showBack={true}
+        description="تخصيص وإدارة إعدادات محرك التحليل الذكي"
+        showBack={true} 
+        onBackClick={() => navigate("/ai/dashboard")}
       />
       
-      <div className="container mx-auto p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center">
-            <CloudCog className="h-8 w-8 text-primary ml-2" />
-            <div>
-              <h2 className="text-2xl font-bold">محرك الذكاء الاصطناعي</h2>
-              <p className="text-sm text-muted-foreground">إدارة وتخصيص إعدادات محرك الذكاء الاصطناعي المدمج في النظام</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Switch 
-              checked={aiSettings.enabled} 
-              onCheckedChange={(value) => handleChange('enabled', value)} 
-              id="ai-enabled" 
-            />
-            <Label htmlFor="ai-enabled" className="mr-2">
-              {aiSettings.enabled ? "مفعل" : "معطل"}
-            </Label>
-          </div>
-        </div>
-        
-        {!aiSettings.enabled && (
-          <Alert className="mb-6 border-amber-300 bg-amber-50 text-amber-900">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>محرك الذكاء الاصطناعي معطل</AlertTitle>
-            <AlertDescription>
-              تم تعطيل محرك الذكاء الاصطناعي. لن تتلقى أي تحليلات أو توصيات أو تنبيهات ذكية.
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="general">الإعدادات العامة</TabsTrigger>
-            <TabsTrigger value="privacy">الخصوصية والأمان</TabsTrigger>
-            <TabsTrigger value="features">ميزات التحليل</TabsTrigger>
-            <TabsTrigger value="integration">التكامل</TabsTrigger>
+      <div className="mt-6">
+        <Tabs defaultValue="journal" className="w-full">
+          <TabsList className="grid grid-cols-4 mb-6">
+            <TabsTrigger value="journal">قيود اليومية</TabsTrigger>
+            <TabsTrigger value="pricing">التسعير الديناميكي</TabsTrigger>
+            <TabsTrigger value="alerts">التنبيهات السلوكية</TabsTrigger>
+            <TabsTrigger value="variance">تحليل التباين</TabsTrigger>
           </TabsList>
           
-          {/* الإعدادات العامة */}
-          <TabsContent value="general">
+          <TabsContent value="journal">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings2 className="ml-2" size={20} />
-                  الإعدادات العامة
-                </CardTitle>
+                <CardTitle>اقتراح قيود اليومية</CardTitle>
                 <CardDescription>
-                  إعدادات نموذج الذكاء الاصطناعي الأساسية
+                  إعدادات نظام اقتراحات القيود المحاسبية الآلية
                 </CardDescription>
               </CardHeader>
-              
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="model">نموذج الذكاء الاصطناعي</Label>
-                    <Select 
-                      value={aiSettings.model}
-                      onValueChange={(value) => handleChange('model', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="اختر النموذج" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="gpt-4">GPT-4 (أعلى دقة، أبطأ)</SelectItem>
-                        <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo (سريع، موازنة)</SelectItem>
-                        <SelectItem value="local-model">النموذج المحلي (خصوصية أعلى)</SelectItem>
-                        <SelectItem value="custom">نموذج مخصص</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="journalSuggestions">تفعيل اقتراحات القيود</Label>
+                    <p className="text-sm text-muted-foreground">
+                      السماح للنظام الذكي باقتراح قيود محاسبية بناءً على العمليات السابقة
+                    </p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="apiKey">مفتاح API</Label>
-                    <div className="flex gap-2">
-                      <Input 
-                        id="apiKey" 
-                        value={aiSettings.apiKey} 
-                        onChange={(e) => handleChange('apiKey', e.target.value)}
-                        type="password"
-                        disabled={aiSettings.model === "local-model"}
-                      />
-                      <Button variant="outline" onClick={handleRegenerateApiKey}>إعادة إنشاء</Button>
-                    </div>
-                  </div>
+                  <Switch
+                    id="journalSuggestions"
+                    checked={settings.journalEntrySuggestions.enabled}
+                    onCheckedChange={(checked) => handleToggleChange('journalEntrySuggestions', 'enabled', checked)}
+                  />
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>درجة الإبداعية (Temperature)</Label>
-                    <span className="text-sm">{aiSettings.temperature}</span>
-                  </div>
-                  <Slider 
-                    min={0} 
-                    max={1} 
-                    step={0.1} 
-                    value={[aiSettings.temperature]}
-                    onValueChange={(value) => handleChange('temperature', value[0])}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>أكثر دقة وتحديدًا</span>
-                    <span>أكثر إبداعًا وتنوعًا</span>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>الحد الأقصى للرموز (Max Tokens)</Label>
-                    <span className="text-sm">{aiSettings.maxTokens}</span>
-                  </div>
-                  <Slider 
-                    min={500} 
-                    max={8000} 
-                    step={500} 
-                    value={[aiSettings.maxTokens]}
-                    onValueChange={(value) => handleChange('maxTokens', value[0])}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>أقصر (أقل تكلفة)</span>
-                    <span>أطول (أكثر تفاصيل)</span>
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="block mb-1">التوصيات التلقائية</Label>
-                      <p className="text-sm text-muted-foreground">تمكين عرض التوصيات التلقائية في لوحة التحكم</p>
-                    </div>
-                    <Switch 
-                      checked={aiSettings.suggestionsEnabled} 
-                      onCheckedChange={(value) => handleChange('suggestionsEnabled', value)} 
-                    />
+                    <Label htmlFor="journalThreshold">نسبة الثقة المطلوبة للاقتراحات</Label>
+                    <span className="text-sm">{settings.journalEntrySuggestions.threshold}%</span>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="block mb-1">التنبيهات الذكية</Label>
-                      <p className="text-sm text-muted-foreground">تمكين التنبيهات الذكية للمشاكل والفرص المحتملة</p>
-                    </div>
-                    <Switch 
-                      checked={aiSettings.alertsEnabled} 
-                      onCheckedChange={(value) => handleChange('alertsEnabled', value)} 
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {/* الخصوصية والأمان */}
-          <TabsContent value="privacy">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <ShieldAlert className="ml-2" size={20} />
-                  الخصوصية والأمان
-                </CardTitle>
-                <CardDescription>
-                  إعدادات الخصوصية وأمان البيانات لمحرك الذكاء الاصطناعي
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="dataAccess">وصول البيانات</Label>
-                  <Select 
-                    value={aiSettings.dataAccess}
-                    onValueChange={(value) => handleChange('dataAccess', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر مستوى الوصول" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">جميع البيانات (المالية، العملاء، المخزون)</SelectItem>
-                      <SelectItem value="financial">البيانات المالية فقط</SelectItem>
-                      <SelectItem value="inventory">بيانات المخزون فقط</SelectItem>
-                      <SelectItem value="aggregated">بيانات مجمعة فقط (بدون تفاصيل)</SelectItem>
-                      <SelectItem value="limited">وصول محدود (قيود خاصة)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="privacyLevel">مستوى الخصوصية</Label>
-                  <Select 
-                    value={aiSettings.privacyLevel}
-                    onValueChange={(value) => handleChange('privacyLevel', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر مستوى الخصوصية" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">منخفض (تحليل كامل، أداء أفضل)</SelectItem>
-                      <SelectItem value="medium">متوسط (موازنة بين الخصوصية والأداء)</SelectItem>
-                      <SelectItem value="high">عالي (تتبع أقل، بيانات مجهولة)</SelectItem>
-                      <SelectItem value="max">قصوى (معالجة محلية بالكامل)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="retentionDays">فترة الاحتفاظ بالبيانات (بالأيام)</Label>
-                    <span className="text-sm">{aiSettings.retentionDays} يوم</span>
-                  </div>
-                  <Slider 
-                    min={1} 
-                    max={90} 
-                    step={1} 
-                    value={[aiSettings.retentionDays]}
-                    onValueChange={(value) => handleChange('retentionDays', value[0])}
+                  <Slider
+                    id="journalThreshold"
+                    defaultValue={[settings.journalEntrySuggestions.threshold]}
+                    min={50}
+                    max={95}
+                    step={5}
+                    onValueChange={(value) => handleSliderChange('journalEntrySuggestions', 'threshold', value)}
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>فترة قصيرة</span>
-                    <span>فترة طويلة</span>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    اختر نسبة الثقة المطلوبة قبل عرض اقتراحات القيود المحاسبية
+                  </p>
                 </div>
-                
-                <Alert className="border-blue-200 bg-blue-50">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-xs">
-                    البيانات المستخدمة في التحليل يتم تشفيرها ولا يتم مشاركتها مع أطراف خارجية.
-                    عند اختيار المستوى القصوى للخصوصية، قد تكون بعض ميزات التحليل المتقدم محدودة.
-                  </AlertDescription>
-                </Alert>
-                
-                <Separator />
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label className="block mb-1">تطبيق حذف البيانات التلقائي</Label>
-                    <p className="text-sm text-muted-foreground">حذف بيانات التحليل والذكاء الاصطناعي تلقائيًا بعد فترة الاحتفاظ</p>
+                    <Label htmlFor="autoCreateEntries">الإنشاء التلقائي للقيود</Label>
+                    <p className="text-sm text-muted-foreground">
+                      إنشاء قيود محاسبية تلقائياً عند درجة ثقة عالية (95% أو أعلى)
+                    </p>
                   </div>
-                  <Switch checked={true} />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {/* ميزات التحليل */}
-          <TabsContent value="features">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Brain className="ml-2" size={20} />
-                  ميزات التحليل الذكي
-                </CardTitle>
-                <CardDescription>
-                  تخصيص الميزات والتحليلات التي يوفرها محرك الذكاء الاصطناعي
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">التحليل التلقائي</h3>
-                      <p className="text-sm text-muted-foreground">تحليل تلقائي للبيانات وإنشاء تقارير ذكية</p>
-                    </div>
-                    <Switch 
-                      checked={aiSettings.autoAnalysis} 
-                      onCheckedChange={(value) => handleChange('autoAnalysis', value)} 
-                    />
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">تحليلات مالية</h3>
-                      <p className="text-sm text-muted-foreground">تحليل وتوصيات لتحسين الأداء المالي</p>
-                    </div>
-                    <Switch 
-                      checked={aiSettings.financialInsights} 
-                      onCheckedChange={(value) => handleChange('financialInsights', value)} 
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">تنبؤات المخزون</h3>
-                      <p className="text-sm text-muted-foreground">التنبؤ بمستويات المخزون واقتراح إعادة الطلب</p>
-                    </div>
-                    <Switch 
-                      checked={aiSettings.inventoryPredictions} 
-                      onCheckedChange={(value) => handleChange('inventoryPredictions', value)} 
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">تقسيم العملاء</h3>
-                      <p className="text-sm text-muted-foreground">تحليل وتقسيم العملاء حسب السلوك والقيمة</p>
-                    </div>
-                    <Switch 
-                      checked={aiSettings.customerSegmentation} 
-                      onCheckedChange={(value) => handleChange('customerSegmentation', value)} 
-                    />
-                  </div>
+                  <Switch
+                    id="autoCreateEntries"
+                    checked={settings.journalEntrySuggestions.autoCreate}
+                    onCheckedChange={(checked) => handleToggleChange('journalEntrySuggestions', 'autoCreate', checked)}
+                  />
                 </div>
                 
-                <Separator />
-                
-                <div className="space-y-4">
-                  <Label>مبرمج مخصص للتحليلات</Label>
-                  <div className="border rounded-md p-4">
-                    <Textarea 
-                      value={aiSettings.customPrompt} 
-                      onChange={(e) => handleChange('customPrompt', e.target.value)} 
-                      placeholder="أدخل التوجيهات المخصصة لعمليات التحليل الذكي. مثال: قم بالتركيز على تحليل هامش الربح وتقديم اقتراحات لتحسينه."
-                      className="min-h-[100px] resize-none"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="promptTemplate">قالب إرشادات الذكاء الاصطناعي</Label>
+                  <Textarea
+                    id="promptTemplate"
+                    placeholder="أدخل الإرشادات المخصصة لإنشاء القيود المحاسبية..."
+                    rows={5}
+                    className="min-h-[120px]"
+                  />
                   <p className="text-xs text-muted-foreground">
-                    يمكنك إضافة توجيهات مخصصة للذكاء الاصطناعي لتوجيه طريقة تحليل البيانات وإنشاء التوصيات.
+                    يمكنك تخصيص الإرشادات التي يتم تزويدها لمحرك الذكاء الاصطناعي لإنشاء قيود محاسبية أكثر دقة
                   </p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
           
-          {/* التكامل */}
-          <TabsContent value="integration">
+          <TabsContent value="pricing">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Zap className="ml-2" size={20} />
-                  التكامل مع النظام
-                </CardTitle>
+                <CardTitle>التسعير الديناميكي</CardTitle>
                 <CardDescription>
-                  تكامل الذكاء الاصطناعي مع وحدات النظام المختلفة
+                  ضبط عملية التسعير الذكي التي تتكيف مع ظروف السوق والطلب
                 </CardDescription>
               </CardHeader>
-              
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-slate-50">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium flex items-center">
-                          <LineChart className="h-4 w-4 ml-2 text-blue-600" />
-                          لوحة التحكم
-                        </CardTitle>
-                        <Switch defaultChecked id="dashboard-integration" />
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-xs text-muted-foreground">
-                        عرض التوصيات والتحليلات في لوحة التحكم الرئيسية
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-slate-50">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium flex items-center">
-                          <Database className="h-4 w-4 ml-2 text-emerald-600" />
-                          التقارير المالية
-                        </CardTitle>
-                        <Switch defaultChecked id="financial-integration" />
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-xs text-muted-foreground">
-                        تحسين وتحليل التقارير المالية بالذكاء الاصطناعي
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-slate-50">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium flex items-center">
-                          <UserPlus2 className="h-4 w-4 ml-2 text-violet-600" />
-                          العملاء
-                        </CardTitle>
-                        <Switch defaultChecked id="customers-integration" />
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-xs text-muted-foreground">
-                        تحليل سلوك العملاء وتقديم توصيات للتعامل معهم
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-slate-50">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium flex items-center">
-                          <Clipboard className="h-4 w-4 ml-2 text-amber-600" />
-                          الفواتير
-                        </CardTitle>
-                        <Switch defaultChecked id="invoices-integration" />
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-xs text-muted-foreground">
-                        تحسين عمليات إنشاء الفواتير والمستندات بالذكاء الاصطناعي
-                      </p>
-                    </CardContent>
-                  </Card>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="dynamicPricing">تفعيل التسعير الديناميكي</Label>
+                    <p className="text-sm text-muted-foreground">
+                      السماح للنظام بتعديل الأسعار تلقائياً بناءً على عوامل الطلب والتكلفة
+                    </p>
+                  </div>
+                  <Switch
+                    id="dynamicPricing"
+                    checked={settings.dynamicPricing.enabled}
+                    onCheckedChange={(checked) => handleToggleChange('dynamicPricing', 'enabled', checked)}
+                  />
                 </div>
                 
-                <div className="pt-4">
-                  <Button variant="outline" className="w-full">إدارة متقدمة للتكامل</Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="maxAdjustment">الحد الأقصى لتعديل الأسعار</Label>
+                    <span className="text-sm">±{settings.dynamicPricing.maxAdjustmentPercentage}%</span>
+                  </div>
+                  <Slider
+                    id="maxAdjustment"
+                    defaultValue={[settings.dynamicPricing.maxAdjustmentPercentage]}
+                    min={1}
+                    max={25}
+                    step={1}
+                    onValueChange={(value) => handleSliderChange('dynamicPricing', 'maxAdjustmentPercentage', value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    الحد الأقصى للنسبة المئوية التي يمكن للنظام تعديل الأسعار بها صعوداً أو هبوطاً
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="frequencyDays">عدد أيام التحديث</Label>
+                    <span className="text-sm">كل {settings.dynamicPricing.frequencyDays} أيام</span>
+                  </div>
+                  <Slider
+                    id="frequencyDays"
+                    defaultValue={[settings.dynamicPricing.frequencyDays]}
+                    min={1}
+                    max={30}
+                    step={1}
+                    onValueChange={(value) => handleSliderChange('dynamicPricing', 'frequencyDays', value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    عدد الأيام بين كل تحديث للأسعار
+                  </p>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">عوامل التسعير</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between border p-3 rounded-lg">
+                      <div>
+                        <Label htmlFor="considerDemand">الطلب</Label>
+                        <p className="text-xs text-muted-foreground">
+                          مراعاة مستويات الطلب عند التسعير
+                        </p>
+                      </div>
+                      <Switch
+                        id="considerDemand"
+                        checked={settings.dynamicPricing.considerDemand}
+                        onCheckedChange={(checked) => handleToggleChange('dynamicPricing', 'considerDemand', checked)}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between border p-3 rounded-lg">
+                      <div>
+                        <Label htmlFor="considerCost">التكلفة</Label>
+                        <p className="text-xs text-muted-foreground">
+                          مراعاة تغيرات التكلفة عند التسعير
+                        </p>
+                      </div>
+                      <Switch
+                        id="considerCost"
+                        checked={settings.dynamicPricing.considerCost}
+                        onCheckedChange={(checked) => handleToggleChange('dynamicPricing', 'considerCost', checked)}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between border p-3 rounded-lg">
+                      <div>
+                        <Label htmlFor="considerCompetition">المنافسة</Label>
+                        <p className="text-xs text-muted-foreground">
+                          مراعاة أسعار المنافسين عند التسعير
+                        </p>
+                      </div>
+                      <Switch
+                        id="considerCompetition"
+                        checked={settings.dynamicPricing.considerCompetition}
+                        onCheckedChange={(checked) => handleToggleChange('dynamicPricing', 'considerCompetition', checked)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="alerts">
+            <Card>
+              <CardHeader>
+                <CardTitle>التنبيهات السلوكية</CardTitle>
+                <CardDescription>
+                  إعدادات نظام التنبيهات الذكي الذي يرصد الأنماط غير العادية
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="behavioralAlerts">تفعيل التنبيهات السلوكية</Label>
+                    <p className="text-sm text-muted-foreground">
+                      اكتشاف الأنماط غير العادية في البيانات والمعاملات وإرسال تنبيهات
+                    </p>
+                  </div>
+                  <Switch
+                    id="behavioralAlerts"
+                    checked={settings.behavioralAlerts.enabled}
+                    onCheckedChange={(checked) => handleToggleChange('behavioralAlerts', 'enabled', checked)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="learningPeriod">فترة التعلم (بالأيام)</Label>
+                    <span className="text-sm">{settings.behavioralAlerts.learningPeriodDays} يوم</span>
+                  </div>
+                  <Slider
+                    id="learningPeriod"
+                    defaultValue={[settings.behavioralAlerts.learningPeriodDays]}
+                    min={7}
+                    max={60}
+                    step={1}
+                    onValueChange={(value) => handleSliderChange('behavioralAlerts', 'learningPeriodDays', value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    الفترة التي يحتاجها النظام لتعلم الأنماط الطبيعية قبل إرسال تنبيهات
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="maxDailyAlerts">الحد الأقصى للتنبيهات اليومية</Label>
+                    <span className="text-sm">{settings.behavioralAlerts.maxDailyAlerts} تنبيهات</span>
+                  </div>
+                  <Slider
+                    id="maxDailyAlerts"
+                    defaultValue={[settings.behavioralAlerts.maxDailyAlerts]}
+                    min={1}
+                    max={20}
+                    step={1}
+                    onValueChange={(value) => handleSliderChange('behavioralAlerts', 'maxDailyAlerts', value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    الحد الأقصى لعدد التنبيهات التي يتم إرسالها في اليوم الواحد
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="variance">
+            <Card>
+              <CardHeader>
+                <CardTitle>تحليل التباين</CardTitle>
+                <CardDescription>
+                  إعدادات نظام تحليل التباين بين القيم الفعلية والمخططة
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="varianceAnalysis">تفعيل تحليل التباين</Label>
+                    <p className="text-sm text-muted-foreground">
+                      تحليل الاختلافات بين القيم المخططة والفعلية وتقديم توصيات
+                    </p>
+                  </div>
+                  <Switch
+                    id="varianceAnalysis"
+                    checked={settings.varianceAnalysis.enabled}
+                    onCheckedChange={(checked) => handleToggleChange('varianceAnalysis', 'enabled', checked)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="thresholdPercentage">نسبة تباين الإبلاغ</Label>
+                    <span className="text-sm">±{settings.varianceAnalysis.thresholdPercentage}%</span>
+                  </div>
+                  <Slider
+                    id="thresholdPercentage"
+                    defaultValue={[settings.varianceAnalysis.thresholdPercentage]}
+                    min={1}
+                    max={25}
+                    step={1}
+                    onValueChange={(value) => handleSliderChange('varianceAnalysis', 'thresholdPercentage', value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    النسبة المئوية للتباين التي يتم الإبلاغ عنها
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="analysisPeriod">فترة التحليل</Label>
+                  <select
+                    id="analysisPeriod"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    defaultValue={settings.varianceAnalysis.analysisPeriod}
+                    onChange={(e) => updateSettings({
+                      ...settings,
+                      varianceAnalysis: {
+                        ...settings.varianceAnalysis,
+                        analysisPeriod: e.target.value as any
+                      }
+                    })}
+                  >
+                    <option value="daily">يومي</option>
+                    <option value="weekly">أسبوعي</option>
+                    <option value="monthly">شهري</option>
+                    <option value="quarterly">ربع سنوي</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground">
+                    الفترة الزمنية التي يتم فيها تحليل التباين
+                  </p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
         
-        <div className="flex justify-end gap-4 mt-6">
+        <div className="mt-6 flex justify-between">
           <Button 
-            variant="outline" 
-            onClick={handleResetDefaults}
+            variant="outline"
+            onClick={handleResetSettings}
           >
-            إعادة الضبط
+            إعادة الضبط للإعدادات الافتراضية
           </Button>
+          
           <Button 
-            onClick={handleSaveChanges}
-            disabled={loading}
+            onClick={handleSaveSettings}
+            disabled={isLoading}
           >
-            {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
+            {isLoading ? "جاري الحفظ..." : "حفظ الإعدادات"}
           </Button>
         </div>
       </div>
-    </Layout>
-  );
-};
-
-// مكون Textarea الذي كان مفقودًا
-const Textarea = ({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
-  return (
-    <textarea
-      className={`flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-      {...props}
-    />
+    </div>
   );
 };
 
