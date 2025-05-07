@@ -1,27 +1,18 @@
-import React, { useState, useEffect } from "react";
+
+import React from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceSettingsType } from "./InvoiceSettings";
-import { mockProducts } from "@/data/mockProducts";
 import { QuickProductSearch } from "./QuickProductSearch";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
 
-// Import new components
-import { ItemTableHeader } from "./table-components/ItemTableHeader";
-import { SearchResults } from "./table-components/SearchResults";
+// Import refactored components
+import { TableHeader as ItemsTableHeader } from "./table-components/TableHeader";
+import { ProductSearchInput } from "./table-components/ProductSearchInput";
 import { EmptyTable } from "./table-components/EmptyTable";
 import { TableResizeHandle } from "./table-components/TableResizeHandle";
 import { ItemTableRow } from "./table-components/ItemTableRow";
-import { InvoiceItemForm } from "../InvoiceItemForm";
+import { ItemFormDialog } from "./table-components/ItemFormDialog";
+import { useInvoiceItemsTable } from "./hooks/useInvoiceItemsTable";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -50,94 +41,22 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   onAddItem,
   settings
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<typeof mockProducts>([]);
-  const [quickSearchActive, setQuickSearchActive] = useState(false);
-  const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
-  const [showItemForm, setShowItemForm] = useState(false);
-  const [currentEditItem, setCurrentEditItem] = useState<InvoiceItem | null>(null);
-  
-  // Auto-open item form when there are no items
-  useEffect(() => {
-    if (items.length === 0 && !isAddingItem && editingItemIndex === null && !quickSearchActive && !showItemForm) {
-      setQuickSearchActive(true);
-    }
-  }, [items.length, isAddingItem, editingItemIndex, quickSearchActive, showItemForm]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    
-    if (term.length > 1) {
-      const results = mockProducts.filter(
-        product => 
-          product.name.toLowerCase().includes(term.toLowerCase()) ||
-          product.code.toLowerCase().includes(term.toLowerCase())
-      );
-      setSearchResults(results);
-    } else {
-      setSearchResults([]);
-    }
-  };
-
-  const handleQuickSelect = (product: any) => {
-    console.log("Adding product from quick select:", product);
-    const newItem = {
-      productId: product.id,
-      code: product.code,
-      name: product.name,
-      quantity: 1,
-      price: product.price,
-      discount: 0,
-      discountType: "percentage" as const,
-      tax: 15,
-      notes: ""
-    };
-    
-    onAddItem(newItem);
-    setSearchTerm("");
-    setSearchResults([]);
-    setQuickSearchActive(false);
-    toast.success(`تم إضافة ${product.name} إلى الفاتورة`);
-  };
-
-  const toggleSearch = () => {
-    setIsSearching(!isSearching);
-    if (!isSearching) {
-      setSearchTerm("");
-      setSearchResults([]);
-    }
-  };
-
-  const handleRowClick = (index: number) => {
-    setActiveRowIndex(index);
-    const clickedItem = items[index];
-    setCurrentEditItem(clickedItem);
-    setShowItemForm(true);
-  };
-
-  const handleAddNewItem = () => {
-    setQuickSearchActive(true);
-  };
-
-  const handleFormCancel = () => {
-    setShowItemForm(false);
-    setCurrentEditItem(null);
-  };
-
-  const handleFormSubmit = (item: Partial<InvoiceItem>) => {
-    if (currentEditItem) {
-      const index = items.findIndex(i => i.id === currentEditItem.id);
-      if (index !== -1) {
-        onAddItem(item); // Using the addItem function which will update
-      }
-    } else {
-      onAddItem(item);
-    }
-    setShowItemForm(false);
-    setCurrentEditItem(null);
-  };
+  const {
+    searchTerm,
+    isSearching,
+    searchResults,
+    quickSearchActive,
+    showItemForm,
+    currentEditItem,
+    handleSearchChange,
+    toggleSearch,
+    handleQuickSelect,
+    handleRowClick,
+    handleAddNewItem,
+    handleFormCancel,
+    handleFormSubmit,
+    setQuickSearchActive
+  } = useInvoiceItemsTable(items, onAddItem, onRemoveItem);
 
   // Get display column configuration from settings
   const getVisibleColumns = () => {
@@ -149,42 +68,19 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
 
   return (
     <div className="mt-2">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">الأصناف</h3>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={toggleSearch}
-            className="flex items-center gap-1"
-          >
-            <Search className="h-4 w-4" />
-            بحث
-          </Button>
-          <Button 
-            onClick={handleAddNewItem} 
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <Plus className="h-4 w-4" />
-            إضافة صنف
-          </Button>
-        </div>
-      </div>
+      <ItemsTableHeader
+        onAddNewItem={handleAddNewItem}
+        onToggleSearch={toggleSearch}
+      />
       
       {isSearching && (
-        <div className="mb-2">
-          <Input
-            type="text"
-            placeholder="ابحث عن صنف..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="mb-1"
-          />
-          {searchResults.length > 0 && (
-            <SearchResults results={searchResults} onSelect={handleQuickSelect} />
-          )}
-        </div>
+        <ProductSearchInput
+          searchTerm={searchTerm}
+          searchResults={searchResults}
+          onSearchChange={handleSearchChange}
+          onSelect={handleQuickSelect}
+          onClose={toggleSearch}
+        />
       )}
       
       <div 
@@ -251,22 +147,14 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         />
       )}
 
-      {/* Item Form Modal */}
-      {showItemForm && (
-        <Dialog open={true} onOpenChange={() => setShowItemForm(false)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{currentEditItem ? "تعديل صنف" : "إضافة صنف"}</DialogTitle>
-            </DialogHeader>
-            <InvoiceItemForm
-              item={currentEditItem || undefined}
-              onSubmit={handleFormSubmit}
-              onCancel={handleFormCancel}
-              includeNotes={settings?.showItemNotes !== false}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
+      {/* Item Form Dialog */}
+      <ItemFormDialog
+        open={showItemForm}
+        currentEditItem={currentEditItem}
+        onClose={handleFormCancel}
+        onSubmit={handleFormSubmit}
+        includeNotes={settings?.showItemNotes !== false}
+      />
     </div>
   );
 };
