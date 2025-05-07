@@ -45,12 +45,13 @@ export interface FinancialDecision {
   id: string;
   title: string;
   description: string;
-  impact: number; // Changed from object to number for simpler comparison
+  impact: number; // نوع رقم بسيط للمقارنة
   confidence: number;
   suggestedActions: string[];
-  createdAt: string; // Changed from Date to string
+  createdAt: string; // نوع نصي بدلاً من Date
   status: 'suggested' | 'accepted' | 'rejected' | 'implemented';
-  type: 'journal_entry' | 'pricing' | 'provision' | 'variance'; // Added type property
+  type: 'journal_entry' | 'pricing' | 'provision' | 'variance'; // إضافة خاصية النوع
+  implementedAt?: string; // تاريخ التنفيذ
 }
 
 // Specific decision types

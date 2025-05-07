@@ -85,8 +85,8 @@ export const useFinancialDecisions = () => {
       const newDecision: FinancialDecision = {
         id: uuidv4(),
         ...decision,
-        createdAt: new Date().toISOString(), // Using string instead of Date
-        status: 'suggested', // Using 'suggested' instead of 'pending'
+        createdAt: new Date().toISOString(),
+        status: 'suggested',
       };
       
       setDecisions(prevDecisions => [...prevDecisions, newDecision]);

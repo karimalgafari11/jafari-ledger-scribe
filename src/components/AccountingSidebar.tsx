@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { menuItems } from "@/config/menuItems";
+import { toast } from "sonner";
 import { 
   Sidebar, 
   SidebarContent, 
@@ -69,9 +70,36 @@ const AccountingSidebar: React.FC<SidebarMenuProps> = ({
   };
 
   const handleItemClick = (path: string) => {
-    navigate(path);
+    // تأكد من أن المسار يبدأ بـ /
+    const finalPath = path.startsWith('/') ? path : `/${path}`;
+    navigate(finalPath);
     if (isMobile) {
       setOpenMobile(false);
+    }
+  };
+
+  // تحقق من وجود المسار قبل الانتقال إليه
+  const safeNavigate = (path: string) => {
+    // تأكد من أن المسار يبدأ بـ /
+    const finalPath = path.startsWith('/') ? path : `/${path}`;
+    
+    // التأكد من أن المسار موجود في routes أو المسارات المعروفة
+    const knownRoutes = [
+      '/dashboard', '/reports', '/ai/financial-decisions', 
+      '/invoices', '/accounting', '/customers', '/vendors', 
+      '/purchases', '/inventory', '/settings'
+    ];
+    
+    // إذا كان المسار موجوداً أو يبدأ بأحد المسارات المعروفة، انتقل إليه
+    if (knownRoutes.some(route => finalPath === route || finalPath.startsWith(`${route}/`))) {
+      navigate(finalPath);
+      if (isMobile) {
+        setOpenMobile(false);
+      }
+    } else {
+      // إذا المسار غير معروف، أرسل المستخدم إلى الصفحة الرئيسية أو أظهر رسالة
+      console.warn(`المسار غير متوفر: ${finalPath}`);
+      toast.warning('هذه الصفحة قيد التطوير');
     }
   };
 

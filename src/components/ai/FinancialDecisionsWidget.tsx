@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from 'react-router-dom';
 
-// Changed to use interface instead of React.FC<Props> pattern
 interface FinancialDecisionsWidgetProps {
   performance: any;
 }
@@ -67,7 +66,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
     }
 
     return (
-      <div key={decision.id} className="p-3 border rounded-lg mb-2 bg-card hover:bg-accent/5 cursor-pointer transition-colors" onClick={() => navigate('/ai-financial-decisions')}>
+      <div key={decision.id} className="p-3 border rounded-lg mb-2 bg-card hover:bg-accent/5 cursor-pointer transition-colors" onClick={() => navigate('/ai/financial-decisions')}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {decisionIcon}
