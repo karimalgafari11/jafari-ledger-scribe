@@ -26,7 +26,8 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
 }) => {
   const [position, setPosition] = useState(defaultPosition);
   
-  const handleDrag = (_e: DraggableEvent, data: DraggableData) => {
+  // Updated handleDrag function with proper typing
+  const handleDrag = (e: DraggableEvent, data: DraggableData) => {
     setPosition({ x: data.x, y: data.y });
   };
 

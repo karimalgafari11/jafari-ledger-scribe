@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, FileText } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -19,21 +19,26 @@ export const ShortcutList: React.FC<ShortcutListProps> = ({
   onDeleteShortcut,
   onDragEnd
 }) => {
-  // Function to safely render icon component
+  // Enhanced function to safely render icon component with stronger type checking
   const renderIcon = (icon: any) => {
+    if (!icon) {
+      return <FileText size={20} />;
+    }
+    
     try {
       // Check if icon is a valid component
       if (typeof icon === 'function') {
         return React.createElement(icon, { size: 20 });
       }
       // Fallback for invalid icons
-      return <div className="w-5 h-5 bg-muted rounded-full"></div>;
+      return <FileText size={20} />;
     } catch (error) {
       console.error("Error rendering icon:", error);
-      return <div className="w-5 h-5 bg-muted rounded-full"></div>;
+      return <FileText size={20} />;
     }
   };
 
+  // Use StrictMode-compatible implementation
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="shortcuts">

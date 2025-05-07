@@ -19,8 +19,12 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
     return null;
   }
   
-  // Function to safely render icon component
+  // Enhanced function to safely render icon component
   const renderIcon = (icon: any) => {
+    if (!icon) {
+      return <FileText size={20} />;
+    }
+    
     try {
       // Check if icon is a valid component
       if (typeof icon === 'function') {
@@ -41,7 +45,6 @@ const DashboardShortcuts: React.FC<DashboardShortcutsProps> = ({ shortcuts }) =>
           <Tooltip>
             <TooltipTrigger asChild>
               <Card 
-                key={shortcut.id}
                 className="p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent transition-all duration-200 hover:shadow-md relative group h-24"
                 onClick={() => navigate(shortcut.route)}
               >
