@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Layout } from "@/components/Layout";
 import { ZoomProvider } from "@/components/interactive/ZoomControl";
@@ -12,7 +11,7 @@ import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { useDashboardState } from "@/hooks/useDashboardState";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-import { CreditCard, Database } from "lucide-react";
+import { CreditCard, Database, Users } from "lucide-react";
 
 // إضافة اختصار جديد لصفحة تسجيل الدفعات
 const paymentShortcut: ShortcutItem = {
@@ -38,6 +37,20 @@ const ledgerShortcut: ShortcutItem = {
   enabled: true,
   badge: {
     text: "محاسبة",
+    variant: "success"
+  }
+};
+
+// إضافة اختصار جديد لصفحة إدارة العملاء
+const customersShortcut: ShortcutItem = {
+  id: "customers-shortcut",
+  name: "إدارة العملاء",
+  description: "عرض وإدارة حسابات وبيانات العملاء",
+  route: "/customers/module",
+  icon: Users,
+  enabled: true,
+  badge: {
+    text: "مبيعات",
     variant: "success"
   }
 };
@@ -95,6 +108,13 @@ const Dashboard = () => {
     const hasLedgerShortcut = shortcuts.some(shortcut => shortcut.id === ledgerShortcut.id);
     if (!hasLedgerShortcut) {
       updatedShortcuts.push(ledgerShortcut);
+      hasChanges = true;
+    }
+    
+    // التحقق من وجود اختصار إدارة العملاء
+    const hasCustomersShortcut = shortcuts.some(shortcut => shortcut.id === customersShortcut.id);
+    if (!hasCustomersShortcut) {
+      updatedShortcuts.push(customersShortcut);
       hasChanges = true;
     }
     

@@ -21,7 +21,7 @@ export const customerRoutes: RouteObject[] = [
     element: <CustomerStatementPage />,
   },
   {
-    path: "customers/statements",
+    path: "customers/statement",
     element: <CustomerStatementListPage />,
   },
   {
