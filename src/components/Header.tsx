@@ -18,7 +18,7 @@ interface HeaderProps {
 // Making Header both a default export and a named export
 const Header = ({
   title,
-  showBack = false,
+  showBack = true, // Changed from false to true to show back button by default
   onBackClick,
   children
 }: HeaderProps) => {
