@@ -62,7 +62,7 @@ export function useDashboardState() {
       id: "receipt-voucher",
       name: "سند قبض",
       icon: FileUp,
-      route: "/receipt-vouchers",
+      route: "/receivables/collection",
       enabled: true,
       description: "إدارة المبالغ المقبوضة من العملاء مع إمكانية ربطها بالفواتير وتسوية الحسابات وطباعة إيصالات الاستلام"
     },
@@ -70,7 +70,7 @@ export function useDashboardState() {
       id: "general-ledger",
       name: "دفتر الأستاذ",
       icon: Database,
-      route: "/accounting/general-ledger",
+      route: "/accounting/ledger",
       enabled: true,
       description: "عرض وتحليل كافة الحركات المالية في النظام مع إمكانية التصفية حسب الحسابات والتواريخ واستخراج التقارير"
     },
@@ -78,7 +78,7 @@ export function useDashboardState() {
       id: "cash-register",
       name: "الصندوق",
       icon: CreditCard,
-      route: "/accounting/cash-registers",
+      route: "/accounting/cashregister",
       enabled: true,
       description: "إدارة عمليات النقد وتسجيل عمليات الإيداع والسحب وتتبع أرصدة الصناديق والطباعة الفورية لإيصالات العمليات"
     },
@@ -87,7 +87,7 @@ export function useDashboardState() {
       name: "عروض الأسعار",
       icon: BarChart,
       route: "/invoices/quotes",
-      enabled: false,
+      enabled: true,
       description: "إنشاء وإدارة عروض الأسعار للعملاء مع إمكانية تحويلها لفواتير مبيعات وتتبع حالة الموافقة والطباعة"
     },
     {
@@ -110,8 +110,8 @@ export function useDashboardState() {
       id: "vendor-reports",
       name: "تقارير الموردين",
       icon: FileText,
-      route: "/reports/vendors",
-      enabled: false,
+      route: "/vendors/reports",
+      enabled: true,
       description: "استخراج تقارير متنوعة عن الموردين تشمل المشتريات والدفعات والديون المستحقة مع خيارات التصفية والتصدير"
     },
     {
@@ -119,15 +119,15 @@ export function useDashboardState() {
       name: "إعادة الطلب",
       icon: Package,
       route: "/inventory/reorder",
-      enabled: false,
+      enabled: true,
       description: "متابعة مستويات المخزون وتنبيهات إعادة الطلب مع إمكانية إنشاء طلبات شراء تلقائية للمنتجات التي وصلت للحد الأدنى"
     },
     {
       id: "inventory-transfer",
       name: "التحويل",
       icon: ArrowLeftRight,
-      route: "/inventory-control/transfers",
-      enabled: false,
+      route: "/inventory-control/transfer",
+      enabled: true,
       description: "إدارة عمليات تحويل المخزون بين المستودعات مع تتبع حركة البضائع وتوثيق عمليات النقل وطباعة مستندات التحويل"
     },
     {
