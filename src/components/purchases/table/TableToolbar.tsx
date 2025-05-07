@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Product } from "@/types/inventory";
-import { TableHeader } from "./TableHeader";
+import { TableActionButtons } from "./TableActionButtons";
 import { QuickProductSearch } from "../QuickProductSearch";
 
 interface TableToolbarProps {
@@ -53,10 +53,13 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
 
   return (
     <div>
-      <TableHeader 
-        onAddNewItem={handleAddClick}
-        onToggleSearch={handleToggleSearch}
-      />
+      <div className="flex justify-between items-center mb-2 rtl">
+        <h3 className="text-lg font-semibold">الأصناف</h3>
+        <TableActionButtons 
+          onAddNewItem={handleAddClick}
+          onToggleSearch={handleToggleSearch}
+        />
+      </div>
       
       {/* Display the quick search dialog when active */}
       {quickSearchActive && (
