@@ -37,9 +37,9 @@ export const useStockMovements = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(item => 
-        item.itemName.toLowerCase().includes(query) ||
-        item.sourceWarehouse.toLowerCase().includes(query) || 
-        item.destinationWarehouse.toLowerCase().includes(query)
+        item.productName.toLowerCase().includes(query) ||
+        item.sourceWarehouseName?.toLowerCase().includes(query) || 
+        item.destinationWarehouseName?.toLowerCase().includes(query)
       );
     }
     
@@ -51,8 +51,8 @@ export const useStockMovements = () => {
     // Apply warehouse filter (source or destination)
     if (filterOptions.warehouse) {
       result = result.filter(item => 
-        item.sourceWarehouse.toLowerCase().includes(filterOptions.warehouse.toLowerCase()) ||
-        item.destinationWarehouse.toLowerCase().includes(filterOptions.warehouse.toLowerCase())
+        (item.sourceWarehouseName?.toLowerCase() || "").includes(filterOptions.warehouse.toLowerCase()) ||
+        (item.destinationWarehouseName?.toLowerCase() || "").includes(filterOptions.warehouse.toLowerCase())
       );
     }
     

@@ -103,10 +103,10 @@ export function MovementsTable({
                 </TableCell>
                 <TableCell className="text-center">{formatDate(movement.date)}</TableCell>
                 <TableCell className="text-center">{getMovementTypeBadge(movement.type)}</TableCell>
-                <TableCell className="text-center font-medium">{movement.itemName}</TableCell>
+                <TableCell className="text-center font-medium">{movement.productName}</TableCell>
                 <TableCell className="text-center">{movement.quantity}</TableCell>
-                <TableCell className="text-center">{movement.sourceWarehouse}</TableCell>
-                <TableCell className="text-center">{movement.destinationWarehouse}</TableCell>
+                <TableCell className="text-center">{movement.sourceWarehouseName}</TableCell>
+                <TableCell className="text-center">{movement.destinationWarehouseName}</TableCell>
                 <TableCell className="text-center">{movement.notes}</TableCell>
                 <TableCell className="text-center">
                   <div className="flex justify-center space-x-1 rtl:space-x-reverse">

@@ -10,7 +10,9 @@ export const mockProducts: Product[] = [
     category: "فلاتر",
     quantity: 25,
     reorderLevel: 10,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "2",
@@ -20,7 +22,9 @@ export const mockProducts: Product[] = [
     category: "فرامل",
     quantity: 15,
     reorderLevel: 8,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "3",
@@ -30,7 +34,9 @@ export const mockProducts: Product[] = [
     category: "محرك",
     quantity: 8,
     reorderLevel: 10,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "4",
@@ -40,7 +46,9 @@ export const mockProducts: Product[] = [
     category: "تعليق",
     quantity: 5,
     reorderLevel: 5,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "5",
@@ -50,7 +58,9 @@ export const mockProducts: Product[] = [
     category: "كهرباء",
     quantity: 12,
     reorderLevel: 8,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "6",
@@ -60,7 +70,9 @@ export const mockProducts: Product[] = [
     category: "إكسسوارات",
     quantity: 7,
     reorderLevel: 10,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "7",
@@ -70,7 +82,9 @@ export const mockProducts: Product[] = [
     category: "كهرباء",
     quantity: 4,
     reorderLevel: 8,
-    isActive: false
+    isActive: false,
+    inStock: true,
+    status: "inactive"
   },
   {
     id: "8",
@@ -80,7 +94,9 @@ export const mockProducts: Product[] = [
     category: "محرك",
     quantity: 0,
     reorderLevel: 15,
-    isActive: true
+    isActive: true,
+    inStock: false,
+    status: "out_of_stock"
   },
   {
     id: "9",
@@ -90,7 +106,9 @@ export const mockProducts: Product[] = [
     category: "زيوت",
     quantity: 3,
     reorderLevel: 5,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   },
   {
     id: "10",
@@ -100,6 +118,8 @@ export const mockProducts: Product[] = [
     category: "فرامل",
     quantity: 18,
     reorderLevel: 10,
-    isActive: true
+    isActive: true,
+    inStock: true,
+    status: "active"
   }
 ];
