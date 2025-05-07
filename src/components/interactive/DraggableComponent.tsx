@@ -1,6 +1,6 @@
 
 import React, { useState, ReactNode } from 'react';
-import Draggable from 'react-draggable';
+import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { cn } from '@/lib/utils';
 
 interface DraggableComponentProps {
@@ -26,7 +26,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
 }) => {
   const [position, setPosition] = useState(defaultPosition);
   
-  const handleDrag = (e: any, data: { x: number; y: number }) => {
+  const handleDrag = (_e: DraggableEvent, data: DraggableData) => {
     setPosition({ x: data.x, y: data.y });
   };
 
