@@ -1,19 +1,30 @@
 
 import React from "react";
-import { TableHead, TableRow, TableHeader } from "@/components/ui/table";
+import { TableHeader, TableRow, TableHead } from "@/components/ui/table";
 
-export const PurchaseTableHeader: React.FC = () => {
+interface PurchaseTableHeaderProps {
+  showItemCodes?: boolean;
+  showItemNotes?: boolean;
+}
+
+export const PurchaseTableHeader: React.FC<PurchaseTableHeaderProps> = ({ 
+  showItemCodes = true,
+  showItemNotes = true 
+}) => {
   return (
     <TableHeader>
-      <TableRow className="rtl">
-        <TableHead className="text-center">الإجراءات</TableHead>
-        <TableHead className="text-center">ملاحظات</TableHead>
-        <TableHead className="text-center">الإجمالي</TableHead>
-        <TableHead className="text-center">السعر</TableHead>
-        <TableHead className="text-center">الكمية</TableHead>
-        <TableHead className="text-center">اسم الصنف</TableHead>
-        <TableHead className="text-center">رمز الصنف</TableHead>
-        <TableHead className="text-center">#</TableHead>
+      <TableRow>
+        <TableHead className="w-16 text-center">#</TableHead>
+        {showItemCodes && <TableHead>الكود</TableHead>}
+        <TableHead className="min-w-[200px]">الصنف</TableHead>
+        <TableHead className="min-w-[80px] text-center">الوحدة</TableHead>
+        <TableHead className="min-w-[80px] text-center">الكمية</TableHead>
+        <TableHead className="min-w-[100px] text-center">سعر الوحدة</TableHead>
+        <TableHead className="min-w-[100px] text-center">الضريبة</TableHead>
+        <TableHead className="min-w-[100px] text-center">الخصم</TableHead>
+        <TableHead className="min-w-[120px] text-center">الإجمالي</TableHead>
+        {showItemNotes && <TableHead className="min-w-[200px]">ملاحظات</TableHead>}
+        <TableHead className="w-16 text-center">حذف</TableHead>
       </TableRow>
     </TableHeader>
   );

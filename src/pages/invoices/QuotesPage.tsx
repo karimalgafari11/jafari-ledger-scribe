@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -87,7 +86,7 @@ const QuotesPage: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "sent":
-        return <Badge variant="info">مرسل</Badge>;
+        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">مرسل</Badge>;
       case "accepted":
         return <Badge variant="success">مقبول</Badge>;
       case "rejected":

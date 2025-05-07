@@ -17,6 +17,8 @@ interface PurchaseInvoiceTableProps {
   onAddItem: (item: Partial<PurchaseItem>) => void;
   onUpdateItem: (index: number, item: Partial<PurchaseItem>) => void;
   onRemoveItem: (index: number) => void;
+  showItemCodes?: boolean;
+  showItemNotes?: boolean;
 }
 
 export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
@@ -27,7 +29,9 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
   setEditingItemIndex,
   onAddItem,
   onUpdateItem,
-  onRemoveItem
+  onRemoveItem,
+  showItemCodes = true,
+  showItemNotes = true
 }) => {
   const {
     activeSearchCell,
@@ -74,7 +78,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
       {/* Items table */}
       <div className="border rounded overflow-auto rtl">
         <Table className="min-w-full border-collapse" gridLines={showGridLines} striped bordered hoverable>
-          <PurchaseTableHeader />
+          <PurchaseTableHeader showItemCodes={showItemCodes} showItemNotes={showItemNotes} />
           <PurchaseTableBody
             items={items}
             activeSearchCell={activeSearchCell}
@@ -89,6 +93,8 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
             searchInputRef={searchInputRef}
             setIsAddingItem={setIsAddingItem}
             isEditingCell={isEditingCell}
+            showItemCodes={showItemCodes}
+            showItemNotes={showItemNotes}
           />
         </Table>
       </div>

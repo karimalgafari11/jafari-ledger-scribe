@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PurchaseOrder } from "@/types/purchases";
 import { 
@@ -36,7 +35,7 @@ export function PurchaseOrdersTable({
       case "pending":
         return "warning";
       case "approved":
-        return "info";
+        return "secondary";
       case "completed":
         return "success";
       case "cancelled":
