@@ -64,3 +64,37 @@ export interface PurchaseOrder {
   createdAt: string;
   updatedAt?: string;
 }
+
+export interface PurchaseReturn {
+  id: string;
+  returnNumber: string;
+  date: Date;
+  invoiceId?: string;
+  invoiceNumber?: string;
+  vendorId: string;
+  vendorName: string;
+  items: PurchaseReturnItem[];
+  subtotal: number;
+  totalAmount: number;
+  tax?: number;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  reason: string;
+  notes?: string;
+  createdBy: string;
+  approvedBy?: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+export interface PurchaseReturnItem {
+  id: string;
+  productId: string;
+  code: string;
+  name: string;
+  quantity: number;
+  price: number;
+  total: number;
+  reason: string;
+  notes?: string;
+}
+
