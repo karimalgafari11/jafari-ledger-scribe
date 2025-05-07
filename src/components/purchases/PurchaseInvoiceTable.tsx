@@ -5,7 +5,7 @@ import { Table } from "@/components/ui/table";
 import { TableToolbar } from "./table/TableToolbar";
 import { ItemFormContainer } from "./table/ItemFormContainer";
 import { PurchaseTableBody } from "./table/PurchaseTableBody";
-import { PurchaseTableHeader } from "./table/TableHeader";
+import { TableHeader } from "./table/TableHeader";
 import { usePurchaseTable } from "@/hooks/purchases/table";
 import { Product } from "@/types/inventory";
 import { v4 as uuidv4 } from "uuid";
@@ -101,7 +101,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
         {/* Items table */}
         <div className="border rounded overflow-auto rtl">
           <Table className={`min-w-full border-collapse ${showGridLines ? 'table-with-grid' : ''}`}>
-            <PurchaseTableHeader 
+            <TableHeader 
               showItemCodes={showItemCodes} 
               showItemNotes={showItemNotes} 
             />

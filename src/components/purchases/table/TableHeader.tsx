@@ -1,23 +1,29 @@
 
 import React from "react";
 import { TableActionButtons } from "./TableActionButtons";
+import { TableHead, TableRow, TableHeader as UITableHeader, TableCell } from "@/components/ui/table";
 
 interface TableHeaderProps {
-  onAddNewItem: () => void;
-  onToggleSearch: () => void;
+  showItemCodes?: boolean;
+  showItemNotes?: boolean;
 }
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
-  onAddNewItem,
-  onToggleSearch
+  showItemCodes = true,
+  showItemNotes = true
 }) => {
   return (
-    <div className="flex justify-between items-center mb-2 rtl">
-      <h3 className="text-lg font-semibold">الأصناف</h3>
-      <TableActionButtons 
-        onAddNewItem={onAddNewItem}
-        onToggleSearch={onToggleSearch}
-      />
-    </div>
+    <TableHead>
+      <TableRow className="bg-muted/50">
+        <TableCell className="font-medium text-center w-[80px]">الإجراء</TableCell>
+        {showItemNotes && <TableCell className="font-medium">ملاحظات</TableCell>}
+        <TableCell className="font-medium text-left">الإجمالي</TableCell>
+        <TableCell className="font-medium">السعر</TableCell>
+        <TableCell className="font-medium text-center">الكمية</TableCell>
+        <TableCell className="font-medium text-right">اسم الصنف</TableCell>
+        {showItemCodes && <TableCell className="font-medium text-center">الرمز</TableCell>}
+        <TableCell className="font-medium text-center w-[50px]">#</TableCell>
+      </TableRow>
+    </TableHead>
   );
 };
