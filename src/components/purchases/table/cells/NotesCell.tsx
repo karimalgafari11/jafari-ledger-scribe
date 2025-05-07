@@ -3,40 +3,40 @@ import React from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
-interface ItemCodeCellProps {
-  code: string;
+interface NotesCellProps {
+  notes?: string;
   index: number;
-  isEditingCell: boolean;
+  isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
 }
 
-export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
-  code,
+export const NotesCell: React.FC<NotesCellProps> = ({
+  notes,
   index,
-  isEditingCell,
+  isEditing,
   handleCellClick,
   handleDirectEdit
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDirectEdit(index, 'code', e.target.value);
+    handleDirectEdit(index, 'notes', e.target.value);
   };
 
   return (
-    <TableCell className="text-center">
-      {isEditingCell ? (
+    <TableCell>
+      {isEditing ? (
         <Input
-          value={code || ''}
+          value={notes || ''}
           onChange={handleChange}
-          className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
+          className="w-full h-full border-none p-0 focus:ring-2 focus:ring-blue-500"
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
         <div 
-          className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'code')}
+          className="w-full h-full min-h-[24px] cursor-pointer flex items-center"
+          onClick={() => handleCellClick(index, 'notes')}
         >
-          {code || ''}
+          {notes || ''}
         </div>
       )}
     </TableCell>

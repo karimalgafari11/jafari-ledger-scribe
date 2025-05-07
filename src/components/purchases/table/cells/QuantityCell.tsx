@@ -3,30 +3,34 @@ import React from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
-interface ItemCodeCellProps {
-  code: string;
+interface QuantityCellProps {
+  quantity: number;
   index: number;
-  isEditingCell: boolean;
+  isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
 }
 
-export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
-  code,
+export const QuantityCell: React.FC<QuantityCellProps> = ({
+  quantity,
   index,
-  isEditingCell,
+  isEditing,
   handleCellClick,
   handleDirectEdit
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDirectEdit(index, 'code', e.target.value);
+    const value = parseFloat(e.target.value) || 0;
+    handleDirectEdit(index, 'quantity', value);
   };
 
   return (
     <TableCell className="text-center">
-      {isEditingCell ? (
+      {isEditing ? (
         <Input
-          value={code || ''}
+          type="number"
+          min="0"
+          step="0.01"
+          value={quantity}
           onChange={handleChange}
           className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
           onClick={(e) => e.stopPropagation()}
@@ -34,9 +38,9 @@ export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
       ) : (
         <div 
           className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'code')}
+          onClick={() => handleCellClick(index, 'quantity')}
         >
-          {code || ''}
+          {quantity}
         </div>
       )}
     </TableCell>

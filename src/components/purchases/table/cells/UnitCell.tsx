@@ -3,30 +3,30 @@ import React from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
-interface ItemCodeCellProps {
-  code: string;
+interface UnitCellProps {
+  unit?: string;
   index: number;
-  isEditingCell: boolean;
+  isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
 }
 
-export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
-  code,
+export const UnitCell: React.FC<UnitCellProps> = ({
+  unit,
   index,
-  isEditingCell,
+  isEditing,
   handleCellClick,
   handleDirectEdit
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDirectEdit(index, 'code', e.target.value);
+    handleDirectEdit(index, 'unit', e.target.value);
   };
 
   return (
     <TableCell className="text-center">
-      {isEditingCell ? (
+      {isEditing ? (
         <Input
-          value={code || ''}
+          value={unit || ''}
           onChange={handleChange}
           className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
           onClick={(e) => e.stopPropagation()}
@@ -34,9 +34,9 @@ export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
       ) : (
         <div 
           className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'code')}
+          onClick={() => handleCellClick(index, 'unit')}
         >
-          {code || ''}
+          {unit || 'قطعة'}
         </div>
       )}
     </TableCell>
