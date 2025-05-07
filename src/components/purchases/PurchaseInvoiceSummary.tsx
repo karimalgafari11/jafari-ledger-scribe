@@ -1,8 +1,10 @@
 
 import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { DiscountForm } from "./forms/DiscountForm";
 
 interface PurchaseInvoiceSummaryProps {
   subtotal: number;
@@ -20,10 +22,10 @@ interface PurchaseInvoiceSummaryProps {
 
 export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
   subtotal,
-  discount = 0,
-  discountType = 'percentage',
-  tax = 0,
-  expenses = 0,
+  discount,
+  discountType,
+  tax,
+  expenses,
   totalAmount,
   amountPaid = 0,
   remaining,
@@ -31,112 +33,125 @@ export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
   onApplyExpenses,
   onAmountPaidChange
 }) => {
-  const [discountValue, setDiscountValue] = useState<number>(discount);
-  const [discountMode, setDiscountMode] = useState<'percentage' | 'fixed'>(discountType);
-  const [expensesValue, setExpensesValue] = useState<number>(expenses);
-  const [paidAmount, setPaidAmount] = useState<number>(amountPaid);
-
-  const handleDiscountApply = () => {
-    onApplyDiscount(discountMode, discountValue);
-  };
-
-  const handleExpensesApply = () => {
-    onApplyExpenses(expensesValue);
-  };
-
-  const handleAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(e.target.value);
-    setPaidAmount(newValue);
-    onAmountPaidChange(newValue);
-  };
-
+  const [showDiscountForm, setShowDiscountForm] = useState(false);
+  const [showTaxForm, setShowTaxForm] = useState(false);
+  
   return (
-    <div className="bg-gray-50 p-4 rounded-md border space-y-3">
-      <h3 className="font-semibold text-lg mb-2">ملخص الفاتورة</h3>
-
-      <div className="grid grid-cols-2 gap-2">
-        <div className="text-gray-600">المجموع قبل الخصم:</div>
-        <div className="text-right font-medium">{subtotal.toFixed(2)} ريال</div>
-      </div>
-
-      <div className="border-t border-gray-200 pt-2">
-        <div className="grid grid-cols-2 gap-2 items-center mb-2">
-          <div className="text-gray-600">
-            <div className="flex items-center gap-2">
-              <span>الخصم:</span>
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="ghost" 
-                className="text-xs h-6 px-1"
-                onClick={() => setDiscountMode(discountMode === 'percentage' ? 'fixed' : 'percentage')}
-              >
-                {discountMode === 'percentage' ? '%' : 'ريال'}
-              </Button>
+    <Card className="mb-4">
+      <CardContent className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rtl">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold mb-2">ملخص الفاتورة</h3>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-base">المجموع الفرعي:</span>
+              <span className="text-base">{subtotal.toFixed(2)} ر.س</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <span className="text-base">الخصم:</span>
+                <Button 
+                  variant="link" 
+                  className="h-auto p-0 pr-2" 
+                  onClick={() => setShowDiscountForm(prev => !prev)}
+                >
+                  (تعديل)
+                </Button>
+              </div>
+              <span className="text-base">
+                {discount ? (
+                  discountType === 'percentage'
+                    ? `${discount}% (${((subtotal * discount) / 100).toFixed(2)} ر.س)`
+                    : `${discount.toFixed(2)} ر.س`
+                ) : '0.00 ر.س'}
+              </span>
+            </div>
+            
+            {showDiscountForm && (
+              <DiscountForm 
+                onApply={onApplyDiscount}
+                onCancel={() => setShowDiscountForm(false)}
+                currentDiscount={discount}
+                currentType={discountType}
+              />
+            )}
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <span className="text-base">ضريبة القيمة المضافة (15%):</span>
+              </div>
+              <span className="text-base">{tax ? tax.toFixed(2) : '0.00'} ر.س</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <span className="text-base">مصاريف إضافية:</span>
+                <Button 
+                  variant="link" 
+                  className="h-auto p-0 pr-2" 
+                  onClick={() => setShowTaxForm(prev => !prev)}
+                >
+                  (تعديل)
+                </Button>
+              </div>
+              <span className="text-base">{expenses ? expenses.toFixed(2) : '0.00'} ر.س</span>
+            </div>
+            
+            {showTaxForm && (
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="number"
+                  placeholder="قيمة المصاريف"
+                  value={expenses || ''}
+                  onChange={(e) => onApplyExpenses(parseFloat(e.target.value) || 0)}
+                  className="text-base"
+                />
+                <Button 
+                  size="sm" 
+                  onClick={() => setShowTaxForm(false)}
+                >
+                  موافق
+                </Button>
+              </div>
+            )}
+            
+            <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
+              <span>الإجمالي:</span>
+              <span>{totalAmount.toFixed(2)} ر.س</span>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Input 
-              type="number" 
-              min="0" 
-              value={discountValue}
-              onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)}
-              className="h-8 text-sm"
-            />
-            <Button 
-              size="sm" 
-              className="h-8 text-xs" 
-              onClick={handleDiscountApply}
-            >
-              تطبيق
-            </Button>
+          
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold mb-2">تفاصيل الدفع</h3>
+            
+            <div>
+              <Label htmlFor="amountPaid" className="text-base">المبلغ المدفوع</Label>
+              <Input
+                id="amountPaid"
+                type="number"
+                value={amountPaid || ''}
+                onChange={(e) => onAmountPaidChange(parseFloat(e.target.value) || 0)}
+                className="text-base"
+              />
+            </div>
+            
+            <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
+              <span>المتبقي:</span>
+              <span>{remaining.toFixed(2)} ر.س</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-base">الحالة:</span>
+              <span className={`text-base font-semibold ${
+                remaining <= 0 ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {remaining <= 0 ? 'مدفوعة بالكامل' : 'معلقة'}
+              </span>
+            </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-2 gap-2 items-center mb-2">
-          <div className="text-gray-600">مصاريف الشراء:</div>
-          <div className="flex gap-2">
-            <Input 
-              type="number" 
-              min="0" 
-              value={expensesValue}
-              onChange={(e) => setExpensesValue(parseFloat(e.target.value) || 0)}
-              className="h-8 text-sm"
-            />
-            <Button 
-              size="sm" 
-              className="h-8 text-xs" 
-              onClick={handleExpensesApply}
-            >
-              تطبيق
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-200 pt-2">
-        <div className="grid grid-cols-2 gap-2">
-          <div className="text-gray-600 font-semibold">الإجمالي:</div>
-          <div className="text-right font-bold text-lg">{totalAmount.toFixed(2)} ريال</div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 items-center mt-2">
-          <div className="text-gray-600">المبلغ المدفوع:</div>
-          <Input 
-            type="number" 
-            min="0" 
-            max={totalAmount}
-            value={paidAmount}
-            onChange={handleAmountPaidChange}
-            className="h-8 text-sm"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mt-2 bg-gray-100 p-2 rounded">
-          <div className="text-gray-600 font-semibold">المبلغ المتبقي:</div>
-          <div className="text-right font-bold text-red-600">{remaining.toFixed(2)} ريال</div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

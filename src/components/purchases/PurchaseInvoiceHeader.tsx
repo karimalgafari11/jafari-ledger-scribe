@@ -1,12 +1,12 @@
 
-import React, { useState } from "react";
-import { PurchaseInvoice } from "@/types/purchases";
-import { Input } from "@/components/ui/input";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { parse } from "date-fns";
+import { PurchaseInvoice } from "@/types/purchases";
+import { mockVendors } from "@/data/mockVendors";
 
 interface PurchaseInvoiceHeaderProps {
   invoice: PurchaseInvoice;
@@ -19,97 +19,91 @@ export const PurchaseInvoiceHeader: React.FC<PurchaseInvoiceHeaderProps> = ({
   onFieldChange,
   onDateChange
 }) => {
-  const invoiceDate = invoice.date ? parse(invoice.date, "yyyy-MM-dd", new Date()) : new Date();
-  
-  // Mock vendors for demonstration
-  const vendors = [
-    { id: "v1", name: "شركة السعيد للتجارة", accountNumber: "SA5980000123456789012345" },
-    { id: "v2", name: "مؤسسة النور للمقاولات", accountNumber: "SA5980000555456789099345" },
-    { id: "v3", name: "مؤسسة الأمانة للتوريدات", accountNumber: "SA5980000777456789012388" }
-  ];
-
-  const handleVendorChange = (vendorId: string) => {
-    const selectedVendor = vendors.find(v => v.id === vendorId);
-    if (selectedVendor) {
-      onFieldChange("vendorId", vendorId);
-      onFieldChange("vendorName", selectedVendor.name);
-      onFieldChange("vendorAccountNumber", selectedVendor.accountNumber);
-    }
-  };
-
-  // Payment method toggle
-  const handlePaymentMethodChange = (isCash: boolean) => {
-    onFieldChange("paymentMethod", isCash ? "cash" : "credit");
-  };
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div className="space-y-2">
-        <div>
-          <Label htmlFor="invoiceNumber">رقم الفاتورة</Label>
-          <Input
-            id="invoiceNumber"
-            placeholder="رقم الفاتورة"
-            value={invoice.invoiceNumber}
-            onChange={(e) => onFieldChange("invoiceNumber", e.target.value)}
-            className="mb-2"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="date">التاريخ</Label>
-          <DatePicker
-            date={invoiceDate}
-            onDateChange={onDateChange}
-            className="w-full"
-            placeholder="اختر تاريخ الفاتورة"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="paymentMethod" className="block mb-1">طريقة الدفع</Label>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Switch
-              id="paymentMethod"
-              checked={invoice.paymentMethod === "cash"}
-              onCheckedChange={handlePaymentMethodChange}
-            />
-            <span>{invoice.paymentMethod === "cash" ? "نقدي" : "آجل"}</span>
+    <Card className="mb-4">
+      <CardContent className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rtl">
+          <div className="space-y-2">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="w-full md:w-1/2">
+                <Label htmlFor="invoiceNumber" className="text-base">رقم الفاتورة</Label>
+                <Input
+                  id="invoiceNumber"
+                  value={invoice.invoiceNumber}
+                  onChange={(e) => onFieldChange('invoiceNumber', e.target.value)}
+                  className="text-base"
+                />
+              </div>
+              
+              <div className="w-full md:w-1/2">
+                <Label htmlFor="date" className="text-base">تاريخ الفاتورة</Label>
+                <DatePicker
+                  date={invoice.date ? new Date(invoice.date) : new Date()}
+                  onSelect={(date) => onDateChange(date)}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="paymentMethod" className="text-base">طريقة الدفع</Label>
+              <Select 
+                value={invoice.paymentMethod} 
+                onValueChange={(value) => onFieldChange('paymentMethod', value as 'cash' | 'credit')}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر طريقة الدفع" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">نقدي</SelectItem>
+                  <SelectItem value="credit">آجل</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <div>
+              <Label htmlFor="vendorName" className="text-base">اسم المورد</Label>
+              <Select
+                value={invoice.vendorId || ""}
+                onValueChange={(value) => {
+                  const vendor = mockVendors.find(v => v.id === value);
+                  if (vendor) {
+                    onFieldChange('vendorId', vendor.id);
+                    onFieldChange('vendorName', vendor.name);
+                    onFieldChange('vendorPhone', vendor.phone);
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر المورد" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockVendors.map(vendor => (
+                    <SelectItem key={vendor.id} value={vendor.id}>
+                      {vendor.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="w-full">
+                <Label htmlFor="vendorPhone" className="text-base">هاتف المورد</Label>
+                <Input
+                  id="vendorPhone"
+                  value={invoice.vendorPhone || ""}
+                  onChange={(e) => onFieldChange('vendorPhone', e.target.value)}
+                  className="text-base"
+                  disabled={!invoice.vendorId}
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div className="space-y-2">
-        <div>
-          <Label htmlFor="vendorId">المورد</Label>
-          <Select 
-            value={invoice.vendorId} 
-            onValueChange={handleVendorChange}
-          >
-            <SelectTrigger id="vendorId">
-              <SelectValue placeholder="اختر المورد" />
-            </SelectTrigger>
-            <SelectContent>
-              {vendors.map(vendor => (
-                <SelectItem key={vendor.id} value={vendor.id}>
-                  {vendor.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div>
-          <Label htmlFor="vendorAccountNumber">رقم حساب المورد</Label>
-          <Input
-            id="vendorAccountNumber"
-            placeholder="رقم حساب المورد"
-            value={invoice.vendorAccountNumber || ""}
-            readOnly
-            className="bg-muted"
-          />
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

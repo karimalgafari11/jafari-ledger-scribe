@@ -72,7 +72,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
       />
       
       {/* Items table */}
-      <div className="border rounded overflow-auto">
+      <div className="border rounded overflow-auto rtl">
         <Table className="min-w-full border-collapse" gridLines={showGridLines} striped bordered hoverable>
           <PurchaseTableHeader />
           <PurchaseTableBody

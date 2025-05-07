@@ -1,15 +1,11 @@
 
 import React from "react";
+import { TableCell, TableRow } from "@/components/ui/table";
 import { PurchaseItem } from "@/types/purchases";
-import { TableRow } from "@/components/ui/table";
-import { IndexCell } from "./cells/IndexCell";
-import { ItemNameCell } from "./cells/ItemNameCell";
-import { ItemCodeCell } from "./cells/ItemCodeCell";
-import { EditableTextCell } from "./cells/EditableTextCell";
-import { EditableNumberCell } from "./cells/EditableNumberCell";
-import { EditableDiscountCell } from "./cells/EditableDiscountCell";
-import { TotalCell } from "./cells/TotalCell";
-import { ActionCell } from "./cells/ActionCell";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import { EditableCell } from "./EditableCell";
+import { ProductSearchCell } from "./ProductSearchCell";
 
 interface ItemRowProps {
   item: PurchaseItem;
@@ -40,120 +36,109 @@ export const ItemRow: React.FC<ItemRowProps> = ({
   editingItemIndex,
   searchInputRef
 }) => {
+  // Helper to determine if this cell is currently being edited
+  const isCellActive = (field: string) => activeSearchCell === `${field}-${index}`;
+  
   return (
-    <TableRow key={item.id || index} className={index % 2 === 0 ? "bg-gray-50 hover:bg-gray-100" : "hover:bg-gray-100"}>
-      <IndexCell index={index} />
+    <TableRow 
+      className={`border-b border-gray-200 ${editingItemIndex === index ? 'bg-blue-50' : ''} hover:bg-gray-50`}
+    >
+      {/* Actions Column */}
+      <TableCell className="px-3 py-2 text-center">
+        <div className="flex space-x-1 rtl:space-x-reverse justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setEditingItemIndex(index)}
+            disabled={isAddingItem || editingItemIndex !== null}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-red-600"
+            onClick={() => onRemoveItem(index)}
+            disabled={isAddingItem || editingItemIndex !== null}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </TableCell>
       
-      <ItemNameCell 
-        name={item.name}
-        index={index}
-        handleProductSelect={handleProductSelect}
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-        handleDirectEdit={handleDirectEdit}
-      />
+      {/* Notes Column */}
+      <TableCell className="px-3 py-2">
+        <EditableCell
+          value={item.notes || ""}
+          isActive={isCellActive("notes")}
+          onActivate={() => handleCellClick(index, "notes")}
+          onChange={(value) => handleDirectEdit(index, "notes", value)}
+          inputRef={isCellActive("notes") ? searchInputRef : undefined}
+          placeholder="ملاحظات"
+        />
+      </TableCell>
       
-      <ItemCodeCell 
-        code={item.code}
-        index={index}
-        handleProductSelect={handleProductSelect}
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-        handleDirectEdit={handleDirectEdit}
-      />
+      {/* Total Column */}
+      <TableCell className="px-3 py-2 text-left">
+        {item.total.toFixed(2)}
+      </TableCell>
       
-      <EditableTextCell
-        value={item.manufacturer || ""}
-        field="manufacturer"
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-      />
+      {/* Price Column */}
+      <TableCell className="px-3 py-2">
+        <EditableCell
+          value={item.price.toString()}
+          isActive={isCellActive("price")}
+          onActivate={() => handleCellClick(index, "price")}
+          onChange={(value) => handleDirectEdit(index, "price", parseFloat(value) || 0)}
+          inputRef={isCellActive("price") ? searchInputRef : undefined}
+          type="number"
+          className="text-left"
+        />
+      </TableCell>
       
-      <EditableTextCell
-        value={item.size || ""}
-        field="size"
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-      />
+      {/* Quantity Column */}
+      <TableCell className="px-3 py-2">
+        <EditableCell
+          value={item.quantity.toString()}
+          isActive={isCellActive("quantity")}
+          onActivate={() => handleCellClick(index, "quantity")}
+          onChange={(value) => handleDirectEdit(index, "quantity", parseFloat(value) || 0)}
+          inputRef={isCellActive("quantity") ? searchInputRef : undefined}
+          type="number"
+          className="text-center"
+        />
+      </TableCell>
       
-      <EditableNumberCell
-        value={item.quantity}
-        field="quantity"
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-        min="1"
-      />
+      {/* Name Column */}
+      <TableCell className="px-3 py-2">
+        <ProductSearchCell
+          value={item.name}
+          code={item.code}
+          isActive={isCellActive("name")}
+          onActivate={() => handleCellClick(index, "name")}
+          onProductSelect={(product) => handleProductSelect(product, index)}
+          inputRef={isCellActive("name") ? searchInputRef : undefined}
+          className="text-right"
+        />
+      </TableCell>
       
-      <EditableNumberCell
-        value={item.price}
-        field="price"
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-        displayValue={item.price.toFixed(2)}
-      />
+      {/* Code Column */}
+      <TableCell className="px-3 py-2">
+        <EditableCell
+          value={item.code}
+          isActive={isCellActive("code")}
+          onActivate={() => handleCellClick(index, "code")}
+          onChange={(value) => handleDirectEdit(index, "code", value)}
+          inputRef={isCellActive("code") ? searchInputRef : undefined}
+          className="text-center"
+        />
+      </TableCell>
       
-      <EditableDiscountCell
-        discount={item.discount || 0}
-        discountType={item.discountType || "percentage"}
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-        onDiscountTypeChange={(value) => handleDirectEdit(index, 'discountType', value)}
-      />
-      
-      <EditableNumberCell
-        value={item.tax || 0}
-        field="tax"
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-        showPercentageSymbol={true}
-        displayValue={(item.tax || 0) > 0 ? `${item.tax}` : ""}
-        displaySuffix={(item.tax || 0) > 0 ? "%" : ""}
-      />
-      
-      <TotalCell total={item.total} />
-      
-      <EditableTextCell
-        value={item.notes || ""}
-        field="notes"
-        index={index}
-        activeSearchCell={activeSearchCell}
-        handleCellClick={handleCellClick}
-        handleDirectEdit={handleDirectEdit}
-        setActiveSearchCell={setActiveSearchCell}
-        inputRef={searchInputRef}
-      />
-      
-      <ActionCell
-        index={index}
-        setEditingItemIndex={setEditingItemIndex}
-        onRemoveItem={onRemoveItem}
-        isAddingItem={isAddingItem}
-        editingItemIndex={editingItemIndex}
-      />
+      {/* Serial Number Column */}
+      <TableCell className="px-3 py-2 text-center">
+        {index + 1}
+      </TableCell>
     </TableRow>
   );
 };
