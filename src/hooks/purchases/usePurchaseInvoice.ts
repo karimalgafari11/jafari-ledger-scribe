@@ -31,6 +31,7 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
   const [invoice, setInvoice] = useState<PurchaseInvoice>(defaultInvoice);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Update invoice when PDF data is provided
   useEffect(() => {
@@ -94,6 +95,17 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
       toast.success(`تم استيراد ${validItems.length} صنف بنجاح من ملف PDF`);
     }
   }, [pdfData]);
+
+  // Create new invoice function
+  const createNewInvoice = () => {
+    setInvoice({
+      ...defaultInvoice,
+      id: uuidv4(),
+      invoiceNumber: `P-${Math.floor(Math.random() * 10000)}`,
+      date: format(new Date(), "yyyy-MM-dd"),
+    });
+    toast.info("تم إنشاء فاتورة جديدة");
+  };
 
   // Update invoice field
   const updateField = (field: keyof PurchaseInvoice, value: any) => {
@@ -165,10 +177,12 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
 
   return {
     invoice,
+    isLoading,
     isAddingItem,
     setIsAddingItem,
     editingItemIndex,
     setEditingItemIndex,
+    createNewInvoice,
     updateField,
     updateDate,
     addItem,
@@ -182,3 +196,4 @@ export const usePurchaseInvoice = ({ initialInvoice, pdfData }: UsePurchaseInvoi
     sendViaWhatsApp
   };
 };
+

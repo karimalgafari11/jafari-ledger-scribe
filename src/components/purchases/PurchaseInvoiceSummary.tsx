@@ -18,6 +18,8 @@ interface PurchaseInvoiceSummaryProps {
   onApplyDiscount: (type: 'percentage' | 'fixed', value: number) => void;
   onApplyExpenses: (value: number) => void;
   onAmountPaidChange: (amount: number) => void;
+  showDiscount?: boolean;
+  showTax?: boolean;
 }
 
 export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
@@ -31,7 +33,9 @@ export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
   remaining,
   onApplyDiscount,
   onApplyExpenses,
-  onAmountPaidChange
+  onAmountPaidChange,
+  showDiscount = true,
+  showTax = true
 }) => {
   const [showDiscountForm, setShowDiscountForm] = useState(false);
   const [showTaxForm, setShowTaxForm] = useState(false);
@@ -48,25 +52,27 @@ export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
               <span className="text-base">{subtotal.toFixed(2)} ر.س</span>
             </div>
             
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <span className="text-base">الخصم:</span>
-                <Button 
-                  variant="link" 
-                  className="h-auto p-0 pr-2" 
-                  onClick={() => setShowDiscountForm(prev => !prev)}
-                >
-                  (تعديل)
-                </Button>
+            {showDiscount && (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <span className="text-base">الخصم:</span>
+                  <Button 
+                    variant="link" 
+                    className="h-auto p-0 pr-2" 
+                    onClick={() => setShowDiscountForm(prev => !prev)}
+                  >
+                    (تعديل)
+                  </Button>
+                </div>
+                <span className="text-base">
+                  {discount ? (
+                    discountType === 'percentage'
+                      ? `${discount}% (${((subtotal * discount) / 100).toFixed(2)} ر.س)`
+                      : `${discount.toFixed(2)} ر.س`
+                  ) : '0.00 ر.س'}
+                </span>
               </div>
-              <span className="text-base">
-                {discount ? (
-                  discountType === 'percentage'
-                    ? `${discount}% (${((subtotal * discount) / 100).toFixed(2)} ر.س)`
-                    : `${discount.toFixed(2)} ر.س`
-                ) : '0.00 ر.س'}
-              </span>
-            </div>
+            )}
             
             {showDiscountForm && (
               <DiscountForm 
@@ -77,12 +83,14 @@ export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
               />
             )}
             
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <span className="text-base">ضريبة القيمة المضافة (15%):</span>
+            {showTax && (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <span className="text-base">ضريبة القيمة المضافة (15%):</span>
+                </div>
+                <span className="text-base">{tax ? tax.toFixed(2) : '0.00'} ر.س</span>
               </div>
-              <span className="text-base">{tax ? tax.toFixed(2) : '0.00'} ر.س</span>
-            </div>
+            )}
             
             <div className="flex justify-between items-center">
               <div className="flex items-center">
@@ -155,3 +163,4 @@ export const PurchaseInvoiceSummary: React.FC<PurchaseInvoiceSummaryProps> = ({
     </Card>
   );
 };
+
