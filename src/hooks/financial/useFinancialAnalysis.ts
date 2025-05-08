@@ -410,6 +410,7 @@ export const useFinancialAnalysis = () => {
     ],
     []
   );
+  
   const chartData = useMemo(() => createMockChartData(), []);
   
   const refreshData = useCallback(() => {

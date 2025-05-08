@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,7 +92,7 @@ const FinancialAnalysisPage = () => {
                       : "لا توجد رؤى متاحة حاليًا."}
                   </p>
                   <Button variant="outline" className="mt-4">
-                    عرض التقري�� الكامل
+                    عرض التقرير الكامل
                   </Button>
                 </>
               )}
