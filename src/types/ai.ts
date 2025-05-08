@@ -1,55 +1,12 @@
 
-export interface Message {
-  role: "user" | "assistant" | "system";
-  content: string;
-  timestamp?: Date;
-  id?: string;
-}
-
-export interface ApiResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: {
-    index: number;
-    message: Message;
-    finish_reason: string;
-  }[];
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
-
-export interface DeepseekConfig {
-  apiKey: string;
-  model: string;
-  temperature: number;
-  maxTokens: number;
-}
-
 export interface SystemAlert {
-  type: "inventory" | "expenses" | "invoices" | "customers";
-  message: string;
-  priority: "high" | "medium" | "low";
-  data?: any;
-  timestamp: Date;
-}
-
-export interface ChatSession {
   id: string;
   title: string;
-  messages: Message[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface AiAssistantContext {
-  lowStockItems: number;
-  unpaidInvoices: number;
-  pendingExpenses: number;
-  pendingApprovals: number;
-  recentAlerts: SystemAlert[];
+  message: string;
+  type: "expenses" | "inventory" | "customers" | "invoices" | "budget" | "financial" | "sales";
+  severity: "low" | "medium" | "high";
+  timestamp: Date;
+  read: boolean;
+  actionRequired?: boolean;
+  actionLink?: string;
 }

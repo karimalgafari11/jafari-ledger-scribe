@@ -1,47 +1,44 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export type Report = {
+export interface Report {
   id: number;
   title: string;
+  name?: string; // Add this to make it compatible with both naming conventions
   description: string;
   date: string;
-  favorite: boolean;
   category: string | string[];
-};
+  favorite: boolean;
+}
 
 export const useReports = (initialReports: Report[]) => {
   const [reports, setReports] = useState<Report[]>(initialReports);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string>("all");
-
-  const toggleFavorite = (reportId: number) => {
-    setReports(prevReports =>
-      prevReports.map(report =>
-        report.id === reportId
-          ? { ...report, favorite: !report.favorite }
-          : report
-      )
-    );
-  };
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+  
+  // Filter reports based on search query and active category
   const filteredReports = reports.filter((report) => {
-    // Filter by category
-    const categoryMatch = 
-      activeCategory === 'all' || 
+    const matchesSearch = report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      report.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = activeCategory === 'all' || 
       activeCategory === 'favorites' && report.favorite ||
       (Array.isArray(report.category) 
         ? report.category.includes(activeCategory)
         : report.category === activeCategory);
     
-    // Filter by search query
-    const searchMatch = 
-      !searchQuery || 
-      report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return categoryMatch && searchMatch;
+    return matchesSearch && matchesCategory;
   });
+
+  // Toggle favorite status
+  const toggleFavorite = (id: number) => {
+    setReports(reports.map((report) => {
+      if (report.id === id) {
+        return { ...report, favorite: !report.favorite };
+      }
+      return report;
+    }));
+  };
 
   return {
     reports: filteredReports,
@@ -49,6 +46,6 @@ export const useReports = (initialReports: Report[]) => {
     setSearchQuery,
     activeCategory,
     setActiveCategory,
-    toggleFavorite
+    toggleFavorite,
   };
 };

@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { useFinancialAnalysis } from "@/hooks/financial/useFinancialAnalysis";
 import { Badge } from "@/components/ui/badge";
 import { Download, Filter, PlusCircle, RefreshCw } from "lucide-react";
+import { AnalysisPeriod } from "@/types/financial-analysis";
 
 const FinancialAnalysisPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -27,6 +28,11 @@ const FinancialAnalysisPage = () => {
     chartData,
     isLoading
   } = useFinancialAnalysis();
+
+  // Type-safe handler for Select component
+  const handlePeriodChange = (newValue: string) => {
+    setPeriod(newValue as AnalysisPeriod);
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -49,7 +55,7 @@ const FinancialAnalysisPage = () => {
 
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2 items-center">
-          <Select value={period} onValueChange={setPeriod}>
+          <Select value={period} onValueChange={handlePeriodChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="اختر الفترة" />
             </SelectTrigger>

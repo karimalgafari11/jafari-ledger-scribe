@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { KpiCard } from "@/components/executive/KpiCard";
