@@ -417,7 +417,7 @@ export const useAiAssistant = () => {
     return mockJournalEntries.filter(entry => entry.status === JournalStatus.Pending);
   };
   
-  // Extended analyzePerformance function to include missing properties
+  // Extended analyzePerformance function to include all required properties
   const analyzePerformance = () => {
     return {
       totalSales: 156750.25,
@@ -428,9 +428,38 @@ export const useAiAssistant = () => {
         "التواصل مع العملاء المتأخرين عن السداد",
         "مراجعة المصروفات المعلقة للموافقة عليها"
       ],
-      // Add the missing properties needed in the UI
+      // Add all the missing properties needed by the AiPerformanceAnalysis interface
       profitMargin: 18.5,
-      currentRatio: 1.8
+      currentRatio: 1.8,
+      revenueGrowth: 5.7,
+      expenseTrend: 3.2,
+      cashFlow: 45000,
+      keyInsights: [
+        "معدل نمو المبيعات أعلى من معدل نمو المصروفات بنسبة 2.5%",
+        "هامش الربح في تحسن مستمر للربع الثالث على التوالي",
+        "المنتجات الإلكترونية تشكل 65% من إجمالي المبيعات",
+        "انخفاض في قيمة المخزون الراكد بنسبة 12% عن الفترة السابقة"
+      ],
+      recommendations: [
+        {
+          priority: 'high',
+          description: "إعادة هيكلة سياسة التسعير للمنتجات منخفضة الدوران",
+          potentialImpact: "زيادة محتملة في هامش الربح بنسبة 3-5%",
+          implementationDifficulty: 'moderate'
+        },
+        {
+          priority: 'medium',
+          description: "تحسين إدارة المخزون للمنتجات عالية الطلب",
+          potentialImpact: "تقليل تكلفة التخزين بنسبة 8-10%",
+          implementationDifficulty: 'easy'
+        },
+        {
+          priority: 'medium',
+          description: "مراجعة شروط الائتمان مع العملاء المتأخرين",
+          potentialImpact: "تحسين التدفق النقدي بقيمة 15000+ ريال شهرياً",
+          implementationDifficulty: 'moderate'
+        }
+      ]
     };
   };
   
