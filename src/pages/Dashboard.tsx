@@ -9,6 +9,7 @@ import {
   transformCategoryData,
   transformDailySalesData
 } from "@/utils/chartDataTransformers";
+import { FileText, BarChart, Receipt } from "lucide-react";
 
 const Dashboard = () => {
   const [displayOptions, setDisplayOptions] = useState<DisplayOptions>({
@@ -21,42 +22,27 @@ const Dashboard = () => {
   const shortcuts: ShortcutItem[] = [
     {
       id: "1",
-      label: "إنشاء فاتورة جديدة",
-      icon: "InvoiceIcon",
-      action: () => alert("Creating new invoice!"),
+      name: "إنشاء فاتورة جديدة",
+      icon: Receipt,
+      route: "/invoices/new",
+      enabled: true,
+      description: "إنشاء فاتورة جديدة للعملاء"
     },
     {
       id: "2",
-      label: "إضافة مصروف جديد",
-      icon: "ExpenseIcon",
-      action: () => alert("Adding new expense!"),
+      name: "إضافة مصروف جديد",
+      icon: FileText,
+      route: "/expenses/new",
+      enabled: true,
+      description: "تسجيل مصروف جديد"
     },
     {
       id: "3",
-      label: "عرض التقارير",
-      icon: "ReportIcon",
-      action: () => alert("Navigating to reports!"),
-    },
-  ];
-
-  const kpis = [
-    {
-      title: "إجمالي المبيعات",
-      value: "156,750.25",
-      status: "up",
-      description: "مقارنة بالشهر الماضي",
-    },
-    {
-      title: "صافي الربح",
-      value: "78,425.13",
-      status: "up",
-      description: "مقارنة بالربع الماضي",
-    },
-    {
-      title: "المصروفات المتأخرة",
-      value: "18,500.75",
-      status: "down",
-      description: "مقارنة بالعام الماضي",
+      name: "عرض التقارير",
+      icon: BarChart,
+      route: "/reports",
+      enabled: true,
+      description: "عرض تقارير النظام"
     },
   ];
 

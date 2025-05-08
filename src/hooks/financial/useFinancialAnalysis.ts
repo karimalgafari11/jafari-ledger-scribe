@@ -1,9 +1,21 @@
+
 import { useState, useMemo, useCallback } from 'react';
-import { FinancialMetric, FinancialRatio, AnalysisPeriod } from '@/types/financial-analysis';
+import { FinancialMetric, FinancialRatio } from '@/types/financial-analysis';
 import { generateMockInsights } from '@/data/mockFinancialData';
 import { ChartData } from '@/types/custom-reports';
 import { addDays, subDays } from 'date-fns';
 import { toast } from 'sonner';
+
+// Define AnalysisPeriod as enum and export it
+export enum AnalysisPeriod {
+  MONTH_3 = '3_months',
+  MONTH_6 = '6_months',
+  YEAR_1 = '1_year',
+  YEAR_2 = '2_years'
+}
+
+// Use string type for insights instead of string[]
+const insights = "تحليل مالي شامل للفترة الحالية يظهر تحسناً بنسبة 15% في صافي الربح مقارنة بالفترة السابقة";
 
 // بيانات وهمية للمؤشرات المالية
 const mockFinancialMetrics: FinancialMetric[] = [
@@ -371,26 +383,19 @@ const createMockChartData = (): {
   };
 };
 
-export enum AnalysisPeriod {
-  MONTH_3 = '3_months',
-  MONTH_6 = '6_months',
-  YEAR_1 = '1_year',
-  YEAR_2 = '2_years'
-}
-
 export const useFinancialAnalysis = () => {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: subDays(new Date(), 30),
     to: new Date()
   });
   
-  const [period, setPeriod] = useState<AnalysisPeriod>('monthly');
+  const [selectedPeriod, setSelectedPeriod] = useState<AnalysisPeriod>(AnalysisPeriod.MONTH_3);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   // استخدام البيانات الوهمية
   const financialMetrics = useMemo(() => mockFinancialMetrics, []);
   const financialRatios = useMemo(() => mockFinancialRatios, []);
-  const insights: string[] = [];
+  const insightsArray = useMemo(() => [insights], []);
   const recommendations = useMemo(
     () => [
       'زيادة الاستثمار في قنوات التسويق الرقمي لتحسين المبيعات عبر الإنترنت',
@@ -425,12 +430,12 @@ export const useFinancialAnalysis = () => {
   return {
     financialMetrics,
     financialRatios,
-    insights,
+    insights: insightsArray,
     recommendations,
     dateRange,
     setDateRange,
-    period,
-    setPeriod,
+    selectedPeriod,
+    setSelectedPeriod,
     refreshData,
     exportAnalysis,
     chartData,

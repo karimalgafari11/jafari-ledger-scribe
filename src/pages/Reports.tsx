@@ -13,6 +13,7 @@ import { ReportExportOptions } from "@/components/reports/ReportExportOptions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { FileText, Plus, Settings } from "lucide-react";
+import { Report as CustomReport } from "@/types/custom-reports";
 
 const Reports = () => {
   const {
@@ -101,7 +102,7 @@ const Reports = () => {
 
             <div ref={reportRef} className="w-full">
               <ReportsList 
-                reports={filteredReports} 
+                reports={filteredReports as unknown as CustomReport[]} 
                 onSelectReport={handleReportClick} 
                 onToggleFavorite={toggleFavorite} 
               />

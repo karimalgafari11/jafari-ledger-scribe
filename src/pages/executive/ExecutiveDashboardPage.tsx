@@ -1,30 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Header } from "@/components/Header";
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
-import { KpiCard } from "@/components/executive/KpiCard";
-import { ExecutiveSummaryCard } from "@/components/executive/ExecutiveSummaryCard";
-import { ProjectStatusCard } from "@/components/executive/ProjectStatusCard";
-import { FinancialRatiosCard } from "@/components/executive/FinancialRatiosCard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertsPanel } from "@/components/executive/AlertsPanel";
-import { useExecutiveDashboard } from "@/hooks/executive/useExecutiveDashboard";
+import { FinancialRatiosCard } from "@/components/executive/FinancialRatiosCard";
+import { ProjectStatusCard } from "@/components/executive/ProjectStatusCard";
+import { KpiCard as ExecutiveKpiCard } from "@/components/executive/KpiCard";
+import { ExecutiveSummaryCard } from "@/components/executive/ExecutiveSummaryCard";
+import { Header } from "@/components/Header";
 import { DateRange } from "react-day-picker";
-import { 
-  AlertTriangle, 
-  Download, 
-  Filter, 
-  LayoutDashboard, 
-  Mail, 
-  Settings, 
-  Sliders 
-} from "lucide-react";
+import { BarChart3, DownloadIcon, FileText, RefreshCcw } from "lucide-react";
+import useExecutiveDashboard from "@/hooks/executive/useExecutiveDashboard";
 
 const ExecutiveDashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
@@ -141,7 +129,7 @@ const ExecutiveDashboardPage: React.FC = () => {
           {/* بطاقات مؤشرات الأداء الرئيسية */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {kpis.map((kpi) => (
-              <KpiCard key={kpi.id} data={kpi} />
+              <ExecutiveKpiCard key={kpi.id} data={kpi} />
             ))}
           </div>
 

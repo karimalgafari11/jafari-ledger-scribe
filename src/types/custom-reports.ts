@@ -1,15 +1,31 @@
 
 export interface Report {
-  id: string; // Change to string type to fix reports.ts type errors
+  id: string;
   name: string;
+  title?: string;
   description: string;
   dateCreated: Date;
   lastModified: Date;
   createdBy: string;
   favorite: boolean;
-  category: string;
+  category: string | string[];
   tags: string[];
   viewCount: number;
+  author?: string;
+  date?: string;
+  type?: string;
+  lastRun?: Date;
+}
+
+export interface ReportFilter {
+  category?: string[];
+  author?: string;
+  favorites?: boolean;
+  dateRange?: {
+    from: Date;
+    to: Date;
+  };
+  type?: string[];
 }
 
 export interface ChartData {

@@ -20,9 +20,15 @@ const FinancialAnalysisPage = () => {
     isLoading
   } = useFinancialAnalysis();
   
-  // Avoid references to non-existent properties
-  // profitabilityData, cashflowData, liquidityData, debtRatios, valuationRatios, etc.
-  // Instead use financialMetrics and financialRatios which do exist
+  // Handle the DateRange compatibility issue
+  const handleDateRangeChange = (range: any) => {
+    if (range && range.from) {
+      setDateRange({
+        from: range.from,
+        to: range.to || new Date()
+      });
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -47,7 +53,7 @@ const FinancialAnalysisPage = () => {
             </Select>
           </div>
           <div className="col-span-2">
-            <DateRangePicker value={dateRange} onChange={setDateRange} />
+            <DateRangePicker value={dateRange} onChange={handleDateRangeChange} />
           </div>
         </CardContent>
       </Card>
