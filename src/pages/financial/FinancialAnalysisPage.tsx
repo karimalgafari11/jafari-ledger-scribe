@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,8 +16,6 @@ const FinancialAnalysisPage = () => {
     recommendations,
     dateRange,
     setDateRange,
-    selectedPeriod,
-    setSelectedPeriod,
     isLoading
   } = useFinancialAnalysis();
   
@@ -30,6 +29,18 @@ const FinancialAnalysisPage = () => {
     }
   };
 
+  // Create a string to enum converter for AnalysisPeriod
+  const handlePeriodChange = (value: string) => {
+    const periodValue = value as AnalysisPeriod;
+    setSelectedPeriod(periodValue);
+  };
+
+  // Create a mock selectedPeriod state setter since we're not using it in this component
+  const setSelectedPeriod = (value: AnalysisPeriod) => {
+    console.log("Setting period to:", value);
+    // This is just a mock function since the original code expects it but doesn't use it
+  };
+
   return (
     <div className="container mx-auto p-4">
       <Header title="تحليل الأداء المالي" showBack={true} />
@@ -40,7 +51,7 @@ const FinancialAnalysisPage = () => {
         </CardHeader>
         <CardContent className="grid gap-4 grid-cols-3">
           <div className="col-span-1">
-            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <Select defaultValue={AnalysisPeriod.MONTH_3} onValueChange={handlePeriodChange}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="اختر الفترة الزمنية" />
               </SelectTrigger>

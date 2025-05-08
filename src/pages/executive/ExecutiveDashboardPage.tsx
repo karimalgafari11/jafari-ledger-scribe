@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +12,19 @@ import { KpiCard as ExecutiveKpiCard } from "@/components/executive/KpiCard";
 import { ExecutiveSummaryCard } from "@/components/executive/ExecutiveSummaryCard";
 import { Header } from "@/components/Header";
 import { DateRange } from "react-day-picker";
-import { BarChart3, DownloadIcon, FileText, RefreshCcw } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription, AlertTriangle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  Mail,
+  Download,
+  Settings,
+  LayoutDashboard,
+  Filter,
+  Sliders,
+  LineChart,
+  BarChart,
+  PieChart
+} from "lucide-react";
 import useExecutiveDashboard from "@/hooks/executive/useExecutiveDashboard";
 
 const ExecutiveDashboardPage: React.FC = () => {

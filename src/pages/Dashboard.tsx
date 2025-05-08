@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import DashboardContent from "@/components/dashboard/DashboardContent";
@@ -123,6 +124,31 @@ const Dashboard = () => {
   const transformedCostCenterData = transformCategoryData(costCenterData);
   const transformedDailySalesData = transformDailySalesData(dailySalesData);
 
+  // Define KPIs
+  const dashboardKpis = [
+    {
+      title: "نمو المبيعات",
+      value: "+12.4%",
+      status: "up" as const,
+      description: "مقارنة بالفترة السابقة"
+    }, {
+      title: "نسبة الربح الإجمالي",
+      value: "50.03%",
+      status: "up" as const,
+      description: "من إجمالي المبيعات"
+    }, {
+      title: "متوسط قيمة الفاتورة",
+      value: "645 ريال",
+      status: "down" as const,
+      description: "انخفاض 3.2% عن الشهر السابق"
+    }, {
+      title: "معدل تكرار الشراء",
+      value: "2.8",
+      status: "neutral" as const,
+      description: "متوسط عدد المشتريات لكل عميل"
+    }
+  ];
+
   return (
     <div className="container mx-auto p-4">
       <Header title="لوحة التحكم" showBack={false} />
@@ -142,7 +168,7 @@ const Dashboard = () => {
         profitMargin="50.03%"
         overdueInvoices={12}
         overdueTotalAmount={18500.75}
-        kpis={kpis}
+        kpis={dashboardKpis}
         salesData={transformedSalesData}
         profitData={transformedProfitData}
         customerDebtData={transformedCustomerDebtData}

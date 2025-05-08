@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useCallback } from 'react';
 import { FinancialMetric, FinancialRatio } from '@/types/financial-analysis';
 import { generateMockInsights } from '@/data/mockFinancialData';
@@ -14,8 +13,10 @@ export enum AnalysisPeriod {
   YEAR_2 = '2_years'
 }
 
-// Use string type for insights instead of string[]
-const insights = "تحليل مالي شامل للفترة الحالية يظهر تحسناً بنسبة 15% في صافي الربح مقارنة بالفترة السابقة";
+// Define insights as an array of strings instead of a single string
+const insights = [
+  "تحليل مالي شامل للفترة الحالية يظهر تحسناً بنسبة 15% في صافي الربح مقارنة بالفترة السابقة"
+];
 
 // بيانات وهمية للمؤشرات المالية
 const mockFinancialMetrics: FinancialMetric[] = [
@@ -395,7 +396,7 @@ export const useFinancialAnalysis = () => {
   // استخدام البيانات الوهمية
   const financialMetrics = useMemo(() => mockFinancialMetrics, []);
   const financialRatios = useMemo(() => mockFinancialRatios, []);
-  const insightsArray = useMemo(() => [insights], []);
+  const insightsArray = useMemo(() => insights, []);
   const recommendations = useMemo(
     () => [
       'زيادة الاستثمار في قنوات التسويق الرقمي لتحسين المبيعات عبر الإنترنت',
