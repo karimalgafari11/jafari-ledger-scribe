@@ -14,20 +14,21 @@ interface FinancialDecisionsWidgetProps {
 }
 
 const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps) => {
-  const { decisions } = useFinancialDecisions();
+  const { decisions, filters, updateFilters } = useFinancialDecisions();
   const [activeType, setActiveType] = useState<'all' | 'journal_entry' | 'pricing' | 'provision' | 'variance'>('all');
   const navigate = useNavigate();
   
   // Filter decisions by selected type
   const filteredDecisions = activeType === 'all' 
-    ? decisions.slice(0, 3) 
-    : decisions.filter(d => d.type === activeType).slice(0, 3);
+    ? decisions.filter(d => d.status === 'suggested').slice(0, 3) 
+    : decisions.filter(d => d.type === activeType && d.status === 'suggested').slice(0, 3);
   
   // Get counts by decision type
-  const journalCount = decisions.filter(d => d.type === 'journal_entry').length;
-  const pricingCount = decisions.filter(d => d.type === 'pricing').length;
-  const provisionCount = decisions.filter(d => d.type === 'provision').length;
-  const varianceCount = decisions.filter(d => d.type === 'variance').length;
+  const journalCount = decisions.filter(d => d.type === 'journal_entry' && d.status === 'suggested').length;
+  const pricingCount = decisions.filter(d => d.type === 'pricing' && d.status === 'suggested').length;
+  const provisionCount = decisions.filter(d => d.type === 'provision' && d.status === 'suggested').length;
+  const varianceCount = decisions.filter(d => d.type === 'variance' && d.status === 'suggested').length;
+  const suggestedCount = decisions.filter(d => d.status === 'suggested').length;
 
   // Classify decisions by confidence level
   const getConfidenceBadge = (confidence: number) => {
@@ -38,6 +39,18 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
     } else {
       return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">تقديري ({confidence}%)</Badge>;
     }
+  };
+
+  // Handle click on type button
+  const handleTypeClick = (type: 'all' | 'journal_entry' | 'pricing' | 'provision' | 'variance') => {
+    setActiveType(type);
+    updateFilters({ type, status: 'suggested' });
+  };
+
+  // Navigate to financial decisions page with filters
+  const handleViewAll = () => {
+    updateFilters({ type: activeType, status: 'suggested' });
+    navigate('/ai/financial-decisions');
   };
 
   // Render a decision card
@@ -95,7 +108,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
             <Calculator className="h-5 w-5 text-primary" />
             محرك القرارات المالي الذكي
           </CardTitle>
-          <Badge>{decisions.length} قرار</Badge>
+          <Badge>{suggestedCount} قرار جديد</Badge>
         </div>
         <CardDescription>
           اقتراحات وتوصيات مالية ذكية مبنية على تحليل البيانات
@@ -106,14 +119,14 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
           <Button 
             variant={activeType === 'all' ? "default" : "outline"} 
             size="sm" 
-            onClick={() => setActiveType('all')}
+            onClick={() => handleTypeClick('all')}
           >
-            الكل ({decisions.length})
+            الكل ({suggestedCount})
           </Button>
           <Button 
             variant={activeType === 'journal_entry' ? "default" : "outline"} 
             size="sm" 
-            onClick={() => setActiveType('journal_entry')}
+            onClick={() => handleTypeClick('journal_entry')}
             className="flex items-center gap-1"
           >
             <Calculator className="h-4 w-4" />
@@ -122,7 +135,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
           <Button 
             variant={activeType === 'pricing' ? "default" : "outline"} 
             size="sm" 
-            onClick={() => setActiveType('pricing')}
+            onClick={() => handleTypeClick('pricing')}
             className="flex items-center gap-1"
           >
             <DollarSign className="h-4 w-4" />
@@ -131,7 +144,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
           <Button 
             variant={activeType === 'provision' ? "default" : "outline"} 
             size="sm" 
-            onClick={() => setActiveType('provision')}
+            onClick={() => handleTypeClick('provision')}
             className="flex items-center gap-1"
           >
             <AlertCircle className="h-4 w-4" />
@@ -140,7 +153,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
           <Button 
             variant={activeType === 'variance' ? "default" : "outline"} 
             size="sm" 
-            onClick={() => setActiveType('variance')}
+            onClick={() => handleTypeClick('variance')}
             className="flex items-center gap-1"
           >
             <FileText className="h-4 w-4" />
@@ -151,7 +164,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
         <ScrollArea className="h-[280px] w-full">
           {filteredDecisions.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              لا توجد قرارات أو اقتراحات في هذا القسم
+              لا توجد قرارات أو اقتراحات جديدة في هذا القسم
             </div>
           ) : (
             filteredDecisions.map(renderDecisionCard)
@@ -159,7 +172,7 @@ const FinancialDecisionsWidget = ({ performance }: FinancialDecisionsWidgetProps
         </ScrollArea>
         
         <div className="mt-4 flex justify-center">
-          <Button onClick={() => navigate('/ai/financial-decisions')} size="sm">
+          <Button onClick={handleViewAll} size="sm">
             عرض جميع القرارات والاقتراحات
           </Button>
         </div>
