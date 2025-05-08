@@ -1,7 +1,7 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import DashboardContent from "@/components/dashboard/DashboardContent";
+import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 import { SystemAlert } from "@/types/ai";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import {
@@ -10,7 +10,7 @@ import {
   transformCategoryData,
   transformDailySalesData
 } from "@/utils/chartDataTransformers";
-import { FileText, BarChart, Receipt } from "lucide-react";
+import { FileText, BarChart, Receipt, Database, CreditCard, Users } from "lucide-react";
 
 const Dashboard = () => {
   const [displayOptions, setDisplayOptions] = useState<DisplayOptions>({
@@ -20,6 +20,7 @@ const Dashboard = () => {
     showAiWidget: true,
   });
 
+  // تعريف الاختصارات مع أيقونات مناسبة
   const shortcuts: ShortcutItem[] = [
     {
       id: "1",
@@ -44,6 +45,30 @@ const Dashboard = () => {
       route: "/reports",
       enabled: true,
       description: "عرض تقارير النظام"
+    },
+    {
+      id: "4",
+      name: "دفتر الأستاذ",
+      icon: Database,
+      route: "/accounting/ledger-module",
+      enabled: true,
+      description: "عرض وتحليل كافة الحركات المالية"
+    },
+    {
+      id: "5",
+      name: "إدارة العملاء",
+      icon: Users,
+      route: "/customers/module",
+      enabled: true,
+      description: "إدارة قاعدة بيانات العملاء"
+    },
+    {
+      id: "6",
+      name: "الصندوق",
+      icon: CreditCard,
+      route: "/accounting/cashregister-module",
+      enabled: true,
+      description: "إدارة عمليات النقد"
     },
   ];
 

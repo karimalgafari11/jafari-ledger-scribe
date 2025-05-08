@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { ChartData } from "@/types/custom-reports";
+import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 
 interface DashboardContentProps {
   totalSales: number;
@@ -61,6 +62,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
   const dashboardContent = (
     <>
+      {/* عرض الاختصارات إذا كان هناك اختصارات مفعلة */}
+      {shortcuts && shortcuts.length > 0 && (
+        <div className="mb-6">
+          <DashboardShortcuts shortcuts={shortcuts} />
+        </div>
+      )}
+
       {/* بطاقات الإحصائيات الرئيسية */}
       {displayOptions.showStats && (
         <StatsCards 
