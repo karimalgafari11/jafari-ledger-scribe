@@ -8,6 +8,12 @@ import NotFound from "@/pages/NotFound";
 import LoginPage from "@/pages/auth/LoginPage";
 import NotificationsPage from "@/pages/settings/NotificationsPage";
 
+// صفحات الميزات المتقدمة الجديدة
+import FinancialAnalysisPage from "@/pages/financial/FinancialAnalysisPage";
+import CustomReportsPage from "@/pages/reports/CustomReportsPage";
+import ProjectManagementPage from "@/pages/projects/ProjectManagementPage";
+import ExecutiveDashboardPage from "@/pages/executive/ExecutiveDashboardPage";
+
 // Import route modules
 import { settingsRoutes } from "./settingsRoutes";
 import { accountingRoutes } from "./accountingRoutes";
@@ -38,6 +44,12 @@ export const appRoutes: RouteObject[] = [
       { path: "dashboard", element: <Dashboard /> },
       { path: "reports", element: <Reports /> },
       { path: "notifications", element: <NotificationsPage /> },
+      
+      // صفحات الميزات المتقدمة الجديدة
+      { path: "financial/analysis", element: <FinancialAnalysisPage /> },
+      { path: "reports/custom", element: <CustomReportsPage /> },
+      { path: "projects/management", element: <ProjectManagementPage /> },
+      { path: "executive/dashboard", element: <ExecutiveDashboardPage /> },
       
       // Sub-route modules
       ...settingsRoutes,
