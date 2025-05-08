@@ -40,14 +40,14 @@ const ProductsPage = () => {
       id: "code",
       header: "رقم المنتج",
       accessorKey: "code",
-      sortable: true,
+      isSortable: true,
       isVisible: true,
     },
     {
       id: "name",
       header: "اسم المنتج",
       accessorKey: "name",
-      sortable: true,
+      isSortable: true,
       isVisible: true,
     },
     {
@@ -55,14 +55,14 @@ const ProductsPage = () => {
       header: "السعر",
       accessorKey: "price",
       cell: ({ row }) => `${row.price.toFixed(2)} ر.س`,
-      sortable: true,
+      isSortable: true,
       isVisible: true,
     },
     {
       id: "quantity",
       header: "الكمية المتاحة",
       accessorKey: "quantity",
-      sortable: true,
+      isSortable: true,
       isVisible: true,
       cell: ({ row }) => {
         const quantity = row.quantity;
@@ -81,7 +81,7 @@ const ProductsPage = () => {
       id: "category",
       header: "التصنيف",
       accessorKey: "category",
-      sortable: true,
+      isSortable: true,
       isVisible: true,
     },
     {
@@ -93,7 +93,7 @@ const ProductsPage = () => {
           {row.isActive ? 'متوفر' : 'غير متوفر'}
         </span>
       ),
-      sortable: true,
+      isSortable: true,
       isVisible: true,
     },
   ];

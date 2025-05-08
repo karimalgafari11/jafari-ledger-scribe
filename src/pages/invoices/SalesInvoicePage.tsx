@@ -13,6 +13,7 @@ import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invo
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvoiceQuickInfo } from "@/components/invoices/invoice-form/InvoiceQuickInfo";
 import { Badge } from "@/components/ui/badge";
+import { InvoiceItem } from "@/types/invoices";
 
 // Define default settings
 const defaultSettings: InvoiceSettingsType = {
@@ -104,6 +105,24 @@ const SalesInvoicePage: React.FC = () => {
 
   const handlePrintPreview = () => {
     window.print();
+  };
+
+  // Create adapter functions to convert between parameter types
+  const handleUpdateItem = (index: number, item: Partial<InvoiceItem>) => {
+    if (item.id) {
+      updateInvoiceItem(item.id, item);
+    } else {
+      console.error("Cannot update item without ID");
+    }
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const itemId = invoice.items[index]?.id;
+    if (itemId) {
+      removeInvoiceItem(itemId);
+    } else {
+      console.error("Cannot remove item at index", index);
+    }
   };
 
   return (
@@ -281,8 +300,8 @@ const SalesInvoicePage: React.FC = () => {
                         invoice={invoice} 
                         onFieldChange={updateInvoiceField} 
                         onAddItem={addInvoiceItem} 
-                        onUpdateItem={updateInvoiceItem} 
-                        onRemoveItem={removeInvoiceItem} 
+                        onUpdateItem={handleUpdateItem} 
+                        onRemoveItem={handleRemoveItem} 
                         onApplyDiscount={applyDiscount} 
                         isLoading={isLoading}
                         settings={invoiceSettings}
@@ -311,8 +330,8 @@ const SalesInvoicePage: React.FC = () => {
                     invoice={invoice} 
                     onFieldChange={updateInvoiceField} 
                     onAddItem={addInvoiceItem} 
-                    onUpdateItem={updateInvoiceItem} 
-                    onRemoveItem={removeInvoiceItem} 
+                    onUpdateItem={handleUpdateItem} 
+                    onRemoveItem={handleRemoveItem} 
                     onApplyDiscount={applyDiscount} 
                     isLoading={isLoading}
                     settings={{...invoiceSettings, showDiscount: false, showItemNotes: false}}
