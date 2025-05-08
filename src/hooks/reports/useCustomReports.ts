@@ -1,166 +1,217 @@
+import { useState, useCallback, useMemo } from 'react';
+import { Report, ReportFilter } from '@/types/custom-reports';
 
-import { useState, useMemo } from 'react';
-import { toast } from 'sonner';
-import { Report } from '@/hooks/useReports'; // استخدام النوع الموجود بالفعل
-
-// بيانات وهمية للتقارير المخصصة
-const mockReports: Report[] = [
-  { 
-    id: 1, 
-    title: 'تقرير المبيعات الشهري', 
-    description: 'تقرير شامل عن أداء المبيعات الشهري موزعة حسب المنتجات والفروع', 
-    date: '2023-06-15', 
-    category: 'sales', 
-    favorite: true 
+// Sample data for custom reports
+const sampleCustomReports: Report[] = [
+  {
+    id: "1", // Changed from number to string
+    name: "تقرير المبيعات الشهرية",
+    title: "تقرير المبيعات الشهرية",
+    description: "تحليل شامل للمبيعات الشهرية حسب المنتج والمنطقة",
+    date: "2023-11-15",
+    category: "مبيعات",
+    favorite: true,
+    author: "أحمد محمد",
+    type: "تقارير مالية",
+    createdAt: new Date('2023-11-10'),
+    lastRun: new Date('2023-11-15')
   },
-  { 
-    id: 2, 
-    title: 'تقرير تحليل الربحية', 
-    description: 'تحليل تفصيلي لربحية المنتجات والعملاء', 
-    date: '2023-06-10', 
-    category: 'financial', 
-    favorite: false 
+  {
+    id: "2", // Changed from number to string
+    name: "تقرير المصروفات الربع سنوية",
+    title: "تقرير المصروفات الربع سنوية",
+    description: "تحليل المصروفات الربع سنوية حسب القسم",
+    date: "2023-10-30",
+    category: "مصروفات",
+    favorite: false,
+    author: "سارة أحمد",
+    type: "تقارير مالية",
+    createdAt: new Date('2023-10-20'),
+    lastRun: new Date('2023-10-30')
   },
-  { 
-    id: 3, 
-    title: 'تقرير المخزون', 
-    description: 'تقرير حالة المخزون والمنتجات الأكثر مبيعاً', 
-    date: '2023-06-05', 
-    category: 'inventory', 
-    favorite: true 
+  {
+    id: "3",
+    name: "تحليل العملاء الجدد",
+    title: "تحليل العملاء الجدد",
+    description: "تحليل مفصل للعملاء الجدد وتوزيعهم الجغرافي",
+    date: "2023-09-22",
+    category: "عملاء",
+    favorite: true,
+    author: "ليلى خالد",
+    type: "تقارير تسويقية",
+    createdAt: new Date('2023-09-15'),
+    lastRun: new Date('2023-09-22')
   },
-  { 
-    id: 4, 
-    title: 'تقرير العملاء', 
-    description: 'تحليل سلوك العملاء وقيمة العميل', 
-    date: '2023-05-28', 
-    category: 'customers', 
-    favorite: false 
+  {
+    id: "4",
+    name: "مقارنة المبيعات السنوية",
+    title: "مقارنة المبيعات السنوية",
+    description: "مقارنة أداء المبيعات بين السنوات المختلفة",
+    date: "2023-08-10",
+    category: "مبيعات",
+    favorite: false,
+    author: "خالد ابراهيم",
+    type: "تقارير مالية",
+    createdAt: new Date('2023-08-01'),
+    lastRun: new Date('2023-08-10')
   },
-  { 
-    id: 5, 
-    title: 'تقرير الميزانية السنوي', 
-    description: 'الميزانية السنوية والمقارنة مع السنوات السابقة', 
-    date: '2023-05-20', 
-    category: 'financial', 
-    favorite: true 
+  {
+    id: "5",
+    name: "تحليل المخزون الشهري",
+    title: "تحليل المخزون الشهري",
+    description: "تحليل مستويات المخزون وتحديد المنتجات الأكثر طلباً",
+    date: "2023-07-05",
+    category: "مخزون",
+    favorite: true,
+    author: "نورة علي",
+    type: "تقارير تشغيلية",
+    createdAt: new Date('2023-06-28'),
+    lastRun: new Date('2023-07-05')
   },
-  { 
-    id: 6, 
-    title: 'تقرير أداء الموظفين', 
-    description: 'تقييم أداء الموظفين والإنتاجية', 
-    date: '2023-05-15', 
-    category: 'hr', 
-    favorite: false 
+  {
+    id: "6",
+    name: "تقرير التدفقات النقدية",
+    title: "تقرير التدفقات النقدية",
+    description: "تحليل التدفقات النقدية الداخلة والخارجة",
+    date: "2023-06-18",
+    category: "مالية",
+    favorite: false,
+    author: "عبدالله سالم",
+    type: "تقارير مالية",
+    createdAt: new Date('2023-06-10'),
+    lastRun: new Date('2023-06-18')
+  },
+  {
+    id: "7",
+    name: "تحليل أداء الموظفين",
+    title: "تحليل أداء الموظفين",
+    description: "تحليل أداء الموظفين وتقييم الكفاءة",
+    date: "2023-05-02",
+    category: "موارد بشرية",
+    favorite: true,
+    author: "فاطمة محمد",
+    type: "تقارير إدارية",
+    createdAt: new Date('2023-04-25'),
+    lastRun: new Date('2023-05-02')
+  },
+  {
+    id: "8",
+    name: "تقرير رضا العملاء",
+    title: "تقرير رضا العملاء",
+    description: "قياس مستوى رضا العملاء عن الخدمات والمنتجات",
+    date: "2023-04-15",
+    category: "عملاء",
+    favorite: false,
+    author: "يوسف أحمد",
+    type: "تقارير تسويقية",
+    createdAt: new Date('2023-04-05'),
+    lastRun: new Date('2023-04-15')
+  },
+  {
+    id: "9",
+    name: "تحليل تكاليف الإنتاج",
+    title: "تحليل تكاليف الإنتاج",
+    description: "تحليل تفصيلي لتكاليف الإنتاج وتقييم الكفاءة",
+    date: "2023-03-01",
+    category: "إنتاج",
+    favorite: true,
+    author: "سارة علي",
+    type: "تقارير تشغيلية",
+    createdAt: new Date('2023-02-20'),
+    lastRun: new Date('2023-03-01')
+  },
+  {
+    id: "10",
+    name: "تقرير الميزانية السنوية",
+    title: "تقرير الميزانية السنوية",
+    description: "تحليل الميزانية السنوية ومقارنتها بالأداء الفعلي",
+    date: "2023-02-12",
+    category: "مالية",
+    favorite: false,
+    author: "أحمد يوسف",
+    type: "تقارير مالية",
+    createdAt: new Date('2023-02-01'),
+    lastRun: new Date('2023-02-12')
   }
 ];
 
-// فئات التقارير
-const reportCategories = [
-  { id: 'all', name: 'جميع التقارير' },
-  { id: 'favorites', name: 'المفضلة' },
-  { id: 'financial', name: 'مالية' },
-  { id: 'sales', name: 'المبيعات' },
-  { id: 'inventory', name: 'المخزون' },
-  { id: 'customers', name: 'العملاء' },
-  { id: 'hr', name: 'الموارد البشرية' },
-  { id: 'projects', name: 'المشاريع' }
-];
-
 export const useCustomReports = () => {
-  const [reports, setReports] = useState<Report[]>(mockReports);
+  const [reports, setReports] = useState<Report[]>(sampleCustomReports);
+  const [filters, setFilters] = useState<ReportFilter>({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterBy, setFilterBy] = useState('all'); // all, favorites, category
   
-  // نسخة معدلة من التقارير لتضمين الكاتب
-  const enhancedReports = useMemo(() => {
-    return reports.map(report => ({
-      ...report,
-      author: 'أحمد محمد', // يمكن تغييرها لتكون ديناميكية في تطبيق حقيقي
-      type: report.category, // لغرض العرض، نستخدم الفئة كنوع أيضاً
-      createdAt: new Date(report.date),
-      lastRun: Math.random() > 0.3 ? new Date(new Date().setDate(new Date().getDate() - Math.floor(Math.random() * 30))) : undefined
-    }));
-  }, [reports]);
+  // Filtered reports
+  const filteredReports = useMemo(() => {
+    return reports.filter(report => {
+      // Filter by search query
+      if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase()) 
+          && !report.description.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      
+      // Filter by category
+      if (filters.category && filters.category.length > 0) {
+        const categories = Array.isArray(report.category) ? report.category : [report.category];
+        if (!filters.category.some(cat => categories.includes(cat))) {
+          return false;
+        }
+      }
+      
+      // Filter by author
+      if (filters.author && report.author !== filters.author) {
+        return false;
+      }
+      
+      // Filter by favorites
+      if (filters.favorites && !report.favorite) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [reports, filters, searchQuery]);
   
-  // إنشاء تقرير جديد
-  const createReport = (report: any) => {
-    const newReport = {
-      id: reports.length + 1,
-      title: report.name || 'تقرير جديد',
-      description: report.description || '',
-      date: new Date().toISOString().slice(0, 10),
-      category: report.category || 'custom',
+  // Toggle favorite
+  const toggleFavorite = useCallback((reportId: string) => {
+    setReports(prevReports => 
+      prevReports.map(report => 
+        report.id === reportId ? { ...report, favorite: !report.favorite } : report
+      )
+    );
+  }, []);
+  
+  // Delete report
+  const deleteReport = useCallback((reportId: string) => {
+    setReports(prevReports => prevReports.filter(report => report.id !== reportId));
+  }, []);
+  
+  // Create report
+  const createReport = useCallback((newReport: Omit<Report, 'id'>) => {
+    const report: Report = {
+      ...newReport,
+      id: String(Math.max(...reports.map(r => parseInt(r.id))) + 1), // Generate string ID
+      date: new Date().toISOString().split('T')[0],
       favorite: false
     };
     
-    setReports([...reports, newReport]);
-    toast.success('تم إنشاء التقرير بنجاح');
-  };
+    setReports(prevReports => [...prevReports, report]);
+    return report;
+  }, [reports]);
   
-  // حذف تقرير
-  const deleteReport = (id: string) => {
-    const reportId = parseInt(id);
-    setReports(reports.filter(report => report.id !== reportId));
-    toast.success('تم حذف التقرير بنجاح');
-  };
-  
-  // نسخ تقرير
-  const duplicateReport = (id: string) => {
-    const reportId = parseInt(id);
-    const reportToDuplicate = reports.find(report => report.id === reportId);
-    
-    if (reportToDuplicate) {
-      const duplicatedReport = {
-        ...reportToDuplicate,
-        id: reports.length + 1,
-        title: `${reportToDuplicate.title} (نسخة)`,
-        date: new Date().toISOString().slice(0, 10),
-        favorite: false
-      };
-      
-      setReports([...reports, duplicatedReport]);
-      toast.success('تم نسخ التقرير بنجاح');
-    }
-  };
-  
-  // تصدير تقرير
-  const exportReport = (id: string) => {
-    const reportId = parseInt(id);
-    const reportToExport = reports.find(report => report.id === reportId);
-    
-    if (reportToExport) {
-      toast.success(`جاري تصدير التقرير: ${reportToExport.title}`);
-      
-      // محاكاة لعملية التصدير
-      setTimeout(() => {
-        toast.success('تم تصدير التقرير بنجاح');
-      }, 1500);
-    }
-  };
-  
-  // إضافة تقرير للمفضلة أو إزالته منها
-  const favoriteReport = (id: string) => {
-    const reportId = parseInt(id);
-    setReports(reports.map(report => {
-      if (report.id === reportId) {
-        return { ...report, favorite: !report.favorite };
-      }
-      return report;
-    }));
-  };
+  // Update filters
+  const updateFilters = useCallback((newFilters: Partial<ReportFilter>) => {
+    setFilters(prevFilters => ({ ...prevFilters, ...newFilters }));
+  }, []);
 
   return {
-    reports: enhancedReports,
+    reports,
+    filteredReports,
+    filters,
     searchQuery,
     setSearchQuery,
-    filterBy,
-    setFilterBy,
-    createReport,
+    toggleFavorite,
     deleteReport,
-    duplicateReport,
-    exportReport,
-    favoriteReport,
-    categories: reportCategories
+    createReport,
+    updateFilters
   };
 };

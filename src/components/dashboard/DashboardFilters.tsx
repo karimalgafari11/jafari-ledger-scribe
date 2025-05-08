@@ -1,6 +1,6 @@
 
 import React from "react";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";

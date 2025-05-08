@@ -38,21 +38,16 @@ const ExecutiveDashboardPage: React.FC = () => {
     salesTrends,
     cashflow,
     profitability,
-    dateRange,
-    setDateRange,
+    dateRange: dashboardDateRange,
+    setDateRange: setDashboardDateRange,
     refreshDashboard,
     shareDashboard,
     exportDashboard
   } = useExecutiveDashboard();
-
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
-    to: new Date()
-  });
   
   const handleDateRangeChange = (range: DateRange) => {
     if (range?.from) {
-      setDateRange({
+      setDashboardDateRange({
         from: range.from,
         to: range.to || range.from
       });
@@ -97,8 +92,8 @@ const ExecutiveDashboardPage: React.FC = () => {
           </Select>
 
           <DateRangePicker 
-            value={dateRange} 
-            onChange={handleDateRangeChange}
+            value={dashboardDateRange} 
+            onValueChange={handleDateRangeChange}
             align="start"
             className="w-auto" 
           />

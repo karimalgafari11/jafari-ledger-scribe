@@ -1,125 +1,51 @@
-
 import React from "react";
-import SalesExpensesChart from "./charts/SalesExpensesChart";
-import ProfitMarginChart from "./charts/ProfitMarginChart";
-import PieChartCard from "./charts/PieChartCard";
-import { Calculator, ShoppingCart, Users } from "lucide-react";
-import DailySalesChart from "./charts/DailySalesChart";
-import AlertsTabs from "./AlertsTabs";
-import { SystemAlert } from "@/types/ai";
-import DraggableComponent from "@/components/interactive/DraggableComponent";
-import ResizableComponent from "@/components/interactive/ResizableComponent";
-import ZoomableContent from "@/components/interactive/ZoomableContent";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { ChartData } from "@/types/custom-reports";
+import { AlertsTabs } from "@/components/dashboard/AlertsTabs";
 
 interface ChartsGridProps {
-  salesData: any[];
-  profitData: any[];
-  customerDebtData: any[];
-  supplierCreditData: any[];
-  costCenterData: any[];
-  dailySalesData: any[];
-  profitMargin: string;
-  systemAlerts: SystemAlert[];
-  interactiveMode?: boolean;
+  salesData: ChartData;
+  customerData: ChartData;
+  alerts: any[];
+  onViewAllAlerts: () => void;
 }
 
-const ChartsGrid: React.FC<ChartsGridProps> = ({
-  salesData,
-  profitData,
-  customerDebtData,
-  supplierCreditData,
-  costCenterData,
-  dailySalesData,
-  profitMargin,
-  systemAlerts,
-  interactiveMode = false
-}) => {
-  const renderChart = (chart: React.ReactNode, id: string) => {
-    if (interactiveMode) {
-      return (
-        <DraggableComponent 
-          key={id}
-          defaultPosition={{ x: 0, y: 0 }}
-          className="z-10 mb-6"
-        >
-          <ResizableComponent 
-            direction="horizontal" 
-            defaultSize={100} 
-            minSize={30} 
-            maxSize={100}
-            id={id}
-          >
-            <ZoomableContent>
-              {chart}
-            </ZoomableContent>
-          </ResizableComponent>
-        </DraggableComponent>
-      );
-    }
-    return chart;
-  };
-
+const ChartsGrid: React.FC<ChartsGridProps> = ({ salesData, customerData, alerts, onViewAllAlerts }) => {
   return (
-    <>
-      {/* المخططات الرئيسية */}
-      <div className={interactiveMode ? "" : "grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"}>
-        {renderChart(
-          <SalesExpensesChart data={salesData} />, 
-          "sales-expenses-chart"
-        )}
-        
-        {renderChart(
-          <ProfitMarginChart data={profitData} averageProfitMargin={profitMargin} />,
-          "profit-margin-chart"
-        )}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Sales Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <LineChart data={salesData} />
+        </CardContent>
+      </Card>
 
-      {/* المزيد من البيانات - العملاء، الموردين، وتحليل مراكز التكلفة */}
-      <div className={interactiveMode ? "" : "grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6"}>
-        {renderChart(
-          <PieChartCard
-            title="أعلى 5 عملاء (الديون)"
-            icon={<Users className="h-5 w-5" />}
-            data={customerDebtData}
-            reportButtonText="عرض تقرير العملاء المفصل"
-          />,
-          "customer-debt-chart"
-        )}
+      <Card>
+        <CardHeader>
+          <CardTitle>Customer Demographics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PieChart data={customerData} />
+        </CardContent>
+      </Card>
 
-        {renderChart(
-          <PieChartCard
-            title="أعلى 5 موردين (المستحقات)"
-            icon={<ShoppingCart className="h-5 w-5" />}
-            data={supplierCreditData}
-            reportButtonText="عرض تقرير الموردين المفصل"
-          />,
-          "supplier-credit-chart"
-        )}
-
-        {renderChart(
-          <PieChartCard
-            title="مراكز التكلفة"
-            icon={<Calculator className="h-5 w-5" />}
-            data={costCenterData}
-            reportButtonText="تقرير مراكز التكلفة المفصل"
-          />,
-          "cost-center-chart"
-        )}
-      </div>
-
-      {/* بيانات المبيعات اليومية وقسم الإشعارات */}
-      <div className={interactiveMode ? "" : "grid grid-cols-1 lg:grid-cols-2 gap-6"}>
-        {renderChart(
-          <DailySalesChart data={dailySalesData} />,
-          "daily-sales-chart"
-        )}
-        
-        {renderChart(
-          <AlertsTabs alerts={systemAlerts} />,
-          "alerts-tabs"
-        )}
-      </div>
-    </>
+      <Card className="md:col-span-2">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Recent Alerts</CardTitle>
+            <Button variant="link" onClick={onViewAllAlerts}>View All</Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <AlertsTabs alerts={alerts} />
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

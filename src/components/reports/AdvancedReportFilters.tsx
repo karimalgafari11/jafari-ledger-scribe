@@ -1,11 +1,9 @@
-
-import React from 'react';
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
+import { Button } from "@/components/ui/button";
+import { DateRange } from "react-day-picker";
 import { Search, X } from "lucide-react";
 
 interface AdvancedReportFiltersProps {

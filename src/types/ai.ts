@@ -37,5 +37,5 @@ export interface AiAssistantContext {
 
 export interface DateRange {
   from: Date;
-  to: Date;
+  to?: Date;
 }

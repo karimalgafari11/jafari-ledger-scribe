@@ -1,7 +1,9 @@
-
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { DateRange } from "react-day-picker";
 import { EmptyStatementNotice } from "@/components/customers/statement/EmptyStatementNotice";
 import { Customer } from "@/types/customers";
@@ -41,43 +43,43 @@ export const VendorTransactionsTable: React.FC<VendorTransactionsTableProps> = (
       <CardContent>
         {transactions.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-50 text-right">
-                  <th className="p-3 border border-gray-200">التاريخ</th>
-                  <th className="p-3 border border-gray-200">البيان</th>
-                  <th className="p-3 border border-gray-200">نوع الحركة</th>
-                  <th className="p-3 border border-gray-200">المبلغ</th>
-                  <th className="p-3 border border-gray-200">الرصيد</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeader className="p-3 border border-gray-200">التاريخ</TableHeader>
+                  <TableHeader className="p-3 border border-gray-200">البيان</TableHeader>
+                  <TableHeader className="p-3 border border-gray-200">نوع الحركة</TableHeader>
+                  <TableHeader className="p-3 border border-gray-200">المبلغ</TableHeader>
+                  <TableHeader className="p-3 border border-gray-200">الرصيد</TableHeader>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {transactions.map(transaction => (
-                  <tr key={transaction.id} className="hover:bg-gray-50">
-                    <td className="p-3 border border-gray-200">
+                  <TableRow key={transaction.id} className="hover:bg-gray-50">
+                    <TableCell className="p-3 border border-gray-200">
                       {transaction.date.toLocaleDateString('ar-SA')}
-                    </td>
-                    <td className="p-3 border border-gray-200">{transaction.description}</td>
-                    <td className="p-3 border border-gray-200">
+                    </TableCell>
+                    <TableCell className="p-3 border border-gray-200">{transaction.description}</TableCell>
+                    <TableCell className="p-3 border border-gray-200">
                       {transaction.type === 'purchase' && 'فاتورة مشتريات'}
                       {transaction.type === 'payment' && 'دفعة سداد'}
                       {transaction.type === 'return' && 'مرتجع بضاعة'}
-                    </td>
-                    <td className={`p-3 border border-gray-200 ${
+                    </TableCell>
+                    <TableCell className={`p-3 border border-gray-200 ${
                       transaction.amount < 0 
                         ? 'text-green-600' 
                         : 'text-red-600'
                     }`}>
                       {Math.abs(transaction.amount).toLocaleString()} ريال
                       {transaction.amount < 0 ? ' (خصم)' : ''}
-                    </td>
-                    <td className="p-3 border border-gray-200 font-medium">
+                    </TableCell>
+                    <TableCell className="p-3 border border-gray-200 font-medium">
                       {transaction.balance.toLocaleString()} ريال
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         ) : (
           <EmptyStatementNotice 
