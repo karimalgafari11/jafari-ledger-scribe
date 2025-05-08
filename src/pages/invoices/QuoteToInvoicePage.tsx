@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Save, FileText, Printer, Receipt, Percent } from "lucide-react"; // Added Percent import here
+import { ArrowLeft, Save, FileText, Printer, Receipt, Percent } from "lucide-react";
 import { useSalesInvoice } from "@/hooks/sales/useSalesInvoice";
 import { toast } from "sonner";
 import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvoiceQuickInfo } from "@/components/invoices/invoice-form/InvoiceQuickInfo";
 import { Badge } from "@/components/ui/badge";
 import { InvoiceItem } from "@/types/invoices";
+import { v4 as uuidv4 } from "uuid";
 
 // Sample quote data (in a real app this would come from an API)
 const sampleQuotes = [
@@ -113,12 +114,16 @@ const QuoteToInvoicePage: React.FC = () => {
           // Add items from quote to invoice
           quote.items.forEach((item: any) => {
             addInvoiceItem({
+              id: uuidv4(), // Generate a new unique ID for each item
               productId: item.productId,
               code: item.code,
               name: item.name,
               description: item.description,
               quantity: item.quantity,
-              price: item.price
+              price: item.price,
+              // Including other required fields with default values if needed
+              isActive: true,
+              reorderLevel: 0
             });
           });
           
