@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,15 +8,22 @@ import { useFinancialDecisions } from "@/hooks/useFinancialDecisions";
 import { FinancialDecisionCard } from "@/components/ai/FinancialDecisionCard";
 import { AiAnalyticsPanel } from "@/components/ai/AiAnalyticsPanel";
 import { AiRulesPanel } from "@/components/ai/AiRulesPanel";
+import { AiPerformanceReport } from "@/components/ai/AiPerformanceReport";
+import { FinancialDecisionReviewModal } from "@/components/ai/FinancialDecisionReviewModal";
 import { Product } from "@/types/inventory";
 import { Expense } from "@/types/expenses";
-import {
-  FinancialDecision,
-  FinancialDecisionStatus
-} from "@/types/ai-finance";
+import { FinancialDecision, FinancialDecisionStatus } from "@/types/ai-finance";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, DollarSign, AlertCircle, FileText, Filter, SlidersHorizontal, BarChart } from "lucide-react";
+import {
+  Calculator,
+  DollarSign,
+  AlertCircle,
+  FileText,
+  Filter,
+  SlidersHorizontal,
+  BarChart
+} from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -32,6 +39,8 @@ import { Progress } from "@/components/ui/progress";
 
 const FinancialDecisionsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("decisions");
+  const [selectedDecision, setSelectedDecision] = useState<FinancialDecision | null>(null);
+  const [showDecisionModal, setShowDecisionModal] = useState(false);
   const { analyzePerformance } = useAiAssistant();
   const { 
     decisions, 
@@ -47,9 +56,15 @@ const FinancialDecisionsPage: React.FC = () => {
   
   const performance = analyzePerformance();
   const stats = getDecisionStats();
+
+  // معالجة فتح تفاصيل القرار
+  const handleOpenDecisionDetails = useCallback((decision: FinancialDecision) => {
+    setSelectedDecision(decision);
+    setShowDecisionModal(true);
+  }, []);
   
-  // Create mock data for the analytics panel
-  const mockData = {
+  // إنشاء بيانات وهمية للمخططات
+  const mockData = useMemo(() => ({
     performanceData: [
       { name: "الأحد", sales: 4000, expenses: 2400, profit: 1600 },
       { name: "الإثنين", sales: 3000, expenses: 1398, profit: 1602 },
@@ -133,8 +148,9 @@ const FinancialDecisionsPage: React.FC = () => {
       },
     ] as Expense[],
     COLORS: ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
-  };
+  }), []);
 
+  // عرض بطاقة الإحصائيات
   const renderStatsCard = useCallback(() => (
     <Card className="shadow-sm mb-6">
       <CardHeader className="pb-2">
@@ -202,6 +218,7 @@ const FinancialDecisionsPage: React.FC = () => {
     </Card>
   ), [stats]);
 
+  // عرض خيارات التصفية
   const renderFilters = useCallback(() => (
     <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
       <div className="flex items-center gap-2">
@@ -422,21 +439,61 @@ const FinancialDecisionsPage: React.FC = () => {
                 </div>
               ) : (
                 filteredDecisions.map(decision => (
-                  <FinancialDecisionCard
+                  <div 
                     key={decision.id}
-                    decision={decision}
-                    onImplement={implementDecision}
-                    onAccept={acceptDecision}
-                    onDismiss={dismissDecision}
-                    isLoading={isLoading}
-                    showDetails={true}
-                  />
+                    className="cursor-pointer"
+                    onClick={() => handleOpenDecisionDetails(decision)}
+                  >
+                    <FinancialDecisionCard
+                      decision={decision}
+                      onImplement={implementDecision}
+                      onAccept={acceptDecision}
+                      onDismiss={dismissDecision}
+                      isLoading={isLoading}
+                      showDetails={false}
+                    />
+                  </div>
                 ))
               )}
             </ScrollArea>
+            
+            {/* مودال عرض تفاصيل القرار */}
+            <FinancialDecisionReviewModal
+              open={showDecisionModal}
+              onOpenChange={setShowDecisionModal}
+              decision={selectedDecision}
+              onImplement={implementDecision}
+              onAccept={acceptDecision}
+              onDismiss={dismissDecision}
+              isLoading={isLoading}
+            />
           </TabsContent>
           
           <TabsContent value="analysis">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <AiPerformanceReport performance={performance} />
+              
+              {/* عرض جزء التحليلات */}
+              <Card className="shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    مؤشرات الأداء المالي
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-6">
+                    <div className="bg-muted py-10 px-6 rounded-lg">
+                      <BarChart className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">المخططات المالية قيد التطوير</h3>
+                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                        سيتم إضافة مخططات ومؤشرات أداء مالية متقدمة في الإصدار القادم
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <AiAnalyticsPanel 
               performanceData={mockData.performanceData}
               categoryData={mockData.categoryData}
