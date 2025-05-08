@@ -9,8 +9,9 @@ import { usePaymentPage } from "@/hooks/usePaymentPage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Plus, Receipt, ArrowLeft } from "lucide-react";
+import { Plus, Receipt, ArrowLeft, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PaymentAccountingDialog } from "@/components/payables/PaymentAccountingDialog";
 
 const PaymentPage = () => {
   const navigate = useNavigate();
@@ -26,9 +27,16 @@ const PaymentPage = () => {
   } = usePaymentPage();
   
   const [activeTab, setActiveTab] = useState("payment");
+  const [showAccountingDialog, setShowAccountingDialog] = useState(false);
+  const [selectedPaymentId, setSelectedPaymentId] = useState<string | null>(null);
 
   const handleBack = () => {
     navigate("/payables");
+  };
+
+  const handleViewAccounting = (paymentId: string) => {
+    setSelectedPaymentId(paymentId);
+    setShowAccountingDialog(true);
   };
 
   return (
@@ -110,13 +118,23 @@ const PaymentPage = () => {
                 </TabsContent>
                 
                 <TabsContent value="history" className="mt-0">
-                  <PaymentHistory payments={paymentHistory} />
+                  <PaymentHistory 
+                    payments={paymentHistory} 
+                    onViewAccounting={handleViewAccounting}
+                  />
                 </TabsContent>
               </div>
             </Tabs>
           </CardContent>
         </Card>
       </div>
+
+      {/* نافذة عرض القيود المحاسبية */}
+      <PaymentAccountingDialog 
+        isOpen={showAccountingDialog} 
+        onClose={() => setShowAccountingDialog(false)} 
+        paymentId={selectedPaymentId}
+      />
     </Layout>
   );
 };

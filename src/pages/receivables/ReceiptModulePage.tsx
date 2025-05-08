@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { FileUp, ArrowLeft, CreditCard, FileText } from "lucide-react";
+import { FileUp, ArrowLeft, CreditCard, FileText, History } from "lucide-react";
 
 const ReceiptModulePage = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const ReceiptModulePage = () => {
         title="نظام المقبوضات" 
         showBack={true}
       >
-        <span className="text-sm text-gray-300">إدارة سندات القبض والمقبوضات من العملاء</span>
+        <span className="text-sm text-gray-300">إدارة سندات القبض والتحصيلات من العملاء</span>
       </Header>
 
       <div className="container mx-auto p-4">
@@ -25,11 +25,11 @@ const ReceiptModulePage = () => {
           <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/receivables/collection")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">سند قبض جديد</CardTitle>
-              <FileUp className="h-6 w-6 text-primary" />
+              <FileUp className="h-6 w-6 text-green-500" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                إنشاء سند قبض جديد من العملاء مع إمكانية تحديد طريقة الدفع وربطه بالفواتير
+                إنشاء سند قبض جديد للعملاء مع إمكانية ربط السند بالفواتير المستحقة
               </p>
               <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/receivables/collection"); }}>
                 إنشاء سند <ArrowLeft className="mr-1 h-4 w-4" />
@@ -37,18 +37,18 @@ const ReceiptModulePage = () => {
             </CardContent>
           </Card>
 
-          {/* قائمة المقبوضات */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/receivables")}>
+          {/* سجل المقبوضات */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/receivables/receipts-history")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">قائمة المقبوضات</CardTitle>
-              <CreditCard className="h-6 w-6 text-blue-500" />
+              <CardTitle className="text-xl">سجل المقبوضات</CardTitle>
+              <History className="h-6 w-6 text-blue-500" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                عرض وإدارة سجل المقبوضات من العملاء مع إمكانية البحث والفلترة
+                عرض وإدارة سجل المدفوعات المحصلة من العملاء مع إمكانية البحث والفلترة
               </p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/receivables"); }}>
-                عرض المقبوضات <ArrowLeft className="mr-1 h-4 w-4" />
+              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/receivables/receipts-history"); }}>
+                عرض السجل <ArrowLeft className="mr-1 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
@@ -57,7 +57,7 @@ const ReceiptModulePage = () => {
           <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/receivables/accounts")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">حسابات العملاء</CardTitle>
-              <FileText className="h-6 w-6 text-green-500" />
+              <FileText className="h-6 w-6 text-purple-500" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">

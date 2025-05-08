@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/utils/formatters";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useAccountingRules } from "@/hooks/useAccountingRules";
 
 interface CollectPaymentDialogProps {
   isOpen: boolean;
@@ -25,6 +27,16 @@ export const CollectPaymentDialog: React.FC<CollectPaymentDialogProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
   const [reference, setReference] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [selectedInvoice, setSelectedInvoice] = useState<string>("");
+  const [createJournalEntry, setCreateJournalEntry] = useState<boolean>(true);
+  const { createAutomaticJournalEntry } = useAccountingRules();
+
+  // Sample invoice data - in a real app, this would be fetched from an API
+  const customerInvoices = [
+    { id: "inv-001", number: "INV-2024-001", amount: 1500, dueDate: "2024-05-15" },
+    { id: "inv-002", number: "INV-2024-002", amount: 2850, dueDate: "2024-05-20" },
+    { id: "inv-003", number: "INV-2024-003", amount: 950, dueDate: "2024-06-01" },
+  ];
 
   if (!customer) return null;
 
@@ -46,6 +58,26 @@ export const CollectPaymentDialog: React.FC<CollectPaymentDialogProps> = ({
     // محاكاة تسجيل دفعة
     toast.success(`تم تسجيل دفعة بقيمة ${formatCurrency(paymentAmount)} من العميل ${customer.name}`);
     
+    // إنشاء قيد محاسبي تلقائي إذا كان الخيار مفعل
+    if (createJournalEntry) {
+      try {
+        const journalEntry = createAutomaticJournalEntry('payment_receipt', {
+          amount: paymentAmount,
+          customerName: customer.name,
+          paymentMethod,
+          reference: reference || `RCPT-${Date.now().toString().slice(-6)}`,
+          invoiceNumber: selectedInvoice ? customerInvoices.find(inv => inv.id === selectedInvoice)?.number : undefined
+        });
+        
+        if (journalEntry) {
+          toast.success("تم إنشاء القيد المحاسبي بنجاح");
+        }
+      } catch (error) {
+        toast.error("حدث خطأ أثناء إنشاء القيد المحاسبي");
+        console.error("Journal entry creation error:", error);
+      }
+    }
+    
     // إعادة تعيين الحقول وإغلاق النافذة
     resetForm();
     onClose();
@@ -56,6 +88,8 @@ export const CollectPaymentDialog: React.FC<CollectPaymentDialogProps> = ({
     setPaymentMethod("cash");
     setReference("");
     setNotes("");
+    setSelectedInvoice("");
+    setCreateJournalEntry(true);
   };
 
   return (
@@ -75,6 +109,23 @@ export const CollectPaymentDialog: React.FC<CollectPaymentDialogProps> = ({
             <div className="grid grid-cols-2 items-center gap-4">
               <div className="text-sm font-medium">الرصيد المستحق:</div>
               <div className="font-medium text-red-600">{formatCurrency(customer.balance)}</div>
+            </div>
+            
+            <div className="grid grid-cols-2 items-center gap-4">
+              <Label htmlFor="invoice">الفاتورة:</Label>
+              <Select value={selectedInvoice} onValueChange={setSelectedInvoice}>
+                <SelectTrigger id="invoice">
+                  <SelectValue placeholder="اختر فاتورة مستحقة" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">جميع المستحقات</SelectItem>
+                  {customerInvoices.map(invoice => (
+                    <SelectItem key={invoice.id} value={invoice.id}>
+                      {invoice.number} - {formatCurrency(invoice.amount)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="grid grid-cols-2 items-center gap-4">
@@ -124,6 +175,17 @@ export const CollectPaymentDialog: React.FC<CollectPaymentDialogProps> = ({
                 placeholder="أدخل أي ملاحظات إضافية هنا"
                 rows={3}
               />
+            </div>
+
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Checkbox 
+                id="createJournalEntry" 
+                checked={createJournalEntry}
+                onCheckedChange={(checked) => setCreateJournalEntry(checked as boolean)}
+              />
+              <Label htmlFor="createJournalEntry" className="cursor-pointer">
+                إنشاء قيد محاسبي تلقائي
+              </Label>
             </div>
           </div>
           
