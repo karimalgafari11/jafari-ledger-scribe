@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { usePDFInvoiceParser } from '@/hooks/purchases/usePDFInvoiceParser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,7 @@ import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 interface PDFInvoiceAnalyzerProps {
   onDataExtracted?: (data: any) => void;
@@ -20,6 +22,7 @@ interface PDFInvoiceAnalyzerProps {
 export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataExtracted }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState<string>('upload');
+  const { toast } = useToast();
   
   const {
     isProcessing,
@@ -37,11 +40,30 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
       
       if (file.type !== 'application/pdf') {
         setErrorMessage('يرجى تحميل ملف PDF فقط');
+        toast({
+          variant: "destructive",
+          title: "خطأ في الملف",
+          description: "يرجى تحميل ملف PDF فقط",
+        });
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        setErrorMessage('حجم الملف كبير جداً (الحد الأقصى 10 ميغابايت)');
+        toast({
+          variant: "destructive",
+          title: "خطأ في الملف",
+          description: "حجم الملف كبير جداً (الحد الأقصى 10 ميغابايت)",
+        });
         return;
       }
       
       setSelectedFile(file);
       setErrorMessage('');
+      toast({
+        title: "تم تحميل الملف",
+        description: "يمكنك الآن تحليل الفاتورة",
+      });
     }
   };
   
@@ -54,11 +76,30 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
       
       if (file.type !== 'application/pdf') {
         setErrorMessage('يرجى تحميل ملف PDF فقط');
+        toast({
+          variant: "destructive",
+          title: "خطأ في الملف",
+          description: "يرجى تحميل ملف PDF فقط",
+        });
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        setErrorMessage('حجم الملف كبير جداً (الحد الأقصى 10 ميغابايت)');
+        toast({
+          variant: "destructive",
+          title: "خطأ في الملف",
+          description: "حجم الملف كبير جداً (الحد الأقصى 10 ميغابايت)",
+        });
         return;
       }
       
       setSelectedFile(file);
       setErrorMessage('');
+      toast({
+        title: "تم تحميل الملف",
+        description: "يمكنك الآن تحليل الفاتورة",
+      });
     }
   };
   
@@ -71,27 +112,44 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
     if (!selectedFile) return;
     
     try {
+      toast({
+        title: "جاري تحليل الفاتورة",
+        description: "يرجى الانتظار...",
+      });
       const data = await parseInvoiceFromPDF(selectedFile);
       if (onDataExtracted) {
         onDataExtracted(data);
       }
       setActiveTab('results');
+      toast({
+        title: "تم التحليل بنجاح",
+        description: "يمكنك الآن استخدام البيانات المستخرجة",
+      });
     } catch (error) {
       console.error('Error analyzing PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "حدث خطأ",
+        description: "فشل تحليل الفاتورة، يرجى المحاولة مرة أخرى",
+      });
     }
   };
   
   const handleUseDataClick = () => {
     if (parsedData && onDataExtracted) {
       onDataExtracted(parsedData);
+      toast({
+        title: "تم استخدام البيانات",
+        description: "تم تطبيق البيانات المستخرجة بنجاح",
+      });
     }
   };
   
   const renderUploadTab = () => {
     return (
-      <div className="flex flex-col items-center justify-center p-6">
+      <div className="flex flex-col items-center justify-center p-4 md:p-6">
         <div 
-          className="w-full border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:bg-gray-50 transition-all cursor-pointer"
+          className="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 md:p-12 text-center hover:bg-gray-50 transition-all cursor-pointer"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onClick={() => document.getElementById('pdf-file-input')?.click()}
@@ -112,8 +170,8 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
         
         {selectedFile && (
           <div className="w-full mt-6">
-            <div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
-              <div className="flex items-center">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-3 border rounded-lg bg-gray-50">
+              <div className="flex items-center mb-2 sm:mb-0">
                 <FileText className="ml-2 text-blue-600" size={24} />
                 <div>
                   <p className="font-medium">{selectedFile.name}</p>
@@ -122,7 +180,8 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
               </div>
               <Button 
                 variant="default" 
-                size="sm" 
+                size="sm"
+                className="w-full sm:w-auto"
                 onClick={() => setSelectedFile(null)}
               >
                 تغيير
@@ -184,14 +243,15 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
     }
     
     return (
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="flex flex-col gap-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">نتائج التحليل</h3>
-            <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <h3 className="text-lg font-semibold mb-2 sm:mb-0">نتائج التحليل</h3>
+            <div className="flex gap-2 w-full sm:w-auto">
               <Button 
                 variant="outline" 
                 size="sm"
+                className="flex-1 sm:flex-none"
                 onClick={() => setActiveTab('upload')}
               >
                 تحميل فاتورة أخرى
@@ -199,6 +259,7 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
               <Button 
                 variant="default" 
                 size="sm"
+                className="flex-1 sm:flex-none"
                 onClick={handleUseDataClick}
               >
                 استخدام البيانات
@@ -209,17 +270,20 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-md">معلومات الفاتورة</CardTitle>
+                <CardTitle className="text-md flex items-center gap-2">
+                  <FileText size={16} />
+                  معلومات الفاتورة
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <dl className="space-y-2">
                   <div className="flex justify-between">
                     <dt className="text-sm font-medium text-gray-500">رقم الفاتورة:</dt>
-                    <dd>{parsedData.invoiceNumber || 'غير محدد'}</dd>
+                    <dd className="font-medium">{parsedData.invoiceNumber || 'غير محدد'}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-sm font-medium text-gray-500">التاريخ:</dt>
-                    <dd>
+                    <dd className="font-medium">
                       {parsedData.date 
                         ? format(parsedData.date, 'dd MMMM yyyy', { locale: ar })
                         : 'غير محدد'
@@ -228,12 +292,12 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-sm font-medium text-gray-500">المورد:</dt>
-                    <dd>{parsedData.vendor || 'غير محدد'}</dd>
+                    <dd className="font-medium">{parsedData.vendor || 'غير محدد'}</dd>
                   </div>
                   {parsedData.vendorTaxId && (
                     <div className="flex justify-between">
                       <dt className="text-sm font-medium text-gray-500">الرقم الضريبي:</dt>
-                      <dd>{parsedData.vendorTaxId}</dd>
+                      <dd className="font-medium">{parsedData.vendorTaxId}</dd>
                     </div>
                   )}
                 </dl>
@@ -242,17 +306,20 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-md">ملخص المبالغ</CardTitle>
+                <CardTitle className="text-md flex items-center gap-2">
+                  <FileText size={16} />
+                  ملخص المبالغ
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <dl className="space-y-2">
                   <div className="flex justify-between">
                     <dt className="text-sm font-medium text-gray-500">المجموع الفرعي:</dt>
-                    <dd>{parsedData.subtotal?.toLocaleString() || 'غير محدد'} ريال</dd>
+                    <dd className="font-medium">{parsedData.subtotal?.toLocaleString() || 'غير محدد'} ريال</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-sm font-medium text-gray-500">الضريبة:</dt>
-                    <dd>{parsedData.tax?.toLocaleString() || '0'} ريال</dd>
+                    <dd className="font-medium">{parsedData.tax?.toLocaleString() || '0'} ريال</dd>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-bold">
@@ -266,35 +333,40 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
           
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-md">العناصر المكتشفة</CardTitle>
+              <CardTitle className="text-md flex items-center gap-2">
+                <FileText size={16} />
+                العناصر المكتشفة
+              </CardTitle>
               <CardDescription>
                 تم العثور على {parsedData.items.length} عنصر
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-80">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">#</TableHead>
-                      <TableHead>الوصف</TableHead>
-                      <TableHead className="text-left">الكمية</TableHead>
-                      <TableHead className="text-left">السعر</TableHead>
-                      <TableHead className="text-left">الإجمالي</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {parsedData.items.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>{item.name}</TableCell>
-                        <TableCell className="text-left">{item.quantity}</TableCell>
-                        <TableCell className="text-left">{item.price?.toLocaleString()}</TableCell>
-                        <TableCell className="text-left">{item.total?.toLocaleString()}</TableCell>
+              <ScrollArea className="h-[calc(100vh-500px)] min-h-[240px]">
+                <div className="w-full overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">#</TableHead>
+                        <TableHead>الوصف</TableHead>
+                        <TableHead className="text-left">الكمية</TableHead>
+                        <TableHead className="text-left">السعر</TableHead>
+                        <TableHead className="text-left">الإجمالي</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {parsedData.items.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell className="text-left">{item.quantity}</TableCell>
+                          <TableCell className="text-left">{item.price?.toLocaleString()}</TableCell>
+                          <TableCell className="text-left">{item.total?.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </ScrollArea>
             </CardContent>
           </Card>
@@ -302,7 +374,10 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
           {rawText && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-md">النص الخام من الفاتورة</CardTitle>
+                <CardTitle className="text-md flex items-center gap-2">
+                  <FileText size={16} />
+                  النص الخام من الفاتورة
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-60 border rounded-md p-4 bg-gray-50">
@@ -321,9 +396,9 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="w-full shadow-sm border-teal-100">
+      <CardHeader className="bg-gradient-to-r from-teal-50 to-cyan-50">
+        <CardTitle className="flex items-center gap-2 text-teal-700">
           <FileText /> تحليل فواتير PDF
         </CardTitle>
         <CardDescription>
@@ -332,9 +407,9 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload">تحميل الفاتورة</TabsTrigger>
-            <TabsTrigger value="results" disabled={!parsedData}>نتائج التحليل</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="upload" className="data-[state=active]:bg-teal-600 data-[state=active]:text-white">تحميل الفاتورة</TabsTrigger>
+            <TabsTrigger value="results" disabled={!parsedData} className="data-[state=active]:bg-teal-600 data-[state=active]:text-white">نتائج التحليل</TabsTrigger>
           </TabsList>
           <TabsContent value="upload">{renderUploadTab()}</TabsContent>
           <TabsContent value="results">{renderResultsTab()}</TabsContent>

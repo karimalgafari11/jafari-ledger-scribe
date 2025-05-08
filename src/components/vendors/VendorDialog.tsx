@@ -17,12 +17,15 @@ import {
   FormItem, 
   FormLabel, 
   FormControl, 
-  FormMessage 
+  FormMessage,
+  FormDescription 
 } from "@/components/ui/form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "الاسم يجب أن يكون 3 أحرف على الأقل" }),
@@ -94,13 +97,22 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>{isEditMode ? "تعديل مورد" : "إضافة مورد جديد"}</DialogTitle>
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
+        <DialogHeader className="bg-gradient-to-r from-teal-50 to-cyan-50 p-6">
+          <DialogTitle className="text-xl text-teal-700">{isEditMode ? "تعديل مورد" : "إضافة مورد جديد"}</DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-6">
+            {form.formState.errors.root?.message && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  {form.formState.errors.root?.message}
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
@@ -111,7 +123,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                     <FormControl>
                       <Input placeholder="أدخل اسم المورد" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500 text-sm font-medium" />
                   </FormItem>
                 )}
               />
@@ -125,7 +137,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                     <FormControl>
                       <Input placeholder="أدخل اسم الشخص المسؤول" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500 text-sm font-medium" />
                   </FormItem>
                 )}
               />
@@ -140,7 +152,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                       <FormControl>
                         <Input placeholder="05xxxxxxxx" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm font-medium" />
                     </FormItem>
                   )}
                 />
@@ -154,7 +166,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                       <FormControl>
                         <Input placeholder="example@company.com" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm font-medium" />
                     </FormItem>
                   )}
                 />
@@ -169,7 +181,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                     <FormControl>
                       <Input placeholder="أدخل عنوان المورد" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500 text-sm font-medium" />
                   </FormItem>
                 )}
               />
@@ -184,7 +196,10 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                       <FormControl>
                         <Input placeholder="الرقم الضريبي (اختياري)" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormDescription className="text-xs text-gray-500">
+                        اختياري - أدخل الرقم الضريبي للمورد إن وجد
+                      </FormDescription>
+                      <FormMessage className="text-red-500 text-sm font-medium" />
                     </FormItem>
                   )}
                 />
@@ -198,7 +213,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                       <FormControl>
                         <Input placeholder="تصنيف المورد" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm font-medium" />
                     </FormItem>
                   )}
                 />
@@ -213,7 +228,10 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                     <FormControl>
                       <Input type="number" placeholder="0" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormDescription className="text-xs text-gray-500">
+                      الحد الأعلى للائتمان المسموح به للمورد
+                    </FormDescription>
+                    <FormMessage className="text-red-500 text-sm font-medium" />
                   </FormItem>
                 )}
               />
@@ -222,7 +240,7 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rtl:space-x-reverse">
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rtl:space-x-reverse border rounded-md p-4 bg-gray-50">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -230,18 +248,27 @@ export const VendorDialog: React.FC<VendorDialogProps> = ({
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>
+                      <FormLabel className="font-medium">
                         نشط
                       </FormLabel>
+                      <FormDescription className="text-xs text-gray-500">
+                        حدد هذا الخيار إذا كان المورد نشطاً ويمكن التعامل معه
+                      </FormDescription>
                     </div>
                   </FormItem>
                 )}
               />
             </div>
             
-            <DialogFooter>
+            <DialogFooter className="flex justify-between border-t pt-4 mt-6">
               <Button type="button" variant="outline" onClick={onClose}>إلغاء</Button>
-              <Button type="submit">{isEditMode ? "تحديث" : "إضافة"}</Button>
+              <Button 
+                type="submit" 
+                disabled={form.formState.isSubmitting} 
+                className="bg-teal-600 hover:bg-teal-700"
+              >
+                {form.formState.isSubmitting ? 'جارٍ الحفظ...' : isEditMode ? "تحديث" : "إضافة"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
