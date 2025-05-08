@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Bot, Brain, ChartLine, LineChart, Zap } from "lucide-react";
 import { useSystemAlerts } from "@/hooks/useSystemAlerts";
 import { SystemAlertCard } from "@/components/ai/SystemAlertCard";
-import InteractiveStatCard from "@/components/ai/InteractiveStatCard";
+import { InteractiveStatCard } from "@/components/ai/InteractiveStatCard";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 
 const AiDashboardPage: React.FC = () => {

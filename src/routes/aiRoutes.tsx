@@ -1,4 +1,3 @@
-
 import { RouteObject } from "react-router-dom";
 import AiAssistantPage from "@/pages/ai/AiAssistantPage";
 import AiDashboardPage from "@/pages/ai/AiDashboardPage";
