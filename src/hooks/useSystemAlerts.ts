@@ -1,71 +1,40 @@
 
 import { useState, useEffect } from 'react';
 import { SystemAlert } from '@/types/ai';
-
-// Mock alerts data for demonstration purposes
-const mockSystemAlerts: SystemAlert[] = [
-  {
-    id: "alert1",
-    title: "مخزون منخفض",
-    message: "انخفاض مستوى المخزون لـ 5 منتجات عن الحد الأدنى",
-    type: "inventory",
-    severity: "medium",
-    priority: "high",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    read: false,
-    data: {
-      items: ["sku123", "sku456", "sku789", "sku012", "sku345"]
-    }
-  },
-  {
-    id: "alert2",
-    title: "فواتير متأخرة",
-    message: "هناك 3 فواتير متأخرة السداد تتجاوز 30 يوماً",
-    type: "invoices",
-    severity: "high",
-    priority: "high",
-    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    read: true,
-    data: {
-      invoiceIds: ["inv-2023-0123", "inv-2023-0145", "inv-2023-0167"]
-    }
-  },
-  {
-    id: "alert3",
-    title: "تحديث النظام",
-    message: "تم تحديث النظام إلى الإصدار 2.5.0",
-    type: "system",
-    severity: "low",
-    priority: "low",
-    timestamp: new Date(Date.now() - 20 * 60 * 1000), // 20 minutes ago
-    read: false
-  }
-];
+import { useAiAssistant } from './useAiAssistant';
 
 export const useSystemAlerts = () => {
-  const [alerts, setAlerts] = useState<SystemAlert[]>(mockSystemAlerts);
-  const [loading, setLoading] = useState(false);
+  const [alerts, setAlerts] = useState<SystemAlert[]>([]);
+  const { getSystemAlerts } = useAiAssistant();
 
-  // Mark alert as read
-  const markAsRead = (alertId: string) => {
+  useEffect(() => {
+    // Fetch alerts when the component mounts
+    setAlerts(getSystemAlerts());
+    
+    // Set up interval to periodically refresh alerts
+    const intervalId = setInterval(() => {
+      setAlerts(getSystemAlerts());
+    }, 60000); // Refresh every minute
+    
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, [getSystemAlerts]);
+
+  // Mark an alert as read
+  const markAlertAsRead = (alertId: string) => {
     setAlerts(prevAlerts => 
       prevAlerts.map(alert => 
-        alert.id === alertId ? { ...alert, read: true } : alert
+        alert.id === alertId 
+          ? { ...alert, read: true } 
+          : alert
       )
     );
   };
 
   // Mark all alerts as read
-  const markAllAsRead = () => {
+  const markAllAlertsAsRead = () => {
     setAlerts(prevAlerts => 
       prevAlerts.map(alert => ({ ...alert, read: true }))
-    );
-  };
-
-  // Dismiss alert
-  const dismissAlert = (alertId: string) => {
-    setAlerts(prevAlerts => 
-      prevAlerts.filter(alert => alert.id !== alertId)
     );
   };
 
@@ -74,18 +43,16 @@ export const useSystemAlerts = () => {
     return alerts.filter(alert => alert.type === type);
   };
 
-  // Get unread alerts count
-  const getUnreadCount = () => {
-    return alerts.filter(alert => !alert.read).length;
+  // Filter alerts by priority
+  const filterAlertsByPriority = (priority: SystemAlert['priority']) => {
+    return alerts.filter(alert => alert.priority === priority);
   };
 
   return {
     alerts,
-    loading,
-    markAsRead,
-    markAllAsRead,
-    dismissAlert,
+    markAlertAsRead,
+    markAllAlertsAsRead,
     filterAlertsByType,
-    getUnreadCount
+    filterAlertsByPriority
   };
 };
