@@ -371,6 +371,13 @@ const createMockChartData = (): {
   };
 };
 
+export enum AnalysisPeriod {
+  MONTH_3 = '3_months',
+  MONTH_6 = '6_months',
+  YEAR_1 = '1_year',
+  YEAR_2 = '2_years'
+}
+
 export const useFinancialAnalysis = () => {
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: subDays(new Date(), 30),
@@ -383,7 +390,7 @@ export const useFinancialAnalysis = () => {
   // استخدام البيانات الوهمية
   const financialMetrics = useMemo(() => mockFinancialMetrics, []);
   const financialRatios = useMemo(() => mockFinancialRatios, []);
-  const insights = useMemo(() => generateMockInsights(), []);
+  const insights: string[] = [];
   const recommendations = useMemo(
     () => [
       'زيادة الاستثمار في قنوات التسويق الرقمي لتحسين المبيعات عبر الإنترنت',

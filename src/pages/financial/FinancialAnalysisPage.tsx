@@ -1,251 +1,146 @@
-import React, { useState } from "react";
+import React from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
-import { DateRange } from "react-day-picker";
-import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { useFinancialAnalysis, AnalysisPeriod } from "@/hooks/financial/useFinancialAnalysis";
 
 const FinancialAnalysisPage = () => {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [analysisPeriod, setAnalysisPeriod] = useState<AnalysisPeriod>("monthly");
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: new Date(new Date().getFullYear(), new Date().getMonth() - 5),
-    to: new Date()
-  });
-  
   const {
-    profitabilityData,
-    cashflowData,
-    liquidityData,
-    debtRatios,
-    efficiencyRatios,
-    profitabilityRatios,
-    valuationRatios,
-    loadingData
-  } = useFinancialAnalysis(dateRange, analysisPeriod);
+    financialMetrics,
+    financialRatios,
+    insights,
+    recommendations,
+    dateRange,
+    setDateRange,
+    selectedPeriod,
+    setSelectedPeriod,
+    isLoading
+  } = useFinancialAnalysis();
   
-  const handlePeriodChange = (value: string) => {
-    setAnalysisPeriod(value as AnalysisPeriod);
-  };
-
-  const handleDateRangeChange = (range: DateRange) => {
-    if (range?.from) {
-      setDateRange({
-        from: range.from,
-        to: range.to || range.from
-      });
-    }
-  };
+  // Avoid references to non-existent properties
+  // profitabilityData, cashflowData, liquidityData, debtRatios, valuationRatios, etc.
+  // Instead use financialMetrics and financialRatios which do exist
 
   return (
-    <div className="container mx-auto py-6">
-      <Header title="التحليل المالي" />
+    <div className="container mx-auto p-4">
+      <Header title="تحليل الأداء المالي" showBack={true} />
       
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-        <div className="flex flex-col md:flex-row gap-2">
-          <Select value={analysisPeriod} onValueChange={handlePeriodChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="الفترة" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="daily">يومي</SelectItem>
-              <SelectItem value="weekly">أسبوعي</SelectItem>
-              <SelectItem value="monthly">شهري</SelectItem>
-              <SelectItem value="quarterly">ربع سنوي</SelectItem>
-              <SelectItem value="yearly">سنوي</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <DateRangePicker 
-            value={dateRange} 
-            onValueChange={handleDateRangeChange}
-            className="w-auto" 
-          />
-        </div>
-        
-        <div>
-          <Button variant="outline" size="sm">تصدير البيانات</Button>
-        </div>
-      </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 mb-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>خيارات التحليل</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 grid-cols-3">
+          <div className="col-span-1">
+            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="اختر الفترة الزمنية" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={AnalysisPeriod.MONTH_3}>آخر 3 أشهر</SelectItem>
+                <SelectItem value={AnalysisPeriod.MONTH_6}>آخر 6 أشهر</SelectItem>
+                <SelectItem value={AnalysisPeriod.YEAR_1}>آخر سنة</SelectItem>
+                <SelectItem value={AnalysisPeriod.YEAR_2}>آخر سنتين</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="col-span-2">
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="overview" className="mt-4">
+        <TabsList>
           <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
-          <TabsTrigger value="profitability">الربحية</TabsTrigger>
-          <TabsTrigger value="liquidity">السيولة</TabsTrigger>
-          <TabsTrigger value="efficiency">الكفاءة</TabsTrigger>
+          <TabsTrigger value="metrics">المقاييس المالية</TabsTrigger>
+          <TabsTrigger value="ratios">النسب المالية</TabsTrigger>
+          <TabsTrigger value="insights">الرؤى والتوصيات</TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">الربحية</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={profitabilityData} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">التدفق النقدي</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <BarChart data={cashflowData} />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">نسب السيولة</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={liquidityData} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">نسب الديون</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={debtRatios} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">نسب الكفاءة</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={efficiencyRatios} />
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="overview" className="space-y-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>ملخص الأداء المالي</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div>جاري تحميل البيانات...</div>
+              ) : (
+                <>
+                  <p>
+                    {insights.length > 0
+                      ? insights[0]
+                      : "لا توجد رؤى متاحة حاليًا."}
+                  </p>
+                  <Button variant="outline" className="mt-4">
+                    عرض التقرير الكامل
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
-        
-        <TabsContent value="profitability">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">هامش الربح الإجمالي</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={profitabilityRatios.grossMargin} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">هامش الربح التشغيلي</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={profitabilityRatios.operatingMargin} />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">هامش صافي الربح</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={profitabilityRatios.netMargin} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">العائد على الأصول</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={profitabilityRatios.roa} />
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="metrics">
+          <Card>
+            <CardHeader>
+              <CardTitle>المقاييس المالية</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div>جاري تحميل البيانات...</div>
+              ) : (
+                <div className="grid gap-4 grid-cols-2">
+                  {financialMetrics.map((metric) => (
+                    <div key={metric.name}>
+                      <p className="text-sm font-bold">{metric.name}</p>
+                      <p className="text-xl">{metric.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
-        
-        <TabsContent value="liquidity">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">نسبة التداول</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={liquidityData} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">النسبة السريعة</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={liquidityData} />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">نسبة النقدية</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={liquidityData} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">رأس المال العامل</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <BarChart data={liquidityData} />
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="ratios">
+          <Card>
+            <CardHeader>
+              <CardTitle>النسب المالية</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div>جاري تحميل البيانات...</div>
+              ) : (
+                <div className="grid gap-4 grid-cols-2">
+                  {financialRatios.map((ratio) => (
+                    <div key={ratio.name}>
+                      <p className="text-sm font-bold">{ratio.name}</p>
+                      <p className="text-xl">{ratio.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
-        
-        <TabsContent value="efficiency">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">معدل دوران المخزون</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={efficiencyRatios.inventoryTurnover} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">معدل دوران الذمم المدينة</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={efficiencyRatios.receivablesTurnover} />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">معدل دوران الأصول</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={efficiencyRatios.assetTurnover} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">دورة التحويل النقدي</CardTitle>
-              </CardHeader>
-              <CardContent className="h-80">
-                <LineChart data={efficiencyRatios.cashConversionCycle} />
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="insights">
+          <Card>
+            <CardHeader>
+              <CardTitle>الرؤى والتوصيات</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div>جاري تحميل البيانات...</div>
+              ) : (
+                <ul>
+                  {recommendations.map((recommendation, index) => (
+                    <li key={index}>{recommendation}</li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

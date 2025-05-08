@@ -1,241 +1,222 @@
-
-import React from "react";
-import { Layout } from "@/components/Layout";
-import { ZoomProvider } from "@/components/interactive/ZoomControl";
-import ZoomControl from "@/components/interactive/ZoomControl";
-import { Button } from "@/components/ui/button";
-import { DashboardSettings } from "@/components/dashboard/DashboardSettings";
-import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
-import { useAiAssistant } from "@/hooks/useAiAssistant";
-import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
-import DashboardWelcome from "@/components/dashboard/DashboardWelcome";
+import React, { useState } from "react";
+import { Header } from "@/components/Header";
 import DashboardContent from "@/components/dashboard/DashboardContent";
-import { useDashboardState } from "@/hooks/useDashboardState";
+import { SystemAlert } from "@/types/ai";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-import { CreditCard, Database, Users, Settings2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-
-// إضافة اختصار جديد لصفحة تسجيل الدفعات
-const paymentShortcut: ShortcutItem = {
-  id: "payment-shortcut",
-  name: "تسجيل دفعة جديدة",
-  description: "إضافة عملية دفع جديدة للموردين",
-  route: "/payables/payment",
-  icon: CreditCard,
-  enabled: true,
-  badge: {
-    text: "جديد",
-    variant: "outline"
-  }
-};
-
-// إضافة اختصار جديد لصفحة دفتر الأستاذ
-const ledgerShortcut: ShortcutItem = {
-  id: "ledger-shortcut",
-  name: "دفتر الأستاذ",
-  description: "عرض وإدارة دفتر الأستاذ العام والقيود المحاسبية",
-  route: "/accounting/ledger",
-  icon: Database,
-  enabled: true,
-  badge: {
-    text: "محاسبة",
-    variant: "success"
-  }
-};
-
-// إضافة اختصار جديد لصفحة إدارة العملاء
-const customersShortcut: ShortcutItem = {
-  id: "customers-shortcut",
-  name: "إدارة العملاء",
-  description: "عرض وإدارة حسابات وبيانات العملاء",
-  route: "/customers/module",
-  icon: Users,
-  enabled: true,
-  badge: {
-    text: "مبيعات",
-    variant: "success"
-  }
-};
+import {
+  transformSalesData,
+  transformProfitData,
+  transformCategoryData,
+  transformDailySalesData
+} from "@/utils/chartDataTransformers";
 
 const Dashboard = () => {
-  // استدعاء بيانات المساعد الذكي للحصول على التنبيهات النظامية
-  const { systemAlerts } = useAiAssistant();
-  const navigate = useNavigate();
-  
-  // استدعاء حالة لوحة التحكم
-  const {
-    date,
-    setDate,
-    period,
-    setPeriod,
-    branch,
-    setBranch,
-    interactiveMode,
-    setInteractiveMode,
-    displayOptions,
-    handleDisplayOptionsChange,
-    shortcuts,
-    handleShortcutsChange
-  } = useDashboardState();
-  
-  // استدعاء بيانات لوحة التحكم
-  const { 
-    totalSales, 
-    totalExpenses, 
-    netProfit, 
-    profitMargin, 
-    overdueInvoices, 
-    overdueTotalAmount,
-    kpis,
-    salesData,
-    profitData,
-    customerDebtData,
-    supplierCreditData,
-    costCenterData,
-    dailySalesData,
-  } = useDashboardMetrics();
+  const [displayOptions, setDisplayOptions] = useState<DisplayOptions>({
+    showStats: true,
+    showKpis: true,
+    showCharts: true,
+    showAiWidget: true,
+  });
 
-  // إضافة اختصارات جديدة إلى قائمة الاختصارات إذا لم تكن موجودة بالفعل
-  React.useEffect(() => {
-    let updatedShortcuts = [...shortcuts];
-    let hasChanges = false;
-    
-    // التحقق من وجود اختصار المدفوعات
-    const hasPaymentShortcut = shortcuts.some(shortcut => shortcut.id === paymentShortcut.id);
-    if (!hasPaymentShortcut) {
-      updatedShortcuts.push(paymentShortcut);
-      hasChanges = true;
-    }
-    
-    // التحقق من وجود اختصار دفتر الأستاذ
-    const hasLedgerShortcut = shortcuts.some(shortcut => shortcut.id === ledgerShortcut.id);
-    if (!hasLedgerShortcut) {
-      updatedShortcuts.push(ledgerShortcut);
-      hasChanges = true;
-    }
-    
-    // التحقق من وجود اختصار إدارة العملاء
-    const hasCustomersShortcut = shortcuts.some(shortcut => shortcut.id === customersShortcut.id);
-    if (!hasCustomersShortcut) {
-      updatedShortcuts.push(customersShortcut);
-      hasChanges = true;
-    }
-    
-    // تحديث الاختصارات إذا كان هناك تغييرات
-    if (hasChanges) {
-      handleShortcutsChange(updatedShortcuts);
-    }
-  }, [shortcuts, handleShortcutsChange]);
+  const shortcuts: ShortcutItem[] = [
+    {
+      id: "1",
+      label: "إنشاء فاتورة جديدة",
+      icon: "InvoiceIcon",
+      action: () => alert("Creating new invoice!"),
+    },
+    {
+      id: "2",
+      label: "إضافة مصروف جديد",
+      icon: "ExpenseIcon",
+      action: () => alert("Adding new expense!"),
+    },
+    {
+      id: "3",
+      label: "عرض التقارير",
+      icon: "ReportIcon",
+      action: () => alert("Navigating to reports!"),
+    },
+  ];
 
-  // التنقل إلى صفحات الإعدادات المختلفة
-  const handleNavigateToSettings = (path: string) => {
-    try {
-      navigate(path);
-      toast.success(`جاري الانتقال إلى ${path}`);
-      console.log(`تم التنقل إلى: ${path}`);
-    } catch (error) {
-      console.error(`خطأ في التنقل إلى: ${path}`, error);
-      toast.error(`حدث خطأ أثناء محاولة الانتقال. الرجاء المحاولة مرة أخرى.`);
-    }
-  };
+  const kpis = [
+    {
+      title: "إجمالي المبيعات",
+      value: "156,750.25",
+      status: "up",
+      description: "مقارنة بالشهر الماضي",
+    },
+    {
+      title: "صافي الربح",
+      value: "78,425.13",
+      status: "up",
+      description: "مقارنة بالربع الماضي",
+    },
+    {
+      title: "المصروفات المتأخرة",
+      value: "18,500.75",
+      status: "down",
+      description: "مقارنة بالعام الماضي",
+    },
+  ];
 
-  // فتح إعدادات النظام
-  const handleOpenSystemSettings = () => {
-    handleNavigateToSettings("/settings/system");
-  };
+  // Raw data
+  const salesData = [
+    { name: "يناير", sales: 12000, target: 15000, expenses: 5000 },
+    { name: "فبراير", sales: 14000, target: 16000, expenses: 6000 },
+    { name: "مارس", sales: 16000, target: 17000, expenses: 7000 },
+    { name: "أبريل", sales: 15000, target: 16500, expenses: 6500 },
+    { name: "مايو", sales: 17000, target: 18000, expenses: 7500 },
+  ];
 
-  // فتح إعدادات محرك الذكاء الاصطناعي
-  const handleOpenAiSettings = () => {
-    handleNavigateToSettings("/settings/ai-engine");
-  };
+  const profitData = [
+    { name: "يناير", profit: 6000, profitMargin: "50%" },
+    { name: "فبراير", profit: 7000, profitMargin: "50%" },
+    { name: "مارس", profit: 8000, profitMargin: "50%" },
+    { name: "أبريل", profit: 7500, profitMargin: "50%" },
+    { name: "مايو", profit: 8500, profitMargin: "50%" },
+  ];
+
+  const customerDebtData = [
+    { name: "العملاء الجدد", value: 45000, percentage: 30 },
+    { name: "العملاء الحاليين", value: 80000, percentage: 55 },
+    { name: "العملاء المتوقعين", value: 25000, percentage: 15 },
+  ];
+
+  const supplierCreditData = [
+    { name: "المورد أ", value: 30000, percentage: 40 },
+    { name: "المورد ب", value: 25000, percentage: 30 },
+    { name: "المورد ج", value: 20000, percentage: 30 },
+  ];
+
+  const costCenterData = [
+    { name: "التسويق", value: 15000, percentage: 20 },
+    { name: "المبيعات", value: 20000, percentage: 25 },
+    { name: "التطوير", value: 30000, percentage: 35 },
+    { name: "الإدارة", value: 10000, percentage: 20 },
+  ];
+
+  const dailySalesData = [
+    { day: "الأحد", sales: 22000 },
+    { day: "الاثنين", sales: 24000 },
+    { day: "الثلاثاء", sales: 26000 },
+    { day: "الأربعاء", sales: 25000 },
+    { day: "الخميس", sales: 27000 },
+  ];
+
+  const alerts: SystemAlert[] = [
+    {
+      id: "1",
+      title: "تنبيه المخزون",
+      message: "المنتج 'أ' وصل إلى الحد الأدنى للمخزون",
+      type: "inventory",
+      priority: "high",
+      severity: "high",
+      timestamp: new Date(),
+      read: false,
+      data: { product: "أ" },
+    },
+    {
+      id: "2",
+      title: "تنبيه الفواتير",
+      message: "تأخر سداد الفاتورة رقم 123",
+      type: "invoices",
+      priority: "medium",
+      severity: "medium",
+      timestamp: new Date(),
+      read: false,
+      data: { invoice: "123" },
+    },
+  ];
+
+  // Transform raw data to ChartData format for charts
+  const transformedSalesData = transformSalesData(salesData);
+  const transformedProfitData = transformProfitData(profitData);
+  const transformedCustomerDebtData = transformCategoryData(customerDebtData);
+  const transformedSupplierCreditData = transformCategoryData(supplierCreditData);
+  const transformedCostCenterData = transformCategoryData(costCenterData);
+  const transformedDailySalesData = transformDailySalesData(dailySalesData);
 
   return (
-    <Layout>
-      <div className="flex flex-col h-full">
-        <div className="flex flex-col md:flex-row items-center justify-between bg-blue-500">
-          <DashboardWelcome 
-            date={date} 
-            onDateChange={setDate} 
-            period={period} 
-            onPeriodChange={setPeriod} 
-            branch={branch} 
-            onBranchChange={setBranch}
-          >
-            <DashboardSettings 
-              displayOptions={displayOptions}
-              onDisplayOptionsChange={handleDisplayOptionsChange}
-              shortcuts={shortcuts}
-              onShortcutsChange={handleShortcutsChange}
-              onOpenSystemSettings={handleOpenSystemSettings}
-              onOpenAiSettings={handleOpenAiSettings}
-            />
-            
-            <Button 
-              variant="outline" 
-              onClick={() => setInteractiveMode(!interactiveMode)}
-              className="mr-2 bg-white/90 text-blue-600 hover:bg-white hover:text-blue-700"
-            >
-              {interactiveMode ? "العرض العادي" : "العرض التفاعلي"}
-            </Button>
-            
-            {interactiveMode && (
-              <ZoomControl compact />
-            )}
-          </DashboardWelcome>
-        </div>
-        
-        <div className="container p-4 mx-auto">
-          <DashboardShortcuts shortcuts={shortcuts} />
-        </div>
+    <div className="container mx-auto p-4">
+      <Header title="لوحة التحكم" showBack={false} />
 
-        {interactiveMode ? (
-          <ZoomProvider>
-            <div className="flex-1 overflow-auto">
-              <DashboardContent
-                totalSales={totalSales}
-                totalExpenses={totalExpenses}
-                netProfit={netProfit}
-                profitMargin={profitMargin}
-                overdueInvoices={overdueInvoices}
-                overdueTotalAmount={overdueTotalAmount}
-                kpis={kpis}
-                salesData={salesData}
-                profitData={profitData}
-                customerDebtData={customerDebtData}
-                supplierCreditData={supplierCreditData}
-                costCenterData={costCenterData}
-                dailySalesData={dailySalesData}
-                systemAlerts={systemAlerts}
-                interactiveMode={interactiveMode}
-                displayOptions={displayOptions}
-                shortcuts={shortcuts}
-              />
-            </div>
-          </ZoomProvider>
-        ) : (
-          <DashboardContent
-            totalSales={totalSales}
-            totalExpenses={totalExpenses}
-            netProfit={netProfit}
-            profitMargin={profitMargin}
-            overdueInvoices={overdueInvoices}
-            overdueTotalAmount={overdueTotalAmount}
-            kpis={kpis}
-            salesData={salesData}
-            profitData={profitData}
-            customerDebtData={customerDebtData}
-            supplierCreditData={supplierCreditData}
-            costCenterData={costCenterData}
-            dailySalesData={dailySalesData}
-            systemAlerts={systemAlerts}
-            interactiveMode={interactiveMode}
-            displayOptions={displayOptions}
-            shortcuts={shortcuts}
-          />
-        )}
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold mb-2">نظرة عامة</h2>
+        <p className="text-gray-600">
+          مرحباً بك في لوحة التحكم الخاصة بك. يمكنك هنا الاطلاع على أهم
+          المؤشرات والبيانات الخاصة بعملك.
+        </p>
       </div>
-    </Layout>
+
+      <DashboardContent
+        totalSales={156750.25}
+        totalExpenses={78325.12}
+        netProfit={78425.13}
+        profitMargin="50.03%"
+        overdueInvoices={12}
+        overdueTotalAmount={18500.75}
+        kpis={kpis}
+        salesData={transformedSalesData}
+        profitData={transformedProfitData}
+        customerDebtData={transformedCustomerDebtData}
+        supplierCreditData={transformedSupplierCreditData}
+        costCenterData={transformedCostCenterData}
+        dailySalesData={transformedDailySalesData}
+        systemAlerts={alerts}
+        interactiveMode={false}
+        displayOptions={displayOptions}
+        shortcuts={shortcuts}
+      />
+
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-2">خيارات العرض</h3>
+        <label className="inline-flex items-center">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={displayOptions.showStats}
+            onChange={(e) =>
+              setDisplayOptions({ ...displayOptions, showStats: e.target.checked })
+            }
+          />
+          <span className="ml-2 text-gray-700">إظهار الإحصائيات الرئيسية</span>
+        </label>
+        <label className="inline-flex items-center ml-4">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={displayOptions.showKpis}
+            onChange={(e) =>
+              setDisplayOptions({ ...displayOptions, showKpis: e.target.checked })
+            }
+          />
+          <span className="ml-2 text-gray-700">إظهار مؤشرات الأداء الرئيسية</span>
+        </label>
+        <label className="inline-flex items-center ml-4">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={displayOptions.showCharts}
+            onChange={(e) =>
+              setDisplayOptions({ ...displayOptions, showCharts: e.target.checked })
+            }
+          />
+          <span className="ml-2 text-gray-700">إظهار الرسوم البيانية</span>
+        </label>
+        <label className="inline-flex items-center ml-4">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={displayOptions.showAiWidget}
+            onChange={(e) =>
+              setDisplayOptions({ ...displayOptions, showAiWidget: e.target.checked })
+            }
+          />
+          <span className="ml-2 text-gray-700">إظهار أدوات الذكاء الاصطناعي</span>
+        </label>
+      </div>
+    </div>
   );
 };
 

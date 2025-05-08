@@ -53,3 +53,38 @@ export interface FinancialDecision {
     cons: string[];
   }[];
 }
+
+// Add missing interfaces needed by useAiAssistant hook
+export interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+}
+
+export interface ApiResponse {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: {
+    message: {
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+    index: number;
+  }[];
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+export interface AiAssistantContext {
+  lowStockItems: number;
+  unpaidInvoices: number;
+  pendingExpenses: number;
+  pendingApprovals: number;
+  recentAlerts: SystemAlert[];
+}

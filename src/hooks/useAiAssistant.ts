@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ApiResponse, Message, SystemAlert, AiAssistantContext } from "@/types/ai";
+import { SystemAlert, AiAssistantContext, Message, ApiResponse } from "@/types/ai";
 import { Product } from "@/types/inventory";
 import { Expense } from "@/types/expenses";
 import { JournalEntry, JournalStatus } from "@/types/journal";
@@ -137,27 +137,39 @@ export const useAiAssistant = () => {
     lowStockProducts.forEach(product => {
       if (product.quantity === 0) {
         alerts.push({
+          id: uuidv4(),
+          title: `نفاد مخزون المنتج: ${product.name}`,
           type: "inventory",
           message: `نفاد مخزون المنتج: ${product.name}`,
           priority: "high",
+          severity: "high",
           data: product,
-          timestamp: new Date()
+          timestamp: new Date(),
+          read: false
         });
       } else if (product.quantity <= product.reorderLevel / 2) {
         alerts.push({
+          id: uuidv4(),
+          title: `مخزون منخفض جداً للمنتج: ${product.name}`,
           type: "inventory",
           message: `مخزون منخفض جداً للمنتج: ${product.name} (${product.quantity} قطعة)`,
           priority: "medium",
+          severity: "medium",
           data: product,
-          timestamp: new Date()
+          timestamp: new Date(),
+          read: false
         });
       } else {
         alerts.push({
+          id: uuidv4(),
+          title: `مخزون منخفض للمنتج: ${product.name}`,
           type: "inventory",
           message: `مخزون منخفض للمنتج: ${product.name} (${product.quantity} قطعة)`,
           priority: "low",
+          severity: "low",
           data: product,
-          timestamp: new Date()
+          timestamp: new Date(),
+          read: false
         });
       }
     });
@@ -165,22 +177,30 @@ export const useAiAssistant = () => {
     // إضافة تنبيهات المصروفات
     pendingExpenses.forEach(expense => {
       alerts.push({
+        id: uuidv4(),
+        title: `مصروف ينتظر الموافقة: ${expense.description}`,
         type: "expenses",
         message: `مصروف بقيمة ${expense.amount} ينتظر الموافقة: ${expense.description}`,
         priority: "medium",
+        severity: "medium",
         data: expense,
-        timestamp: new Date()
+        timestamp: new Date(),
+        read: false
       });
     });
     
     // إضافة تنبيهات القيود المحاسبية المعلقة
     pendingJournalEntries.forEach(entry => {
       alerts.push({
+        id: uuidv4(),
+        title: `قيد محاسبي ينتظر الموافقة: ${entry.entryNumber}`,
         type: "invoices",
         message: `قيد محاسبي رقم ${entry.entryNumber} بقيمة ${entry.totalDebit} ينتظر الموافقة`,
         priority: "medium",
+        severity: "medium",
         data: entry,
-        timestamp: new Date()
+        timestamp: new Date(),
+        read: false
       });
     });
     
@@ -191,11 +211,15 @@ export const useAiAssistant = () => {
     
     highDebtCustomers.forEach(customer => {
       alerts.push({
+        id: uuidv4(),
+        title: `تجاوز العميل الحد الائتماني: ${customer.name}`,
         type: "customers",
         message: `رصيد العميل ${customer.name} تجاوز ${Math.round(customer.balance / customer.creditLimit! * 100)}% من الحد الائتماني`,
         priority: "high",
+        severity: "high",
         data: customer,
-        timestamp: new Date()
+        timestamp: new Date(),
+        read: false
       });
     });
     
