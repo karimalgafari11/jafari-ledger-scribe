@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +10,7 @@ import { Search, FilePlus, FileText, Check, X, ArrowLeft, Calendar, User, Packag
 import { useNavigate } from "react-router-dom";
 import { PurchaseReturn } from "@/types/purchases";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import NewPurchaseReturnDialog from "@/components/purchases/returns/NewPurchaseReturnDialog";

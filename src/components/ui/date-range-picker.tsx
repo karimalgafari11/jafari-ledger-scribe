@@ -17,12 +17,14 @@ interface DateRangePickerProps {
   className?: string;
   value: DateRange;
   onChange: (date: DateRange) => void;
+  align?: "start" | "center" | "end";
 }
 
 export function DateRangePicker({
   className,
   value,
   onChange,
+  align = "start",
 }: DateRangePickerProps) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -51,7 +53,7 @@ export function DateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0" align={align}>
           <Calendar
             initialFocus
             mode="range"
@@ -60,9 +62,13 @@ export function DateRangePicker({
             onSelect={onChange}
             numberOfMonths={2}
             locale={ar}
+            className="pointer-events-auto"
           />
         </PopoverContent>
       </Popover>
     </div>
   );
 }
+
+// Also export DatePickerWithRange for backwards compatibility
+export { DatePickerWithRange } from "./date-picker-with-range";
