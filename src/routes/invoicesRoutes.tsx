@@ -8,6 +8,9 @@ import ReturnsPage from "@/pages/invoices/ReturnsPage";
 import SalesOrdersPage from "@/pages/invoices/SalesOrdersPage";
 import OutgoingInvoicePage from "@/pages/invoices/OutgoingInvoicePage";
 import PriceQuotesPage from "@/pages/invoices/PriceQuotesPage";
+import QuoteToInvoicePage from "@/pages/invoices/QuoteToInvoicePage";
+import InvoiceTemplatesPage from "@/pages/invoices/InvoiceTemplatesPage";
+import SalesReturnFormPage from "@/pages/invoices/SalesReturnFormPage";
 
 export const invoicesRoutes: RouteObject[] = [
   {
@@ -39,11 +42,27 @@ export const invoicesRoutes: RouteObject[] = [
     element: <PriceQuotesPage />,
   },
   {
+    path: "invoices/quotes/new",
+    element: <QuotesPage />,
+  },
+  {
+    path: "invoices/quotes/convert/:id",
+    element: <QuoteToInvoicePage />,
+  },
+  {
     path: "invoices/returns",
     element: <ReturnsPage />,
   },
   {
+    path: "invoices/returns/new",
+    element: <SalesReturnFormPage />,
+  },
+  {
     path: "invoices/sales-orders",
     element: <SalesOrdersPage />,
+  },
+  {
+    path: "invoices/templates",
+    element: <InvoiceTemplatesPage />,
   },
 ];

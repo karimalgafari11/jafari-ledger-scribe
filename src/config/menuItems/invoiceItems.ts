@@ -1,5 +1,5 @@
 
-import { Receipt, Percent, ShoppingBag, FileText, FileBarChart2, ArrowLeftRight } from "lucide-react";
+import { Receipt, Percent, ShoppingBag, FileText, FileBarChart2, ArrowLeftRight, FileCheck } from "lucide-react";
 import { MenuItem } from "./types";
 
 export const invoiceItems: MenuItem[] = [
@@ -31,6 +31,11 @@ export const invoiceItems: MenuItem[] = [
         label: "إحصائيات المبيعات",
         path: "/invoices/sales-stats",
         icon: FileBarChart2,
+      },
+      {
+        label: "قوالب الفواتير",
+        path: "/invoices/templates",
+        icon: FileCheck,
       },
     ],
   },

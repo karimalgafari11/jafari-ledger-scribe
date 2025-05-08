@@ -4,6 +4,7 @@ import { useInvoiceItems, calculateItemTotal } from './useInvoiceItems';
 import { useInvoiceCalculations } from './useInvoiceCalculations';
 import { useInvoiceOperations } from './useInvoiceOperations';
 import { useDiscounts } from "@/hooks/useDiscounts";
+import { Product } from '@/types/inventory';
 
 export const useSalesInvoice = () => {
   const { calculateDiscount } = useDiscounts();
@@ -30,7 +31,8 @@ export const useSalesInvoice = () => {
   } = useInvoiceItems(invoice, setInvoice, calculateTotalAmount);
 
   const {
-    saveInvoice
+    saveInvoice,
+    convertQuoteToInvoice
   } = useInvoiceOperations(invoice, setInvoice, setIsLoading);
 
   // Create wrapper functions to avoid passing too many params
@@ -52,6 +54,7 @@ export const useSalesInvoice = () => {
     removeInvoiceItem,
     applyDiscount,
     calculateTotals,
-    saveInvoice
+    saveInvoice,
+    convertQuoteToInvoice
   };
 };
