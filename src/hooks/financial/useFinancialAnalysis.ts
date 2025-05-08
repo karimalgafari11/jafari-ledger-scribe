@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useCallback } from 'react';
 import { FinancialMetric, FinancialRatio } from '@/types/financial-analysis';
 import { generateMockInsights } from '@/data/mockFinancialData';
@@ -398,7 +397,7 @@ export const useFinancialAnalysis = () => {
   const financialMetrics = useMemo(() => mockFinancialMetrics, []);
   const financialRatios = useMemo(() => mockFinancialRatios, []);
   
-  // Return the entire array instead of trying to access a single string
+  // Make sure insights is typed as string[] throughout the component
   const insights = useMemo(() => insightsData, []);
   
   const recommendations = useMemo(
