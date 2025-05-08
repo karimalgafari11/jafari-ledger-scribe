@@ -12,7 +12,7 @@ import { KpiCard as ExecutiveKpiCard } from "@/components/executive/KpiCard";
 import { ExecutiveSummaryCard } from "@/components/executive/ExecutiveSummaryCard";
 import { Header } from "@/components/Header";
 import { DateRange } from "react-day-picker";
-import { Alert, AlertTitle, AlertDescription, AlertTriangle } from "@/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Mail,
@@ -21,10 +21,11 @@ import {
   LayoutDashboard,
   Filter,
   Sliders,
-  LineChart,
-  BarChart,
-  PieChart
+  AlertTriangle
 } from "lucide-react";
+import { LineChart } from "@/components/ui/LineChart";
+import { BarChart } from "@/components/ui/BarChart";
+import { PieChart } from "@/components/ui/PieChart";
 import useExecutiveDashboard from "@/hooks/executive/useExecutiveDashboard";
 
 const ExecutiveDashboardPage: React.FC = () => {

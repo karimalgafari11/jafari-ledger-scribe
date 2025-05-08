@@ -1,3 +1,4 @@
+
 import { useState, useMemo, useCallback } from 'react';
 import { FinancialMetric, FinancialRatio } from '@/types/financial-analysis';
 import { generateMockInsights } from '@/data/mockFinancialData';
@@ -13,8 +14,8 @@ export enum AnalysisPeriod {
   YEAR_2 = '2_years'
 }
 
-// Define insights as an array of strings instead of a single string
-const insights = [
+// Define insights as an array of strings
+const insightsData = [
   "تحليل مالي شامل للفترة الحالية يظهر تحسناً بنسبة 15% في صافي الربح مقارنة بالفترة السابقة"
 ];
 
@@ -396,7 +397,10 @@ export const useFinancialAnalysis = () => {
   // استخدام البيانات الوهمية
   const financialMetrics = useMemo(() => mockFinancialMetrics, []);
   const financialRatios = useMemo(() => mockFinancialRatios, []);
-  const insightsArray = useMemo(() => insights, []);
+  
+  // Fix this line to properly handle the string array
+  const insights = useMemo(() => insightsData, []);
+  
   const recommendations = useMemo(
     () => [
       'زيادة الاستثمار في قنوات التسويق الرقمي لتحسين المبيعات عبر الإنترنت',
@@ -431,7 +435,7 @@ export const useFinancialAnalysis = () => {
   return {
     financialMetrics,
     financialRatios,
-    insights: insightsArray,
+    insights,
     recommendations,
     dateRange,
     setDateRange,
