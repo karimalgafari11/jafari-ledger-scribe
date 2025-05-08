@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +25,7 @@ import {
   Sliders 
 } from "lucide-react";
 
-const ExecutiveDashboardPage = () => {
+const ExecutiveDashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   
   const {
@@ -44,6 +44,20 @@ const ExecutiveDashboardPage = () => {
     shareDashboard,
     exportDashboard
   } = useExecutiveDashboard();
+
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+    to: new Date()
+  });
+  
+  const handleDateRangeChange = (range: DateRange) => {
+    if (range?.from) {
+      setDateRange({
+        from: range.from,
+        to: range.to || range.from
+      });
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -84,7 +98,7 @@ const ExecutiveDashboardPage = () => {
 
           <DateRangePicker 
             value={dateRange} 
-            onValueChange={setDateRange}
+            onChange={handleDateRangeChange}
             align="start"
             className="w-auto" 
           />

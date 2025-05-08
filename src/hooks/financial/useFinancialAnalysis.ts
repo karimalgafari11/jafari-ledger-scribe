@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useCallback } from 'react';
 import { FinancialMetric, FinancialRatio, AnalysisPeriod } from '@/types/financial-analysis';
 import { generateMockInsights } from '@/data/mockFinancialData';

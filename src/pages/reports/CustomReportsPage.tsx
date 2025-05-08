@@ -1,150 +1,218 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Plus, 
-  Search, 
-  SlidersHorizontal, 
-  Download, 
-  Calendar,
-  LayoutGrid,
-  List
-} from "lucide-react";
-import { CustomReportList } from "@/components/reports/CustomReportList";
-import { CustomReportBuilder } from "@/components/reports/CustomReportBuilder";
-import { CustomReportGrid } from "@/components/reports/CustomReportGrid";
-import { useCustomReports } from "@/hooks/reports/useCustomReports";
-import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Filter, Plus, Search } from "lucide-react";
+import { Report } from "@/hooks/useReports";
+import { useReports } from "@/hooks/useReports";
+import CustomReportBuilder from "@/components/reports/CustomReportBuilder";
 
-const CustomReportsPage = () => {
-  const [activeTab, setActiveTab] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isCreating, setIsCreating] = useState(false);
+const CustomReportsPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>("recent");
+  const [isCreatingReport, setIsCreatingReport] = useState(false);
   
+  const recentReports: Report[] = [
+    {
+      id: "1", // Changed to string
+      title: "تقرير المبيعات الشهري",
+      name: "تقرير المبيعات الشهري",
+      description: "تفاصيل المبيعات حسب المنتج والعميل للشهر الحالي",
+      date: "2023-05-01",
+      category: "sales",
+      favorite: true,
+      author: "محمد أحمد",
+      type: "monthly",
+      createdAt: new Date(2023, 4, 1),
+      lastRun: new Date(2023, 4, 28)
+    },
+    {
+      id: "2", // Changed to string
+      title: "تقرير المصروفات الربع سنوي",
+      name: "تقرير المصروفات الربع سنوي",
+      description: "تحليل المصروفات حسب الفئة والوقت للربع الحالي",
+      date: "2023-04-15",
+      category: "expenses",
+      favorite: false,
+      author: "ليلى سالم",
+      type: "quarterly",
+      createdAt: new Date(2023, 3, 15),
+      lastRun: new Date(2023, 4, 15)
+    },
+    {
+      id: "3", // Changed to string
+      title: "تقرير المخزون اليومي",
+      name: "تقرير المخزون اليومي",
+      description: "ملخص مستويات المخزون وتحديثات المنتجات اليومية",
+      date: "2023-05-29",
+      category: "inventory",
+      favorite: true,
+      author: "خالد عبد الله",
+      type: "daily",
+      createdAt: new Date(2023, 2, 1),
+      lastRun: new Date(2023, 4, 29)
+    }
+  ];
+
+  const savedReports: Report[] = [
+    {
+      id: "101", // Changed to string
+      title: "تقرير الميزانية السنوية",
+      name: "تقرير الميزانية السنوية",
+      description: "تحليل الميزانية والمصروفات للسنة المالية",
+      date: "2023-01-15",
+      category: ["finance", "budget"],
+      favorite: true,
+      author: "سارة محمد",
+      type: "annual",
+      createdAt: new Date(2023, 0, 15),
+      lastRun: new Date(2023, 3, 1)
+    },
+    {
+      id: "102", // Changed to string
+      title: "تقرير الأرباح والخسائر",
+      name: "تقرير الأرباح والخسائر",
+      description: "بيان الأرباح والخسائر ربع السنوي",
+      date: "2023-03-31",
+      category: ["finance", "profit"],
+      favorite: false,
+      author: "أحمد علي",
+      type: "quarterly",
+      createdAt: new Date(2022, 9, 1),
+      lastRun: new Date(2023, 2, 31)
+    },
+    {
+      id: "103", // Changed to string
+      title: "تقرير التدفقات النقدية",
+      name: "تقرير التدفقات النقدية",
+      description: "تحليل التدفقات النقدية الداخلة والخارجة",
+      date: "2023-05-01",
+      category: ["finance", "cashflow"],
+      favorite: true,
+      author: "نورة إبراهيم",
+      type: "monthly",
+      createdAt: new Date(2023, 1, 1),
+      lastRun: new Date(2023, 4, 1)
+    }
+  ];
+  
+  const initialReports = activeTab === "recent" ? recentReports : savedReports;
   const {
     reports,
-    categories,
     searchQuery,
     setSearchQuery,
-    filterBy,
-    setFilterBy,
-    createReport,
-    deleteReport,
-    duplicateReport,
-    exportReport,
-    favoriteReport
-  } = useCustomReports();
-
-  if (isCreating) {
-    return (
-      <CustomReportBuilder 
-        onSave={(report) => {
-          createReport(report);
-          setIsCreating(false);
-        }}
-        onCancel={() => setIsCreating(false)}
-      />
-    );
-  }
+    activeCategory,
+    setActiveCategory,
+    toggleFavorite,
+  } = useReports(initialReports);
 
   return (
     <div className="container mx-auto p-6">
       <Header title="التقارير المخصصة" showBack={true}>
-        <Button onClick={() => setIsCreating(true)}>
+        <Button onClick={() => setIsCreatingReport(true)}>
           <Plus className="ml-2 h-4 w-4" /> إنشاء تقرير جديد
         </Button>
       </Header>
 
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center">
-          <div className="w-full max-w-lg flex gap-2">
-            <Input
-              placeholder="ابحث عن تقرير..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1"
-            />
-            <Button variant="outline" size="icon">
-              <Search className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon">
-              <SlidersHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
+      <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between">
+        <div className="flex flex-1 items-center gap-2">
+          <Input
+            placeholder="ابحث عن تقرير..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-sm"
+          />
+          <Button variant="outline" size="icon">
+            <Search className="h-4 w-4" />
+          </Button>
         </div>
+        
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Calendar className="ml-2 h-4 w-4" /> جدولة
+          <Select value={activeCategory} onValueChange={setActiveCategory}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="جميع الفئات" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">جميع الفئات</SelectItem>
+              <SelectItem value="sales">المبيعات</SelectItem>
+              <SelectItem value="expenses">المصروفات</SelectItem>
+              <SelectItem value="inventory">المخزون</SelectItem>
+              <SelectItem value="finance">المالية</SelectItem>
+              <SelectItem value="budget">الميزانية</SelectItem>
+              <SelectItem value="favorites">المفضلة</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button variant="outline">
+            <Filter className="ml-2 h-4 w-4" />
+            فلترة
           </Button>
-          <Button variant="outline" size="sm">
-            <Download className="ml-2 h-4 w-4" /> تصدير
+          
+          <Button variant="outline">
+            <Calendar className="ml-2 h-4 w-4" />
+            التواريخ
           </Button>
-          <div className="flex rounded-md border">
-            <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              size="sm"
-              className="rounded-none rounded-l-md"
-              onClick={() => setViewMode("grid")}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-            <Separator orientation="vertical" className="h-auto" />
-            <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
-              size="sm"
-              className="rounded-none rounded-r-md"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="all">جميع التقارير</TabsTrigger>
-          <TabsTrigger value="favorites">المفضلة</TabsTrigger>
-          <TabsTrigger value="financial">مالية</TabsTrigger>
-          <TabsTrigger value="sales">المبيعات</TabsTrigger>
-          <TabsTrigger value="inventory">المخزون</TabsTrigger>
-          <TabsTrigger value="projects">المشاريع</TabsTrigger>
+          <TabsTrigger value="recent">التقارير الأخيرة</TabsTrigger>
+          <TabsTrigger value="saved">التقارير المحفوظة</TabsTrigger>
         </TabsList>
 
-        {categories.map((category) => (
-          <TabsContent key={category.id} value={category.id}>
-            {viewMode === "grid" ? (
-              <CustomReportGrid
-                reports={reports.filter(r => 
-                  activeTab === "all" || 
-                  (activeTab === "favorites" && r.favorite) || 
-                  (r.category === activeTab)
-                )}
-                onDelete={deleteReport}
-                onDuplicate={duplicateReport}
-                onExport={exportReport}
-                onFavorite={favoriteReport}
-              />
-            ) : (
-              <CustomReportList
-                reports={reports.filter(r => 
-                  activeTab === "all" || 
-                  (activeTab === "favorites" && r.favorite) || 
-                  (r.category === activeTab)
-                )}
-                onDelete={deleteReport}
-                onDuplicate={duplicateReport}
-                onExport={exportReport}
-                onFavorite={favoriteReport}
-              />
-            )}
-          </TabsContent>
-        ))}
+        <TabsContent value="recent">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {reports.map((report) => (
+              <Card key={report.id}>
+                <CardHeader>
+                  <CardTitle>{report.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{report.description}</p>
+                  <div className="flex items-center justify-between mt-4">
+                    <Badge variant="secondary">{report.category}</Badge>
+                    <Button variant="outline" size="sm">
+                      عرض التقرير
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="saved">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {reports.map((report) => (
+              <Card key={report.id}>
+                <CardHeader>
+                  <CardTitle>{report.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{report.description}</p>
+                  <div className="flex items-center justify-between mt-4">
+                    <Badge variant="secondary">{report.category}</Badge>
+                    <Button variant="outline" size="sm">
+                      عرض التقرير
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
       </Tabs>
+      
+      {isCreatingReport && (
+        <CustomReportBuilder onSaveReport={(reportData) => {
+          console.log("Report data saved:", reportData);
+          setIsCreatingReport(false);
+        }} />
+      )}
     </div>
   );
 };

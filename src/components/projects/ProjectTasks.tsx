@@ -1,12 +1,15 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Project, ProjectTask } from "@/types/project-management";
 
 interface ProjectTasksProps {
   projectId?: string;
+  projects?: Project[];
+  tasks?: ProjectTask[];
 }
 
-export const ProjectTasks: React.FC<ProjectTasksProps> = ({ projectId }) => {
+export const ProjectTasks: React.FC<ProjectTasksProps> = ({ projectId, projects, tasks }) => {
   return (
     <Card>
       <CardHeader>

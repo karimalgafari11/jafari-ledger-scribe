@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,16 +10,29 @@ import { useFinancialAnalysis } from "@/hooks/financial/useFinancialAnalysis";
 import { Badge } from "@/components/ui/badge";
 import { Download, Filter, PlusCircle, RefreshCw } from "lucide-react";
 import { AnalysisPeriod } from "@/types/financial-analysis";
+import { DateRange } from "react-day-picker";
 
-const FinancialAnalysisPage = () => {
+const FinancialAnalysisPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+    to: new Date()
+  });
+  
+  const handleDateRangeChange = (range: DateRange) => {
+    if (range?.from) {
+      setDateRange({
+        from: range.from,
+        to: range.to || range.from
+      });
+    }
+  };
+
   const { 
     financialMetrics, 
     financialRatios, 
     insights, 
     recommendations,
-    dateRange,
-    setDateRange,
     period,
     setPeriod,
     refreshData,
@@ -70,7 +82,7 @@ const FinancialAnalysisPage = () => {
 
           <DateRangePicker 
             value={dateRange} 
-            onValueChange={setDateRange}
+            onChange={handleDateRangeChange}
             align="start"
             className="w-auto" 
           />

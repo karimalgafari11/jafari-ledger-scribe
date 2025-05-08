@@ -2,13 +2,17 @@
 import { useState, useEffect } from "react";
 
 export interface Report {
-  id: number;
+  id: string;
   title: string;
   name?: string; // Add this to make it compatible with both naming conventions
   description: string;
   date: string;
   category: string | string[];
   favorite: boolean;
+  author?: string;
+  type?: string | string[];
+  createdAt?: Date;
+  lastRun?: Date;
 }
 
 export const useReports = (initialReports: Report[]) => {
@@ -31,7 +35,7 @@ export const useReports = (initialReports: Report[]) => {
   });
 
   // Toggle favorite status
-  const toggleFavorite = (id: number) => {
+  const toggleFavorite = (id: string) => {
     setReports(reports.map((report) => {
       if (report.id === id) {
         return { ...report, favorite: !report.favorite };
