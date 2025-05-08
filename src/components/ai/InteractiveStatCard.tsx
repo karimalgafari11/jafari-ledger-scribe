@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from "lucide-react";
@@ -5,13 +6,16 @@ import { LucideIcon, TrendingUp, TrendingDown, Minus } from "lucide-react";
 export interface InteractiveStatCardProps {
   title: string;
   value: string;
-  description: string;
-  icon: LucideIcon;
+  description?: string;
+  icon?: LucideIcon;
   trend?: "up" | "down" | "neutral";
   trendValue?: string;
   animation?: "pulse" | "fade" | "scale";
   color?: string;
   onClick?: () => void;
+  // Add these properties to support the existing usage in AiDashboardPage
+  change?: number;
+  isUp?: boolean;
 }
 
 export const InteractiveStatCard: React.FC<InteractiveStatCardProps> = ({
@@ -23,8 +27,14 @@ export const InteractiveStatCard: React.FC<InteractiveStatCardProps> = ({
   trendValue,
   animation,
   color = "blue",
-  onClick
+  onClick,
+  change,
+  isUp
 }) => {
+  // If change and isUp are provided, use them to determine trend and trendValue
+  const effectiveTrend = change !== undefined ? (isUp ? "up" : "down") : trend;
+  const effectiveTrendValue = change !== undefined ? `${Math.abs(change).toFixed(1)}%` : trendValue;
+
   const getColorClass = () => {
     switch (color) {
       case "red":
@@ -100,20 +110,22 @@ export const InteractiveStatCard: React.FC<InteractiveStatCardProps> = ({
           <div>
             <p className="text-sm font-medium text-gray-500">{title}</p>
             <h4 className="text-2xl font-bold mt-1">{value}</h4>
-            <p className="text-xs text-gray-500 mt-1">{description}</p>
+            {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
           </div>
-          <div className={`h-10 w-10 rounded-full flex items-center justify-center ${colorClasses.icon}`}>
-            <Icon className="h-5 w-5" />
-          </div>
+          {Icon && (
+            <div className={`h-10 w-10 rounded-full flex items-center justify-center ${colorClasses.icon}`}>
+              <Icon className="h-5 w-5" />
+            </div>
+          )}
         </div>
         
-        {trendValue && (
+        {(effectiveTrendValue || change !== undefined) && (
           <div className="flex items-center mt-2">
-            {trend === "up" && <TrendingUp className="h-3 w-3 text-green-600 mr-1" />}
-            {trend === "down" && <TrendingDown className="h-3 w-3 text-red-600 mr-1" />}
-            {trend === "neutral" && <Minus className="h-3 w-3 text-gray-500 mr-1" />}
-            <span className={`text-xs font-medium ${colorClasses.trend[trend]}`}>
-              {trendValue}
+            {effectiveTrend === "up" && <TrendingUp className="h-3 w-3 text-green-600 mr-1" />}
+            {effectiveTrend === "down" && <TrendingDown className="h-3 w-3 text-red-600 mr-1" />}
+            {effectiveTrend === "neutral" && <Minus className="h-3 w-3 text-gray-500 mr-1" />}
+            <span className={`text-xs font-medium ${colorClasses.trend[effectiveTrend]}`}>
+              {effectiveTrendValue}
             </span>
           </div>
         )}
