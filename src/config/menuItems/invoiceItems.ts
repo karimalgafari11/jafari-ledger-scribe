@@ -1,5 +1,5 @@
 
-import { Receipt, Percent, ShoppingBag, FileText } from "lucide-react";
+import { Receipt, Percent, ShoppingBag, FileText, FileBarChart2, ArrowLeftRight } from "lucide-react";
 import { MenuItem } from "./types";
 
 export const invoiceItems: MenuItem[] = [
@@ -14,7 +14,7 @@ export const invoiceItems: MenuItem[] = [
       },
       {
         label: "عروض الأسعار",
-        path: "/invoices/quotes",
+        path: "/invoices/quotes-module",
         icon: Percent,
       },
       {
@@ -25,7 +25,12 @@ export const invoiceItems: MenuItem[] = [
       {
         label: "المرتجعات",
         path: "/invoices/returns",
-        icon: FileText,
+        icon: ArrowLeftRight,
+      },
+      {
+        label: "إحصائيات المبيعات",
+        path: "/invoices/sales-stats",
+        icon: FileBarChart2,
       },
     ],
   },

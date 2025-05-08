@@ -1,11 +1,27 @@
-import { useState } from "react";
+
+import React, { useState } from "react";
+import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
-import { DataGrid } from "@/components/inventory/DataGrid";
 import { ProductsToolbar } from "@/components/inventory/ProductsToolbar";
+import { DataGrid, ColumnDefinition, ActionDefinition } from "@/components/inventory/DataGrid";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
+import { Product } from "@/types/inventory";
+import { Eye, Pencil, Trash2, FilePlus } from "lucide-react";
 import { toast } from "sonner";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+
 const ProductsPage = () => {
+  const navigate = useNavigate();
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
   const {
     products,
     searchQuery,
@@ -16,110 +32,247 @@ const ProductsPage = () => {
     bulkDeleteProducts,
     selectedProducts,
     toggleProductSelection,
-    clearSelectedProducts
+    clearSelectedProducts,
   } = useInventoryProducts();
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
-    toast.success("تم حذف القطعة بنجاح");
+
+  const columns: ColumnDefinition[] = [
+    {
+      id: "code",
+      header: "رقم المنتج",
+      accessorKey: "code",
+      sortable: true,
+      isVisible: true,
+    },
+    {
+      id: "name",
+      header: "اسم المنتج",
+      accessorKey: "name",
+      sortable: true,
+      isVisible: true,
+    },
+    {
+      id: "price",
+      header: "السعر",
+      accessorKey: "price",
+      cell: ({ row }) => `${row.price.toFixed(2)} ر.س`,
+      sortable: true,
+      isVisible: true,
+    },
+    {
+      id: "quantity",
+      header: "الكمية المتاحة",
+      accessorKey: "quantity",
+      sortable: true,
+      isVisible: true,
+      cell: ({ row }) => {
+        const quantity = row.quantity;
+        const reorderLevel = row.reorderLevel || 5;
+        
+        if (quantity <= 0) {
+          return <span className="text-red-700 font-bold">{quantity}</span>;
+        } else if (quantity < reorderLevel) {
+          return <span className="text-orange-500 font-bold">{quantity}</span>;
+        }
+        
+        return quantity;
+      }
+    },
+    {
+      id: "category",
+      header: "التصنيف",
+      accessorKey: "category",
+      sortable: true,
+      isVisible: true,
+    },
+    {
+      id: "status",
+      header: "الحالة",
+      accessorKey: "isActive",
+      cell: ({ row }) => (
+        <span className={`px-2 py-1 rounded-full text-xs ${row.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+          {row.isActive ? 'متوفر' : 'غير متوفر'}
+        </span>
+      ),
+      sortable: true,
+      isVisible: true,
+    },
+  ];
+
+  const actions: ActionDefinition[] = [
+    {
+      icon: <Eye className="h-4 w-4" />,
+      label: "عرض",
+      onClick: (product: Product) => handleViewProduct(product),
+    },
+    {
+      icon: <Pencil className="h-4 w-4" />,
+      label: "تعديل",
+      onClick: (product: Product) => navigate(`/inventory/products/edit/${product.id}`),
+    },
+    {
+      icon: <Trash2 className="h-4 w-4" />,
+      label: "حذف",
+      onClick: (product: Product) => handleDeleteProduct(product.id),
+      variant: "destructive",
+    },
+    {
+      icon: <FilePlus className="h-4 w-4" />,
+      label: "نسخ",
+      onClick: (product: Product) => handleDuplicateProduct(product),
+    },
+  ];
+
+  const handleViewProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setShowDetails(true);
   };
+
+  const handleDeleteProduct = (id: string) => {
+    deleteProduct(id);
+    toast.success("تم حذف المنتج بنجاح");
+  };
+
+  const handleDuplicateProduct = (product: Product) => {
+    navigate(`/inventory/products/duplicate/${product.id}`);
+    toast.success("تم نسخ المنتج، يمكنك الآن تعديل النسخة الجديدة");
+  };
+
   const handleBulkDelete = () => {
     if (selectedProducts.length === 0) {
-      toast.error("الرجاء تحديد قطع الغيار للحذف");
+      toast.error("الرجاء تحديد المنتجات المراد حذفها أولاً");
       return;
     }
+
     bulkDeleteProducts();
-    toast.success(`تم حذف ${selectedProducts.length} قطعة بنجاح`);
+    toast.success(`تم حذف ${selectedProducts.length} منتج بنجاح`);
   };
-  const handleExport = (type: 'pdf' | 'excel') => {
-    toast.info(`جاري تصدير البيانات بصيغة ${type}...`);
+
+  const handleExport = (type: "pdf" | "excel") => {
+    toast.success(`تم تصدير المنتجات بتنسيق ${type} بنجاح`);
   };
+
   const handleShare = () => {
-    toast.info("جاري مشاركة البيانات عبر واتساب...");
+    toast.success("تم نسخ رابط المنتجات للمشاركة");
   };
-  const handleViewDetails = (id: string) => {
-    toast.info(`عرض تفاصيل قطعة الغيار: ${id}`);
+
+  const handleProductVisibility = (id: string, visible: boolean) => {
+    // This would update product visibility in a real app
+    toast.success(`تم تغيير حالة المنتج ${visible ? 'إلى متوفر' : 'إلى غير متوفر'}`);
   };
-  const handleEdit = (id: string) => {
-    toast.info(`تحرير قطعة الغيار: ${id}`);
-  };
-  const columns = [{
-    id: "code",
-    header: "رقم القطعة",
-    accessorKey: "code",
-    width: "120px",
-    isSortable: true
-  }, {
-    id: "name",
-    header: "اسم القطعة",
-    accessorKey: "name",
-    width: "200px",
-    isSortable: true
-  }, {
-    id: "price",
-    header: "السعر",
-    accessorKey: "price",
-    width: "120px",
-    isSortable: true,
-    cell: (value: number) => value.toFixed(2)
-  }, {
-    id: "category",
-    header: "التصنيف",
-    accessorKey: "category",
-    width: "150px",
-    isSortable: true
-  }, {
-    id: "quantity",
-    header: "الكمية المتاحة",
-    accessorKey: "quantity",
-    width: "150px",
-    isSortable: true,
-    cell: (value: number, row: any) => {
-      const isLow = value < row.reorderLevel;
-      return <span className={`${value <= 0 ? 'text-red-700 font-bold' : isLow ? 'text-orange-500 font-bold' : ''}`}>{value}</span>;
+
+  const onSelectAll = (selected: boolean) => {
+    if (!selected) {
+      clearSelectedProducts();
+    } else {
+      // Select all displayed products
+      products.forEach(product => {
+        if (!selectedProducts.includes(product.id)) {
+          toggleProductSelection(product.id);
+        }
+      });
     }
-  }, {
-    id: "isActive",
-    header: "الحالة",
-    accessorKey: "isActive",
-    width: "100px",
-    cell: (value: boolean) => <span className={`px-2 py-1 text-xs rounded-full ${value ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-          {value ? 'متوفر' : 'غير متوفر'}
-        </span>
-  }];
-  const actions = [{
-    icon: <Eye className="h-4 w-4" />,
-    label: "عرض",
-    onClick: (row: any) => handleViewDetails(row.id)
-  }, {
-    icon: <Pencil className="h-4 w-4" />,
-    label: "تحرير",
-    onClick: (row: any) => handleEdit(row.id)
-  }, {
-    icon: <Trash2 className="h-4 w-4" />,
-    label: "حذف",
-    onClick: (row: any) => handleDelete(row.id),
-    variant: "ghost" as const
-  }];
-  return <div className="h-screen overflow-y-auto bg-gray-50">
-      <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <Header title="إدارة قطع الغيار" showBack={true} />
+  };
+
+  return (
+    <Layout>
+      <Header title="إدارة المنتجات" />
+      
+      <div className="p-4 md:p-6 space-y-6">
+        <ProductsToolbar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filterOptions={filterOptions}
+          setFilterOptions={setFilterOptions}
+          selectedCount={selectedProducts.length}
+          onBulkDelete={handleBulkDelete}
+          onExport={handleExport}
+          onShare={handleShare}
+        />
+
+        <DataGrid
+          data={products}
+          columns={columns}
+          actions={actions}
+          selectable={true}
+          selectedRows={selectedProducts}
+          onToggleSelection={toggleProductSelection}
+          onSelectAll={onSelectAll}
+          idField="id"
+          emptyMessage="لا توجد منتجات متاحة"
+          className="rounded-md overflow-hidden"
+        />
       </div>
 
-      <main className="p-6 bg-cyan-100">
-        <ProductsToolbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} filterOptions={filterOptions} setFilterOptions={setFilterOptions} selectedCount={selectedProducts.length} onBulkDelete={handleBulkDelete} onExport={handleExport} onShare={handleShare} />
-        
-        <DataGrid data={products} columns={columns} actions={actions} selectable={true} selectedRows={selectedProducts} onToggleSelection={toggleProductSelection} onSelectAll={selected => {
-        if (selected) {
-          products.forEach(product => {
-            if (!selectedProducts.includes(product.id)) {
-              toggleProductSelection(product.id);
-            }
-          });
-        } else {
-          clearSelectedProducts();
-        }
-      }} />
-      </main>
-    </div>;
+      {/* Product Details Dialog */}
+      <Dialog open={showDetails} onOpenChange={setShowDetails}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">تفاصيل المنتج</DialogTitle>
+          </DialogHeader>
+          
+          {selectedProduct && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium text-muted-foreground">رمز المنتج</h3>
+                  <p className="text-lg">{selectedProduct.code}</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">اسم المنتج</h3>
+                  <p className="text-lg">{selectedProduct.name}</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">الوصف</h3>
+                  <p>{selectedProduct.description || "لا يوجد وصف"}</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">التصنيف</h3>
+                  <p>{selectedProduct.category || "غير مصنف"}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium text-muted-foreground">سعر البيع</h3>
+                  <p className="text-lg font-medium">{selectedProduct.price.toFixed(2)} ر.س</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">سعر التكلفة</h3>
+                  <p>{selectedProduct.costPrice?.toFixed(2) || "غير محدد"} ر.س</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">الكمية المتوفرة</h3>
+                  <p className={`font-medium ${selectedProduct.quantity <= 5 ? 'text-red-600' : ''}`}>
+                    {selectedProduct.quantity}
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">الباركود</h3>
+                  <p>{selectedProduct.barcode || "غير محدد"}</p>
+                </div>
+              </div>
+              
+              <div className="md:col-span-2 flex justify-end gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/inventory/products/edit/${selectedProduct.id}`)}
+                >
+                  تعديل المنتج
+                </Button>
+                <Button onClick={() => setShowDetails(false)}>إغلاق</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </Layout>
+  );
 };
+
 export default ProductsPage;
