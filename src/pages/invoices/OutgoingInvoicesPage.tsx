@@ -67,7 +67,7 @@ const OutgoingInvoicesPage: React.FC = () => {
   return (
     <Layout>
       <div className="h-full w-full flex flex-col overflow-hidden">
-        <Header title="الفواتير الصادرة" showBack={true}>
+        <Header title="فواتير المبيعات" showBack={true}>
           <div className="flex items-center gap-4">
             <Button 
               onClick={handleNewInvoice} 
@@ -96,7 +96,7 @@ const OutgoingInvoicesPage: React.FC = () => {
           <Card className="overflow-hidden">
             <CardHeader className="bg-white py-4">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <CardTitle className="text-xl">قائمة الفواتير الصادرة</CardTitle>
+                <CardTitle className="text-xl">قائمة فواتير المبيعات</CardTitle>
                 <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
                   <div className="relative w-full md:w-[280px]">
                     <Search className="absolute right-2.5 top-2.5 h-4 w-4 text-gray-500" />

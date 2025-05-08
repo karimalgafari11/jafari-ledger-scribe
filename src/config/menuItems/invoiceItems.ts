@@ -8,7 +8,7 @@ export const invoiceItems: MenuItem[] = [
     icon: Receipt,
     children: [
       {
-        label: "الفواتير الصادرة",
+        label: "فواتير المبيعات",
         path: "/invoices/outgoing",
         icon: Receipt,
       },

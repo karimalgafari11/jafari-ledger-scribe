@@ -12,15 +12,15 @@ import { ShortcutItem } from "@/types/dashboard";
 const OutgoingInvoicePage: React.FC = () => {
   const navigate = useNavigate();
 
-  // إعداد اختصارات الفواتير الصادرة
+  // إعداد اختصارات فواتير المبيعات
   const invoiceShortcuts: ShortcutItem[] = [
     {
       id: "invoices-all",
-      name: "الفواتير الصادرة",
+      name: "فواتير المبيعات",
       icon: Receipt,
       route: "/invoices/outgoing",
       enabled: true,
-      description: "عرض وإدارة جميع الفواتير الصادرة"
+      description: "عرض وإدارة جميع فواتير المبيعات"
     },
     {
       id: "invoice-new",
@@ -106,15 +106,15 @@ const OutgoingInvoicePage: React.FC = () => {
 
         {/* بطاقات الوظائف الرئيسية */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">
-          {/* قائمة الفواتير الصادرة */}
+          {/* قائمة فواتير المبيعات */}
           <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/invoices/outgoing")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">الفواتير الصادرة</CardTitle>
+              <CardTitle className="text-xl">فواتير المبيعات</CardTitle>
               <Receipt className="h-6 w-6 text-primary" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                عرض وإدارة الفواتير الصادرة وتتبع حالة الدفع
+                عرض وإدارة فواتير المبيعات وتتبع حالة الدفع
               </p>
               <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/invoices/outgoing"); }}>
                 عرض الفواتير <ArrowLeft className="mr-1 h-4 w-4" />
