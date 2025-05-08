@@ -13,6 +13,7 @@ import { ReportExportOptions } from "@/components/reports/ReportExportOptions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { FileText, Plus, Settings } from "lucide-react";
+
 const Reports = () => {
   const {
     reports: filteredReports,
@@ -39,7 +40,7 @@ const Reports = () => {
     setActiveCategory(value);
     toast.info("تم تحديث الفلتر");
   };
-  const handleReportClick = (reportId: number) => {
+  const handleReportClick = (reportId: string) => {
     toast.success("جاري فتح التقرير...");
     console.log(`Opening report: ${reportId}`);
     // هنا يمكن إضافة منطق لفتح التقرير أو تحويل المستخدم إلى صفحة التقرير
@@ -99,7 +100,11 @@ const Reports = () => {
             <ReportCategories activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
             <div ref={reportRef} className="w-full">
-              <ReportsList reports={filteredReports} activeCategory={activeCategory} onReportClick={handleReportClick} onFavoriteClick={toggleFavorite} />
+              <ReportsList 
+                reports={filteredReports} 
+                onSelectReport={handleReportClick} 
+                onToggleFavorite={toggleFavorite} 
+              />
             </div>
           </TabsContent>
 
@@ -131,4 +136,5 @@ const Reports = () => {
       </main>
     </div>;
 };
+
 export default Reports;

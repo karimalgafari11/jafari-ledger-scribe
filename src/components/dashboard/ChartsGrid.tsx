@@ -5,17 +5,29 @@ import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { AlertsTabs } from "@/components/dashboard/AlertsTabs";
-import { ChartData } from "@/components/ui/charts";
+import { ChartData } from "@/types/custom-reports";
 import { SystemAlert } from "@/types/ai";
 
 interface ChartsGridProps {
   salesData?: ChartData;
   customerData?: ChartData;
-  alerts?: SystemAlert[];
-  onViewAllAlerts: () => void;
+  profitData?: ChartData;
+  customerDebtData?: ChartData;
+  supplierCreditData?: ChartData;
+  costCenterData?: ChartData;
+  dailySalesData?: ChartData;
+  profitMargin?: string;
+  systemAlerts?: SystemAlert[];
+  interactiveMode?: boolean;
+  onViewAllAlerts?: () => void;
 }
 
-const ChartsGrid: React.FC<ChartsGridProps> = ({ salesData, customerData, alerts = [], onViewAllAlerts }) => {
+const ChartsGrid: React.FC<ChartsGridProps> = ({ 
+  salesData, 
+  customerData, 
+  systemAlerts = [], 
+  onViewAllAlerts = () => {} 
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card>
@@ -44,7 +56,7 @@ const ChartsGrid: React.FC<ChartsGridProps> = ({ salesData, customerData, alerts
           </div>
         </CardHeader>
         <CardContent>
-          <AlertsTabs alerts={alerts} />
+          <AlertsTabs alerts={systemAlerts} />
         </CardContent>
       </Card>
     </div>

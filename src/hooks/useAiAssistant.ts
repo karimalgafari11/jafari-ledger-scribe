@@ -16,6 +16,7 @@ import {
   isSensitiveData,
   getRequiredVerificationLevel
 } from "@/utils/aiSecurityUtils";
+import { v4 as uuidv4 } from 'uuid';
 
 // Local storage keys
 const CHAT_HISTORY_KEY = "ai_assistant_chat_history";
@@ -281,7 +282,7 @@ export const useAiAssistant = () => {
                           currentVerificationLevel === VerificationLevel.BASIC ? 'أساسي' :
                           currentVerificationLevel === VerificationLevel.TWO_FACTOR ? 'متقدم' : 'كامل';
     
-    return `أنت مساعد ذكي متخصص في نظام إدارة المخزون والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أج����اء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
+    return `أنت مساعد ذكي متخصص في نظام إدارة المخز��ن والمحاسبة، وتتمتع بصلاحيات ${hasFullAccess ? 'كاملة' : 'محدودة'} ��لوصول إلى أج����اء النظام. دورك هو مساعدة المستخدم بالمعلومات المفيدة والإجابة على أسئلته بخصوص نظام إدارة المخزون والمبيعات والمشتريات والمحاسبة.
 
 معلومات حالية عن النظام:
 - يوجد حالياً ${systemContext.lowStockItems} منتج بمخزون منخفض يحتاج إلى إعادة طلب.
@@ -515,6 +516,132 @@ export const useAiAssistant = () => {
     }`);
   };
 
+  // Generate system alerts
+  const generateSystemAlerts = useCallback(() => {
+    const alerts: SystemAlert[] = [];
+    
+    // Low Inventory Alert
+    if (Math.random() > 0.3) {
+      alerts.push({
+        id: uuidv4(),
+        title: "مخزون منخفض",
+        message: "المنتج 'هاتف ذكي سامسونج' وصل إلى مستوى إعادة الطلب",
+        type: "inventory",
+        priority: "high",
+        severity: "high",
+        timestamp: new Date(),
+        read: false,
+        data: {
+          name: 'هاتف ذكي سامسونج',
+          sku: 'SM-G980F',
+          currentStock: 5,
+          reorderLevel: 10
+        }
+      });
+    }
+    
+    // Medium Priority Inventory Alert
+    if (Math.random() > 0.5) {
+      alerts.push({
+        id: uuidv4(),
+        title: "مخزون متناقص",
+        message: "المنتج 'سماعات بلوتوث' يقترب من مستوى إعادة الطلب",
+        type: "inventory",
+        priority: "medium",
+        severity: "medium",
+        timestamp: new Date(),
+        read: false,
+        data: {
+          name: 'سماعات بلوتوث',
+          sku: 'BT-500',
+          currentStock: 12,
+          reorderLevel: 10
+        }
+      });
+    }
+    
+    // Low Priority Inventory Alert
+    if (Math.random() > 0.7) {
+      alerts.push({
+        id: uuidv4(),
+        title: "تحذير المخزون",
+        message: "المنتج 'شاحن لاسلكي' في المخزون بكميات محدودة",
+        type: "inventory",
+        priority: "low",
+        severity: "low",
+        timestamp: new Date(),
+        read: false,
+        data: {
+          name: 'شاحن لاسلكي',
+          sku: 'WC-100',
+          currentStock: 15,
+          reorderLevel: 10
+        }
+      });
+    }
+    
+    // Expenses Alert
+    if (Math.random() > 0.4) {
+      alerts.push({
+        id: uuidv4(),
+        title: "نفقات غير معتادة",
+        message: "تم اكتشاف زيادة كبيرة في نفقات التسويق هذا الشهر",
+        type: "expenses",
+        priority: "medium",
+        severity: "medium",
+        timestamp: new Date(),
+        read: false,
+        data: {
+          category: 'تسويق',
+          currentMonth: 25000,
+          previousMonth: 15000,
+          percentIncrease: 67
+        }
+      });
+    }
+    
+    // Invoices Alert
+    if (Math.random() > 0.5) {
+      alerts.push({
+        id: uuidv4(),
+        title: "فواتير متأخرة",
+        message: "هناك 3 فواتير متأخرة السداد تحتاج إلى المتابعة",
+        type: "invoices",
+        priority: "medium",
+        severity: "medium",
+        timestamp: new Date(),
+        read: false,
+        data: {
+          invoiceCount: 3,
+          totalAmount: 15600,
+          oldestInvoiceAge: 45
+        }
+      });
+    }
+    
+    // Customer Alert
+    if (Math.random() > 0.4) {
+      alerts.push({
+        id: uuidv4(),
+        title: "خسارة عميل مهم",
+        message: "العميل 'شركة الأمل للتجارة' لم يقم بعمليات شراء منذ 3 أشهر",
+        type: "customers",
+        priority: "high",
+        severity: "high",
+        timestamp: new Date(),
+        read: false,
+        data: {
+          name: 'شركة الأمل للتجارة',
+          id: 'CUST-1234',
+          lastPurchase: '2023-01-15',
+          totalSpent: 125000
+        }
+      });
+    }
+    
+    return alerts;
+  }, []);
+
   return { 
     sendMessage, 
     isLoading, 
@@ -535,6 +662,7 @@ export const useAiAssistant = () => {
     pendingVerification,
     verifyUserIdentity,
     // Add the getter function
-    getSystemAlerts
+    getSystemAlerts,
+    generateSystemAlerts
   };
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -7,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { KpiCard } from "@/components/executive/KpiCard";
@@ -16,7 +15,7 @@ import { ProjectStatusCard } from "@/components/executive/ProjectStatusCard";
 import { FinancialRatiosCard } from "@/components/executive/FinancialRatiosCard";
 import { AlertsPanel } from "@/components/executive/AlertsPanel";
 import { useExecutiveDashboard } from "@/hooks/executive/useExecutiveDashboard";
-import { DateRange } from "@/types/ai";
+import { DateRange } from "react-day-picker";
 import { 
   AlertTriangle, 
   Download, 
@@ -40,24 +39,19 @@ const ExecutiveDashboardPage: React.FC = () => {
     salesTrends,
     cashflow,
     profitability,
-    dashboardDateRange, // Renamed to avoid conflict
-    setDashboardDateRange, // Renamed to avoid conflict
     refreshDashboard,
     shareDashboard,
     exportDashboard
   } = useExecutiveDashboard();
-  
-  // Use our own local date range state
-  const [localDateRange, setLocalDateRange] = useState<DateRange>({
+
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date()
   });
   
   const handleDateRangeChange = (range: DateRange) => {
     if (range?.from) {
-      setLocalDateRange(range);
-      // Also update the dashboard date range if needed
-      setDashboardDateRange({
+      setDateRange({
         from: range.from,
         to: range.to || range.from
       });
@@ -102,8 +96,8 @@ const ExecutiveDashboardPage: React.FC = () => {
           </Select>
 
           <DateRangePicker 
-            value={dashboardDateRange} 
-            onValueChange={handleDateRangeChange}
+            value={dateRange} 
+            onChange={handleDateRangeChange}
             align="start"
             className="w-auto" 
           />
@@ -121,7 +115,7 @@ const ExecutiveDashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {alerts.some(alert => alert.severity === 'high') && (
+      {alerts && alerts.some(alert => alert.severity === 'high') && (
         <Alert variant="destructive" className="mb-6">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>تنبيهات هامة</AlertTitle>

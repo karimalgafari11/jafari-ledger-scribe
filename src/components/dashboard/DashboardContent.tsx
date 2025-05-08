@@ -9,6 +9,7 @@ import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InteractiveLayout from "@/components/interactive/InteractiveLayout";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
+import { ChartData } from "@/types/custom-reports";
 
 interface DashboardContentProps {
   totalSales: number;
@@ -23,12 +24,12 @@ interface DashboardContentProps {
     status: "up" | "down" | "neutral";
     description: string;
   }>;
-  salesData: any[];
-  profitData: any[];
-  customerDebtData: any[];
-  supplierCreditData: any[];
-  costCenterData: any[];
-  dailySalesData: any[];
+  salesData: ChartData;
+  profitData: ChartData;
+  customerDebtData: ChartData;
+  supplierCreditData: ChartData;
+  costCenterData: ChartData;
+  dailySalesData: ChartData;
   systemAlerts: SystemAlert[];
   interactiveMode?: boolean;
   displayOptions: DisplayOptions;

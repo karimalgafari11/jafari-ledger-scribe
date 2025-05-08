@@ -22,8 +22,6 @@ export const ReportsList: React.FC<ReportsListProps> = ({
   showActions = true,
   isSelectable = true
 }) => {
-  // Rest of component implementation
-
   return (
     <Card>
       <CardHeader className="pb-2">
