@@ -442,22 +442,22 @@ export const useAiAssistant = () => {
       ],
       recommendations: [
         {
-          priority: 'high',
+          priority: 'high' as 'high',
           description: "إعادة هيكلة سياسة التسعير للمنتجات منخفضة الدوران",
           potentialImpact: "زيادة محتملة في هامش الربح بنسبة 3-5%",
-          implementationDifficulty: 'moderate'
+          implementationDifficulty: 'moderate' as 'moderate'
         },
         {
-          priority: 'medium',
+          priority: 'medium' as 'medium',
           description: "تحسين إدارة المخزون للمنتجات عالية الطلب",
           potentialImpact: "تقليل تكلفة التخزين بنسبة 8-10%",
-          implementationDifficulty: 'easy'
+          implementationDifficulty: 'easy' as 'easy'
         },
         {
-          priority: 'medium',
+          priority: 'medium' as 'medium',
           description: "مراجعة شروط الائتمان مع العملاء المتأخرين",
           potentialImpact: "تحسين التدفق النقدي بقيمة 15000+ ريال شهرياً",
-          implementationDifficulty: 'moderate'
+          implementationDifficulty: 'moderate' as 'moderate'
         }
       ]
     };
