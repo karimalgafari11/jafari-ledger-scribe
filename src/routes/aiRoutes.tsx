@@ -1,3 +1,4 @@
+
 import { RouteObject } from "react-router-dom";
 import AiAssistantPage from "@/pages/ai/AiAssistantPage";
 import AiDashboardPage from "@/pages/ai/AiDashboardPage";
@@ -7,6 +8,10 @@ import AiAssistantModulePage from "@/pages/ai/AiAssistantModulePage";
 import FinancialForecastPage from "@/pages/ai/FinancialForecastPage";
 
 export const aiRoutes: RouteObject[] = [
+  {
+    path: "ai",
+    element: <AiDashboardPage />,
+  },
   {
     path: "ai/assistant",
     element: <AiAssistantPage />,
