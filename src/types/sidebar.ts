@@ -9,6 +9,7 @@ export interface MenuItem {
     label: string;
     path: string;
     icon: LucideIcon;
+    description?: string;
   }[];
 }
 
