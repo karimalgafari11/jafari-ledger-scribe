@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 // Import the necessary types and data from the separated files
 import { AnalysisPeriod } from './types';
 import { mockFinancialMetrics, mockFinancialRatios, insightsData, mockRecommendations } from './mockData';
-import { createMockChartData } from './chartDataGenerator';
+import { createMockChartData } from './chartData';
 
 // Re-export the AnalysisPeriod enum to maintain API compatibility
 export { AnalysisPeriod };
