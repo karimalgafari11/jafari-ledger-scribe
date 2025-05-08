@@ -1,5 +1,5 @@
 
-import { Zap, Bot, Brain, LineChart } from "lucide-react";
+import { Zap, Bot, Brain, LineChart, ChartBar, ChartLine } from "lucide-react";
 import { MenuItem } from "./types";
 
 export const aiItems: MenuItem[] = [
@@ -21,6 +21,11 @@ export const aiItems: MenuItem[] = [
         label: "قرارات مالية",
         path: "/ai/financial-decisions",
         icon: LineChart,
+      },
+      {
+        label: "التوقعات المالية",
+        path: "/ai/financial-forecast",
+        icon: ChartLine,
       },
       {
         label: "إعدادات الذكاء الاصطناعي",

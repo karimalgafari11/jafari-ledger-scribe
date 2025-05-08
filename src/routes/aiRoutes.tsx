@@ -5,6 +5,7 @@ import AiDashboardPage from "@/pages/ai/AiDashboardPage";
 import AiSettingsPage from "@/pages/ai/AiSettingsPage";
 import FinancialDecisionsPage from "@/pages/ai/FinancialDecisionsPage";
 import AiAssistantModulePage from "@/pages/ai/AiAssistantModulePage";
+import FinancialForecastPage from "@/pages/ai/FinancialForecastPage";
 
 export const aiRoutes: RouteObject[] = [
   {
@@ -26,5 +27,9 @@ export const aiRoutes: RouteObject[] = [
   {
     path: "ai/assistant-module",
     element: <AiAssistantModulePage />,
+  },
+  {
+    path: "ai/financial-forecast",
+    element: <FinancialForecastPage />,
   }
 ];
