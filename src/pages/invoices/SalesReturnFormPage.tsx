@@ -9,7 +9,7 @@ import { ArrowLeft, Save, Search, Printer, Receipt, ArrowDown } from "lucide-rea
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox } from "@/components/ui/combobox"; // Now this import should work
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -150,11 +150,13 @@ const SalesReturnFormPage: React.FC = () => {
       // In a real app, this would be an API call to get invoice items
       const items = sampleInvoiceItems[selectedInvoice as keyof typeof sampleInvoiceItems] || [];
       
+      // Fix the type issue by explicitly typing the discountType as "percentage" | "fixed"
       setInvoiceItems(items.map(item => ({
         ...item,
         returnQuantity: 0,
         originalQuantity: item.quantity,
-        returnReason: ""
+        returnReason: "",
+        discountType: item.discountType as "percentage" | "fixed" // Ensure correct type
       })));
 
       setReturnItems([]);

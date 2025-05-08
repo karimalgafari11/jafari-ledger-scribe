@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -16,6 +15,7 @@ export interface Product {
   // Adding missing properties referenced in the codebase
   isActive?: boolean;
   reorderLevel?: number;
+  productId?: string; // Adding this to satisfy QuoteToInvoicePage.tsx
 }
 
 export interface FilterOptions {

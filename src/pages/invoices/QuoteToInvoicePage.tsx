@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Save, FileText, Printer, Receipt } from "lucide-react";
+import { ArrowLeft, Save, FileText, Printer, Receipt, Percent } from "lucide-react"; // Added Percent import here
 import { useSalesInvoice } from "@/hooks/sales/useSalesInvoice";
 import { toast } from "sonner";
 import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
