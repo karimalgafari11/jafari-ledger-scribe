@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Invoice } from "@/types/invoices";
 import { toast } from "sonner";
@@ -185,7 +186,7 @@ export const useOutgoingInvoices = () => {
       setIsLoading(true);
       try {
         // محاكاة تأخير API
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         // استخدام بيانات وهمية
         const mockInvoices = createMockInvoices();

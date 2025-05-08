@@ -27,6 +27,10 @@ export const invoicesRoutes: RouteObject[] = [
     element: <SalesInvoicePage />,
   },
   {
+    path: "invoices/new",
+    element: <SalesInvoicePage />,
+  },
+  {
     path: "invoices/quotes",
     element: <QuotesPage />,
   },
