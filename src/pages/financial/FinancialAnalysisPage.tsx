@@ -87,7 +87,7 @@ const FinancialAnalysisPage = () => {
               ) : (
                 <>
                   <p>
-                    {insights.length > 0
+                    {insights && insights.length > 0
                       ? insights[0]
                       : "لا توجد رؤى متاحة حاليًا."}
                   </p>
