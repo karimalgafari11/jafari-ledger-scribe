@@ -32,7 +32,7 @@ export interface FinancialAnalysis {
   period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
   metrics: FinancialMetric[];
   ratios: FinancialRatio[];
-  insights: string[];
+  insights: string[]; // Explicitly defining this as an array of strings
   recommendations: string[];
 }
 

@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useCallback } from 'react';
 import { FinancialMetric, FinancialRatio } from '@/types/financial-analysis';
 import { generateMockInsights } from '@/data/mockFinancialData';
@@ -15,7 +14,7 @@ export enum AnalysisPeriod {
 }
 
 // Define insights as an array of strings
-const insightsData = [
+const insightsData: string[] = [
   "تحليل مالي شامل للفترة الحالية يظهر تحسناً بنسبة 15% في صافي الربح مقارنة بالفترة السابقة"
 ];
 
