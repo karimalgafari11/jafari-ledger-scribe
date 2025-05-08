@@ -6,3 +6,5 @@ export * from './useInvoiceActions';
 export * from './invoiceCalculations';
 export * from './usePDFProcessing';
 export * from './usePDFInvoiceUploader';
+export * from './usePDFInvoiceParser';
+export * from './usePDFAnalysis';

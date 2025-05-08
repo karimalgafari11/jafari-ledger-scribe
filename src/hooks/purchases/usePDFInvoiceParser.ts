@@ -222,7 +222,8 @@ export const usePDFInvoiceParser = () => {
           return {
             id: `item-${index}`,
             productId: `prod-${index}`,
-            productName: description || `Item ${index + 1}`,
+            code: `code-${index}`, // Added code property to match PurchaseItem type
+            name: description || `Item ${index + 1}`, // Use name instead of productName
             quantity: isNaN(quantity) ? 1 : quantity,
             price: isNaN(price) ? 0 : price,
             total: isNaN(total) ? (isNaN(price) ? 0 : price * (isNaN(quantity) ? 1 : quantity)) : total,

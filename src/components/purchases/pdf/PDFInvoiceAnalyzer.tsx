@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePDFInvoiceParser } from '@/hooks/purchases/usePDFInvoiceParser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -288,7 +287,7 @@ export const PDFInvoiceAnalyzer: React.FC<PDFInvoiceAnalyzerProps> = ({ onDataEx
                     {parsedData.items.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>{item.productName}</TableCell>
+                        <TableCell>{item.name}</TableCell>
                         <TableCell className="text-left">{item.quantity}</TableCell>
                         <TableCell className="text-left">{item.price?.toLocaleString()}</TableCell>
                         <TableCell className="text-left">{item.total?.toLocaleString()}</TableCell>
