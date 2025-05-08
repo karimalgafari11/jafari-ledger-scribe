@@ -1,6 +1,6 @@
 
 export interface Report {
-  id: string; // Changed from number to string
+  id: string;
   title: string;
   name?: string;
   description: string;

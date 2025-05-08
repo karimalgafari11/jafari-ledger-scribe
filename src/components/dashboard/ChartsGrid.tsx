@@ -1,19 +1,21 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChartData } from "@/types/custom-reports";
 import { AlertsTabs } from "@/components/dashboard/AlertsTabs";
+import { ChartData } from "@/components/ui/charts";
+import { SystemAlert } from "@/types/ai";
 
 interface ChartsGridProps {
-  salesData: ChartData;
-  customerData: ChartData;
-  alerts: any[];
+  salesData?: ChartData;
+  customerData?: ChartData;
+  alerts?: SystemAlert[];
   onViewAllAlerts: () => void;
 }
 
-const ChartsGrid: React.FC<ChartsGridProps> = ({ salesData, customerData, alerts, onViewAllAlerts }) => {
+const ChartsGrid: React.FC<ChartsGridProps> = ({ salesData, customerData, alerts = [], onViewAllAlerts }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card>

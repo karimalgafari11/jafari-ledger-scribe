@@ -6,19 +6,30 @@ import { SystemAlertCard } from "@/components/ai/SystemAlertCard";
 import { Badge } from "@/components/ui/badge";
 
 interface AlertsTabsProps {
-  alerts: SystemAlert[];
+  alerts?: SystemAlert[];
 }
 
-export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts }) => {
-  const highPriorityAlerts = alerts.filter(alert => alert.priority === "high" || alert.severity === "high");
-  const mediumPriorityAlerts = alerts.filter(alert => alert.priority === "medium" || alert.severity === "medium");
-  const lowPriorityAlerts = alerts.filter(alert => alert.priority === "low" || alert.severity === "low");
+export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts = [] }) => {
+  // Make sure we're working with a valid array by providing a default value
+  const safeAlerts = Array.isArray(alerts) ? alerts : [];
+  
+  const highPriorityAlerts = safeAlerts.filter(alert => 
+    alert && (alert.priority === "high" || alert.severity === "high")
+  );
+  
+  const mediumPriorityAlerts = safeAlerts.filter(alert => 
+    alert && (alert.priority === "medium" || alert.severity === "medium")
+  );
+  
+  const lowPriorityAlerts = safeAlerts.filter(alert => 
+    alert && (alert.priority === "low" || alert.severity === "low")
+  );
   
   return (
     <Tabs defaultValue="all">
       <TabsList className="grid grid-cols-4 mb-4">
         <TabsTrigger value="all">
-          الكل <Badge variant="outline" className="mr-2">{alerts.length}</Badge>
+          الكل <Badge variant="outline" className="mr-2">{safeAlerts.length}</Badge>
         </TabsTrigger>
         <TabsTrigger value="high">
           عالية <Badge variant="outline" className="mr-2">{highPriorityAlerts.length}</Badge>
@@ -32,12 +43,12 @@ export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts }) => {
       </TabsList>
       
       <TabsContent value="all" className="space-y-4">
-        {alerts.length === 0 ? (
+        {safeAlerts.length === 0 ? (
           <div className="text-center p-4">
             <p className="text-muted-foreground">لا توجد تنبيهات</p>
           </div>
         ) : (
-          alerts.map((alert, index) => (
+          safeAlerts.map((alert, index) => (
             <SystemAlertCard key={index} alert={alert} />
           ))
         )}
