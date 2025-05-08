@@ -398,7 +398,7 @@ export const useFinancialAnalysis = () => {
   const financialMetrics = useMemo(() => mockFinancialMetrics, []);
   const financialRatios = useMemo(() => mockFinancialRatios, []);
   
-  // Fix this line to properly handle the string array
+  // Return the entire array instead of trying to access a single string
   const insights = useMemo(() => insightsData, []);
   
   const recommendations = useMemo(
