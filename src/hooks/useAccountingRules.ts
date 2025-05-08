@@ -5,7 +5,8 @@ import {
   AccountingRule, 
   ValidationRule, 
   AutomaticEntry, 
-  AccountingRuleSettings
+  AccountingRuleSettings,
+  InventoryValuationMethod
 } from '@/types/accountingRules';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,6 +18,9 @@ const defaultSettings: AccountingRuleSettings = {
   requireApproval: true,
   checkDuplicateEntries: true,
   allowNegativeInventory: false,
+  inventoryValuationMethod: InventoryValuationMethod.WeightedAverage, // تم إضافة طريقة تقييم المخزون الافتراضية
+  automaticCostCalculation: true, // تم إضافة حساب التكلفة آلياً
+  recordInventoryTransactions: true, // تم إضافة تسجيل معاملات المخزون تلقائيًا
 };
 
 export const useAccountingRules = () => {
