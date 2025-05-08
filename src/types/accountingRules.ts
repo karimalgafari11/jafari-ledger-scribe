@@ -7,6 +7,9 @@ export interface AccountingRuleSettings {
   requireApproval: boolean;           // تتطلب القيود موافقة
   checkDuplicateEntries: boolean;     // التحقق من تكرار القيود
   allowNegativeInventory: boolean;    // السماح بمخزون سالب
+  inventoryValuationMethod: InventoryValuationMethod; // طريقة تقييم المخزون
+  automaticCostCalculation: boolean;  // حساب التكلفة آلياً
+  recordInventoryTransactions: boolean; // تسجيل معاملات المخزون تلقائيًا
 }
 
 // نوع قانون المحاسبة
@@ -48,4 +51,41 @@ export interface AccountEntry {
   amountType: 'fixed' | 'percentage' | 'calculated';
   amountSource?: string;
   description?: string;
+}
+
+// طرق تقييم المخزون
+export enum InventoryValuationMethod {
+  FIFO = 'fifo',           // الوارد أولاً صادر أولاً
+  LIFO = 'lifo',           // الوارد أخيراً صادر أولاً
+  WeightedAverage = 'weighted_average', // المتوسط المرجح
+  SpecificIdentification = 'specific_identification' // التحديد المعين
+}
+
+// نوع معاملة المخزون المحاسبية
+export interface InventoryTransaction {
+  id: string;
+  date: string;
+  type: 'purchase' | 'sale' | 'return' | 'adjustment';
+  documentId: string;
+  documentType: string;
+  productId: string;
+  quantity: number;
+  unitCost: number;
+  totalCost: number;
+  journalEntryId?: string;
+}
+
+// نوع حركة المخزون المحاسبية
+export interface InventoryMovementCost {
+  productId: string;
+  date: string;
+  inQty: number;
+  inCost: number;
+  outQty: number;
+  outCost: number;
+  balanceQty: number;
+  balanceCost: number;
+  method: InventoryValuationMethod;
+  documentId: string;
+  documentType: string;
 }

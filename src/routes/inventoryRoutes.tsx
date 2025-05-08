@@ -5,6 +5,7 @@ import StockMovementsPage from "@/pages/inventory/StockMovementsPage";
 import CountingPage from "@/pages/inventory/CountingPage";
 import ReorderPage from "@/pages/inventory/ReorderPage";
 import ReorderModulePage from "@/pages/inventory/ReorderModulePage";
+import InventoryCostingPage from "@/pages/inventory/InventoryCostingPage";
 
 export const inventoryRoutes: RouteObject[] = [
   {
@@ -26,5 +27,9 @@ export const inventoryRoutes: RouteObject[] = [
   {
     path: "inventory/reorder-module",
     element: <ReorderModulePage />,
+  },
+  {
+    path: "inventory/costing",
+    element: <InventoryCostingPage />,
   }
 ];

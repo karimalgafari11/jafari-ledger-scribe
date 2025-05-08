@@ -7,7 +7,8 @@ import {
   FolderKanban, 
   Zap, 
   Store, 
-  AlertTriangle 
+  AlertTriangle,
+  FileText
 } from "lucide-react";
 import { MenuItem } from "./types";
 
@@ -35,6 +36,11 @@ export const inventoryItems: MenuItem[] = [
         label: "إعادة الطلب",
         path: "/inventory/reorder",
         icon: CaseSensitive,
+      },
+      {
+        label: "تكاليف المخزون",
+        path: "/inventory/costing",
+        icon: FileText,
       },
     ],
   },
