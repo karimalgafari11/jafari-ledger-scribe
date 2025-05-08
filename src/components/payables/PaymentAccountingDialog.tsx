@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { JournalEntry } from "@/types/journal";
+import { JournalEntry, JournalStatus } from "@/types/journal";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpDown, FileUp, FileDown } from "lucide-react";
@@ -62,7 +62,7 @@ export const PaymentAccountingDialog: React.FC<PaymentAccountingDialogProps> = (
           ],
           totalDebit: 5000,
           totalCredit: 5000,
-          status: 'approved',
+          status: JournalStatus.Approved,
           createdBy: "النظام",
           createdAt: new Date(),
           updatedAt: new Date()
@@ -108,8 +108,8 @@ export const PaymentAccountingDialog: React.FC<PaymentAccountingDialogProps> = (
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">الحالة:</p>
-                <Badge variant={journalEntry.status === 'approved' ? 'success' : 'default'}>
-                  {journalEntry.status === 'approved' ? 'معتمد' : 'مسودة'}
+                <Badge variant={journalEntry.status === JournalStatus.Approved ? 'success' : 'default'}>
+                  {journalEntry.status === JournalStatus.Approved ? 'معتمد' : 'مسودة'}
                 </Badge>
               </div>
             </div>
