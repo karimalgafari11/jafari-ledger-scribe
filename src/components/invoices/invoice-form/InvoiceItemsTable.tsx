@@ -48,6 +48,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   onUpdateItem,
   settings
 }) => {
+  // عرض أكواد العناصر
+  const showItemCodes = settings?.showItemCodes !== false;
+  // عرض ملاحظات العناصر
+  const showItemNotes = settings?.showItemNotes !== false;
+
   const [editingItem, setEditingItem] = useState<InvoiceItem | undefined>(
     editingItemIndex !== null ? items[editingItemIndex] : undefined
   );
@@ -202,11 +207,6 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     
     return () => clearTimeout(timer);
   };
-
-  // عرض أكواد العناصر
-  const showItemCodes = settings?.showItemCodes !== false;
-  // عرض ملاحظات العناصر
-  const showItemNotes = settings?.showItemNotes !== false;
 
   return (
     <div className="space-y-4">
@@ -409,3 +409,4 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     </div>
   );
 };
+
