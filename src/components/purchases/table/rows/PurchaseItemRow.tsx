@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { KeyboardEvent } from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash } from "lucide-react";
@@ -25,6 +25,8 @@ interface PurchaseItemRowProps {
   onRemoveItem: (index: number) => void;
   showItemCodes?: boolean;
   showItemNotes?: boolean;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => void;
+  cellRefs?: Map<string, HTMLTableCellElement>;
 }
 
 export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
@@ -40,7 +42,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
   setEditingItemIndex,
   onRemoveItem,
   showItemCodes = true,
-  showItemNotes = true
+  showItemNotes = true,
+  onKeyDown,
+  cellRefs
 }) => {
   const handleEditRow = (index: number) => {
     if (!isAddingItem && editingItemIndex === null) {
@@ -62,6 +66,21 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
            activeSearchCell.cellName === cellName;
   };
 
+  // Helper function to register cell references
+  const registerCellRef = (cellName: string) => (el: HTMLTableCellElement | null) => {
+    if (el && cellRefs) {
+      const cellId = `${index}-${cellName}`;
+      cellRefs.set(cellId, el);
+    }
+  };
+
+  // Handle keyboard events for each cell
+  const handleCellKeyDown = (e: KeyboardEvent<HTMLTableCellElement>, cellName: string) => {
+    if (onKeyDown) {
+      onKeyDown(e, index, cellName);
+    }
+  };
+
   return (
     <TableRow 
       key={item.id || index} 
@@ -79,6 +98,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
           handleDirectEdit={handleDirectEdit}
           isEditingCell={isEditingCell(index, 'code')}
           handleCellClick={handleCellClick}
+          onKeyDown={(e) => handleCellKeyDown(e, 'code')}
+          ref={registerCellRef('code')}
+          tabIndex={0}
         />
       )}
       
@@ -91,6 +113,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
         handleDirectEdit={handleDirectEdit}
         isEditing={isEditingCell(index, 'name')}
         handleCellClick={handleCellClick}
+        onKeyDown={(e) => handleCellKeyDown(e, 'name')}
+        ref={registerCellRef('name')}
+        tabIndex={0}
       />
       
       <UnitCell 
@@ -99,6 +124,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
         isEditing={isEditingCell(index, 'unit')}
         handleCellClick={handleCellClick}
         handleDirectEdit={handleDirectEdit}
+        onKeyDown={(e) => handleCellKeyDown(e, 'unit')}
+        ref={registerCellRef('unit')}
+        tabIndex={0}
       />
       
       <QuantityCell 
@@ -107,6 +135,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
         isEditing={isEditingCell(index, 'quantity')}
         handleCellClick={handleCellClick}
         handleDirectEdit={handleDirectEdit}
+        onKeyDown={(e) => handleCellKeyDown(e, 'quantity')}
+        ref={registerCellRef('quantity')}
+        tabIndex={0}
       />
       
       <PriceCell 
@@ -115,6 +146,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
         isEditing={isEditingCell(index, 'price')}
         handleCellClick={handleCellClick}
         handleDirectEdit={handleDirectEdit}
+        onKeyDown={(e) => handleCellKeyDown(e, 'price')}
+        ref={registerCellRef('price')}
+        tabIndex={0}
       />
       
       <TableCell className="text-center font-semibold">
@@ -128,6 +162,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
           isEditing={isEditingCell(index, 'notes')}
           handleCellClick={handleCellClick}
           handleDirectEdit={handleDirectEdit}
+          onKeyDown={(e) => handleCellKeyDown(e, 'notes')}
+          ref={registerCellRef('notes')}
+          tabIndex={0}
         />
       )}
       

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -9,15 +9,19 @@ interface ItemCodeCellProps {
   isEditingCell: boolean;
   handleDirectEdit: (index: number, field: string, value: any) => void;
   handleCellClick: (rowIndex: number, cellName: string) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
+  tabIndex?: number;
 }
 
-export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
+export const ItemCodeCell = forwardRef<HTMLTableCellElement, ItemCodeCellProps>(({
   code,
   index,
   isEditingCell,
   handleDirectEdit,
-  handleCellClick
-}) => {
+  handleCellClick,
+  onKeyDown,
+  tabIndex
+}, ref) => {
   const [inputValue, setInputValue] = useState(code);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,8 +44,11 @@ export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
     <TableCell 
       className="text-center border border-gray-300 p-2"
       onClick={() => handleCellClick(index, 'code')}
+      onKeyDown={onKeyDown}
       data-row-index={index}
       data-cell-name="code"
+      tabIndex={tabIndex}
+      ref={ref}
     >
       {isEditingCell ? (
         <Input
@@ -58,4 +65,6 @@ export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
       )}
     </TableCell>
   );
-};
+});
+
+ItemCodeCell.displayName = "ItemCodeCell";

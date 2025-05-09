@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { KeyboardEvent, useRef } from "react";
 import { TableBody } from "@/components/ui/table";
 import { PurchaseItem } from "@/types/purchases";
 import { PurchaseItemRow } from "./rows/PurchaseItemRow";
@@ -36,8 +36,79 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
   showItemCodes = true,
   showItemNotes = true
 }) => {
+  // Create a reference array to store references to each cell
+  const cellRefs = useRef<Map<string, HTMLTableCellElement>>(new Map());
+  
+  // Handle keyboard navigation
+  const handleKeyDown = (e: KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
+    const cellId = `${rowIndex}-${cellName}`;
+    
+    if (e.key === 'Enter') {
+      // Activate cell for editing
+      handleCellClick(rowIndex, cellName);
+      e.preventDefault();
+      return;
+    }
+    
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+      return;
+    }
+    
+    e.preventDefault();
+    
+    const cellNames = ['code', 'name', 'unit', 'quantity', 'price', 'notes'];
+    if (!showItemCodes) {
+      cellNames.splice(cellNames.indexOf('code'), 1);
+    }
+    if (!showItemNotes) {
+      cellNames.splice(cellNames.indexOf('notes'), 1);
+    }
+    
+    let nextRowIndex = rowIndex;
+    let nextCellIndex = cellNames.indexOf(cellName);
+    
+    switch (e.key) {
+      case 'ArrowUp':
+        nextRowIndex = Math.max(0, rowIndex - 1);
+        break;
+      case 'ArrowDown':
+        nextRowIndex = Math.min(items.length - 1, rowIndex + 1);
+        break;
+      case 'ArrowLeft':
+        nextCellIndex = Math.max(0, nextCellIndex - 1);
+        break;
+      case 'ArrowRight':
+        nextCellIndex = Math.min(cellNames.length - 1, nextCellIndex + 1);
+        break;
+      case 'Tab':
+        if (e.shiftKey) {
+          nextCellIndex = Math.max(0, nextCellIndex - 1);
+          if (nextCellIndex === 0 && rowIndex > 0) {
+            nextRowIndex = rowIndex - 1;
+            nextCellIndex = cellNames.length - 1;
+          }
+        } else {
+          nextCellIndex = Math.min(cellNames.length - 1, nextCellIndex + 1);
+          if (nextCellIndex === cellNames.length - 1 && rowIndex < items.length - 1) {
+            nextRowIndex = rowIndex + 1;
+            nextCellIndex = 0;
+          }
+        }
+        break;
+    }
+    
+    const nextCellName = cellNames[nextCellIndex];
+    const nextCellId = `${nextRowIndex}-${nextCellName}`;
+    
+    // Focus the next cell
+    const nextCell = cellRefs.current.get(nextCellId);
+    if (nextCell) {
+      nextCell.focus();
+    }
+  };
+  
   return (
-    <TableBody>
+    <TableBody dir="rtl">
       {items.length === 0 ? (
         <tr>
           <td 
@@ -68,6 +139,8 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
             onRemoveItem={onRemoveItem}
             showItemCodes={showItemCodes}
             showItemNotes={showItemNotes}
+            onKeyDown={handleKeyDown}
+            cellRefs={cellRefs.current}
           />
         ))
       )}

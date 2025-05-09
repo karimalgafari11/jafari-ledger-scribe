@@ -12,7 +12,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   showItemNotes = true
 }) => {
   return (
-    <UITableHeader className="bg-primary-50">
+    <UITableHeader className="bg-primary-50" dir="rtl">
       <TableRow>
         <TableHead className="text-center border border-gray-300 p-2 font-bold">#</TableHead>
         
