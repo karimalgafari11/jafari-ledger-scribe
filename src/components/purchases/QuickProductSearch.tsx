@@ -164,9 +164,14 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
                         <div className="flex flex-col items-start w-full">
                           <span className="font-medium text-right w-full">{product.name}</span>
                           <div className="flex justify-between w-full mt-1">
-                            <span className="text-sm">{product.category || ""}</span>
+                            <span className="text-sm">{product.unit || ""}</span>
                             <span className="text-sm font-bold">{product.price?.toFixed(2)} ر.س</span>
                           </div>
+                          {product.sku && (
+                            <div className="w-full text-right mt-1">
+                              <span className="text-xs text-gray-500">المقاس: {product.sku}</span>
+                            </div>
+                          )}
                         </div>
                       </Button>
                     ))
@@ -176,19 +181,20 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
                 <Table className="min-w-full border-collapse">
                   <TableHeader>
                     <TableRow className="bg-muted">
-                      <TableHead className="border text-center font-bold w-16">#</TableHead>
-                      <TableHead className="border text-center font-bold">رقم المنتج</TableHead>
+                      <TableHead className="border text-center font-bold w-16">رقم</TableHead>
+                      <TableHead className="border text-center font-bold">رقم الصنف</TableHead>
                       <TableHead className="border text-center font-bold">اسم المنتج</TableHead>
                       <TableHead className="border text-center font-bold">الكمية المتاحة</TableHead>
                       <TableHead className="border text-center font-bold">سعر البيع</TableHead>
-                      <TableHead className="border text-center font-bold">التصنيف</TableHead>
+                      <TableHead className="border text-center font-bold">المقاس</TableHead>
+                      <TableHead className="border text-center font-bold">الوحدة</TableHead>
                       <TableHead className="border text-center font-bold w-20">إضافة</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredProducts.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="h-24 text-center">
+                        <TableCell colSpan={8} className="h-24 text-center">
                           لا توجد منتجات مطابقة للبحث
                         </TableCell>
                       </TableRow>
@@ -216,11 +222,10 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
                             {product.price?.toFixed(2)} ر.س
                           </TableCell>
                           <TableCell className="border text-center">
-                            {product.category ? (
-                              <Badge variant="outline" className="font-normal bg-blue-50">
-                                {product.category}
-                              </Badge>
-                            ) : "-"}
+                            {product.sku || "-"}
+                          </TableCell>
+                          <TableCell className="border text-center">
+                            {product.unit || "قطعة"}
                           </TableCell>
                           <TableCell className="border text-center">
                             <Button
