@@ -11,6 +11,7 @@ import PriceQuotesPage from "@/pages/invoices/PriceQuotesPage";
 import QuoteToInvoicePage from "@/pages/invoices/QuoteToInvoicePage";
 import InvoiceTemplatesPage from "@/pages/invoices/InvoiceTemplatesPage";
 import SalesReturnFormPage from "@/pages/invoices/SalesReturnFormPage";
+import SalesStatsPage from "@/pages/reports/SalesStatsPage";
 
 export const invoicesRoutes: RouteObject[] = [
   {
@@ -60,6 +61,10 @@ export const invoicesRoutes: RouteObject[] = [
   {
     path: "invoices/sales-orders",
     element: <SalesOrdersPage />,
+  },
+  {
+    path: "invoices/sales-stats",
+    element: <SalesStatsPage />,
   },
   {
     path: "invoices/templates",

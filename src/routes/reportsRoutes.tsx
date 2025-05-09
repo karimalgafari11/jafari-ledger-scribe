@@ -1,11 +1,20 @@
 
 import { RouteObject } from "react-router-dom";
+import Reports from "@/pages/Reports";
 import SalesReportsPage from "@/pages/reports/SalesReportsPage";
-import ReportTemplatesPage from "@/pages/reports/ReportTemplatesPage";
-import FinancialReportsPage from "@/pages/reports/FinancialReportsPage";
+import SalesStatsPage from "@/pages/reports/SalesStatsPage";
 
 export const reportsRoutes: RouteObject[] = [
-  { path: "reports/sales", element: <SalesReportsPage /> },
-  { path: "reports/templates", element: <ReportTemplatesPage /> },
-  { path: "reports/financial", element: <FinancialReportsPage /> }
+  {
+    path: "reports",
+    element: <Reports />,
+  },
+  {
+    path: "reports/sales",
+    element: <SalesReportsPage />,
+  },
+  {
+    path: "reports/sales-stats",
+    element: <SalesStatsPage />,
+  }
 ];

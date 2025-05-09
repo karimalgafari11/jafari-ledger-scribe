@@ -18,7 +18,23 @@ type TranslationKey =
   | 'systemSettings'
   | 'filterResults'
   | 'showFilters'
-  | 'hideFilters';
+  | 'hideFilters'
+  | 'salesStats'
+  | 'salesStatistics'
+  | 'overview'
+  | 'products'
+  | 'customers'
+  | 'sales'
+  | 'totalSales'
+  | 'transactions'
+  | 'averageOrder'
+  | 'netProfit'
+  | 'exportPdf'
+  | 'exportExcel'
+  | 'exportCsv'
+  | 'period'
+  | 'branch'
+  | 'salesPerformance';
 
 type Translations = {
   [key in Language]: {
@@ -44,7 +60,20 @@ export const translations: Translations = {
     systemSettings: 'إعدادات النظام',
     filterResults: 'تصفية النتائج',
     showFilters: 'عرض الفلاتر',
-    hideFilters: 'إخفاء الفلاتر'
+    hideFilters: 'إخفاء الفلاتر',
+    salesStats: 'إحصائيات المبيعات',
+    salesStatistics: 'إحصائيات ومؤشرات المبيعات',
+    overview: 'نظرة عامة',
+    totalSales: 'إجمالي المبيعات',
+    transactions: 'عدد المعاملات',
+    averageOrder: 'متوسط قيمة الطلب',
+    netProfit: 'صافي الأرباح',
+    exportPdf: 'تصدير PDF',
+    exportExcel: 'تصدير Excel',
+    exportCsv: 'تصدير CSV',
+    period: 'الفترة',
+    branch: 'الفرع',
+    salesPerformance: 'أداء المبيعات والإيرادات'
   },
   en: {
     dashboard: 'Dashboard',
@@ -63,7 +92,20 @@ export const translations: Translations = {
     systemSettings: 'System Settings',
     filterResults: 'Filter Results',
     showFilters: 'Show Filters',
-    hideFilters: 'Hide Filters'
+    hideFilters: 'Hide Filters',
+    salesStats: 'Sales Statistics',
+    salesStatistics: 'Sales Statistics & Metrics',
+    overview: 'Overview',
+    totalSales: 'Total Sales',
+    transactions: 'Transactions',
+    averageOrder: 'Average Order',
+    netProfit: 'Net Profit',
+    exportPdf: 'Export PDF',
+    exportExcel: 'Export Excel',
+    exportCsv: 'Export CSV',
+    period: 'Period',
+    branch: 'Branch',
+    salesPerformance: 'Sales & Revenue Performance'
   }
 };
 
