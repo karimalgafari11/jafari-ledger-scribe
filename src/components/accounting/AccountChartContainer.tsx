@@ -58,7 +58,7 @@ export const AccountChartContainer: React.FC = () => {
               onShare={handleShare}
             />
 
-            <AccountDialogsManager
+            <DialogManager
               parentOptions={getParentAccountOptions()}
               onAddSubmit={handleAddSubmit}
               onEditSubmit={handleEditSubmit}
@@ -71,19 +71,21 @@ export const AccountChartContainer: React.FC = () => {
   );
 };
 
-interface AccountDialogsManagerProps {
+interface DialogManagerProps {
   parentOptions: { label: string; value: string }[];
   onAddSubmit: (data: any) => void;
   onEditSubmit: (data: any) => void;
   onSuggestNumber: (type: string, parentId: string | null) => string;
 }
 
-const AccountDialogsManager: React.FC<AccountDialogsManagerProps> = ({
+// Use a named component declaration to avoid "useAccountDialogs is not defined" runtime error
+const DialogManager: React.FC<DialogManagerProps> = ({
   parentOptions,
   onAddSubmit,
   onEditSubmit,
   onSuggestNumber
 }) => {
+  // Now using the hook inside a function component
   const {
     isAddDialogOpen,
     setIsAddDialogOpen,

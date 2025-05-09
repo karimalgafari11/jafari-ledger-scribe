@@ -6,7 +6,7 @@ import { AccountTreeNode } from "./AccountTreeNode";
 interface AccountTreeProps {
   accounts: AccountNode[];
   onEdit: (id: string) => void;
-  onDelete: (id: string, name: string) => void;
+  onDelete: (id: string, name?: string) => void; // Updated to accept optional name parameter
   onShare: (id: string, method: 'link' | 'email' | 'whatsapp') => void;
   loading?: boolean;
 }
