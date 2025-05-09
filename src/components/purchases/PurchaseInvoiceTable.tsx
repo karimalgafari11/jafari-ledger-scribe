@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table } from "@/components/ui/table";
@@ -132,7 +131,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
               editingItemIndex={editingItemIndex}
               searchInputRef={searchInputRef}
               setIsAddingItem={setIsAddingItem}
-              isEditingCell={(rowIndex, cellName) => isEditingCell(rowIndex, cellName)}
+              isEditingCell={(rowIndex, cellName) => activeSearchCell?.rowIndex === rowIndex && activeSearchCell?.cellName === cellName}
               showItemCodes={showItemCodes}
               showItemNotes={showItemNotes}
             />
