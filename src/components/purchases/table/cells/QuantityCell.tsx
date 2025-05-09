@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -9,15 +9,19 @@ interface QuantityCellProps {
   isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
+  tabIndex?: number;
 }
 
-export const QuantityCell: React.FC<QuantityCellProps> = ({
+export const QuantityCell = forwardRef<HTMLTableCellElement, QuantityCellProps>(({
   quantity,
   index,
   isEditing,
   handleCellClick,
-  handleDirectEdit
-}) => {
+  handleDirectEdit,
+  onKeyDown,
+  tabIndex
+}, ref) => {
   const [inputValue, setInputValue] = useState(quantity.toString());
   
   useEffect(() => {
@@ -52,8 +56,11 @@ export const QuantityCell: React.FC<QuantityCellProps> = ({
     <TableCell 
       className="text-center border border-gray-300 p-2"
       onClick={() => handleCellClick(index, 'quantity')}
+      onKeyDown={onKeyDown}
       data-row-index={index}
       data-cell-name="quantity"
+      ref={ref}
+      tabIndex={tabIndex}
     >
       {isEditing ? (
         <Input
@@ -70,4 +77,6 @@ export const QuantityCell: React.FC<QuantityCellProps> = ({
       )}
     </TableCell>
   );
-};
+});
+
+QuantityCell.displayName = "QuantityCell";

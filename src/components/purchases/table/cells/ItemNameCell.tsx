@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/types/inventory";
@@ -13,6 +13,8 @@ interface ItemNameCellProps {
   handleCellClick: (rowIndex: number, cellName: string) => void;
   isAddingItem: boolean;
   editingItemIndex: number | null;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
+  tabIndex?: number;
 }
 
 // نفس منتجات البحث المستخدمة في ProductSearch
@@ -29,7 +31,7 @@ const mockProducts: Product[] = [
   { id: "10", code: "P010", name: "كيبل HDMI 2متر", price: 35.00 },
 ];
 
-export const ItemNameCell: React.FC<ItemNameCellProps> = ({
+export const ItemNameCell = forwardRef<HTMLTableCellElement, ItemNameCellProps>(({
   name,
   index,
   isEditing,
@@ -37,8 +39,10 @@ export const ItemNameCell: React.FC<ItemNameCellProps> = ({
   handleDirectEdit,
   handleCellClick,
   isAddingItem,
-  editingItemIndex
-}) => {
+  editingItemIndex,
+  onKeyDown,
+  tabIndex
+}, ref) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Product[]>([]);
   
@@ -83,6 +87,9 @@ export const ItemNameCell: React.FC<ItemNameCellProps> = ({
       onClick={() => !isAddingItem && editingItemIndex === null && handleCellClick(index, 'name')}
       data-row-index={index}
       data-cell-name="name"
+      onKeyDown={onKeyDown}
+      ref={ref}
+      tabIndex={tabIndex}
     >
       {isEditing ? (
         <div>
@@ -120,4 +127,6 @@ export const ItemNameCell: React.FC<ItemNameCellProps> = ({
       )}
     </TableCell>
   );
-};
+});
+
+ItemNameCell.displayName = "ItemNameCell";

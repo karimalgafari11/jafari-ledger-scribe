@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -9,15 +9,19 @@ interface NotesCellProps {
   isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
+  tabIndex?: number;
 }
 
-export const NotesCell: React.FC<NotesCellProps> = ({
+export const NotesCell = forwardRef<HTMLTableCellElement, NotesCellProps>(({
   notes = "",
   index,
   isEditing,
   handleCellClick,
-  handleDirectEdit
-}) => {
+  handleDirectEdit,
+  onKeyDown,
+  tabIndex
+}, ref) => {
   const [inputValue, setInputValue] = useState(notes);
   
   useEffect(() => {
@@ -46,8 +50,11 @@ export const NotesCell: React.FC<NotesCellProps> = ({
     <TableCell 
       className="border border-gray-300 p-2"
       onClick={() => handleCellClick(index, 'notes')}
+      onKeyDown={onKeyDown}
       data-row-index={index}
       data-cell-name="notes"
+      ref={ref}
+      tabIndex={tabIndex}
     >
       {isEditing ? (
         <Input
@@ -64,4 +71,6 @@ export const NotesCell: React.FC<NotesCellProps> = ({
       )}
     </TableCell>
   );
-};
+});
+
+NotesCell.displayName = "NotesCell";

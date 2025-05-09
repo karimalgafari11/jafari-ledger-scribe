@@ -35,7 +35,7 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
 
   return (
     <ScrollArea className="h-[60vh]">
-      <Table className="min-w-full border-collapse dir-ltr">
+      <Table className="min-w-full border-collapse dir-rtl">
         <TableHeader>
           <TableRow className="bg-muted">
             <TableHead className="border text-center font-bold w-16">رقم</TableHead>
