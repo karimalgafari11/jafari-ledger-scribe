@@ -196,7 +196,9 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         </CardContent>
       </Card>
 
-      <style jsx>{`
+      {/* Fix: Remove the jsx attribute from the style tag */}
+      <style>
+        {`
         .table-bordered th,
         .table-bordered td {
           border: 1px solid #e2e8f0;
@@ -209,7 +211,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           margin-left: 15px;
           margin-bottom: 10px;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
