@@ -11,17 +11,18 @@ interface AccountParentSelectorProps {
 }
 
 export const AccountParentSelector: React.FC<AccountParentSelectorProps> = ({ form, parentOptions }) => {
-  // Ensure we have valid parent options before rendering
-  // Strict validation to prevent empty strings or undefined values
-  const validParentOptions = parentOptions?.filter(
-    option => option && 
-      typeof option === 'object' && 
-      'value' in option && 
-      option.value && 
-      typeof option.value === 'string' && 
-      option.value.trim() !== ''
-  ) || [];
-
+  // Strict validation to ensure all parent options are valid objects with non-empty string values
+  const validParentOptions = React.useMemo(() => {
+    return parentOptions?.filter(
+      option => option && 
+        typeof option === 'object' && 
+        'value' in option && 
+        option.value && 
+        typeof option.value === 'string' && 
+        option.value.trim() !== ''
+    ) || [];
+  }, [parentOptions]);
+  
   console.log("Valid parent options in selector:", validParentOptions);
 
   return (
@@ -42,7 +43,7 @@ export const AccountParentSelector: React.FC<AccountParentSelectorProps> = ({ fo
             </FormControl>
             <SelectContent>
               <SelectItem value="no-parent">بدون حساب أب</SelectItem>
-              {validParentOptions.map((option) => (
+              {validParentOptions.length > 0 && validParentOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>

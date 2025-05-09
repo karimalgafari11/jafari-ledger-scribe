@@ -20,6 +20,14 @@ interface AccountTypeSelectorProps {
 }
 
 export const AccountTypeSelector: React.FC<AccountTypeSelectorProps> = ({ form }) => {
+  // Ensure a valid form value exists
+  React.useEffect(() => {
+    // Set a default value if none exists
+    if (!form.getValues("type")) {
+      form.setValue("type", "asset");
+    }
+  }, [form]);
+
   return (
     <FormField
       control={form.control}
@@ -29,7 +37,7 @@ export const AccountTypeSelector: React.FC<AccountTypeSelectorProps> = ({ form }
           <FormLabel>نوع الحساب</FormLabel>
           <Select
             onValueChange={field.onChange}
-            value={field.value}
+            value={field.value || "asset"} // Ensure we always have a valid value
           >
             <FormControl>
               <SelectTrigger>

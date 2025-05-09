@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,16 +36,20 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
   console.log("AccountDialogs - Parent options received:", parentOptions);
   
   // Ensure we have valid parent options - strict validation
-  const validatedParentOptions = Array.isArray(parentOptions) 
-    ? parentOptions.filter(option => 
-        option && 
-        typeof option === 'object' &&
-        'value' in option && 
-        option.value && 
-        typeof option.value === 'string' && 
-        option.value.trim() !== ''
-      )
-    : [];
+  const validatedParentOptions = useMemo(() => {
+    if (!Array.isArray(parentOptions)) {
+      return [];
+    }
+  
+    return parentOptions.filter(option => 
+      option && 
+      typeof option === 'object' &&
+      'value' in option && 
+      option.value && 
+      typeof option.value === 'string' && 
+      option.value.trim() !== ''
+    );
+  }, [parentOptions]);
     
   console.log("AccountDialogs - Validated parent options:", validatedParentOptions);
   

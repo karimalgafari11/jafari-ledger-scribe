@@ -40,9 +40,16 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   onCancel,
 }) => {
   // Validate parent options - ensure no empty values
-  const validParentOptions = parentOptions?.filter(
-    option => option && option.value && typeof option.value === 'string' && option.value.trim() !== ''
-  ) || [];
+  const validParentOptions = React.useMemo(() => {
+    return parentOptions?.filter(
+      option => option && 
+        typeof option === 'object' && 
+        'value' in option && 
+        option.value && 
+        typeof option.value === 'string' && 
+        option.value.trim() !== ''
+    ) || [];
+  }, [parentOptions]);
 
   console.log("Valid parent options in form:", validParentOptions);
 
@@ -58,7 +65,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       : {
           name: "",
           number: "",
-          type: "asset",
+          type: "asset", // Ensure we always have a default type
           parentId: null,
         },
   });

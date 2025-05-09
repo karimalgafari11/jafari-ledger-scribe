@@ -113,14 +113,21 @@ export const useAccounts = () => {
       account.id.trim() !== ''
     );
     
-    const options = validAccounts.map(account => ({
-      label: `${account.number} - ${account.name}`,
-      value: account.id
-    }));
+    const options = validAccounts.map(account => {
+      // Additional check to ensure we're not creating options with empty values
+      if (!account.id || account.id.trim() === '') {
+        return null;
+      }
+      
+      return {
+        label: `${account.number} - ${account.name}`,
+        value: account.id
+      };
+    }).filter(Boolean) as { label: string; value: string }[];
     
     // تصفية نهائية للتأكد من عدم وجود قيم فارغة أو تكرارات
     const filteredOptions = options.filter(option => 
-      option.value && 
+      option && option.value && 
       typeof option.value === 'string' && 
       option.value.trim() !== ''
     );
