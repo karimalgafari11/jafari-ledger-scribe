@@ -188,13 +188,15 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {/* Changed "null" to "no-parent" to avoid empty string issues */}
                     <SelectItem value="no-parent">بدون حساب أب</SelectItem> 
-                    {parentOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
+                    {parentOptions && parentOptions.length > 0 && parentOptions
+                      .filter(option => option.value && option.value.trim() !== '')
+                      .map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))
+                    }
                   </SelectContent>
                 </Select>
                 <FormMessage />

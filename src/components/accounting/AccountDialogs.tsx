@@ -34,6 +34,11 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
 }) => {
   console.log("Parent options:", parentOptions); // Debug log to check values
   
+  // Ensure we have valid parent options
+  const validatedParentOptions = parentOptions && Array.isArray(parentOptions) 
+    ? parentOptions.filter(option => option.value && option.value.trim() !== '')
+    : [];
+    
   return (
     <>
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -42,7 +47,7 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
             <DialogTitle>إضافة حساب جديد</DialogTitle>
           </DialogHeader>
           <AccountForm
-            parentOptions={parentOptions}
+            parentOptions={validatedParentOptions}
             onSubmit={onAddSubmit}
             onSuggestNumber={onSuggestNumber}
             onCancel={() => setIsAddDialogOpen(false)}
@@ -58,7 +63,7 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
           {selectedAccount && (
             <AccountForm
               account={selectedAccount}
-              parentOptions={parentOptions}
+              parentOptions={validatedParentOptions}
               onSubmit={onEditSubmit}
               onSuggestNumber={onSuggestNumber}
               onCancel={() => setIsEditDialogOpen(false)}

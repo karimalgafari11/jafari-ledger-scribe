@@ -105,11 +105,12 @@ export const useAccounts = () => {
   const getParentAccountOptions = useCallback(() => {
     // Make sure we're not returning any empty values
     return accounts
-      .filter(account => account.level < 3 && account.id) // نسمح فقط بمستويين من الحسابات الفرعية
+      .filter(account => account.level < 3 && account.id && account.id.trim() !== '') 
       .map(account => ({
         label: `${account.number} - ${account.name}`,
         value: account.id
-      }));
+      }))
+      .filter(option => option.value && option.value.trim() !== ''); // Double check that no empty values slip through
   }, [accounts]);
 
   // اقتراح الحسابات بناءً على النوع
