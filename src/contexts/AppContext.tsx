@@ -1,8 +1,7 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type ThemeMode = 'light' | 'dark';
-type Language = 'ar' | 'en';
+export type ThemeMode = 'light' | 'dark';
+export type Language = 'ar' | 'en';
 
 interface AppContextProps {
   language: Language;
