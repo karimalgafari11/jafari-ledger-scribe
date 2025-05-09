@@ -1,9 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, Settings } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody } from "@/components/ui/table";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceItemRow } from "./InvoiceItemRow";
 import { InvoiceItemSection } from "./InvoiceItemSection";
@@ -12,12 +10,15 @@ import { InvoiceSettingsType } from "./InvoiceSettings";
 import { QuickProductSearch } from "./QuickProductSearch";
 import { Product } from "@/types/inventory";
 import { v4 as uuidv4 } from "uuid";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
+// Import the newly created components
+import { TableHeader } from "./table-components/TableHeader";
+import { TableColumns } from "./table-components/TableColumns";
+import { TableFooter } from "./table-components/TableFooter";
+import { EmptyTableContent } from "./table-components/EmptyTableContent";
+import { TableStyles } from "./table-components/TableStyles";
+import { useTableInitialFocus } from "./table-components/TableInitialFocus";
+import { TableKeyboardNavigation } from "./table-components/TableKeyboardNavigation";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -85,65 +86,17 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     setEditingItemIndex: handleEditItem
   });
 
-  // إضافة مستمع لأحداث لوحة المفاتيح للجدول بأكمله
-  useEffect(() => {
-    const handleTableKeyDown = (e: KeyboardEvent) => {
-      if (!tableHasFocus) return;
-      
-      // اختصارات إضافة عنصر جديد
-      if (e.key === 'Insert' || (e.ctrlKey && e.key === 'n')) {
-        e.preventDefault();
-        if (!isAddingItem && editingItemIndex === null) {
-          handleAddItemClick();
-        }
-      }
-      
-      // اختصارات أخرى عامة للجدول
-      if (e.key === 'F2' && activeSearchCell) {
-        // بدء تحرير الخلية المحددة حاليًا
-        e.preventDefault();
-        const { rowIndex, cellName } = activeSearchCell;
-        handleCellClick(rowIndex, cellName);
-      }
-    };
-    
-    // تسجيل مستمع الأحداث
-    document.addEventListener('keydown', handleTableKeyDown);
-    
-    return () => {
-      document.removeEventListener('keydown', handleTableKeyDown);
-    };
-  }, [tableHasFocus, isAddingItem, editingItemIndex, activeSearchCell, handleCellClick]);
-
-  // عند تحميل الجدول، ركز على أول خلية للعنصر الأول إذا وجد
-  useEffect(() => {
-    // التركيز على الخلية الأولى بعد تحميل الجدول إذا كانت هناك عناصر
-    if (firstRender && items.length > 0 && !isAddingItem && editingItemIndex === null && !activeSearchCell) {
-      // استخدم مؤقتًا أطول للتأكد من أن الجدول قد تم رسمه بالكامل
-      const timer = setTimeout(() => {
-        // استخدم ترتيب الخلايا للحصول على الخلية الأولى المرئية
-        const firstVisibleField = showItemCodes ? 'code' : 'name';
-        focusCell(0, firstVisibleField);
-        setFirstRender(false);
-      }, 800);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [items.length, firstRender, isAddingItem, editingItemIndex, activeSearchCell, showItemCodes, focusCell]);
-
-  // تحديث تركيز الجدول عند إضافة عناصر جديدة
-  useEffect(() => {
-    if (items.length > 0 && !activeSearchCell && !isAddingItem && editingItemIndex === null) {
-      // التركيز على آخر عنصر تم إضافته
-      const timer = setTimeout(() => {
-        const lastItemIndex = items.length - 1;
-        const firstVisibleField = showItemCodes ? 'code' : 'name';
-        focusCell(lastItemIndex, firstVisibleField);
-      }, 300);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [items.length, isAddingItem]);
+  // استخدام هوك التركيز الأولي
+  useTableInitialFocus({
+    items,
+    isAddingItem,
+    editingItemIndex,
+    activeSearchCell,
+    showItemCodes,
+    focusCell,
+    firstRender,
+    setFirstRender
+  });
 
   // التعامل مع التركيز على الجدول
   const handleTableFocus = () => {
@@ -230,48 +183,28 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         />
       )}
 
+      {/* إضافة مستمع أحداث لوحة المفاتيح */}
+      <TableKeyboardNavigation
+        tableHasFocus={tableHasFocus}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        activeSearchCell={activeSearchCell}
+        handleCellClick={handleCellClick}
+        handleAddItemClick={handleAddItemClick}
+      />
+
       {/* جدول العناصر */}
       <Card>
         <CardContent className="p-0">
-          <div className="flex justify-between items-center p-4 border-b">
-            <h3 className="text-lg font-semibold">الأصناف والخدمات</h3>
-            <div className="flex gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="h-8 gap-1"
-                  >
-                    <Settings className="w-4 h-4" /> خيارات الجدول
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuCheckboxItem
-                    checked={showGridLines}
-                    onCheckedChange={toggleGridLines}
-                  >
-                    إظهار خطوط الجدول
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={isDenseView}
-                    onCheckedChange={toggleDenseView}
-                  >
-                    عرض مضغوط
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <Button 
-                onClick={handleAddItemClick}
-                disabled={isAddingItem || editingItemIndex !== null}
-                size="sm"
-                className="h-8 gap-1"
-              >
-                <Plus className="w-4 h-4" /> إضافة صنف
-              </Button>
-            </div>
-          </div>
+          <TableHeader
+            handleAddItemClick={handleAddItemClick}
+            isAddingItem={isAddingItem}
+            editingItemIndex={editingItemIndex}
+            showGridLines={showGridLines}
+            isDenseView={isDenseView}
+            toggleGridLines={toggleGridLines}
+            toggleDenseView={toggleDenseView}
+          />
           
           <div 
             ref={(node) => {
@@ -291,41 +224,18 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             aria-label="جدول الفاتورة"
           >
             <Table className={`${showGridLines ? 'table-bordered' : ''} ${isDenseView ? 'table-sm' : ''}`}>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center w-12">#</TableHead>
-                  {showItemCodes && <TableHead className="text-center">رمز الصنف</TableHead>}
-                  <TableHead>اسم الصنف</TableHead>
-                  <TableHead className="text-center">الكمية</TableHead>
-                  <TableHead className="text-center">السعر</TableHead>
-                  <TableHead className="text-center">الإجمالي</TableHead>
-                  {showItemNotes && <TableHead>ملاحظات</TableHead>}
-                  <TableHead className="text-center w-24">الإجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
+              <TableColumns
+                showItemCodes={showItemCodes}
+                showItemNotes={showItemNotes}
+              />
               <TableBody>
                 {items.length === 0 ? (
-                  <TableRow>
-                    <TableCell 
-                      colSpan={showItemCodes && showItemNotes ? 8 : showItemCodes || showItemNotes ? 7 : 6}
-                      className="text-center py-12 text-muted-foreground"
-                    >
-                      <div className="flex flex-col items-center justify-center space-y-3">
-                        <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-                          <Plus className="h-6 w-6 text-gray-400" />
-                        </div>
-                        <p>لم يتم إضافة أصناف بعد</p>
-                        <Button 
-                          onClick={handleAddItemClick}
-                          size="sm"
-                          className="mt-2"
-                          disabled={isAddingItem || editingItemIndex !== null}
-                        >
-                          إضافة صنف جديد
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                  <EmptyTableContent
+                    colSpanValue={showItemCodes && showItemNotes ? 8 : showItemCodes || showItemNotes ? 7 : 6}
+                    handleAddItemClick={handleAddItemClick}
+                    isAddingItem={isAddingItem}
+                    editingItemIndex={editingItemIndex}
+                  />
                 ) : (
                   items.map((item, index) => (
                     <InvoiceItemRow
@@ -352,18 +262,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             </Table>
           </div>
           
-          {items.length > 0 && (
-            <div className="py-2 px-4 text-sm text-muted-foreground border-t">
-              <div className="flex justify-between items-center">
-                <div>إجمالي الأصناف: {items.length}</div>
-                <div className="text-xs text-gray-500">
-                  <span className="bg-gray-100 px-2 py-1 rounded ml-1">Insert</span> لإضافة صنف | 
-                  <span className="bg-gray-100 px-2 py-1 rounded mx-1">أسهم الكيبورد</span> للتنقل | 
-                  <span className="bg-gray-100 px-2 py-1 rounded mr-1">Enter</span> للتحرير
-                </div>
-              </div>
-            </div>
-          )}
+          <TableFooter itemsCount={items.length} />
           
           {/* مقبض تغيير حجم الجدول */}
           <div
@@ -373,40 +272,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         </CardContent>
       </Card>
 
-      <style>
-        {`
-        .table-bordered th,
-        .table-bordered td {
-          border: 1px solid #e2e8f0;
-        }
-        .table-sm th,
-        .table-sm td {
-          padding: 0.5rem;
-          font-size: 0.875rem;
-        }
-        .resize-handle {
-          cursor: col-resize;
-          border-bottom: 4px solid #cbd5e0;
-          border-left: 4px solid #cbd5e0;
-          transform: rotate(45deg);
-          margin-left: 15px;
-          margin-bottom: 10px;
-        }
-        .table-row-active {
-          background-color: rgba(59, 130, 246, 0.05);
-        }
-        /* تحسين وضوح الخلية النشطة */
-        [role="gridcell"]:focus {
-          outline: 2px solid #3b82f6;
-          outline-offset: -2px;
-          background-color: rgba(59, 130, 246, 0.1);
-        }
-        [aria-selected="true"] {
-          background-color: rgba(59, 130, 246, 0.1);
-        }
-        `}
-      </style>
+      <TableStyles />
     </div>
   );
 };
-
