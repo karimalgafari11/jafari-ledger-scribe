@@ -33,16 +33,25 @@ export function DataGridBody({
         return '';
       }
       
+      // Safely access the value using the accessor key
       const value = column.accessorKey ? row[column.accessorKey] : undefined;
       
-      if (column.cell) {
-        return column.cell(value, row);
+      // Use custom cell renderer if provided
+      if (column.cell && typeof column.cell === 'function') {
+        try {
+          return column.cell(value, row);
+        } catch (cellError) {
+          console.error("Error in custom cell renderer:", cellError);
+          return "Error";
+        }
       }
       
+      // Handle undefined or null values
       if (value === undefined || value === null) {
         return '';
       }
       
+      // Render value with tooltip
       return (
         <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-full">
           <TooltipProvider>
@@ -63,6 +72,7 @@ export function DataGridBody({
     }
   };
 
+  // Check if data is valid and not empty
   if (!Array.isArray(data) || data.length === 0) {
     return (
       <TableBody>

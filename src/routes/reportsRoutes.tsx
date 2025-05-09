@@ -15,10 +15,6 @@ export const reportsRoutes: RouteObject[] = [
     element: <SalesReportsPage />,
   },
   {
-    path: "reports/sales-stats",
-    element: <SalesStatsPage />,
-  },
-  {
     path: "reports/templates",
     element: <ReportTemplatesPage />,
   }
