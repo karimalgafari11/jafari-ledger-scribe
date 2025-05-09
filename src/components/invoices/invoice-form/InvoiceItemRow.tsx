@@ -1,10 +1,19 @@
 
-import React, { KeyboardEvent, useRef, useEffect } from "react";
-import { TableRow, TableCell } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash } from "lucide-react";
+import React, { KeyboardEvent, useEffect } from "react";
+import { TableRow } from "@/components/ui/table";
 import { InvoiceItem } from "@/types/invoices";
-import { formatCurrency } from "@/utils/formatters";
+import { useRowRefs } from "./hooks/useRowRefs";
+import { useRegisterCellRef } from "./hooks/useRegisterCellRef";
+
+// Import all cell components
+import { IndexCell } from "./table-cells/IndexCell";
+import { CodeCell } from "./table-cells/CodeCell";
+import { NameCell } from "./table-cells/NameCell";
+import { QuantityCell } from "./table-cells/QuantityCell";
+import { PriceCell } from "./table-cells/PriceCell";
+import { TotalCell } from "./table-cells/TotalCell";
+import { NotesCell } from "./table-cells/NotesCell";
+import { ActionCell } from "./table-cells/ActionCell";
 
 interface InvoiceItemRowProps {
   item: InvoiceItem;
@@ -41,24 +50,13 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
   onKeyDown,
   cellRefs
 }) => {
-  // مراجع لحقول الإدخال للتركيز التلقائي
-  const inputRefs = {
-    code: useRef<HTMLInputElement>(null),
-    name: useRef<HTMLInputElement>(null),
-    quantity: useRef<HTMLInputElement>(null),
-    price: useRef<HTMLInputElement>(null),
-    notes: useRef<HTMLInputElement>(null)
-  };
+  // Get input refs for auto focusing
+  const { inputRefs } = useRowRefs();
 
-  // تسجيل مرجع للخلايا
-  const registerCellRef = (cellName: string) => (el: HTMLTableCellElement | null) => {
-    if (el && cellRefs) {
-      const cellId = `${index}-${cellName}`;
-      cellRefs.set(cellId, el);
-    }
-  };
+  // Register cell refs for keyboard navigation
+  const registerCellRef = useRegisterCellRef(index, cellRefs);
 
-  // التركيز التلقائي على حقل الإدخال عند تفعيل التحرير
+  // Auto-focus on the input when editing is activated
   useEffect(() => {
     if (activeSearchCell?.rowIndex === index) {
       const field = activeSearchCell.cellName;
@@ -67,15 +65,16 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
         inputRefs[field].current?.select();
       }
     }
-  }, [activeSearchCell, index, isEditingCell]);
+  }, [activeSearchCell, index, isEditingCell, inputRefs]);
 
-  // معالجة أحداث لوحة المفاتيح لكل خلية
+  // Handle keyboard events for each cell
   const handleCellKeyDown = (e: KeyboardEvent<HTMLTableCellElement>, cellName: string) => {
     if (onKeyDown) {
       onKeyDown(e, index, cellName);
     }
   };
 
+  // Helper functions for row actions
   const handleEditRow = () => {
     if (!isAddingItem && editingItemIndex === null) {
       setEditingItemIndex(index);
@@ -104,183 +103,74 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
       data-row-index={index}
       aria-selected={activeSearchCell?.rowIndex === index}
     >
-      <TableCell className="text-center">{index + 1}</TableCell>
+      <IndexCell index={index} />
       
       {showItemCodes && (
-        <TableCell 
-          className={`text-center p-2 ${isActive('code') ? 'bg-blue-100' : ''} transition-colors`}
-          onClick={() => handleCellClick(index, 'code')}
+        <CodeCell 
+          code={item.code}
+          index={index}
+          isEditing={isEditingCell(index, 'code')}
+          isActive={isActive('code')}
+          handleCellClick={handleCellClick}
+          handleDirectEdit={handleDirectEdit}
           onKeyDown={(e) => handleCellKeyDown(e, 'code')}
-          data-row-index={index}
-          data-cell-name="code"
           ref={registerCellRef('code')}
-          tabIndex={0}
-          aria-selected={isActive('code')}
-          role="gridcell"
-        >
-          {isEditingCell(index, 'code') ? (
-            <input
-              ref={inputRefs.code}
-              type="text"
-              value={item.code || ""}
-              onChange={(e) => handleDirectEdit(index, 'code', e.target.value)}
-              className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
-              autoFocus
-              onKeyDown={(e) => {
-                // منع انتشار أحداث المفاتيح للخلية الأم
-                e.stopPropagation();
-              }}
-            />
-          ) : (
-            <span className="cursor-text block w-full h-full py-1">{item.code || "—"}</span>
-          )}
-        </TableCell>
+        />
       )}
       
-      <TableCell 
-        className={`p-2 ${isActive('name') ? 'bg-blue-100' : ''} transition-colors`}
-        onClick={() => handleCellClick(index, 'name')}
+      <NameCell 
+        name={item.name}
+        index={index}
+        isEditing={isEditingCell(index, 'name')}
+        isActive={isActive('name')}
+        handleCellClick={handleCellClick}
+        handleDirectEdit={handleDirectEdit}
         onKeyDown={(e) => handleCellKeyDown(e, 'name')}
-        data-row-index={index}
-        data-cell-name="name"
         ref={registerCellRef('name')}
-        tabIndex={0}
-        aria-selected={isActive('name')}
-        role="gridcell"
-      >
-        {isEditingCell(index, 'name') ? (
-          <input
-            ref={inputRefs.name}
-            type="text"
-            value={item.name || ""}
-            onChange={(e) => handleDirectEdit(index, 'name', e.target.value)}
-            className="w-full h-8 border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
-            autoFocus
-            onKeyDown={(e) => {
-              // منع انتشار أحداث المفاتيح للخلية الأم
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          <span className="cursor-text block w-full h-full py-1 font-medium">{item.name || "انقر لإضافة اسم"}</span>
-        )}
-      </TableCell>
+      />
       
-      <TableCell 
-        className={`text-center p-2 ${isActive('quantity') ? 'bg-blue-100' : ''} transition-colors`}
-        onClick={() => handleCellClick(index, 'quantity')}
+      <QuantityCell 
+        quantity={item.quantity}
+        index={index}
+        isEditing={isEditingCell(index, 'quantity')}
+        isActive={isActive('quantity')}
+        handleCellClick={handleCellClick}
+        handleDirectEdit={handleDirectEdit}
         onKeyDown={(e) => handleCellKeyDown(e, 'quantity')}
-        data-row-index={index}
-        data-cell-name="quantity"
         ref={registerCellRef('quantity')}
-        tabIndex={0}
-        aria-selected={isActive('quantity')}
-        role="gridcell"
-      >
-        {isEditingCell(index, 'quantity') ? (
-          <input
-            ref={inputRefs.quantity}
-            type="number"
-            value={item.quantity || 0}
-            onChange={(e) => handleDirectEdit(index, 'quantity', e.target.value)}
-            className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
-            autoFocus
-            onKeyDown={(e) => {
-              // منع انتشار أحداث المفاتيح للخلية الأم
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          <span className="cursor-text block w-full h-full py-1">{item.quantity}</span>
-        )}
-      </TableCell>
+      />
       
-      <TableCell 
-        className={`text-center p-2 ${isActive('price') ? 'bg-blue-100' : ''} transition-colors`}
-        onClick={() => handleCellClick(index, 'price')}
+      <PriceCell 
+        price={item.price}
+        index={index}
+        isEditing={isEditingCell(index, 'price')}
+        isActive={isActive('price')}
+        handleCellClick={handleCellClick}
+        handleDirectEdit={handleDirectEdit}
         onKeyDown={(e) => handleCellKeyDown(e, 'price')}
-        data-row-index={index}
-        data-cell-name="price"
         ref={registerCellRef('price')}
-        tabIndex={0}
-        aria-selected={isActive('price')}
-        role="gridcell"
-      >
-        {isEditingCell(index, 'price') ? (
-          <input
-            ref={inputRefs.price}
-            type="number"
-            value={item.price || 0}
-            onChange={(e) => handleDirectEdit(index, 'price', e.target.value)}
-            className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
-            autoFocus
-            onKeyDown={(e) => {
-              // منع انتشار أحداث المفاتيح للخلية الأم
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          <span className="cursor-text block w-full h-full py-1">{formatCurrency(item.price)}</span>
-        )}
-      </TableCell>
+      />
       
-      <TableCell className="text-center font-semibold">
-        {formatCurrency(item.total)}
-      </TableCell>
+      <TotalCell total={item.total} />
       
       {showItemNotes && (
-        <TableCell 
-          className={`p-2 ${isActive('notes') ? 'bg-blue-100' : ''} transition-colors`}
-          onClick={() => handleCellClick(index, 'notes')}
+        <NotesCell 
+          notes={item.notes}
+          index={index}
+          isEditing={isEditingCell(index, 'notes')}
+          isActive={isActive('notes')}
+          handleCellClick={handleCellClick}
+          handleDirectEdit={handleDirectEdit}
           onKeyDown={(e) => handleCellKeyDown(e, 'notes')}
-          data-row-index={index}
-          data-cell-name="notes"
           ref={registerCellRef('notes')}
-          tabIndex={0}
-          aria-selected={isActive('notes')}
-          role="gridcell"
-        >
-          {isEditingCell(index, 'notes') ? (
-            <input
-              ref={inputRefs.notes}
-              type="text"
-              value={item.notes || ""}
-              onChange={(e) => handleDirectEdit(index, 'notes', e.target.value)}
-              className="w-full h-8 border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
-              autoFocus
-              onKeyDown={(e) => {
-                // منع انتشار أحداث المفاتيح للخلية الأم
-                e.stopPropagation();
-              }}
-            />
-          ) : (
-            <span className="cursor-text block w-full h-full py-1">{item.notes || "—"}</span>
-          )}
-        </TableCell>
+        />
       )}
       
-      <TableCell className="text-center">
-        <div className="flex justify-center space-x-1 rtl:space-x-reverse">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 hover:bg-blue-100 hover:text-blue-700"
-            onClick={handleEditRow}
-            disabled={isAddingItem || editingItemIndex !== null}
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 hover:bg-red-100 hover:text-red-700"
-            onClick={handleDeleteRow}
-            disabled={isAddingItem || editingItemIndex !== null}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        </div>
-      </TableCell>
+      <ActionCell 
+        onEdit={handleEditRow}
+        onDelete={handleDeleteRow}
+        disabled={isAddingItem || editingItemIndex !== null}
+      />
     </TableRow>
   );
 };
