@@ -32,6 +32,8 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
   onEditSubmit,
   onSuggestNumber,
 }) => {
+  console.log("Parent options:", parentOptions); // Debug log to check values
+  
   return (
     <>
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

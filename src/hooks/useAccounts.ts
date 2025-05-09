@@ -103,8 +103,9 @@ export const useAccounts = () => {
 
   // الحصول على الحسابات الرئيسية فقط للاختيار من بينها
   const getParentAccountOptions = useCallback(() => {
+    // Make sure we're not returning any empty values
     return accounts
-      .filter(account => account.level < 3) // نسمح فقط بمستويين من الحسابات الفرعية
+      .filter(account => account.level < 3 && account.id) // نسمح فقط بمستويين من الحسابات الفرعية
       .map(account => ({
         label: `${account.number} - ${account.name}`,
         value: account.id

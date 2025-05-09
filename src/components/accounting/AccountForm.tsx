@@ -145,7 +145,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                 <FormLabel>نوع الحساب</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
