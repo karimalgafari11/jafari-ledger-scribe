@@ -257,9 +257,11 @@ const ThemeCustomizationPage: React.FC = () => {
   // تبديل وضع السمة (فاتح/داكن)
   const handleThemeModeToggle = () => {
     const newMode = currentTheme.mode === 'light' ? 'dark' : 'light';
-    const newTheme = newMode === 'light' ? 
-      { ...currentTheme, ...defaultLightTheme, mode: 'light' } : 
-      { ...currentTheme, ...defaultDarkTheme, mode: 'dark' };
+    const newTheme = {
+      ...currentTheme,
+      mode: newMode,
+      colors: newMode === 'light' ? defaultLightTheme.colors : defaultDarkTheme.colors
+    };
       
     setCurrentTheme(newTheme);
     applyThemeToDOM(newTheme);

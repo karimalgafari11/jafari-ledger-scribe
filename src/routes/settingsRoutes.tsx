@@ -9,9 +9,9 @@ import ActivityLogPage from "@/pages/settings/ActivityLogPage";
 import BranchesPage from "@/pages/settings/BranchesPage";
 import NotificationsPage from "@/pages/settings/NotificationsPage";
 import NotificationSettingsPage from "@/pages/settings/NotificationSettingsPage";
+import SendNotificationPage from "@/pages/settings/SendNotificationPage";
 import AiEngineSettingsPage from "@/pages/settings/AiEngineSettingsPage";
 import PageManagementPage from "@/pages/settings/PageManagementPage";
-import SendNotificationPage from "@/pages/settings/SendNotificationPage";
 import ThemeCustomizationPage from "@/pages/settings/ThemeCustomizationPage";
 
 export const settingsRoutes: RouteObject[] = [
