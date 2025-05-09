@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { addDays, format, subDays, subMonths } from "date-fns";
@@ -83,13 +82,7 @@ const generateRevenueData = () => {
             'rgba(153, 102, 255, 0.7)',
             'rgba(255, 159, 64, 0.7)'
           ],
-          borderColor: [
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 99, 132, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
+          borderColor: 'rgba(0, 0, 0, 0.1)', // Fixed: using a single string instead of array
         }
       ]
     },
@@ -160,7 +153,8 @@ const generateProductData = () => {
           'rgba(75, 192, 192, 0.7)',
           'rgba(54, 162, 235, 0.7)',
           'rgba(255, 99, 132, 0.7)',
-        ]
+        ],
+        borderColor: 'rgba(0, 0, 0, 0.1)' // Fixed: using a single string instead of array
       }
     ]
   };
@@ -239,7 +233,8 @@ const generateCustomerData = () => {
           'rgba(75, 192, 192, 0.7)',
           'rgba(54, 162, 235, 0.7)',
           'rgba(255, 99, 132, 0.7)',
-        ]
+        ],
+        borderColor: 'rgba(0, 0, 0, 0.1)'
       }
     ]
   };
