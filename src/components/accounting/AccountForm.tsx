@@ -179,8 +179,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               <FormItem>
                 <FormLabel>الحساب الأب</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value || ""}
+                  onValueChange={(value) => field.onChange(value === "no-parent" ? null : value)}
+                  value={field.value || "no-parent"}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -188,7 +188,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="null">بدون حساب أب</SelectItem>
+                    {/* Changed "null" to "no-parent" to avoid empty string issues */}
+                    <SelectItem value="no-parent">بدون حساب أب</SelectItem> 
                     {parentOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
