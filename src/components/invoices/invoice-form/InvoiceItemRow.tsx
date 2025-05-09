@@ -122,7 +122,6 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
               onChange={(e) => handleDirectEdit(index, 'code', e.target.value)}
               className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
               autoFocus
-              onBlur={() => handleCellClick(index, 'code')}
             />
           ) : (
             <span className="cursor-text block w-full h-full py-1">{item.code || "—"}</span>
@@ -147,7 +146,6 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
             onChange={(e) => handleDirectEdit(index, 'name', e.target.value)}
             className="w-full h-8 border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
-            onBlur={() => handleCellClick(index, 'name')}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1 font-medium">{item.name || "انقر لإضافة اسم"}</span>
@@ -171,7 +169,6 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
             onChange={(e) => handleDirectEdit(index, 'quantity', e.target.value)}
             className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
-            onBlur={() => handleCellClick(index, 'quantity')}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1">{item.quantity}</span>
@@ -195,7 +192,6 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
             onChange={(e) => handleDirectEdit(index, 'price', e.target.value)}
             className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
-            onBlur={() => handleCellClick(index, 'price')}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1">{formatCurrency(item.price)}</span>
@@ -224,7 +220,6 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
               onChange={(e) => handleDirectEdit(index, 'notes', e.target.value)}
               className="w-full h-8 border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
               autoFocus
-              onBlur={() => handleCellClick(index, 'notes')}
             />
           ) : (
             <span className="cursor-text block w-full h-full py-1">{item.notes || "—"}</span>
@@ -257,3 +252,4 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
     </TableRow>
   );
 };
+

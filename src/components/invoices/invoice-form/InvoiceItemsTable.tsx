@@ -68,7 +68,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     isEditingCell,
     toggleGridLines,
     toggleDenseView,
-    handleTableClick
+    handleTableClick,
+    focusCell
   } = useInvoiceTable({
     items,
     onUpdateItem,
@@ -105,7 +106,19 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     return () => {
       document.removeEventListener('keydown', handleTableKeyDown);
     };
-  }, [tableHasFocus, isAddingItem, editingItemIndex, activeSearchCell]);
+  }, [tableHasFocus, isAddingItem, editingItemIndex, activeSearchCell, handleCellClick]);
+
+  // عند تحميل الجدول، ركز على أول خلية للعنصر الأول إذا وجد
+  useEffect(() => {
+    // التركيز على الخلية الأولى بعد تحميل الجدول وتسجيل جميع المراجع
+    if (items.length > 0 && !isAddingItem && editingItemIndex === null && !activeSearchCell) {
+      setTimeout(() => {
+        // استخدم ترتيب الخلايا للحصول على الخلية الأولى المرئية
+        const firstVisibleField = showItemCodes ? 'code' : 'name';
+        focusCell(0, firstVisibleField);
+      }, 500); // تأخير صغير لضمان اكتمال تسجيل جميع المراجع
+    }
+  }, []);
 
   // التعامل مع التركيز على الجدول
   const handleTableFocus = () => {
@@ -160,6 +173,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     
     onAddItem(newItem);
     setShowProductSearch(false);
+    
+    // بعد إضافة عنصر، ركز على الصف الجديد
+    setTimeout(() => {
+      focusCell(items.length, 'quantity');
+    }, 100);
   };
 
   // عرض أكواد العناصر
@@ -240,7 +258,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
               }
               tableContainerRef.current = node;
             }}
-            className="overflow-x-auto"
+            className="overflow-x-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             style={{ width: `${tableWidth}%` }}
             onFocus={handleTableFocus}
             onBlur={handleTableBlur}
@@ -314,9 +332,9 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
               <div className="flex justify-between items-center">
                 <div>إجمالي الأصناف: {items.length}</div>
                 <div className="text-xs text-gray-500">
-                  <span className="bg-gray-100 px-2 py-1 rounded">Insert</span> لإضافة صنف | 
-                  <span className="bg-gray-100 px-2 py-1 rounded mr-1">أسهم الكيبورد</span> للتنقل | 
-                  <span className="bg-gray-100 px-2 py-1 rounded mr-1">Enter</span> للتحرير
+                  <span className="bg-gray-100 px-2 py-1 rounded ml-1">Insert</span> لإضافة صنف | 
+                  <span className="bg-gray-100 px-2 py-1 rounded ml-1">أسهم الكيبورد</span> للتنقل | 
+                  <span className="bg-gray-100 px-2 py-1 rounded ml-1">Enter</span> للتحرير
                 </div>
               </div>
             </div>

@@ -127,85 +127,115 @@ export function useInvoiceTable({
   };
 
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
-    // منع تمرير الحدث إذا كانت الخلية في وضع التحرير
+    // منع السلوك الافتراضي لضمان عمل التنقل بشكل صحيح
+    const preventDefaultAndNavigate = (key, newRowIndex, newCellName) => {
+      e.preventDefault();
+      e.stopPropagation();
+      focusCell(newRowIndex, newCellName);
+    };
+
+    // إذا كان في وضع التحرير، تعامل فقط مع Enter و Escape
     if (isEditingCell && activeSearchCell?.rowIndex === rowIndex && activeSearchCell?.cellName === cellName) {
-      // السماح بإيفنتس معينة فقط في وضع التحرير (Enter و Escape)
-      if (e.key === 'Enter' || e.key === 'Escape') {
-        if (e.key === 'Escape') {
-          setIsEditingCell(false);
-        } else if (e.key === 'Enter') {
-          setIsEditingCell(false);
-          // التحرك للخلية التالية بعد الضغط على Enter
-          const cellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
-          const currentIndex = cellOrder.indexOf(cellName);
-          if (currentIndex < cellOrder.length - 1) {
-            const nextCellName = cellOrder[currentIndex + 1];
-            focusCell(rowIndex, nextCellName);
-          } else if (rowIndex < items.length - 1) {
-            // الانتقال إلى الصف التالي، الخلية الأولى
-            focusCell(rowIndex + 1, cellOrder[0]);
-          }
-        }
+      if (e.key === 'Escape') {
         e.preventDefault();
+        setIsEditingCell(false);
+        return;
+      } 
+      
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        setIsEditingCell(false);
+        
+        // التحرك للخلية التالية بعد الضغط على Enter
+        const cellOrder = getVisibleCellOrder();
+        const currentIndex = cellOrder.indexOf(cellName);
+        
+        if (currentIndex < cellOrder.length - 1) {
+          const nextCellName = cellOrder[currentIndex + 1];
+          setTimeout(() => focusCell(rowIndex, nextCellName), 10);
+        } else if (rowIndex < items.length - 1) {
+          // الانتقال إلى الصف التالي، الخلية الأولى
+          setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 10);
+        }
       }
+      
       return;
     }
     
-    // تعريف ترتيب الخلايا للتنقل
-    const cellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
-    
-    // الحصول على الفهرس الحالي للخلية
+    // الحصول على ترتيب الخلايا المرئية للتنقل
+    const cellOrder = getVisibleCellOrder();
     const currentIndex = cellOrder.indexOf(cellName);
     
     if (currentIndex === -1) return;
     
-    // معالجة مفاتيح الأسهم
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      if (currentIndex > 0) {
-        const prevCell = cellOrder[currentIndex - 1];
-        if (prevCell !== 'total') { // لا يمكن تحرير الإجمالي
-          focusCell(rowIndex, prevCell);
+    // معالجة أحداث مفاتيح الأسهم
+    switch (e.key) {
+      case 'ArrowRight':
+        // في الواجهة العربية الانتقال لليمين يعني الخلية السابقة
+        if (currentIndex > 0) {
+          const prevCell = cellOrder[currentIndex - 1];
+          preventDefaultAndNavigate(e.key, rowIndex, prevCell);
         }
-      }
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      if (currentIndex < cellOrder.length - 1) {
-        const nextCell = cellOrder[currentIndex + 1];
-        if (nextCell !== 'total') { // لا يمكن تحرير الإجمالي
-          focusCell(rowIndex, nextCell);
+        break;
+      
+      case 'ArrowLeft':
+        // في الواجهة العربية الانتقال لليسار يعني الخلية التالية
+        if (currentIndex < cellOrder.length - 1) {
+          const nextCell = cellOrder[currentIndex + 1];
+          preventDefaultAndNavigate(e.key, rowIndex, nextCell);
         }
-      }
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (rowIndex > 0) {
-        focusCell(rowIndex - 1, cellName);
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (rowIndex < items.length - 1) {
-        focusCell(rowIndex + 1, cellName);
-      }
-    } else if (e.key === 'Enter' && !isEditingCell) {
-      e.preventDefault();
-      setActiveSearchCell({ rowIndex, cellName });
-      setIsEditingCell(true);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      finishEditing();
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      navigateWithTab(rowIndex, cellName, e.shiftKey);
-    } else if (!isEditingCell && /^[a-zA-Z0-9]$/.test(e.key)) {
-      // بدء التحرير مباشرة عند كتابة حرف أو رقم
-      setActiveSearchCell({ rowIndex, cellName });
-      setIsEditingCell(true);
+        break;
+      
+      case 'ArrowUp':
+        if (rowIndex > 0) {
+          preventDefaultAndNavigate(e.key, rowIndex - 1, cellName);
+        }
+        break;
+      
+      case 'ArrowDown':
+        if (rowIndex < items.length - 1) {
+          preventDefaultAndNavigate(e.key, rowIndex + 1, cellName);
+        }
+        break;
+      
+      case 'Enter':
+        if (!isEditingCell) {
+          e.preventDefault();
+          setActiveSearchCell({ rowIndex, cellName });
+          setIsEditingCell(true);
+        }
+        break;
+      
+      case 'Escape':
+        e.preventDefault();
+        finishEditing();
+        break;
+      
+      case 'Tab':
+        e.preventDefault();
+        navigateWithTab(rowIndex, cellName, e.shiftKey);
+        break;
+      
+      default:
+        // بدء التحرير مباشرة عند كتابة حرف أو رقم
+        if (!isEditingCell && /^[a-zA-Z0-9\u0600-\u06FF]$/.test(e.key)) {
+          e.preventDefault();
+          setActiveSearchCell({ rowIndex, cellName });
+          setIsEditingCell(true);
+        }
+        break;
     }
+  };
+  
+  // الحصول على ترتيب الخلايا المرئية للتنقل
+  const getVisibleCellOrder = () => {
+    const basicCellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
+    return basicCellOrder;
   };
   
   // التنقل باستخدام مفتاح Tab
   const navigateWithTab = (rowIndex: number, cellName: string, isShiftKey: boolean) => {
-    const cellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
+    const cellOrder = getVisibleCellOrder();
     const currentIndex = cellOrder.indexOf(cellName);
     
     if (isShiftKey) {
@@ -231,13 +261,21 @@ export function useInvoiceTable({
   
   // التركيز على خلية معينة
   const focusCell = (rowIndex: number, cellName: string) => {
+    if (rowIndex < 0 || rowIndex >= items.length) return;
+    
     const cellId = `${rowIndex}-${cellName}`;
     const cell = cellRefs.get(cellId);
     
     if (cell) {
-      cell.focus();
-      setActiveSearchCell({ rowIndex, cellName });
-      setLastSelectedRowIndex(rowIndex);
+      // تأجيل التركيز لضمان عمله بشكل صحيح
+      setTimeout(() => {
+        cell.focus();
+        setActiveSearchCell({ rowIndex, cellName });
+        setLastSelectedRowIndex(rowIndex);
+        setIsEditingCell(false);
+      }, 0);
+    } else {
+      console.log(`لم يتم العثور على خلية ${cellId}`, cellRefs);
     }
   };
   
@@ -268,3 +306,4 @@ export function useInvoiceTable({
     focusCell,
   };
 }
+
