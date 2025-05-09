@@ -30,6 +30,7 @@ import { integrationsRoutes } from "./integrationsRoutes";
 import { receivablesPayablesRoutes } from "./receivablesPayablesRoutes";
 import { purchasesRoutes } from "./purchasesRoutes";
 import { aboutRoutes } from "./aboutRoutes";
+import { hrRoutes } from "./hrRoutes";
 
 export const appRoutes: RouteObject[] = [
   {
@@ -67,6 +68,7 @@ export const appRoutes: RouteObject[] = [
       ...receivablesPayablesRoutes,
       ...purchasesRoutes,
       ...aboutRoutes,
+      ...hrRoutes,
       
       // Catch-all route
       { path: "*", element: <NotFound /> }
