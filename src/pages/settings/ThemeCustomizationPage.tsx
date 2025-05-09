@@ -44,6 +44,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { useAppContext } from "@/contexts/AppContext";
 import { 
   Paintbrush, 
   Type, 
@@ -134,15 +136,16 @@ const fontSizeOptions = [
 ];
 
 const ThemeCustomizationPage: React.FC = () => {
+  const { themeMode: systemThemeMode, toggleTheme: systemToggleTheme } = useAppContext();
   const [activeTab, setActiveTab] = useState("colors");
-  const [currentTheme, setCurrentTheme] = useState<ThemeSettings>(defaultLightTheme);
+  const [currentTheme, setCurrentTheme] = useState<ThemeSettings>(
+    systemThemeMode === 'dark' ? defaultDarkTheme : defaultLightTheme
+  );
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
-  // تطبيق التغييرات على DOM
+  // استرجاع الإعدادات المخزنة عند التحميل الأول
   useEffect(() => {
-    applyThemeToDOM(currentTheme);
-    
-    // محاولة استرجاع الإعدادات المخزنة عند التحميل الأول
     if (localStorage.getItem('appThemeSettings')) {
       try {
         const savedTheme = JSON.parse(localStorage.getItem('appThemeSettings') || '');
@@ -150,9 +153,17 @@ const ThemeCustomizationPage: React.FC = () => {
         applyThemeToDOM(savedTheme);
       } catch (e) {
         console.error('خطأ في استرجاع إعدادات السمة:', e);
+        // استخدام الثيم الافتراضي في حالة حدوث خطأ
+        const defaultTheme = systemThemeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
+        setCurrentTheme(defaultTheme);
+        applyThemeToDOM(defaultTheme);
       }
+    } else {
+      // تطبيق الثيم الافتراضي إذا لم يكن هناك إعدادات سابقة
+      const defaultTheme = systemThemeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
+      applyThemeToDOM(defaultTheme);
     }
-  }, []);
+  }, [systemThemeMode]);
 
   // تطبيق السمة على DOM
   const applyThemeToDOM = (theme: ThemeSettings) => {
@@ -170,11 +181,16 @@ const ThemeCustomizationPage: React.FC = () => {
     
     // تطبيق نوع الخط
     if (theme.fonts.family !== 'Tajawal') {
-      // إضافة الخط إذا كان مختلفًا عن Tajawal
-      const fontLink = document.createElement('link');
-      fontLink.rel = 'stylesheet';
-      fontLink.href = `https://fonts.googleapis.com/css2?family=${theme.fonts.family}:wght@300;400;500;700&display=swap`;
-      document.head.appendChild(fontLink);
+      // التحقق من وجود عنصر link بنفس الرابط لتجنب التكرار
+      const existingFontLink = document.querySelector(`link[href*="${theme.fonts.family}"]`);
+      
+      if (!existingFontLink) {
+        // إضافة الخط إذا كان غير موجود
+        const fontLink = document.createElement('link');
+        fontLink.rel = 'stylesheet';
+        fontLink.href = `https://fonts.googleapis.com/css2?family=${theme.fonts.family}:wght@300;400;500;700&display=swap`;
+        document.head.appendChild(fontLink);
+      }
     }
     
     document.body.style.fontFamily = `'${theme.fonts.family}', sans-serif`;
@@ -265,15 +281,24 @@ const ThemeCustomizationPage: React.FC = () => {
       
     setCurrentTheme(newTheme);
     applyThemeToDOM(newTheme);
+    
+    // مزامنة مع حالة النظام
+    systemToggleTheme();
   };
 
   // حفظ التغييرات
   const handleSaveTheme = () => {
-    // حفظ في التخزين المحلي (في التطبيق الحقيقي سيتم الحفظ في قاعدة البيانات)
-    localStorage.setItem('appThemeSettings', JSON.stringify(currentTheme));
+    setIsSaving(true);
     
-    // إظهار رسالة نجاح
-    toast.success("تم حفظ إعدادات السمة بنجاح");
+    // محاكاة حفظ البيانات مع تأخير
+    setTimeout(() => {
+      // حفظ في التخزين المحلي (في التطبيق الحقيقي سيتم الحفظ في قاعدة البيانات)
+      localStorage.setItem('appThemeSettings', JSON.stringify(currentTheme));
+      
+      // إظهار رسالة نجاح
+      toast.success("تم حفظ إعدادات السمة بنجاح");
+      setIsSaving(false);
+    }, 600);
   };
 
   // إعادة التعيين إلى الإعدادات الافتراضية
@@ -328,9 +353,20 @@ const ThemeCustomizationPage: React.FC = () => {
               </AlertDialogContent>
             </AlertDialog>
             
-            <Button onClick={handleSaveTheme}>
-              <Save className="h-4 w-4 ml-2" />
-              حفظ التغييرات
+            <Button 
+              onClick={handleSaveTheme} 
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <span className="animate-pulse">جاري الحفظ...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 ml-2" />
+                  حفظ التغييرات
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -339,17 +375,17 @@ const ThemeCustomizationPage: React.FC = () => {
           {/* قسم الإعدادات */}
           <div className="lg:col-span-2 space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="colors" className="flex items-center">
-                  <Paintbrush className="h-4 w-4 ml-2" />
+              <TabsList className="grid w-full grid-cols-3 mb-2">
+                <TabsTrigger value="colors" className="flex items-center gap-1">
+                  <Paintbrush className="h-4 w-4" />
                   الألوان
                 </TabsTrigger>
-                <TabsTrigger value="typography" className="flex items-center">
-                  <Type className="h-4 w-4 ml-2" />
+                <TabsTrigger value="typography" className="flex items-center gap-1">
+                  <Type className="h-4 w-4" />
                   الخطوط
                 </TabsTrigger>
-                <TabsTrigger value="layout" className="flex items-center">
-                  <LayoutIcon className="h-4 w-4 ml-2" />
+                <TabsTrigger value="layout" className="flex items-center gap-1">
+                  <LayoutIcon className="h-4 w-4" />
                   التخطيط
                 </TabsTrigger>
               </TabsList>
@@ -404,7 +440,7 @@ const ThemeCustomizationPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <Separator />
+                    <Separator className="my-2" />
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -605,7 +641,7 @@ const ThemeCustomizationPage: React.FC = () => {
                           هذا نص تجريبي لمعاينة الخط المختار. يمكنك رؤية كيف سيظهر الخط في مختلف أحجام النص.
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          نص ثانوي بحجم أصغر لمعاينة الخط في النصوص الوصفية.
+                          نص ثانوي أصغر حجمًا لمعاينة الخط في النصوص الوصفية.
                         </p>
                         <div className="mt-2">
                           <a href="#" className="hover:underline" style={{ color: currentTheme.colors.link }}>
@@ -626,39 +662,47 @@ const ThemeCustomizationPage: React.FC = () => {
                     <CardDescription>تخصيص تخطيط التطبيق</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="borderRadius">استدارة الحواف</Label>
-                      <Slider
-                        id="borderRadius"
-                        min={0}
-                        max={16}
-                        step={1}
-                        defaultValue={[8]}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>لا استدارة</span>
-                        <span>استدارة قصوى</span>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="borderRadius" className="mb-2 block">استدارة الحواف</Label>
+                        <div className="pt-4">
+                          <Slider
+                            id="borderRadius"
+                            min={0}
+                            max={16}
+                            step={1}
+                            defaultValue={[8]}
+                            className="w-full"
+                            aria-label="استدارة الحواف"
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                          <span>لا استدارة</span>
+                          <span>استدارة قصوى</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-6">
+                        <Label htmlFor="spacing" className="mb-2 block">المسافات بين العناصر</Label>
+                        <div className="pt-4">
+                          <Slider
+                            id="spacing"
+                            min={1}
+                            max={5}
+                            step={1}
+                            defaultValue={[3]}
+                            className="w-full"
+                            aria-label="المسافات بين العناصر"
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                          <span>متقاربة</span>
+                          <span>متباعدة</span>
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="spacing">المسافات بين العناصر</Label>
-                      <Slider
-                        id="spacing"
-                        min={1}
-                        max={5}
-                        step={1}
-                        defaultValue={[3]}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>متقاربة</span>
-                        <span>متباعدة</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
+                    <div className="space-y-2 mt-4">
                       <Label>تأثيرات الظل</Label>
                       <Select defaultValue="medium">
                         <SelectTrigger>
@@ -705,21 +749,22 @@ const ThemeCustomizationPage: React.FC = () => {
           
           {/* قسم المعاينة */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-4">
+            <Card className="sticky top-4 shadow-md">
               <CardHeader>
                 <CardTitle>معاينة مباشرة</CardTitle>
                 <CardDescription>معاينة التغييرات قبل الحفظ</CardDescription>
               </CardHeader>
               <CardContent>
                 <div 
-                  className="border rounded-md p-4 mb-4"
+                  className="border rounded-md p-4 mb-4 transition-all duration-200"
                   style={{ 
                     backgroundColor: currentTheme.colors.background,
                     color: currentTheme.colors.textPrimary,
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
                   }}
                 >
                   <div 
-                    className="h-10 mb-4 flex items-center px-3 rounded-md"
+                    className="h-10 mb-4 flex items-center px-3 rounded-md transition-colors"
                     style={{ backgroundColor: currentTheme.colors.header, color: '#ffffff' }}
                   >
                     <h3 className="text-sm font-medium">ترويسة التطبيق</h3>
@@ -749,7 +794,7 @@ const ThemeCustomizationPage: React.FC = () => {
                     <Button variant="outline">زر ثانوي</Button>
                   </div>
                   
-                  <div className="mt-4 p-3 rounded-md" style={{ backgroundColor: currentTheme.colors.secondary }}>
+                  <div className="mt-4 p-3 rounded-md transition-colors" style={{ backgroundColor: currentTheme.colors.secondary }}>
                     <p className="text-xs">
                       هذا مثال على القسم ذو الخلفية الثانوية
                     </p>
@@ -757,9 +802,9 @@ const ThemeCustomizationPage: React.FC = () => {
                 </div>
                 
                 {/* نصائح للمستخدم */}
-                <div className="text-xs text-muted-foreground p-2 bg-muted rounded-md">
-                  <p>❓ نصائح للتخصيص:</p>
-                  <ul className="list-disc list-inside mt-1">
+                <div className="text-xs text-muted-foreground p-3 bg-muted rounded-md">
+                  <p className="font-semibold mb-1">❓ نصائح للتخصيص:</p>
+                  <ul className="list-disc list-inside mt-1 space-y-1">
                     <li>تأكد من وجود تباين كافٍ بين ألوان النصوص والخلفيات</li>
                     <li>اختر ألوانًا متناسقة تعكس هوية مؤسستك</li>
                     <li>يمكنك تبديل الوضع بين الفاتح والداكن لمعاينة كلا المظهرين</li>
@@ -775,3 +820,4 @@ const ThemeCustomizationPage: React.FC = () => {
 };
 
 export default ThemeCustomizationPage;
+
