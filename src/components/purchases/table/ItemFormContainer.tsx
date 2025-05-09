@@ -62,6 +62,7 @@ export const ItemFormContainer: React.FC<ItemFormContainerProps> = ({
           onProductSelect={handleProductSelect}
           onChange={handleItemChange}
           onUpdateItem={handleUpdateItemField}
+          onSave={handleSave} // تمرير معالج حدث الحفظ
         />
         
         <FormActions

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { KeyboardEvent } from "react";
 import { ProductSearch } from "../../ProductSearch";
 import { Product } from "@/types/inventory";
 import { PurchaseItem } from "@/types/purchases";
@@ -12,6 +12,7 @@ interface ProductSearchSectionProps {
   onProductSelect: (product: Product) => void;
   onChange: (field: string, value: any) => void;
   onUpdateItem?: (index: number, field: string, value: any) => void;
+  onSave?: () => void; // إضافة معالج حدث الحفظ
 }
 
 export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
@@ -20,10 +21,19 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
   newItem,
   onProductSelect,
   onChange,
-  onUpdateItem
+  onUpdateItem,
+  onSave
 }) => {
+  // إضافة معالج حدث الضغط على Enter
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && newItem.name && onSave) {
+      e.preventDefault();
+      onSave();
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4" onKeyDown={handleKeyDown}>
       <div className="md:col-span-3">
         <label className="block text-sm font-medium mb-1">البحث عن صنف</label>
         <ProductSearch 
