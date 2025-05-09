@@ -1,4 +1,3 @@
-
 import { 
   Scale, 
   ClipboardList, 
@@ -17,7 +16,7 @@ export const accountingItems: MenuItem[] = [
     children: [
       {
         label: "دليل الحسابات",
-        path: "/accounting/accounts",
+        path: "/accounting/chart",
         icon: ClipboardList,
       },
       {

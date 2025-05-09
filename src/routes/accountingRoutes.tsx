@@ -1,4 +1,3 @@
-
 import { RouteObject } from "react-router-dom";
 import AccountChartPage from "@/pages/accounting/AccountChartPage";
 import JournalEntriesPage from "@/pages/accounting/JournalEntriesPage";
@@ -15,6 +14,10 @@ import CashRegisterModulePage from "@/pages/accounting/CashRegisterModulePage";
 export const accountingRoutes: RouteObject[] = [
   {
     path: "accounting/chart",
+    element: <AccountChartPage />,
+  },
+  {
+    path: "accounting/accounts",
     element: <AccountChartPage />,
   },
   {
