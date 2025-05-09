@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Account, AccountNode } from "@/types/accounts";
 import { mockAccounts } from "@/data/mockAccounts";
 import { toast } from "sonner";
@@ -101,16 +101,33 @@ export const useAccounts = () => {
     setFilteredAccounts(filtered);
   }, [accounts]);
 
-  // الحصول على الحسابات الرئيسية فقط للاختيار من بينها
+  // مصفوفة الخيارات المستخدمة في قائمة الحساب الأب - مع منع القيم الفارغة
   const getParentAccountOptions = useCallback(() => {
-    // Make sure we're not returning any empty values
-    return accounts
-      .filter(account => account.level < 3 && account.id && account.id.trim() !== '') 
-      .map(account => ({
-        label: `${account.number} - ${account.name}`,
-        value: account.id
-      }))
-      .filter(option => option.value && option.value.trim() !== ''); // Double check that no empty values slip through
+    console.log("useAccounts - Generating parent options from accounts:", accounts);
+    
+    // تطبيق تصفية صارمة للتأكد من عدم وجود قيم فارغة
+    const validAccounts = accounts.filter(account => 
+      account.level < 3 && 
+      account.id && 
+      typeof account.id === 'string' && 
+      account.id.trim() !== ''
+    );
+    
+    const options = validAccounts.map(account => ({
+      label: `${account.number} - ${account.name}`,
+      value: account.id
+    }));
+    
+    // تصفية نهائية للتأكد من عدم وجود قيم فارغة
+    const filteredOptions = options.filter(option => 
+      option.value && 
+      typeof option.value === 'string' && 
+      option.value.trim() !== ''
+    );
+    
+    console.log("useAccounts - Final parent options:", filteredOptions);
+    
+    return filteredOptions;
   }, [accounts]);
 
   // اقتراح الحسابات بناءً على النوع
@@ -154,6 +171,9 @@ export const useAccounts = () => {
     const maxNumber = Math.max(...rootAccounts.map(acc => parseInt(acc.number)));
     return (maxNumber + 100).toString();
   }, [accounts]);
+  
+  // Memoize parent options to avoid calculations on every render
+  const parentOptions = useMemo(() => getParentAccountOptions(), [getParentAccountOptions]);
 
   return {
     accounts,
@@ -166,6 +186,7 @@ export const useAccounts = () => {
     deleteAccount,
     searchAccounts,
     getParentAccountOptions,
+    parentOptions,
     suggestAccountNumber
   };
 };

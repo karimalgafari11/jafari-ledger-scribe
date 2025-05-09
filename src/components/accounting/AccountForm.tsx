@@ -64,6 +64,13 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   onSuggestNumber,
   onCancel,
 }) => {
+  // Validate parent options - ensure no empty values
+  const validParentOptions = parentOptions?.filter(
+    option => option && option.value && typeof option.value === 'string' && option.value.trim() !== ''
+  ) || [];
+
+  console.log("Valid parent options in form:", validParentOptions);
+
   const form = useForm<AccountFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: account
@@ -188,15 +195,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="no-parent">بدون حساب أب</SelectItem> 
-                    {parentOptions && parentOptions.length > 0 && parentOptions
-                      .filter(option => option.value && option.value.trim() !== '')
-                      .map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))
-                    }
+                    <SelectItem value="no-parent">بدون حساب أب</SelectItem>
+                    {validParentOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

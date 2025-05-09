@@ -32,13 +32,23 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
   onEditSubmit,
   onSuggestNumber,
 }) => {
-  console.log("Parent options:", parentOptions); // Debug log to check values
+  // Debug logs for troubleshooting
+  console.log("AccountDialogs - Parent options received:", parentOptions);
   
-  // Ensure we have valid parent options
-  const validatedParentOptions = parentOptions && Array.isArray(parentOptions) 
-    ? parentOptions.filter(option => option.value && option.value.trim() !== '')
+  // Ensure we have valid parent options - strict validation
+  const validatedParentOptions = Array.isArray(parentOptions) 
+    ? parentOptions.filter(option => 
+        option && 
+        typeof option === 'object' &&
+        'value' in option && 
+        option.value && 
+        typeof option.value === 'string' && 
+        option.value.trim() !== ''
+      )
     : [];
     
+  console.log("AccountDialogs - Validated parent options:", validatedParentOptions);
+  
   return (
     <>
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
