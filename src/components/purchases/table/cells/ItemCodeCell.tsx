@@ -1,28 +1,34 @@
 
-import React, { useState, forwardRef, KeyboardEvent } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
 interface ItemCodeCellProps {
   code: string;
   index: number;
-  isEditingCell: boolean;
-  handleDirectEdit: (index: number, field: string, value: any) => void;
+  isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
+  handleDirectEdit: (index: number, field: string, value: any) => void;
   onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
   tabIndex?: number;
 }
 
 export const ItemCodeCell = forwardRef<HTMLTableCellElement, ItemCodeCellProps>(({
-  code,
+  code = "",
   index,
-  isEditingCell,
-  handleDirectEdit,
+  isEditing,
   handleCellClick,
+  handleDirectEdit,
   onKeyDown,
   tabIndex
 }, ref) => {
   const [inputValue, setInputValue] = useState(code);
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(code);
+    }
+  }, [isEditing, code]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -47,10 +53,10 @@ export const ItemCodeCell = forwardRef<HTMLTableCellElement, ItemCodeCellProps>(
       onKeyDown={onKeyDown}
       data-row-index={index}
       data-cell-name="code"
-      tabIndex={tabIndex}
       ref={ref}
+      tabIndex={tabIndex}
     >
-      {isEditingCell ? (
+      {isEditing ? (
         <Input
           type="text"
           value={inputValue}
@@ -61,7 +67,7 @@ export const ItemCodeCell = forwardRef<HTMLTableCellElement, ItemCodeCellProps>(
           autoFocus
         />
       ) : (
-        <span className="cursor-text">{code}</span>
+        <span className="cursor-text">{code || "—"}</span>
       )}
     </TableCell>
   );

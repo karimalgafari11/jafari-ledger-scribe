@@ -95,9 +95,9 @@ export const PurchaseItemRow: React.FC<PurchaseItemRowProps> = ({
         <ItemCodeCell
           code={item.code}
           index={index}
-          handleDirectEdit={handleDirectEdit}
-          isEditingCell={isEditingCell(index, 'code')}
+          isEditing={isEditingCell(index, 'code')}
           handleCellClick={handleCellClick}
+          handleDirectEdit={handleDirectEdit}
           onKeyDown={(e) => handleCellKeyDown(e, 'code')}
           ref={registerCellRef('code')}
           tabIndex={0}
