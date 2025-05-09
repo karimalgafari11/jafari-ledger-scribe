@@ -38,17 +38,24 @@ export const AccountDialogs: React.FC<AccountDialogsProps> = ({
   // Ensure we have valid parent options - strict validation
   const validatedParentOptions = useMemo(() => {
     if (!Array.isArray(parentOptions)) {
+      console.warn("Parent options is not an array:", parentOptions);
       return [];
     }
   
-    return parentOptions.filter(option => 
+    const filtered = parentOptions.filter(option => 
       option && 
       typeof option === 'object' &&
       'value' in option && 
+      'label' in option && 
       option.value && 
       typeof option.value === 'string' && 
-      option.value.trim() !== ''
+      option.value.trim() !== '' &&
+      option.label &&
+      typeof option.label === 'string'
     );
+    
+    console.log("Filtered parent options:", filtered);
+    return filtered;
   }, [parentOptions]);
     
   console.log("AccountDialogs - Validated parent options:", validatedParentOptions);

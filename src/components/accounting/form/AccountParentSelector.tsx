@@ -13,16 +13,24 @@ interface AccountParentSelectorProps {
 export const AccountParentSelector: React.FC<AccountParentSelectorProps> = ({ form, parentOptions }) => {
   // Strict validation to ensure all parent options are valid objects with non-empty string values
   const validParentOptions = React.useMemo(() => {
-    return parentOptions?.filter(
+    if (!Array.isArray(parentOptions)) {
+      return [];
+    }
+    
+    return parentOptions.filter(
       option => option && 
         typeof option === 'object' && 
         'value' in option && 
+        'label' in option &&
         option.value && 
         typeof option.value === 'string' && 
-        option.value.trim() !== ''
-    ) || [];
+        option.value.trim() !== '' &&
+        option.label &&
+        typeof option.label === 'string'
+    );
   }, [parentOptions]);
   
+  // Debug logging to verify our valid options
   console.log("Valid parent options in selector:", validParentOptions);
 
   return (

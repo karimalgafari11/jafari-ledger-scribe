@@ -46,16 +46,18 @@ export const AccountTypeSelector: React.FC<AccountTypeSelectorProps> = ({ form }
             </FormControl>
             <SelectContent>
               {accountTypes.map((type) => (
-                <Tooltip key={type.value}>
-                  <TooltipTrigger asChild>
-                    <SelectItem value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{type.description}</p>
-                  </TooltipContent>
-                </Tooltip>
+                <TooltipProvider key={type.value}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SelectItem value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{type.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
             </SelectContent>
           </Select>

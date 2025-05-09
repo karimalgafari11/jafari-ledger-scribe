@@ -41,14 +41,21 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 }) => {
   // Validate parent options - ensure no empty values
   const validParentOptions = React.useMemo(() => {
-    return parentOptions?.filter(
+    if (!Array.isArray(parentOptions)) {
+      return [];
+    }
+    
+    return parentOptions.filter(
       option => option && 
         typeof option === 'object' && 
         'value' in option && 
+        'label' in option &&
         option.value && 
         typeof option.value === 'string' && 
-        option.value.trim() !== ''
-    ) || [];
+        option.value.trim() !== '' &&
+        option.label &&
+        typeof option.label === 'string'
+    );
   }, [parentOptions]);
 
   console.log("Valid parent options in form:", validParentOptions);

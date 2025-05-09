@@ -101,16 +101,21 @@ export const useAccounts = () => {
     setFilteredAccounts(filtered);
   }, [accounts]);
 
-  // مصفوفة الخيارات المستخدمة في قائمة الحساب الأب - مع منع القيم الفارغة
+  // مصفوفة الخيارات المستخدمة في قائمة الحساب الأب
   const getParentAccountOptions = useCallback(() => {
     console.log("useAccounts - Generating parent options from accounts:", accounts);
     
     // تطبيق تصفية صارمة للتأكد من عدم وجود قيم فارغة
     const validAccounts = accounts.filter(account => 
+      account && 
       account.level < 3 && 
       account.id && 
       typeof account.id === 'string' && 
-      account.id.trim() !== ''
+      account.id.trim() !== '' &&
+      account.name &&
+      typeof account.name === 'string' &&
+      account.number &&
+      typeof account.number === 'string'
     );
     
     const options = validAccounts.map(account => {
@@ -127,9 +132,12 @@ export const useAccounts = () => {
     
     // تصفية نهائية للتأكد من عدم وجود قيم فارغة أو تكرارات
     const filteredOptions = options.filter(option => 
-      option && option.value && 
+      option && 
+      option.value && 
       typeof option.value === 'string' && 
-      option.value.trim() !== ''
+      option.value.trim() !== '' &&
+      option.label &&
+      typeof option.label === 'string'
     );
     
     // Remove any duplicate values
