@@ -62,6 +62,12 @@ export interface FilterOptions {
   brand: string;
   priceRange: { min: number; max: number };
   inStock: boolean | null;
+  
+  // Add the missing properties that are being used in the codebase
+  status?: string;
+  warehouse?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export interface InventoryCountItem {

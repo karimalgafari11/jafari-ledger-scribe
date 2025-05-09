@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { FilterOptions } from "@/types/inventory";
+
 interface ProductsToolbarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -16,6 +18,7 @@ interface ProductsToolbarProps {
   onExport: (type: 'pdf' | 'excel') => void;
   onShare: () => void;
 }
+
 export function ProductsToolbar({
   searchQuery,
   setSearchQuery,
@@ -26,12 +29,14 @@ export function ProductsToolbar({
   onExport,
   onShare
 }: ProductsToolbarProps) {
-  const form = useForm({
+  const form = useForm<FilterOptions>({
     defaultValues: filterOptions
   });
+  
   const handleFilterSubmit = (data: FilterOptions) => {
     setFilterOptions(data);
   };
+  
   return <div className="mb-6 space-y-4 rtl">
       {/* Search and Actions Row */}
       <div className="flex flex-col md:flex-row gap-4 justify-between bg-cyan-200 px-[2px]">
@@ -56,42 +61,58 @@ export function ProductsToolbar({
             <PopoverContent className="w-80" align="end">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleFilterSubmit)} className="space-y-4">
-                  <FormField control={form.control} name="category" render={({
-                  field
-                }) => <FormItem>
+                  <FormField 
+                    control={form.control} 
+                    name="category" 
+                    render={({ field }) => (
+                      <FormItem>
                         <FormLabel>التصنيف</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="اختر التصنيف" />
                         </FormControl>
-                      </FormItem>} />
+                      </FormItem>
+                    )} 
+                  />
                   
-                  <FormField control={form.control} name="status" render={({
-                  field
-                }) => <FormItem>
+                  <FormField 
+                    control={form.control} 
+                    name="status" 
+                    render={({ field }) => (
+                      <FormItem>
                         <FormLabel>الحالة</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="الحالة" />
                         </FormControl>
-                      </FormItem>} />
+                      </FormItem>
+                    )} 
+                  />
                   
                   <div className="flex gap-2">
-                    <FormField control={form.control} name="minPrice" render={({
-                    field
-                  }) => <FormItem className="flex-1">
+                    <FormField 
+                      control={form.control} 
+                      name="minPrice" 
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
                           <FormLabel>السعر من</FormLabel>
                           <FormControl>
                             <Input {...field} type="number" placeholder="0" />
                           </FormControl>
-                        </FormItem>} />
+                        </FormItem>
+                      )} 
+                    />
                     
-                    <FormField control={form.control} name="maxPrice" render={({
-                    field
-                  }) => <FormItem className="flex-1">
+                    <FormField 
+                      control={form.control} 
+                      name="maxPrice" 
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
                           <FormLabel>إلى</FormLabel>
                           <FormControl>
                             <Input {...field} type="number" placeholder="10000" />
                           </FormControl>
-                        </FormItem>} />
+                        </FormItem>
+                      )} 
+                    />
                   </div>
                   
                   <div className="flex justify-end pt-2">

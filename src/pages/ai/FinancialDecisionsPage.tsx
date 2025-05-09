@@ -1,532 +1,440 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { Header } from "@/components/Header";
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAiAssistant } from "@/hooks/useAiAssistant";
-import { useFinancialDecisions } from "@/hooks/useFinancialDecisions";
-import { FinancialDecisionCard } from "@/components/ai/FinancialDecisionCard";
-import { AiAnalyticsPanel } from "@/components/ai/AiAnalyticsPanel";
-import { AiRulesPanel } from "@/components/ai/AiRulesPanel";
-import AiPerformanceReport from "@/components/ai/AiPerformanceReport";
-import FinancialDecisionReviewModal from "@/components/ai/FinancialDecisionReviewModal";
-import { Product } from "@/types/inventory";
-import { Expense } from "@/types/expenses";
-import { FinancialDecision, FinancialDecisionStatus } from "@/types/ai-finance";
+import { BarChart, PieChart, LineChart } from "@/components/ui/charts";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  Calculator,
-  DollarSign,
-  AlertCircle,
-  FileText,
-  Filter,
-  SlidersHorizontal,
-  BarChart
-} from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Product } from "@/types/inventory";
+import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
+} from "@/components/ui/select"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { cn } from "@/lib/utils";
+import { getPieChartColors } from "@/utils/chartUtils";
+
+// Mock data for demonstration purposes
+const mockProducts: Product[] = [
+  {
+    id: "1",
+    code: "LP001",
+    name: "لاب توب ديل XPS",
+    description: "لاب توب ديل XPS 13 بوصة",
+    price: 5499.99,
+    costPrice: 4500,
+    quantity: 5,
+    reorderLevel: 10,
+    category: "إلكترونيات",
+    unit: "قطعة",
+    barcode: "123456789012",
+    isActive: true
+  },
+  {
+    id: "2",
+    code: "PH002",
+    name: "آيفون 15 برو",
+    description: "هاتف آيفون 15 برو ماكس",
+    price: 4999.99,
+    costPrice: 4000,
+    quantity: 2,
+    reorderLevel: 5,
+    category: "جوالات",
+    unit: "قطعة",
+    barcode: "987654321098",
+    isActive: true
+  },
+  {
+    id: "3",
+    code: "AU003",
+    name: "سماعات سوني",
+    description: "سماعات سوني لاسلكية",
+    price: 799.99,
+    costPrice: 450,
+    quantity: 50,
+    reorderLevel: 20,
+    category: "إلكترونيات",
+    unit: "قطعة",
+    barcode: "345678901234",
+    isActive: true
+  },
+  {
+    id: "4",
+    code: "DS004",
+    name: "شاشة سامسونج",
+    description: "شاشة سامسونج 4K 55 بوصة",
+    price: 2999.99,
+    costPrice: 2400,
+    quantity: 3,
+    reorderLevel: 8,
+    category: "إلكترونيات",
+    unit: "قطعة",
+    barcode: "567890123456",
+    isActive: true
+  },
+  {
+    id: "5",
+    code: "MS005",
+    name: "ماوس لاسلكي",
+    description: "ماوس لاسلكي لوجيتيك",
+    price: 149.99,
+    costPrice: 80,
+    quantity: 100,
+    reorderLevel: 30,
+    category: "إكسسوارات",
+    unit: "قطعة",
+    barcode: "678901234567",
+    isActive: true
+  }
+];
+
+// Zod validation schema for the form
+const formSchema = z.object({
+  decisionType: z.string().min(2, {
+    message: "نوع القرار يجب أن يكون على الأقل حرفين.",
+  }),
+  factors: z.string().min(10, {
+    message: "يجب أن تصف العوامل المؤثرة بتفصيل أكبر.",
+  }),
+  recommendation: z.string().min(10, {
+    message: "يجب أن تكون التوصية مفصلة.",
+  }),
+  expectedOutcome: z.string().min(10, {
+    message: "يجب أن تصف النتائج المتوقعة بتفصيل أكبر.",
+  }),
+  riskAssessment: z.string().min(10, {
+    message: "يجب أن يكون تقييم المخاطر مفصلاً.",
+  }),
+});
 
 const FinancialDecisionsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("decisions");
-  const [selectedDecision, setSelectedDecision] = useState<FinancialDecision | null>(null);
-  const [showDecisionModal, setShowDecisionModal] = useState(false);
-  const { analyzePerformance } = useAiAssistant();
-  const { 
-    decisions, 
-    filteredDecisions, 
-    isLoading, 
-    filters, 
-    updateFilters, 
-    implementDecision, 
-    acceptDecision,
-    dismissDecision, 
-    getDecisionStats 
-  } = useFinancialDecisions();
-  
-  const performance = analyzePerformance();
-  const stats = getDecisionStats();
+  const { toast } = useToast();
+  const [decisionDialogOpen, setDecisionDialogOpen] = React.useState(false);
 
-  // معالجة فتح تفاصيل القرار
-  const handleOpenDecisionDetails = useCallback((decision: FinancialDecision) => {
-    setSelectedDecision(decision);
-    setShowDecisionModal(true);
-  }, []);
-  
-  // إنشاء بيانات وهمية للمخططات
-  const mockData = useMemo(() => ({
-    performanceData: [
-      { name: "الأحد", sales: 4000, expenses: 2400, profit: 1600 },
-      { name: "الإثنين", sales: 3000, expenses: 1398, profit: 1602 },
-      { name: "الثلاثاء", sales: 2000, expenses: 9800, profit: -7800 },
-      { name: "الأربعاء", sales: 2780, expenses: 3908, profit: -1128 },
-      { name: "الخميس", sales: 1890, expenses: 4800, profit: -2910 },
-      { name: "الجمعة", sales: 2390, expenses: 3800, profit: -1410 },
-      { name: "السبت", sales: 3490, expenses: 4300, profit: -810 },
-    ],
-    categoryData: [
-      { name: "إلكترونيات", value: 400 },
-      { name: "ملابس", value: 300 },
-      { name: "أثاث", value: 300 },
-      { name: "أدوات منزلية", value: 200 },
-      { name: "أخرى", value: 100 },
-    ],
-    customerData: [
-      { name: "الولاء", value: 80 },
-      { name: "التكرار", value: 65 },
-      { name: "القيمة", value: 90 },
-      { name: "المدة", value: 70 },
-      { name: "الإنفاق", value: 85 },
-    ],
-    inventoryData: [
-      { name: "إلكترونيات", stock: 120, optimal: 100 },
-      { name: "ملابس", stock: 85, optimal: 150 },
-      { name: "أثاث", stock: 30, optimal: 50 },
-      { name: "أدوات ��نزلية", stock: 60, optimal: 75 },
-      { name: "أخرى", stock: 40, optimal: 30 },
-    ],
-    lowStockItemsData: [
-      { 
-        id: "1", 
-        name: "هاتف ذكي", 
-        quantity: 5, 
-        reorderLevel: 10, 
-        code: "PHN-001", 
-        price: 1299.99, 
-        category: "إلكترونيات", 
-        isActive: true 
-      },
-      { 
-        id: "2", 
-        name: "جهاز تابلت", 
-        quantity: 2, 
-        reorderLevel: 8, 
-        code: "TAB-002", 
-        price: 899.99, 
-        category: "إلكترونيات", 
-        isActive: true 
-      },
-      { 
-        id: "3", 
-        name: "سماعات لاسلكية", 
-        quantity: 0, 
-        reorderLevel: 15, 
-        code: "AUD-003", 
-        price: 299.99, 
-        category: "إلكترونيات", 
-        isActive: true 
-      },
-    ] as Product[],
-    pendingExpenses: [
-      { 
-        id: "1", 
-        description: "إيجار المكتب", 
-        amount: 5000, 
-        status: "pending" as 'pending' | 'approved' | 'rejected',
-        date: new Date(), 
-        category: "إيجارات", 
-        paymentMethod: "bank" as 'cash' | 'credit' | 'bank'
-      },
-      { 
-        id: "2", 
-        description: "فواتير الكهرباء", 
-        amount: 1200, 
-        status: "pending" as 'pending' | 'approved' | 'rejected',
-        date: new Date(), 
-        category: "مرافق", 
-        paymentMethod: "bank" as 'cash' | 'credit' | 'bank'
-      },
-    ] as Expense[],
-    COLORS: ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
-  }), []);
+  // Filter products with quantity below reorder level
+  const lowStockItems = mockProducts.filter(product => product.quantity !== undefined && product.reorderLevel !== undefined && product.quantity < product.reorderLevel);
 
-  // عرض بطاقة الإحصائيات
-  const renderStatsCard = useCallback(() => (
-    <Card className="shadow-sm mb-6">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <BarChart className="h-5 w-5 text-primary" />
-          إحصائيات القرارات المالية
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div className="bg-green-50 p-3 rounded-lg border border-green-100">
-            <div className="text-green-700 text-xs mb-1">القرارات المنفذة</div>
-            <div className="text-2xl font-bold">{stats.implemented}</div>
-            <Progress 
-              value={(stats.implemented / stats.total) * 100} 
-              className="h-1 mt-2"
-              indicatorClassName="bg-green-500"
-            />
-          </div>
-          <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
-            <div className="text-amber-700 text-xs mb-1">القرارات المقبولة</div>
-            <div className="text-2xl font-bold">{stats.accepted}</div>
-            <Progress 
-              value={(stats.accepted / stats.total) * 100} 
-              className="h-1 mt-2"
-              indicatorClassName="bg-amber-500"
-            />
-          </div>
-          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-            <div className="text-blue-700 text-xs mb-1">القرارات المقترحة</div>
-            <div className="text-2xl font-bold">{stats.suggested}</div>
-            <Progress 
-              value={(stats.suggested / stats.total) * 100} 
-              className="h-1 mt-2"
-              indicatorClassName="bg-blue-500"
-            />
-          </div>
-          <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-            <div className="text-gray-700 text-xs mb-1">إجمالي التأثير المالي</div>
-            <div className="text-2xl font-bold text-green-600">
-              {(stats.totalPositiveImpact - Math.abs(stats.totalNegativeImpact)).toLocaleString()} ريال
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-2 mb-2">
-          <div className="flex items-center gap-1">
-            <Calculator className="h-4 w-4 text-indigo-500" />
-            <span className="text-xs text-gray-600">قيود محاسبية: {stats.byType.journal_entry}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <DollarSign className="h-4 w-4 text-green-500" />
-            <span className="text-xs text-gray-600">تسعير: {stats.byType.pricing}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <AlertCircle className="h-4 w-4 text-amber-500" />
-            <span className="text-xs text-gray-600">مخصصات: {stats.byType.provision}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <FileText className="h-4 w-4 text-blue-500" />
-            <span className="text-xs text-gray-600">فروقات: {stats.byType.variance}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  ), [stats]);
+  // Calculate total value of low stock items
+  const totalLowStockValue = lowStockItems.reduce((sum, item) => sum + (item.costPrice || 0) * (item.quantity || 0), 0);
 
-  // عرض خيارات التصفية
-  const renderFilters = useCallback(() => (
-    <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-      <div className="flex items-center gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Filter className="h-4 w-4" /> فلتر
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72">
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium mb-2">نوع القرار</h4>
-                <Select
-                  value={filters.type}
-                  onValueChange={(value) => updateFilters({ type: value as any })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر النوع" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="all">الكل</SelectItem>
-                      <SelectItem value="journal_entry">قيود محاسبية</SelectItem>
-                      <SelectItem value="pricing">تسعير</SelectItem>
-                      <SelectItem value="provision">مخصصات</SelectItem>
-                      <SelectItem value="variance">فروقات</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2">حالة القرار</h4>
-                <Select
-                  value={filters.status}
-                  onValueChange={(value) => updateFilters({ status: value as any })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر الحالة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="all">الكل</SelectItem>
-                      <SelectItem value="suggested">مقترح</SelectItem>
-                      <SelectItem value="accepted">مقبول</SelectItem>
-                      <SelectItem value="implemented">منفذ</SelectItem>
-                      <SelectItem value="rejected">مرفوض</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2">ترتيب حسب</h4>
-                <Select
-                  value={filters.sortBy}
-                  onValueChange={(value) => updateFilters({ sortBy: value as any })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="ترتيب حسب" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="impact">التأثير المالي</SelectItem>
-                      <SelectItem value="confidence">مستوى الثقة</SelectItem>
-                      <SelectItem value="date">التاريخ</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2">نوع الترتيب</h4>
-                <Select
-                  value={filters.sortOrder}
-                  onValueChange={(value) => updateFilters({ sortOrder: value as any })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="نوع الترتيب" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="desc">تنازلي</SelectItem>
-                      <SelectItem value="asc">تصاعدي</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => updateFilters({
-                  type: 'all',
-                  status: 'all',
-                  sortBy: 'impact',
-                  sortOrder: 'desc'
-                })}
-                className="w-full"
-              >
-                إعادة تعيين الفلتر
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+  // Prepare data for stock level analysis pie chart
+  const stockLevelData = {
+    labels: ['مخزون كافي', 'مخزون منخفض'],
+    datasets: [{
+      label: 'تحليل مستويات المخزون',
+      data: [mockProducts.length - lowStockItems.length, lowStockItems.length],
+      backgroundColor: ['#36A2EB', '#FF6384'],
+      hoverBackgroundColor: ['#36A2EB', '#FF6384']
+    }]
+  };
 
-        <div className="flex gap-1">
-          <Button 
-            variant={filters.type === 'all' ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => updateFilters({ type: 'all' })}
-            className="h-8 px-2 py-1"
-          >
-            الكل
-          </Button>
-          <Button 
-            variant={filters.type === 'journal_entry' ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => updateFilters({ type: 'journal_entry' })}
-            className="h-8 px-2 py-1 flex items-center gap-1"
-          >
-            <Calculator className="h-3 w-3" />
-            قيود
-          </Button>
-          <Button 
-            variant={filters.type === 'pricing' ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => updateFilters({ type: 'pricing' })}
-            className="h-8 px-2 py-1 flex items-center gap-1"
-          >
-            <DollarSign className="h-3 w-3" />
-            تسعير
-          </Button>
-          <Button 
-            variant={filters.type === 'provision' ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => updateFilters({ type: 'provision' })}
-            className="h-8 px-2 py-1 flex items-center gap-1"
-          >
-            <AlertCircle className="h-3 w-3" />
-            مخصصات
-          </Button>
-          <Button 
-            variant={filters.type === 'variance' ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => updateFilters({ type: 'variance' })}
-            className="h-8 px-2 py-1 flex items-center gap-1"
-          >
-            <FileText className="h-3 w-3" />
-            فروقات
-          </Button>
-        </div>
-      </div>
+  // Prepare data for top selling categories bar chart
+  const categorySalesData = () => {
+    const categorySales: { [key: string]: number } = {};
+    mockProducts.forEach(product => {
+      if (product.category) {
+        categorySales[product.category] = (categorySales[product.category] || 0) + product.price;
+      }
+    });
 
-      <div className="flex gap-1">
-        <Button 
-          variant={filters.status === 'all' ? "default" : "ghost"} 
-          size="sm" 
-          onClick={() => updateFilters({ status: 'all' })}
-          className="h-8 px-3"
-        >
-          الكل
-          <Badge variant="outline" className="mr-2 bg-gray-100">{decisions.length}</Badge>
-        </Button>
-        <Button 
-          variant={filters.status === 'suggested' ? "default" : "ghost"} 
-          size="sm" 
-          onClick={() => updateFilters({ status: 'suggested' })}
-          className="h-8 px-3"
-        >
-          مقترح
-          <Badge variant="outline" className="mr-2 bg-blue-100">{stats.suggested}</Badge>
-        </Button>
-        <Button 
-          variant={filters.status === 'accepted' ? "default" : "ghost"} 
-          size="sm" 
-          onClick={() => updateFilters({ status: 'accepted' })}
-          className="h-8 px-3"
-        >
-          مقبول
-          <Badge variant="outline" className="mr-2 bg-amber-100">{stats.accepted}</Badge>
-        </Button>
-        <Button 
-          variant={filters.status === 'implemented' ? "default" : "ghost"} 
-          size="sm" 
-          onClick={() => updateFilters({ status: 'implemented' })}
-          className="h-8 px-3"
-        >
-          منفذ
-          <Badge variant="outline" className="mr-2 bg-green-100">{stats.implemented}</Badge>
-        </Button>
-      </div>
-    </div>
-  ), [filters, updateFilters, decisions.length, stats]);
-  
-  // Assuming the error is around line 103, here's how to correctly handle the type conversion:
-  const lowStockProducts = lowStockItemsData.map(item => ({
+    const labels = Object.keys(categorySales);
+    const data = Object.values(categorySales);
+
+    return {
+      labels: labels,
+      datasets: [{
+        label: 'المبيعات حسب الفئة',
+        data: data,
+        backgroundColor: 'rgba(255,99,132,0.2)',
+        borderColor: 'rgba(255,99,132,1)',
+        borderWidth: 1,
+      }]
+    };
+  };
+
+  // Prepare data for price distribution line chart
+  const priceDistributionData = () => {
+    const prices = mockProducts.map(product => product.price).sort((a, b) => a - b);
+    const labels = prices.map((price, index) => `المنتج ${index + 1}`);
+
+    return {
+      labels: labels,
+      datasets: [{
+        label: 'توزيع الأسعار',
+        data: prices,
+        fill: false,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+      }]
+    };
+  };
+
+  // Function to handle form submission
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      decisionType: "",
+      factors: "",
+      recommendation: "",
+      expectedOutcome: "",
+      riskAssessment: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Here, you would typically handle the form submission,
+    // such as sending the data to an API or updating state.
+    console.log("Form values:", values);
+    toast({
+      title: "تم تسجيل القرار المالي!",
+      description: "تم تسجيل قرارك المالي بنجاح.",
+    })
+    setDecisionDialogOpen(false);
+  }
+
+  const { pieColors } = getPieChartColors();
+
+  // Define the lowStockItemsData variable that's missing
+  const lowStockItemsData = lowStockItems.map(item => ({
+    ...item,
+    // Ensure required properties match the Product type
     id: item.id,
     name: item.name,
     code: item.code,
+    price: item.price,
     quantity: item.quantity,
     reorderLevel: item.reorderLevel,
-    price: item.price,
     category: item.category,
     isActive: item.isActive
-  })) as unknown as Product[];
+  })) as Product[];
 
   return (
     <div className="container mx-auto p-6 rtl">
-      <Header title="القرارات المالية الذكية" showBack={true} />
-      
-      <div className="mt-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4 w-full">
-            <TabsTrigger value="decisions" className="flex-1">القرارات المالية</TabsTrigger>
-            <TabsTrigger value="analysis" className="flex-1">التحليل المالي</TabsTrigger>
-            <TabsTrigger value="rules" className="flex-1">القواعد والتوصيات</TabsTrigger>
-            <TabsTrigger value="settings" className="flex-1">إعدادات التحليل</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="decisions">
-            {renderStatsCard()}
-            {renderFilters()}
-            
-            <ScrollArea className="h-[calc(100vh-350px)] w-full pr-4">
-              {filteredDecisions.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">
-                  لا توجد قرارات مطابقة لمعايير البحث
-                </div>
-              ) : (
-                filteredDecisions.map(decision => (
-                  <div 
-                    key={decision.id}
-                    className="cursor-pointer"
-                    onClick={() => handleOpenDecisionDetails(decision)}
-                  >
-                    <FinancialDecisionCard
-                      decision={decision}
-                      onImplement={implementDecision}
-                      onAccept={acceptDecision}
-                      onDismiss={dismissDecision}
-                      isLoading={isLoading}
-                      showDetails={false}
-                    />
-                  </div>
-                ))
-              )}
-            </ScrollArea>
-            
-            {/* مودال عرض تفاصيل القرار */}
-            <FinancialDecisionReviewModal
-              open={showDecisionModal}
-              onOpenChange={setShowDecisionModal}
-              decision={selectedDecision}
-              onImplement={implementDecision}
-              onAccept={acceptDecision}
-              onDismiss={dismissDecision}
-              isLoading={isLoading}
-            />
-          </TabsContent>
-          
-          <TabsContent value="analysis">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <AiPerformanceReport performance={performance} />
-              
-              {/* عرض جزء التحليلات */}
-              <Card className="shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    مؤشرات الأداء المالي
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-6">
-                    <div className="bg-muted py-10 px-6 rounded-lg">
-                      <BarChart className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">المخططات المالية قيد التطوير</h3>
-                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                        سيتم إضافة مخططات ومؤشرات أداء مالية متقدمة في الإصدار القادم
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+      <h1 className="text-2xl font-bold mb-4">اتخاذ القرارات المالية</h1>
 
-            <AiAnalyticsPanel 
-              performanceData={mockData.performanceData}
-              categoryData={mockData.categoryData}
-              customerData={mockData.customerData}
-              inventoryData={mockData.inventoryData}
-              lowStockItems={lowStockProducts}
-              pendingExpenses={mockData.pendingExpenses}
-              COLORS={mockData.COLORS}
-            />
-          </TabsContent>
-          
-          <TabsContent value="rules">
-            <AiRulesPanel />
-          </TabsContent>
-          
-          <TabsContent value="settings">
-            <div className="text-center p-10 text-gray-500">
-              <p>سيتم تفعيل إعدادات التحليل المالي قريباً</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>تحليل المخزون</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 mb-4">نظرة عامة على مستويات المخزون الحالية.</p>
+            <div className="h-[250px]">
+              <PieChart
+                data={{
+                  labels: stockLevelData.labels,
+                  datasets: [{
+                    ...stockLevelData.datasets[0],
+                    backgroundColor: pieColors[0],
+                    borderColor: 'rgba(255, 255, 255, 0.5)'
+                  }]
+                }}
+              />
             </div>
-          </TabsContent>
-        </Tabs>
+            <p className="mt-4">
+              <span className="font-bold">إجمالي قيمة المخزون المنخفض:</span> {totalLowStockValue.toFixed(2)} ر.س
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>تحليل الفئات الأكثر مبيعاً</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 mb-4">تحليل الفئات التي تحقق أعلى المبيعات.</p>
+            <div className="h-[250px]">
+              <BarChart data={categorySalesData()} />
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>توزيع الأسعار</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-500 mb-4">تحليل توزيع الأسعار للمنتجات.</p>
+          <div className="h-[300px]">
+            <LineChart data={priceDistributionData()} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>المنتجات ذات المخزون المنخفض</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-500 mb-4">قائمة بالمنتجات التي تحتاج إلى إعادة طلب.</p>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>المنتج</TableHead>
+                <TableHead>الكمية المتاحة</TableHead>
+                <TableHead>نقطة إعادة الطلب</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lowStockItemsData.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.reorderLevel}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Dialog open={decisionDialogOpen} onOpenChange={setDecisionDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default">تسجيل قرار مالي</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[625px] rtl">
+          <DialogHeader>
+            <DialogTitle>تسجيل قرار مالي</DialogTitle>
+            <DialogDescription>
+              سجل قرارك المالي مع وصف للعوامل المؤثرة والنتائج المتوقعة.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="decisionType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>نوع القرار</FormLabel>
+                    <FormControl>
+                      <Input placeholder="مثال: تخفيض المخزون، زيادة التسويق" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      وضح نوع القرار المالي الذي اتخذته.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="factors"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>العوامل المؤثرة</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="صف العوامل التي أدت إلى اتخاذ هذا القرار."
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      صف بالتفصيل العوامل التي أثرت في قرارك.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="recommendation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>التوصية</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="قدم توصية بناءً على هذا القرار."
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      ما هي توصيتك بناءً على هذا القرار؟
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="expectedOutcome"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>النتائج المتوقعة</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="صف النتائج المتوقعة لهذا القرار."
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      ما هي النتائج التي تتوقعها من هذا القرار؟
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="riskAssessment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>تقييم المخاطر</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="قيم المخاطر المحتملة لهذا القرار."
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      ما هي المخاطر المحتملة لهذا القرار وكيف يمكن التعامل معها؟
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">تسجيل القرار</Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

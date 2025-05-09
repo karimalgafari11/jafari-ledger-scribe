@@ -9,6 +9,10 @@ export const useInventoryProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     category: "",
+    subcategory: "",
+    brand: "",
+    priceRange: { min: 0, max: 0 },
+    inStock: null,
     status: "",
     warehouse: "",
     minPrice: 0,

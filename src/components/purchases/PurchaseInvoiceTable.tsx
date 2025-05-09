@@ -118,7 +118,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
               editingItemIndex={editingItemIndex}
               searchInputRef={searchInputRef}
               setIsAddingItem={setIsAddingItem}
-              isEditingCell={isEditingCell}
+              isEditingCell={(rowIndex, cellName) => isEditingCell(rowIndex, cellName)}
               showItemCodes={showItemCodes}
               showItemNotes={showItemNotes}
             />
