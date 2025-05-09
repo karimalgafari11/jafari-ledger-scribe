@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -39,11 +38,19 @@ const SalesStatsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   const handleExport = (format: "pdf" | "excel" | "csv") => {
-    exportReport(format);
-    toast.success(language === 'ar' 
-      ? `تم تصدير التقرير بتنسيق ${format === "pdf" ? "PDF" : format === "excel" ? "Excel" : "CSV"}`
-      : `Report exported as ${format.toUpperCase()} successfully`
-    );
+    try {
+      exportReport(format);
+      toast.success(language === 'ar' 
+        ? `تم تصدير التقرير بتنسيق ${format === "pdf" ? "PDF" : format === "excel" ? "Excel" : "CSV"}`
+        : `Report exported as ${format.toUpperCase()} successfully`
+      );
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error(language === 'ar'
+        ? `حدث خطأ أثناء تصدير التقرير`
+        : `Error exporting report`
+      );
+    }
   };
 
   return (
