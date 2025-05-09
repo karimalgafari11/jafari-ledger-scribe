@@ -1,5 +1,5 @@
 
-import React, { useEffect, KeyboardEvent } from "react";
+import React, { useEffect } from "react";
 
 interface TableKeyboardNavigationProps {
   tableHasFocus: boolean;
@@ -20,7 +20,7 @@ export const TableKeyboardNavigation: React.FC<TableKeyboardNavigationProps> = (
 }) => {
   // إضافة مستمع لأحداث لوحة المفاتيح للجدول بأكمله
   useEffect(() => {
-    const handleTableKeyDown = (e: KeyboardEvent) => {
+    const handleTableKeyDown = (e: globalThis.KeyboardEvent) => {
       if (!tableHasFocus) return;
       
       // اختصارات إضافة عنصر جديد

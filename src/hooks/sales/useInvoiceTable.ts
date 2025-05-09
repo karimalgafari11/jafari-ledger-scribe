@@ -28,14 +28,6 @@ export function useInvoiceTable({
   const searchInputRef = useRef(null);
   const cellRefs = useRef(new Map()).current;
   
-  // استدعاء هوك التنقل بالكيبورد
-  const { handleKeyNavigation, finishEditing } = useTableKeyboardNavigation(
-    items, 
-    setActiveSearchCell, 
-    setIsEditingCellActive, 
-    setLastSelectedRowIndex
-  );
-  
   // استدعاء هوك التركيز على الخلايا
   const { focusCell: focusCellBase } = useCellFocus();
   
@@ -43,6 +35,20 @@ export function useInvoiceTable({
   const focusCell = (rowIndex: number, cellName: string) => {
     focusCellBase(cellRefs, rowIndex, cellName, setActiveSearchCell, setLastSelectedRowIndex);
   };
+  
+  // استدعاء هوك التنقل بالكيبورد وتمرير دالة focusCell له
+  const { 
+    handleKeyNavigation, 
+    finishEditing, 
+    isEditingCell,
+    setIsEditingActive
+  } = useTableKeyboardNavigation(
+    items, 
+    setActiveSearchCell, 
+    setIsEditingCellActive, 
+    setLastSelectedRowIndex,
+    focusCell // تمرير دالة focusCell
+  );
   
   const handleCellClick = (rowIndex: number, cellName: string) => {
     if (isAddingItem || editingItemIndex !== null) return;
@@ -52,11 +58,13 @@ export function useInvoiceTable({
         activeSearchCell.rowIndex === rowIndex && 
         activeSearchCell.cellName === cellName) {
       setIsEditingCellActive(true);
+      setIsEditingActive(true); // تحديث الحالة في هوك التنقل أيضًا
     } else {
       // تحديث الخلية النشطة
       setActiveSearchCell({ rowIndex, cellName });
       setLastSelectedRowIndex(rowIndex);
       setIsEditingCellActive(true);
+      setIsEditingActive(true); // تحديث الحالة في هوك التنقل أيضًا
     }
     
     // إظهار رسالة للمستخدم بالنقر المزدوج للتحرير (فقط في المرة الأولى)
@@ -136,13 +144,6 @@ export function useInvoiceTable({
   
   const toggleDenseView = () => {
     setIsDenseView(prev => !prev);
-  };
-  
-  // دالة مساعدة للتحقق مما إذا كانت الخلية في وضع التحرير
-  const isEditingCell = (rowIndex: number, cellName: string) => {
-    return isEditingCellActive && 
-           activeSearchCell?.rowIndex === rowIndex && 
-           activeSearchCell?.cellName === cellName;
   };
   
   return {

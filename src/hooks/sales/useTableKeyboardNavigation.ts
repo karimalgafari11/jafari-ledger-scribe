@@ -2,7 +2,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEditingCell, setLastSelectedRowIndex) {
+export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEditingCell, setLastSelectedRowIndex, focusCellFn) {
+  // Flag to track active editing cell
+  const [isEditingActive, setIsEditingActive] = useState(false);
+
   // تحسين معالجة أحداث لوحة المفاتيح
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
     // منع السلوك الافتراضي لمفاتيح الأسهم والتاب دائمًا
@@ -111,6 +114,20 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
     }
   };
   
+  // Helper function to check if a cell is being edited
+  const isEditingCell = (rowIndex: number, cellName: string) => {
+    return isEditingActive && 
+           setActiveSearchCell !== null &&
+           typeof setActiveSearchCell === 'function';
+  };
+  
+  // Function to handle focusing on a cell
+  const focusCell = (rowIndex: number, cellName: string) => {
+    if (focusCellFn && typeof focusCellFn === 'function') {
+      focusCellFn(rowIndex, cellName);
+    }
+  };
+  
   // الحصول على ترتيب الخلايا المرئية للتنقل
   const getVisibleCellOrder = () => {
     // حسب الترتيب الطبيعي للجدول من اليمين إلى اليسار
@@ -155,5 +172,7 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
     handleKeyNavigation,
     finishEditing,
     getVisibleCellOrder,
+    isEditingCell,
+    setIsEditingActive
   };
 }
