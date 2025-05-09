@@ -1,93 +1,164 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { mockProducts } from "@/data/mockProducts";
-import { SearchIcon, Plus } from "lucide-react";
+import { Search, Grid3X3, List } from "lucide-react";
+import { Product } from "@/types/inventory";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProductGridView } from "@/components/purchases/product-search/ProductGridView";
+import { ProductTableView } from "@/components/purchases/product-search/ProductTableView";
+import { useProductSearch } from "@/hooks/sales/useProductSearch";
 
 interface QuickProductSearchProps {
   onClose: () => void;
-  onSelect: (product: any) => void;
+  onSelect: (product: Product) => void;
+  initialQuery?: string;
 }
 
 export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   onClose,
-  onSelect
+  onSelect,
+  initialQuery = ""
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState(mockProducts);
-
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredProducts,
+    selectedProductId,
+    setSelectedProductId,
+    viewMode,
+    setViewMode,
+    searchInputRef,
+    getStockLevelClass
+  } = useProductSearch();
+  
+  // Focus search input on mount
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredProducts(mockProducts);
-    } else {
-      const term = searchTerm.toLowerCase().trim();
-      const filtered = mockProducts.filter(
-        product => 
-          product.name.toLowerCase().includes(term) ||
-          product.code.toLowerCase().includes(term) ||
-          (product.category && product.category.toLowerCase().includes(term))
-      );
-      setFilteredProducts(filtered);
+    setTimeout(() => {
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
+    }, 100);
+    
+    if (initialQuery) {
+      setSearchTerm(initialQuery);
     }
-  }, [searchTerm]);
-
-  const handleSelect = (product: any) => {
-    console.log("Selected product:", product);
+  }, [initialQuery]);
+  
+  // Handle product selection and close dialog
+  const handleSelectProduct = (product: Product) => {
     onSelect(product);
     onClose();
   };
 
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && selectedProductId) {
+      const selectedProduct = filteredProducts.find(p => p.id === selectedProductId);
+      if (selectedProduct) {
+        e.preventDefault();
+        handleSelectProduct(selectedProduct);
+      }
+    } else if (e.key === 'Escape') {
+      onClose();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      // Navigate through products with arrow keys
+      e.preventDefault();
+      const currentIndex = filteredProducts.findIndex(p => p.id === selectedProductId);
+      
+      if (currentIndex === -1) {
+        // If no product is selected, select the first one
+        if (filteredProducts.length > 0) {
+          setSelectedProductId(filteredProducts[0].id);
+        }
+        return;
+      }
+      
+      let newIndex;
+      if (e.key === 'ArrowDown') {
+        newIndex = (currentIndex + 1) % filteredProducts.length;
+      } else {
+        newIndex = (currentIndex - 1 + filteredProducts.length) % filteredProducts.length;
+      }
+      
+      setSelectedProductId(filteredProducts[newIndex].id);
+    }
+  };
+  
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>إضافة منتج للفاتورة</DialogTitle>
+      <DialogContent 
+        className="max-w-3xl h-[80vh] flex flex-col p-0 gap-0" 
+        onKeyDown={handleKeyDown}
+      >
+        <DialogHeader className="px-4 pt-4 pb-2 border-b flex-shrink-0">
+          <DialogTitle className="text-xl">اختيار منتج للفاتورة</DialogTitle>
+          
+          <div className="relative mt-2">
+            <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              ref={searchInputRef}
+              placeholder="ابحث عن المنتج بالاسم أو الكود..."
+              className="pr-10 w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              autoFocus
+            />
+          </div>
+          
+          <div className="flex justify-between items-center mt-2">
+            <div className="text-sm text-muted-foreground">
+              {filteredProducts.length} منتج
+            </div>
+            <div className="flex gap-1">
+              <Button 
+                size="sm" 
+                variant={viewMode === 'grid' ? "default" : "outline"} 
+                className="h-8 w-8 p-0"
+                onClick={() => setViewMode('grid')}
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </Button>
+              <Button 
+                size="sm" 
+                variant={viewMode === 'table' ? "default" : "outline"} 
+                className="h-8 w-8 p-0"
+                onClick={() => setViewMode('table')}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </DialogHeader>
-
-        <div className="relative mb-4">
-          <Input
-            type="text"
-            placeholder="ابحث عن منتج بالاسم أو الرمز..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 h-10"
-            autoFocus
-          />
-          <SearchIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-        </div>
-
-        <ScrollArea className="max-h-[400px] overflow-y-auto">
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              لا توجد منتجات مطابقة للبحث
-            </div>
+        
+        <div className="flex-1 overflow-hidden">
+          {viewMode === 'grid' ? (
+            <ProductGridView 
+              products={filteredProducts} 
+              selectedProductId={selectedProductId}
+              handleSelect={handleSelectProduct} 
+            />
           ) : (
-            <div className="grid grid-cols-1 gap-2">
-              {filteredProducts.map((product) => (
-                <Button
-                  key={product.id}
-                  variant="outline"
-                  className="h-auto py-3 px-4 justify-between flex flex-row items-start text-right"
-                  onClick={() => handleSelect(product)}
-                >
-                  <div className="flex flex-col items-start">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">{product.code}</span>
-                    {product.category && (
-                      <span className="text-xs text-gray-500 mt-1">{product.category}</span>
-                    )}
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-medium">{product.name}</span>
-                    <span className="text-sm font-bold">{product.price.toFixed(2)} ر.س</span>
-                  </div>
-                </Button>
-              ))}
-            </div>
+            <ProductTableView 
+              products={filteredProducts} 
+              selectedProductId={selectedProductId}
+              setSelectedProductId={setSelectedProductId}
+              handleSelect={handleSelectProduct}
+              getStockLevelClass={getStockLevelClass}
+            />
           )}
-        </ScrollArea>
+        </div>
+        
+        <div className="border-t p-4 flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">
+            اختر منتج بالنقر المزدوج أو اضغط Enter
+          </span>
+          <Button variant="outline" onClick={onClose}>
+            إلغاء
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

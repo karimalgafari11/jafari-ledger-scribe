@@ -1,97 +1,15 @@
 
 /**
- * تنسيق التاريخ إلى صيغة عربية
- */
-export function formatDate(isoDate: string): string {
-  const date = new Date(isoDate);
-  return date.toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
-/**
- * تنسيق المبلغ المالي
+ * Formats a number as currency (SAR)
  */
 export function formatCurrency(amount: number): string {
-  return amount.toLocaleString('ar-SA', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
+  return amount.toFixed(2) + " ر.س";
 }
 
 /**
- * تنسيق النسبة المئوية
+ * Formats a date as a string (YYYY-MM-DD)
  */
-export function formatPercent(value: number): string {
-  return `${value.toLocaleString('ar-SA', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1
-  })}%`;
-}
-
-/**
- * تنسيق الرقم
- */
-export function formatNumber(value: number): string {
-  return value.toLocaleString('ar-SA');
-}
-
-/**
- * تحويل الرقم إلى صيغة مختصرة (مثلاً: 1K, 1M)
- */
-export function formatShortNumber(value: number): string {
-  if (value >= 1000000) {
-    return `${(value / 1000000).toLocaleString('ar-SA', { maximumFractionDigits: 1 })} M`;
-  } else if (value >= 1000) {
-    return `${(value / 1000).toLocaleString('ar-SA', { maximumFractionDigits: 1 })} K`;
-  } else {
-    return value.toLocaleString('ar-SA');
-  }
-}
-
-/**
- * تنسيق الوقت إلى صيغة عربية
- */
-export function formatTime(isoDate: string): string {
-  const date = new Date(isoDate);
-  return date.toLocaleTimeString('ar-SA', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-/**
- * تنسيق التاريخ والوقت
- */
-export function formatDateTime(isoDate: string): string {
-  const date = new Date(isoDate);
-  return date.toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-/**
- * تنسيق المدة الزمنية (بالأيام، الساعات، إلخ)
- */
-export function formatDuration(milliseconds: number): string {
-  const seconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) {
-    return `${days} يوم`;
-  } else if (hours > 0) {
-    return `${hours} ساعة`;
-  } else if (minutes > 0) {
-    return `${minutes} دقيقة`;
-  } else {
-    return `${seconds} ثانية`;
-  }
+export function formatDate(date: Date | string): string {
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toISOString().split('T')[0];
 }

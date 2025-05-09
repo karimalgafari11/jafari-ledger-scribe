@@ -111,21 +111,29 @@ export function useInvoiceTable({
 
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
     // تعريف ترتيب الخلايا للتنقل
-    const cellOrder = ['code', 'name', 'quantity', 'price', 'total', 'discount', 'notes'];
+    const cellOrder = ['code', 'name', 'quantity', 'price', 'total', 'notes'];
     
     // الحصول على الفهرس الحالي للخلية
     const currentIndex = cellOrder.indexOf(cellName);
+    
+    if (currentIndex === -1) return;
     
     // معالجة مفاتيح الأسهم
     if (e.key === 'ArrowRight') {
       e.preventDefault();
       if (currentIndex > 0) {
-        focusCell(rowIndex, cellOrder[currentIndex - 1]);
+        const prevCell = cellOrder[currentIndex - 1];
+        if (prevCell !== 'total') { // لا يمكن تحرير الإجمالي
+          focusCell(rowIndex, prevCell);
+        }
       }
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
       if (currentIndex < cellOrder.length - 1) {
-        focusCell(rowIndex, cellOrder[currentIndex + 1]);
+        const nextCell = cellOrder[currentIndex + 1];
+        if (nextCell !== 'total') { // لا يمكن تحرير الإجمالي
+          focusCell(rowIndex, nextCell);
+        }
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -140,6 +148,9 @@ export function useInvoiceTable({
     } else if (e.key === 'Enter') {
       e.preventDefault();
       handleCellClick(rowIndex, cellName);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      finishEditing();
     }
   };
   
@@ -160,7 +171,11 @@ export function useInvoiceTable({
     tableRef,
     cellRefs,
     lastSelectedRowIndex,
-    isEditingCell,
+    isEditingCell: (rowIndex, cellName) => {
+      return activeSearchCell !== null && 
+             activeSearchCell.rowIndex === rowIndex && 
+             activeSearchCell.cellName === cellName;
+    },
     handleCellClick,
     handleProductSelect,
     handleDirectEdit,

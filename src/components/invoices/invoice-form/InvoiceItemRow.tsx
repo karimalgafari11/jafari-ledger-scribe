@@ -85,7 +85,7 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
       
       {showItemCodes && (
         <TableCell 
-          className="text-center border border-gray-300 p-2"
+          className={`text-center p-2 ${isActive('code') ? 'bg-blue-100' : ''}`}
           onClick={() => handleCellClick(index, 'code')}
           onKeyDown={(e) => handleCellKeyDown(e, 'code')}
           data-row-index={index}
@@ -108,7 +108,7 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
       )}
       
       <TableCell 
-        className="border border-gray-300 p-2"
+        className={`p-2 ${isActive('name') ? 'bg-blue-100' : ''}`}
         onClick={() => handleCellClick(index, 'name')}
         onKeyDown={(e) => handleCellKeyDown(e, 'name')}
         data-row-index={index}
@@ -130,7 +130,7 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
       </TableCell>
       
       <TableCell 
-        className="text-center border border-gray-300 p-2"
+        className={`text-center p-2 ${isActive('quantity') ? 'bg-blue-100' : ''}`}
         onClick={() => handleCellClick(index, 'quantity')}
         onKeyDown={(e) => handleCellKeyDown(e, 'quantity')}
         data-row-index={index}
@@ -152,7 +152,7 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
       </TableCell>
       
       <TableCell 
-        className="text-center border border-gray-300 p-2"
+        className={`text-center p-2 ${isActive('price') ? 'bg-blue-100' : ''}`}
         onClick={() => handleCellClick(index, 'price')}
         onKeyDown={(e) => handleCellKeyDown(e, 'price')}
         data-row-index={index}
@@ -179,7 +179,7 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
       
       {showItemNotes && (
         <TableCell 
-          className="border border-gray-300 p-2"
+          className={`p-2 ${isActive('notes') ? 'bg-blue-100' : ''}`}
           onClick={() => handleCellClick(index, 'notes')}
           onKeyDown={(e) => handleCellKeyDown(e, 'notes')}
           data-row-index={index}

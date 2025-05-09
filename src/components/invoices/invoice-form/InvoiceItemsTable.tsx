@@ -9,6 +9,9 @@ import { InvoiceItemRow } from "./InvoiceItemRow";
 import { InvoiceItemSection } from "./InvoiceItemSection";
 import { useInvoiceTable } from "@/hooks/sales/useInvoiceTable";
 import { InvoiceSettingsType } from "./InvoiceSettings";
+import { QuickProductSearch } from "./QuickProductSearch";
+import { Product } from "@/types/inventory";
+import { v4 as uuidv4 } from "uuid";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -40,6 +43,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   const [editingItem, setEditingItem] = useState<InvoiceItem | undefined>(
     editingItemIndex !== null ? items[editingItemIndex] : undefined
   );
+  const [showProductSearch, setShowProductSearch] = useState(false);
 
   const {
     activeSearchCell,
@@ -72,7 +76,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   // مقبض لإضافة عنصر جديد
   const handleAddItemClick = () => {
     if (editingItemIndex === null) {
-      setIsAddingItem(true);
+      setShowProductSearch(true);
     }
   };
 
@@ -94,6 +98,25 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     handleEditItem(null);
   };
 
+  // معالج اختيار المنتج من البحث السريع
+  const handleProductSelected = (product: Product) => {
+    const newItem: Partial<InvoiceItem> = {
+      id: uuidv4(),
+      productId: product.id,
+      code: product.code,
+      name: product.name,
+      quantity: 1,
+      price: product.price,
+      discount: 0,
+      discountType: "percentage",
+      tax: 15,
+      total: product.price
+    };
+    
+    onAddItem(newItem);
+    setShowProductSearch(false);
+  };
+
   // عرض أكواد العناصر
   const showItemCodes = settings?.showItemCodes !== false;
   // عرض ملاحظات العناصر
@@ -112,6 +135,14 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         handleCancelAdd={handleCancelAdd}
         settings={settings}
       />
+
+      {/* نافذة البحث عن المنتجات */}
+      {showProductSearch && (
+        <QuickProductSearch
+          onClose={() => setShowProductSearch(false)}
+          onSelect={handleProductSelected}
+        />
+      )}
 
       {/* جدول العناصر */}
       <Card>
@@ -196,7 +227,6 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         </CardContent>
       </Card>
 
-      {/* Fix: Remove the jsx attribute from the style tag */}
       <style>
         {`
         .table-bordered th,
