@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, X, Grid3X3, List } from "lucide-react";
@@ -35,8 +35,6 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
     getStockLevelClass
   } = useProductSearch();
   
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  
   // Focus search input on mount
   useEffect(() => {
     setTimeout(() => {
@@ -47,19 +45,45 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   // Handle product selection and close dialog
   const handleSelectProduct = (product: Product) => {
     onSelect(product);
+    onClose();
   };
 
-  // Handle search change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  // Find the currently selected product
+  const getSelectedProduct = (): Product | undefined => {
+    return filteredProducts.find(p => p.id === selectedProductId);
   };
   
   // Handle keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' && selectedProduct) {
-      handleSelectProduct(selectedProduct);
+    if (e.key === 'Enter') {
+      const selectedProduct = getSelectedProduct();
+      if (selectedProduct) {
+        e.preventDefault();
+        handleSelectProduct(selectedProduct);
+      }
     } else if (e.key === 'Escape') {
       onClose();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      // Navigate through products with arrow keys
+      e.preventDefault();
+      const currentIndex = filteredProducts.findIndex(p => p.id === selectedProductId);
+      
+      if (currentIndex === -1) {
+        // If no product is selected, select the first one
+        if (filteredProducts.length > 0) {
+          setSelectedProductId(filteredProducts[0].id);
+        }
+        return;
+      }
+      
+      let newIndex;
+      if (e.key === 'ArrowDown') {
+        newIndex = (currentIndex + 1) % filteredProducts.length;
+      } else {
+        newIndex = (currentIndex - 1 + filteredProducts.length) % filteredProducts.length;
+      }
+      
+      setSelectedProductId(filteredProducts[newIndex].id);
     }
   };
 
@@ -72,6 +96,7 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
         className="max-w-3xl h-[80vh] flex flex-col p-0 gap-0" 
         onKeyDown={handleKeyDown}
       >
+        <DialogTitle className="sr-only">البحث عن المنتجات</DialogTitle>
         <SearchHeader 
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -91,20 +116,14 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
               <ProductGridView 
                 products={filteredProducts} 
                 selectedProductId={selectedProductId} 
-                handleSelect={(product) => {
-                  setSelectedProduct(product);
-                  handleSelectProduct(product); // تعديل ليتم إضافة المنتج فور الاختيار
-                }}
+                handleSelect={handleSelectProduct}
               />
             ) : (
               <ProductTableView 
                 products={filteredProducts} 
                 selectedProductId={selectedProductId}
                 setSelectedProductId={setSelectedProductId}
-                handleSelect={(product) => {
-                  setSelectedProduct(product);
-                  handleSelectProduct(product); // تعديل ليتم إضافة المنتج فور الاختيار
-                }}
+                handleSelect={handleSelectProduct}
                 getStockLevelClass={getStockLevelClass}
               />
             )}
@@ -133,12 +152,6 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
           productCount={filteredProducts.length}
           selectedProductId={selectedProductId}
           onClose={onClose}
-          handleAddSelected={() => {
-            const product = filteredProducts.find(p => p.id === selectedProductId);
-            if (product) {
-              handleSelectProduct(product);
-            }
-          }}
         />
       </DialogContent>
     </Dialog>

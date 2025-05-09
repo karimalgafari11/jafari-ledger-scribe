@@ -1,8 +1,6 @@
 
 import React from "react";
 import { Product } from "@/types/inventory";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -40,13 +38,12 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
             <TableHead className="border text-center font-bold">سعر البيع</TableHead>
             <TableHead className="border text-center font-bold">المقاس</TableHead>
             <TableHead className="border text-center font-bold">الوحدة</TableHead>
-            <TableHead className="border text-center font-bold w-20">إضافة</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {products.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
+              <TableCell colSpan={7} className="h-24 text-center">
                 لا توجد منتجات مطابقة للبحث
               </TableCell>
             </TableRow>
@@ -56,6 +53,7 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                 key={product.id}
                 className={`hover:bg-muted/50 cursor-pointer ${selectedProductId === product.id ? 'bg-blue-50' : ''}`}
                 onClick={() => setSelectedProductId(product.id)}
+                onDoubleClick={() => handleSelect(product)}
               >
                 <TableCell className="border text-center font-medium">{index + 1}</TableCell>
                 <TableCell className="border text-center">{product.code}</TableCell>
@@ -78,20 +76,6 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                 </TableCell>
                 <TableCell className="border text-center">
                   {product.unit || "قطعة"}
-                </TableCell>
-                <TableCell className="border text-center">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelect(product);
-                    }}
-                  >
-                    <Plus className="h-4 w-4 ml-1" />
-                    إضافة
-                  </Button>
                 </TableCell>
               </TableRow>
             ))
