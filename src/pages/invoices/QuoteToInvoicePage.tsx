@@ -129,8 +129,9 @@ const QuoteToInvoicePage: React.FC = () => {
               quantity: item.quantity,
               price: item.price,
               // Including other required fields with default values if needed
-              isActive: true,
-              reorderLevel: 0
+              discount: item.discount || 0,
+              discountType: item.discountType || 'percentage',
+              tax: item.tax || 15
             });
           });
           

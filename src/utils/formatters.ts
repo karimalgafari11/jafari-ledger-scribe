@@ -13,3 +13,10 @@ export function formatDate(date: Date | string): string {
   const d = date instanceof Date ? date : new Date(date);
   return d.toISOString().split('T')[0];
 }
+
+/**
+ * Formats a number with thousand separators
+ */
+export function formatNumber(amount: number): string {
+  return amount.toLocaleString('ar-SA');
+}
