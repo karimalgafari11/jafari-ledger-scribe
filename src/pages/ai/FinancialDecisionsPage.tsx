@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Product } from "@/types/inventory";
 import { useToast } from "@/components/ui/use-toast";
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -140,7 +140,7 @@ const formSchema = z.object({
 });
 
 const FinancialDecisionsPage: React.FC = () => {
-  const { toast } = useToast();
+  const { toast: showToast } = useToast();
   const [decisionDialogOpen, setDecisionDialogOpen] = React.useState(false);
 
   // Filter products with quantity below reorder level
@@ -217,7 +217,7 @@ const FinancialDecisionsPage: React.FC = () => {
     // Here, you would typically handle the form submission,
     // such as sending the data to an API or updating state.
     console.log("Form values:", values);
-    toast({
+    showToast({
       title: "تم تسجيل القرار المالي!",
       description: "تم تسجيل قرارك المالي بنجاح.",
     })
