@@ -97,8 +97,27 @@
     font-family: 'Tajawal', sans-serif;
   }
   
-  .rtl {
-    direction: rtl;
+  html[dir="rtl"] {
     text-align: right;
   }
+  
+  html[dir="ltr"] {
+    text-align: left;
+  }
+}
+
+/* Common Language-specific styles */
+html[dir="rtl"] .ltr-element {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="ltr"] .rtl-element {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Make sure RTL images get flipped if needed */
+html[dir="rtl"] .flip-in-rtl {
+  transform: scaleX(-1);
 }

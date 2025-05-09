@@ -16,9 +16,11 @@ import { useOutgoingInvoices } from "@/hooks/invoices/useOutgoingInvoices";
 import { DataImportExportDialog } from "@/components/data-management/DataImportExportDialog";
 import { useDataImportExport } from "@/hooks/useDataImportExport";
 import { Invoice } from "@/types/invoices";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const OutgoingInvoicesPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t, language } = useTranslation();
   const {
     invoices,
     isLoading,
@@ -37,30 +39,38 @@ const OutgoingInvoicesPage: React.FC = () => {
 
   const onDeleteSelected = () => {
     if (selectedInvoices.length === 0) {
-      toast.warning("يرجى تحديد الفواتير المراد حذفها أولاً");
+      toast.warning(language === 'ar' ? "يرجى تحديد الفواتير المراد حذفها أولاً" : "Please select invoices to delete first");
       return;
     }
 
-    if (confirm(`هل أنت متأكد من حذف ${selectedInvoices.length} فواتير محددة؟`)) {
+    if (confirm(language === 'ar' 
+      ? `هل أنت متأكد من حذف ${selectedInvoices.length} فواتير محددة؟` 
+      : `Are you sure you want to delete ${selectedInvoices.length} selected invoices?`)) {
       deleteInvoices(selectedInvoices);
-      toast.success(`تم حذف ${selectedInvoices.length} فواتير بنجاح`);
+      toast.success(language === 'ar' 
+        ? `تم حذف ${selectedInvoices.length} فواتير بنجاح` 
+        : `Successfully deleted ${selectedInvoices.length} invoices`);
     }
   };
 
   const onPrintSelected = () => {
     if (selectedInvoices.length === 0) {
-      toast.warning("يرجى تحديد الفواتير المراد طباعتها أولاً");
+      toast.warning(language === 'ar' ? "يرجى تحديد الفواتير المراد طباعتها أولاً" : "Please select invoices to print first");
       return;
     }
-    toast.info(`جاري إعداد طباعة ${selectedInvoices.length} فواتير`);
+    toast.info(language === 'ar' 
+      ? `جاري إعداد طباعة ${selectedInvoices.length} فواتير` 
+      : `Preparing to print ${selectedInvoices.length} invoices`);
   };
 
   const onWhatsAppSend = () => {
     if (selectedInvoices.length === 0) {
-      toast.warning("يرجى تحديد الفواتير المراد إرسالها أولاً");
+      toast.warning(language === 'ar' ? "يرجى تحديد الفواتير المراد إرسالها أولاً" : "Please select invoices to send first");
       return;
     }
-    toast.info(`جاري إعداد ${selectedInvoices.length} فواتير للإرسال عبر واتساب`);
+    toast.info(language === 'ar' 
+      ? `جاري إعداد ${selectedInvoices.length} فواتير للإرسال عبر واتساب` 
+      : `Preparing to send ${selectedInvoices.length} invoices via WhatsApp`);
   };
 
   // استخدام الخطاف الجديد لاستيراد/تصدير البيانات
@@ -75,7 +85,7 @@ const OutgoingInvoicesPage: React.FC = () => {
     transformImportData: (data) => {
       // تحقق من هيكل البيانات المستوردة
       if (!Array.isArray(data)) {
-        throw new Error("البيانات المستوردة غير صالحة، يجب أن تكون مصفوفة");
+        throw new Error(language === 'ar' ? "البيانات المستوردة غير صالحة، يجب أن تكون مصفوفة" : "Imported data is invalid, it should be an array");
       }
 
       // التحقق من وجود الحقول الإلزامية
@@ -84,7 +94,9 @@ const OutgoingInvoicesPage: React.FC = () => {
       for (const item of data) {
         for (const field of required) {
           if (!item[field]) {
-            throw new Error(`حقل ${field} إلزامي لجميع الفواتير`);
+            throw new Error(language === 'ar' 
+              ? `حقل ${field} إلزامي لجميع الفواتير`
+              : `Field ${field} is required for all invoices`);
           }
         }
       }
@@ -109,7 +121,9 @@ const OutgoingInvoicesPage: React.FC = () => {
         dueDate: invoice.dueDate || "-",
         totalAmount: invoice.totalAmount,
         status: getStatusInArabic(invoice.status),
-        paymentMethod: invoice.paymentMethod === "cash" ? "نقداً" : "آجل",
+        paymentMethod: language === 'ar' 
+          ? (invoice.paymentMethod === "cash" ? "نقداً" : "آجل")
+          : invoice.paymentMethod,
         amountPaid: invoice.amountPaid || 0,
         remaining: invoice.totalAmount - (invoice.amountPaid || 0)
       }));
@@ -118,7 +132,7 @@ const OutgoingInvoicesPage: React.FC = () => {
     // التحقق من صحة البيانات المستوردة
     validateImportData: (data) => {
       if (!data || data.length === 0) {
-        return "لا توجد بيانات للاستيراد";
+        return language === 'ar' ? "لا توجد بيانات للاستيراد" : "No data to import";
       }
       
       // يمكن إضافة المزيد من التحقق حسب متطلبات العمل
@@ -127,26 +141,32 @@ const OutgoingInvoicesPage: React.FC = () => {
     
     // خيارات إضافية للتصدير
     exportOptions: {
-      fileName: "فواتير_المبيعات",
-      sheetName: "فواتير المبيعات",
+      fileName: language === 'ar' ? "فواتير_المبيعات" : "Sales_Invoices",
+      sheetName: language === 'ar' ? "فواتير المبيعات" : "Sales Invoices",
       includeHeaders: true
     },
     
     // الدالة التي يتم تنفيذها بعد نجاح الاستيراد
     onImportSuccess: (data) => {
-      toast.success(`تم استيراد ${data.length} فاتورة بنجاح`);
+      toast.success(language === 'ar' 
+        ? `تم استيراد ${data.length} فاتورة بنجاح`
+        : `Successfully imported ${data.length} invoices`);
       // في التطبيق الحقيقي، ستتم إضافة الفواتير المستوردة إلى قاعدة البيانات
     }
   });
 
   // دالة مساعدة لتحويل حالة الفاتورة إلى اللغة العربية
   const getStatusInArabic = (status: string): string => {
-    switch (status) {
-      case "paid": return "مدفوعة";
-      case "pending": return "معلقة";
-      case "overdue": return "متأخرة";
-      case "draft": return "مسودة";
-      default: return status;
+    if (language === 'ar') {
+      switch (status) {
+        case "paid": return "مدفوعة";
+        case "pending": return "معلقة";
+        case "overdue": return "متأخرة";
+        case "draft": return "مسودة";
+        default: return status;
+      }
+    } else {
+      return status.charAt(0).toUpperCase() + status.slice(1);
     }
   };
 
@@ -162,13 +182,15 @@ const OutgoingInvoicesPage: React.FC = () => {
 
   return (
     <Layout>
-      <Header title="فواتير المبيعات" showBack={true} backPath="/invoices/outgoing-module">
+      <Header title={t('salesInvoices')} showBack={true} backPath="/invoices/outgoing-module">
         <div className="flex items-center gap-2">
           <Button onClick={() => navigate("/invoices/sales")} className="bg-primary">
-            <Plus className="ml-1 h-4 w-4" /> فاتورة جديدة
+            <Plus className={`${language === 'ar' ? 'ml-1' : 'mr-1'} h-4 w-4`} /> 
+            {language === 'ar' ? 'فاتورة جديدة' : 'New Invoice'}
           </Button>
           <Button variant="outline" onClick={openImportExportDialog}>
-            <Import className="ml-1 h-4 w-4" /> استيراد / تصدير
+            <Import className={`${language === 'ar' ? 'ml-1' : 'mr-1'} h-4 w-4`} /> 
+            {language === 'ar' ? 'استيراد / تصدير' : 'Import / Export'}
           </Button>
         </div>
       </Header>
@@ -190,7 +212,7 @@ const OutgoingInvoicesPage: React.FC = () => {
           {!showFilters && (
             <div className="mb-4">
               <Button variant="outline" onClick={toggleFilters}>
-                عرض الفلاتر
+                {t('showFilters')}
               </Button>
             </div>
           )}
@@ -227,9 +249,9 @@ const OutgoingInvoicesPage: React.FC = () => {
       <DataImportExportDialog
         open={dialogOpen}
         onClose={closeImportExportDialog}
-        title="استيراد / تصدير فواتير المبيعات"
-        importTitle="استيراد فواتير المبيعات"
-        exportTitle="تصدير فواتير المبيعات"
+        title={language === 'ar' ? "استيراد / تصدير فواتير المبيعات" : "Import / Export Sales Invoices"}
+        importTitle={language === 'ar' ? "استيراد فواتير المبيعات" : "Import Sales Invoices"}
+        exportTitle={language === 'ar' ? "تصدير فواتير المبيعات" : "Export Sales Invoices"}
         supportedFormats={['.xlsx', '.csv', '.json']}
         allowedExportTypes={['excel', 'csv', 'pdf', 'json']}
         onImport={handleImport}
@@ -237,9 +259,13 @@ const OutgoingInvoicesPage: React.FC = () => {
           handleExport(format);
           return "";
         }}
-        entityName="فواتير المبيعات"
-        importInstructions="قم بتحميل ملف يحتوي على بيانات الفواتير. يجب أن يتضمن الملف الحقول التالية: رقم الفاتورة، اسم العميل، التاريخ، والمبلغ الإجمالي."
-        exportInstructions="اختر صيغة التصدير المناسبة. سيتم تصدير جميع الفواتير المعروضة حالياً (بعد تطبيق الفلترة)."
+        entityName={language === 'ar' ? "فواتير المبيعات" : "Sales Invoices"}
+        importInstructions={language === 'ar' 
+          ? "قم بتحميل ملف يحتوي على بيانات الفواتير. يجب أن يتضمن الملف الحقول التالية: رقم الفاتورة، اسم العميل، التاريخ، والمبلغ الإجمالي."
+          : "Upload a file containing invoice data. The file must include the following fields: invoice number, customer name, date, and total amount."}
+        exportInstructions={language === 'ar'
+          ? "اختر صيغة التصدير المناسبة. سيتم تصدير جميع الفواتير المعروضة حالياً (بعد تطبيق الفلترة)."
+          : "Choose the appropriate export format. All currently displayed invoices will be exported (after applying filters)."}
       />
     </Layout>
   );

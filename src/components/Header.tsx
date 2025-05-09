@@ -7,6 +7,9 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { ThemeSwitcher } from './ThemeSwitcher';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { useAppContext } from '@/contexts/AppContext';
 
 interface HeaderProps {
   title?: string;
@@ -14,7 +17,7 @@ interface HeaderProps {
   onBackClick?: () => void;
   children?: React.ReactNode;
   description?: string;
-  backPath?: string; // Added backPath property
+  backPath?: string;
 }
 
 // Making Header both a default export and a named export
@@ -24,10 +27,11 @@ const Header = ({
   onBackClick,
   children,
   description,
-  backPath  // Added this parameter
+  backPath
 }: HeaderProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { language } = useAppContext();
   
   const handleBackClick = () => {
     if (onBackClick) {
@@ -50,13 +54,13 @@ const Header = ({
             onClick={handleBackClick} 
             variant="ghost" 
             size="sm"
-            className="ml-2 mr-3 hover:bg-opacity-10 hover:bg-gray-100"
+            className={`${language === 'ar' ? 'ml-2 mr-3' : 'mr-2 ml-3'} hover:bg-opacity-10 hover:bg-gray-100`}
           >
-            <ArrowLeft className="rotate-180" />
+            <ArrowLeft className={language === 'ar' ? "rotate-180" : ""} />
           </Button>
         )}
         <div>
-          <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>{title || "نظام إدارة الأعمال"}</h1>
+          <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>{title || (language === 'ar' ? "نظام إدارة الأعمال" : "Business Management System")}</h1>
           {description && (
             <p className="text-sm opacity-80">{description}</p>
           )}
@@ -65,6 +69,8 @@ const Header = ({
       
       <div className="flex items-center gap-2 md:gap-4">
         {children}
+        <LanguageSwitcher />
+        <ThemeSwitcher />
         <NotificationsDropdown />
         <Logo size="small" className={isMobile ? "scale-75" : ""} />
       </div>
