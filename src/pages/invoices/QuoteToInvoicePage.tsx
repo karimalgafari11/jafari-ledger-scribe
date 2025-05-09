@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -113,6 +112,13 @@ const QuoteToInvoicePage: React.FC = () => {
           
           // Add items from quote to invoice
           quote.items.forEach((item: any) => {
+            const mappedProduct: Product = {
+              id: item.productId,
+              name: item.name,
+              code: item.code,
+              price: item.price
+            };
+            
             addInvoiceItem({
               id: uuidv4(), // Generate a new unique ID for each item
               productId: item.productId,

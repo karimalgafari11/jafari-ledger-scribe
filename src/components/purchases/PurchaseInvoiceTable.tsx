@@ -111,7 +111,7 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
               handleCellClick={handleCellClick}
               handleProductSelect={handleProductSelect}
               handleDirectEdit={handleDirectEdit}
-              setActiveSearchCell={cell => {}}
+              setActiveSearchCell={() => {}}  /* Fixed from boolean to function */
               setEditingItemIndex={setEditingItemIndex}
               onRemoveItem={onRemoveItem}
               isAddingItem={isAddingItem}

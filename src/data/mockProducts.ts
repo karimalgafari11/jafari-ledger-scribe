@@ -14,7 +14,8 @@ export const mockProducts: Product[] = [
     quantity: 15,
     category: "إلكترونيات",
     unit: "قطعة",
-    barcode: "123456789012"
+    barcode: "123456789012",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -26,7 +27,8 @@ export const mockProducts: Product[] = [
     quantity: 30,
     category: "جوالات",
     unit: "قطعة",
-    barcode: "987654321098"
+    barcode: "987654321098",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -38,7 +40,8 @@ export const mockProducts: Product[] = [
     quantity: 50,
     category: "إلكترونيات",
     unit: "قطعة",
-    barcode: "345678901234"
+    barcode: "345678901234",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -50,7 +53,8 @@ export const mockProducts: Product[] = [
     quantity: 10,
     category: "إلكترونيات",
     unit: "قطعة",
-    barcode: "567890123456"
+    barcode: "567890123456",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -62,7 +66,8 @@ export const mockProducts: Product[] = [
     quantity: 100,
     category: "إكسسوارات",
     unit: "قطعة",
-    barcode: "678901234567"
+    barcode: "678901234567",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -74,7 +79,8 @@ export const mockProducts: Product[] = [
     quantity: 45,
     category: "إكسسوارات",
     unit: "قطعة",
-    barcode: "789012345678"
+    barcode: "789012345678",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -86,7 +92,8 @@ export const mockProducts: Product[] = [
     quantity: 20,
     category: "إلكترونيات",
     unit: "قطعة",
-    barcode: "890123456789"
+    barcode: "890123456789",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -98,7 +105,8 @@ export const mockProducts: Product[] = [
     quantity: 25,
     category: "إكسسوارات",
     unit: "قطعة",
-    barcode: "901234567890"
+    barcode: "901234567890",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -110,7 +118,8 @@ export const mockProducts: Product[] = [
     quantity: 35,
     category: "إلكترونيات",
     unit: "قطعة",
-    barcode: "012345678901"
+    barcode: "012345678901",
+    isActive: true
   },
   {
     id: uuidv4(),
@@ -122,6 +131,7 @@ export const mockProducts: Product[] = [
     quantity: 80,
     category: "إكسسوارات",
     unit: "قطعة",
-    barcode: "234567890123"
+    barcode: "234567890123",
+    isActive: true
   }
 ];

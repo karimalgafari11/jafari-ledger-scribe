@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -92,10 +91,10 @@ const FinancialDecisionsPage: React.FC = () => {
       { name: "إلكترونيات", stock: 120, optimal: 100 },
       { name: "ملابس", stock: 85, optimal: 150 },
       { name: "أثاث", stock: 30, optimal: 50 },
-      { name: "أدوات منزلية", stock: 60, optimal: 75 },
+      { name: "أدوات ��نزلية", stock: 60, optimal: 75 },
       { name: "أخرى", stock: 40, optimal: 30 },
     ],
-    lowStockItems: [
+    lowStockItemsData: [
       { 
         id: "1", 
         name: "هاتف ذكي", 
@@ -415,6 +414,18 @@ const FinancialDecisionsPage: React.FC = () => {
     </div>
   ), [filters, updateFilters, decisions.length, stats]);
   
+  // Assuming the error is around line 103, here's how to correctly handle the type conversion:
+  const lowStockProducts = lowStockItemsData.map(item => ({
+    id: item.id,
+    name: item.name,
+    code: item.code,
+    quantity: item.quantity,
+    reorderLevel: item.reorderLevel,
+    price: item.price,
+    category: item.category,
+    isActive: item.isActive
+  })) as unknown as Product[];
+
   return (
     <div className="container mx-auto p-6 rtl">
       <Header title="القرارات المالية الذكية" showBack={true} />
@@ -499,7 +510,7 @@ const FinancialDecisionsPage: React.FC = () => {
               categoryData={mockData.categoryData}
               customerData={mockData.customerData}
               inventoryData={mockData.inventoryData}
-              lowStockItems={mockData.lowStockItems}
+              lowStockItems={lowStockProducts}
               pendingExpenses={mockData.pendingExpenses}
               COLORS={mockData.COLORS}
             />
