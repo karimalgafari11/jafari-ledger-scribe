@@ -5,12 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { mockProducts } from "@/data/mockProducts";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { Product } from "@/types/inventory";
+import { useInventoryProducts } from "@/hooks/useInventoryProducts";
 
 interface QuickProductSearchProps {
   onClose: () => void;
-  onSelect: (product: any) => void;
+  onSelect: (product: Product) => void;
 }
 
 export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
@@ -18,14 +19,22 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   onSelect
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState(mockProducts);
+  const { products, searchQuery, setSearchQuery } = useInventoryProducts();
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
+  // Update filtered products when search term changes
+  useEffect(() => {
+    setSearchQuery(searchTerm);
+  }, [searchTerm, setSearchQuery]);
+
+  // Update filtered products when products or search query change
   useEffect(() => {
     if (searchTerm.trim() === "") {
-      setFilteredProducts(mockProducts);
+      setFilteredProducts(products.slice(0, 50)); // Show first 50 products by default
     } else {
       const term = searchTerm.toLowerCase().trim();
-      const filtered = mockProducts.filter(
+      const filtered = products.filter(
         product => 
           product.name.toLowerCase().includes(term) ||
           product.code.toLowerCase().includes(term) ||
@@ -33,62 +42,106 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
       );
       setFilteredProducts(filtered);
     }
-  }, [searchTerm]);
+  }, [products, searchTerm]);
 
-  const handleSelect = (product: any) => {
-    console.log("Selected product:", product);
+  const handleSelect = (product: Product) => {
+    setSelectedProductId(product.id);
     onSelect(product);
+  };
+
+  const handleAddSelected = () => {
+    if (selectedProductId) {
+      const product = products.find(p => p.id === selectedProductId);
+      if (product) {
+        onSelect(product);
+      }
+    }
     onClose();
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-4xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>إضافة منتج للفاتورة</DialogTitle>
+          <DialogTitle className="text-xl">اختيار منتج من المخزون</DialogTitle>
         </DialogHeader>
 
-        <div className="relative mb-4">
-          <Input
-            type="text"
-            placeholder="ابحث عن منتج بالاسم أو الرمز..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 h-10"
-            autoFocus
-          />
-          <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-        </div>
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="flex items-center gap-2 mb-4">
+            <Search className="h-5 w-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="ابحث عن منتج بالاسم أو الرمز..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-grow"
+              autoFocus
+            />
+            {searchTerm && (
+              <Button variant="ghost" size="icon" onClick={() => setSearchTerm("")}>
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
-        <ScrollArea className="max-h-[400px] overflow-y-auto">
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              لا توجد منتجات مطابقة للبحث
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-2">
-              {filteredProducts.map((product) => (
-                <Button
-                  key={product.id}
-                  variant="outline"
-                  className="h-auto py-3 px-4 justify-between flex flex-row items-start text-right"
-                  onClick={() => handleSelect(product)}
-                >
-                  <div className="flex flex-col items-start">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">{product.code}</span>
-                    {product.category && (
-                      <span className="text-xs text-gray-500 mt-1">{product.category}</span>
-                    )}
+          <div className="flex-grow overflow-hidden border rounded-md">
+            <ScrollArea className="h-[50vh]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2">
+                {filteredProducts.length === 0 ? (
+                  <div className="col-span-2 text-center py-12 text-gray-500">
+                    لا توجد منتجات مطابقة للبحث
                   </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-medium">{product.name}</span>
-                    <span className="text-sm font-bold">{product.price.toFixed(2)} ر.س</span>
-                  </div>
-                </Button>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
+                ) : (
+                  filteredProducts.map((product) => (
+                    <Button
+                      key={product.id}
+                      variant={selectedProductId === product.id ? "default" : "outline"}
+                      className={`h-auto py-3 px-4 flex flex-col items-stretch text-right justify-between ${
+                        selectedProductId === product.id ? "bg-primary text-primary-foreground" : ""
+                      }`}
+                      onClick={() => handleSelect(product)}
+                    >
+                      <div className="flex justify-between w-full mb-2">
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">
+                          {product.code}
+                        </span>
+                        {product.quantity !== undefined && (
+                          <span className={`text-xs px-2 py-0.5 rounded-md ${
+                            product.quantity > 0 
+                              ? "bg-green-100 text-green-800" 
+                              : "bg-red-100 text-red-800"
+                          }`}>
+                            {product.quantity > 0 ? `متوفر: ${product.quantity}` : "غير متوفر"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-start w-full">
+                        <span className="font-medium text-right w-full">{product.name}</span>
+                        <div className="flex justify-between w-full mt-1">
+                          <span className="text-sm">{product.category || ""}</span>
+                          <span className="text-sm font-bold">{product.price?.toFixed(2)} ر.س</span>
+                        </div>
+                      </div>
+                    </Button>
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+          </div>
+
+          <div className="flex justify-between mt-4 pt-2 border-t">
+            <Button variant="outline" onClick={onClose}>
+              إلغاء
+            </Button>
+            <Button 
+              onClick={handleAddSelected} 
+              disabled={!selectedProductId}
+            >
+              <Plus className="h-4 w-4 ml-2" />
+              إضافة المنتج
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table } from "@/components/ui/table";
 import { TableToolbar } from "./table/TableToolbar";
@@ -11,6 +11,7 @@ import { Product } from "@/types/inventory";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { QuickProductSearch } from "./QuickProductSearch";
 
 interface PurchaseInvoiceTableProps {
   items: PurchaseItem[];
@@ -58,6 +59,9 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
     setEditingItemIndex
   });
   
+  // State for product search modal
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
   // Handle product selection from the toolbar or quick search
   const handleToolbarProductSelect = (product: Product) => {
     console.log("Product selected from toolbar or quick search:", product);
@@ -74,6 +78,15 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
     
     onAddItem(newItem);
     toast.success(`تمت إضافة ${product.name} إلى الفاتورة`);
+    setIsSearchOpen(false);
+  };
+  
+  const handleOpenSearch = () => {
+    setIsSearchOpen(true);
+  };
+
+  const handleCloseSearch = () => {
+    setIsSearchOpen(false);
   };
   
   return (
@@ -83,8 +96,9 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
           isAddingItem={isAddingItem}
           editingItemIndex={editingItemIndex}
           setIsAddingItem={setIsAddingItem}
-          handleProductSelect={handleToolbarProductSelect}
+          handleProductSelect={handleOpenSearch}
           toggleGridLines={toggleGridLines}
+          onToggleSearch={handleOpenSearch}
         />
         
         {/* Form for adding or editing items */}
@@ -124,6 +138,14 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
             />
           </Table>
         </div>
+        
+        {/* Product Search Dialog */}
+        {isSearchOpen && (
+          <QuickProductSearch
+            onClose={handleCloseSearch}
+            onSelect={handleToolbarProductSelect}
+          />
+        )}
       </div>
     </TooltipProvider>
   );
