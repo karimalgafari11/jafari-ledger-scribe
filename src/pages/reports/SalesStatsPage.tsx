@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useSalesReports } from "@/hooks/useSalesReports";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -93,12 +93,12 @@ const SalesStatsPage: React.FC = () => {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <DatePickerWithRange
-                dateRange={dateRange}
-                onDateRangeChange={setDateRange}
+              <DateRangePicker
+                value={dateRange}
+                onChange={setDateRange}
                 className="w-[260px]"
               />
-              <Select value={period} onValueChange={setPeriod}>
+              <Select value={period} onValueChange={(value: "daily" | "weekly" | "monthly" | "quarterly" | "yearly") => setPeriod(value)}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder={language === 'ar' ? "الفترة" : "Period"} />
                 </SelectTrigger>
