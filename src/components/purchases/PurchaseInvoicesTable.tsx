@@ -1,19 +1,11 @@
 
-import React from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Eye, FileText, Printer } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { PurchaseInvoice } from "@/types/purchases";
+import React from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { FileText, Edit, Trash2, Copy } from 'lucide-react';
+import { PurchaseInvoice } from '@/types/purchases';
 
 interface PurchaseInvoicesTableProps {
   invoices: PurchaseInvoice[];
@@ -26,144 +18,109 @@ export const PurchaseInvoicesTable: React.FC<PurchaseInvoicesTableProps> = ({
   invoices,
   isLoading,
   selectedInvoices,
-  onToggleSelection
+  onToggleSelection,
 }) => {
-  const navigate = useNavigate();
-  
-  const statusBadgeVariant = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
-      case "paid":
-        return "success";
-      case "pending":
-        return "warning";
-      case "overdue":
-        return "destructive";
-      case "draft":
-        return "outline";
+      case 'paid':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">مدفوعة</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">معلقة</Badge>;
+      case 'overdue':
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">متأخرة</Badge>;
+      case 'draft':
+        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">مسودة</Badge>;
       default:
-        return "secondary";
+        return <Badge>{status}</Badge>;
     }
   };
-  
-  const statusLabel = (status: string) => {
-    switch (status) {
-      case "paid":
-        return "مدفوعة";
-      case "pending":
-        return "معلقة";
-      case "overdue":
-        return "متأخرة";
-      case "draft":
-        return "مسودة";
-      default:
-        return status;
-    }
-  };
-  
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR'
-    }).format(amount);
-  };
-  
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-  
-  if (invoices.length === 0) {
-    return (
-      <div className="text-center py-12 border rounded-md mt-4 bg-gray-50">
-        <FileText className="h-12 w-12 mx-auto text-gray-400" />
-        <h3 className="mt-2 text-lg font-medium">لا توجد فواتير</h3>
-        <p className="text-gray-500 mt-1">لم يتم العثور على فواتير مشتريات</p>
-        <Button 
-          onClick={() => navigate("/purchases/new")} 
-          className="mt-4"
-        >
-          إنشاء فاتورة جديدة
-        </Button>
-      </div>
-    );
-  }
-  
+
   return (
-    <div className="border rounded-md mt-4 overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12">
-              <Checkbox 
-                checked={invoices.length > 0 && selectedInvoices.length === invoices.length}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    // تحديد جميع الفواتير
-                    invoices.forEach(invoice => {
-                      if (!selectedInvoices.includes(invoice.id)) {
-                        onToggleSelection(invoice.id);
-                      }
-                    });
-                  } else {
-                    // إلغاء تحديد جميع الفواتير
-                    invoices.forEach(invoice => {
-                      if (selectedInvoices.includes(invoice.id)) {
-                        onToggleSelection(invoice.id);
-                      }
-                    });
-                  }
-                }}
-              />
-            </TableHead>
-            <TableHead>رقم الفاتورة</TableHead>
-            <TableHead>المورد</TableHead>
-            <TableHead>التاريخ</TableHead>
-            <TableHead>المبلغ</TableHead>
-            <TableHead>المدفوع</TableHead>
-            <TableHead>الحالة</TableHead>
-            <TableHead>المستودع</TableHead>
-            <TableHead className="text-left">الإجراءات</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {invoices.map((invoice) => (
-            <TableRow key={invoice.id}>
-              <TableCell>
+    <div className="border rounded-md">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[50px]">
                 <Checkbox 
-                  checked={selectedInvoices.includes(invoice.id)}
-                  onCheckedChange={() => onToggleSelection(invoice.id)}
+                  checked={invoices.length > 0 && selectedInvoices.length === invoices.length}
+                  onCheckedChange={() => {
+                    if (selectedInvoices.length === invoices.length) {
+                      onToggleSelection("clear-all"); // استعمال قيمة خاصة لمسح التحديد
+                    } else {
+                      // تحديد الكل - يتم إدارتها في الوالد
+                      invoices.forEach(inv => {
+                        if (!selectedInvoices.includes(inv.id)) {
+                          onToggleSelection(inv.id);
+                        }
+                      });
+                    }
+                  }}
                 />
-              </TableCell>
-              <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
-              <TableCell>{invoice.vendorName}</TableCell>
-              <TableCell>{invoice.date}</TableCell>
-              <TableCell>{formatCurrency(invoice.totalAmount)}</TableCell>
-              <TableCell>
-                {invoice.amountPaid ? formatCurrency(invoice.amountPaid) : formatCurrency(0)}
-              </TableCell>
-              <TableCell>
-                <Badge variant={statusBadgeVariant(invoice.status)} className="text-xs">
-                  {statusLabel(invoice.status)}
-                </Badge>
-              </TableCell>
-              <TableCell>{invoice.warehouseName || "-"}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button size="icon" variant="ghost" onClick={() => navigate(`/purchases/view/${invoice.id}`)}>
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button size="icon" variant="ghost">
-                    <Printer className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
+              </TableHead>
+              <TableHead>رقم الفاتورة</TableHead>
+              <TableHead>المورد</TableHead>
+              <TableHead>التاريخ</TableHead>
+              <TableHead>الإجمالي</TableHead>
+              <TableHead>المدفوع</TableHead>
+              <TableHead>المتبقي</TableHead>
+              <TableHead>الحالة</TableHead>
+              <TableHead>الإجراءات</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center py-10">
+                  جاري التحميل...
+                </TableCell>
+              </TableRow>
+            ) : invoices.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center py-10">
+                  لا توجد فواتير متاحة
+                </TableCell>
+              </TableRow>
+            ) : (
+              invoices.map((invoice) => (
+                <TableRow key={invoice.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedInvoices.includes(invoice.id)}
+                      onCheckedChange={() => onToggleSelection(invoice.id)}
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
+                  <TableCell>{invoice.vendorName}</TableCell>
+                  <TableCell>{new Date(invoice.date).toLocaleDateString('ar-SA')}</TableCell>
+                  <TableCell>{invoice.totalAmount.toLocaleString()} ريال</TableCell>
+                  <TableCell>{(invoice.amountPaid || 0).toLocaleString()} ريال</TableCell>
+                  <TableCell>
+                    {(invoice.totalAmount - (invoice.amountPaid || 0)).toLocaleString()} ريال
+                  </TableCell>
+                  <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" title="عرض">
+                        <FileText className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" title="تعديل">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" title="نسخ">
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" title="حذف" className="text-red-500">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

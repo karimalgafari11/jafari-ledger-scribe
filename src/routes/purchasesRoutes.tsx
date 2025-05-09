@@ -3,11 +3,8 @@ import { RouteObject } from "react-router-dom";
 import PurchasesPage from "@/pages/purchases/PurchasesPage";
 import PurchaseInvoicePage from "@/pages/purchases/PurchaseInvoicePage";
 import PurchaseInvoicesPage from "@/pages/purchases/PurchaseInvoicesPage";
-import PurchaseOrdersPage from "@/pages/purchases/PurchaseOrdersPage";
-import PurchaseReturnsPage from "@/pages/purchases/PurchaseReturnsPage";
-import PurchaseAnalyticsPage from "@/pages/purchases/PurchaseAnalyticsPage";
-import PurchaseSettingsPage from "@/pages/purchases/PurchaseSettingsPage";
-import VendorManagementPage from "@/pages/purchases/VendorManagementPage";
+import PurchasesOrdersPage from "@/pages/purchases/PurchasesOrdersPage";
+import PurchasesReturnsPage from "@/pages/purchases/PurchasesReturnsPage";
 
 export const purchasesRoutes: RouteObject[] = [
   {
@@ -24,22 +21,23 @@ export const purchasesRoutes: RouteObject[] = [
   },
   {
     path: "purchases/orders",
-    element: <PurchaseOrdersPage />,
+    element: <PurchasesOrdersPage />,
   },
   {
     path: "purchases/returns",
-    element: <PurchaseReturnsPage />,
+    element: <PurchasesReturnsPage />,
   },
-  {
-    path: "purchases/analytics",
-    element: <PurchaseAnalyticsPage />,
-  },
-  {
-    path: "purchases/settings",
-    element: <PurchaseSettingsPage />,
-  },
-  {
-    path: "purchases/vendors",
-    element: <VendorManagementPage />,
-  },
+  // Temporarily commenting out missing pages until they are implemented
+  // {
+  //   path: "purchases/analytics",
+  //   element: <PurchaseAnalyticsPage />,
+  // },
+  // {
+  //   path: "purchases/settings",
+  //   element: <PurchaseSettingsPage />,
+  // },
+  // {
+  //   path: "purchases/vendors",
+  //   element: <VendorManagementPage />,
+  // },
 ];

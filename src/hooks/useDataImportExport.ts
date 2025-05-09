@@ -55,11 +55,27 @@ export function useDataImportExport(
       let importedData: any[] = [];
       
       if (fileType === 'csv') {
-        importedData = parseCSV(fileContent as string);
+        // التعامل مع fileContent كنص فقط إذا كان نوع الملف CSV
+        if (typeof fileContent !== 'string') {
+          const decoder = new TextDecoder('utf-8');
+          importedData = parseCSV(decoder.decode(fileContent));
+        } else {
+          importedData = parseCSV(fileContent);
+        }
       } else if (fileType === 'xlsx' || fileType === 'xls') {
+        // التحقق من أن fileContent هو ArrayBuffer
+        if (typeof fileContent === 'string') {
+          throw new Error('Cannot parse Excel file from string content');
+        }
         importedData = parseExcel(fileContent);
       } else if (fileType === 'json') {
-        importedData = JSON.parse(fileContent as string);
+        // التعامل مع fileContent كنص فقط إذا كان نوع الملف JSON
+        if (typeof fileContent !== 'string') {
+          const decoder = new TextDecoder('utf-8');
+          importedData = JSON.parse(decoder.decode(fileContent));
+        } else {
+          importedData = JSON.parse(fileContent);
+        }
       } else {
         throw new Error(`نوع الملف غير مدعوم: ${fileType}`);
       }
@@ -86,7 +102,7 @@ export function useDataImportExport(
     }
   };
   
-  const handleExport = async (exportType: string) => {
+  const handleExport = async (exportType: string): Promise<Blob | void> => {
     setIsExporting(true);
     
     try {

@@ -13,16 +13,18 @@ interface HeaderProps {
   showBack?: boolean;
   onBackClick?: () => void;
   children?: React.ReactNode;
-  description?: string; // Added the description property
+  description?: string;
+  backPath?: string; // Added backPath property
 }
 
 // Making Header both a default export and a named export
 const Header = ({
   title,
-  showBack = true, // Changed from false to true to show back button by default
+  showBack = true,
   onBackClick,
   children,
-  description // Added this parameter
+  description,
+  backPath  // Added this parameter
 }: HeaderProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -30,6 +32,8 @@ const Header = ({
   const handleBackClick = () => {
     if (onBackClick) {
       onBackClick();
+    } else if (backPath) {
+      navigate(backPath);
     } else {
       navigate(-1);
     }

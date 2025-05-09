@@ -16,56 +16,6 @@ import { DataImportExportDialog } from "@/components/data-management/DataImportE
 import { useDataImportExport } from "@/hooks/useDataImportExport";
 import { PurchaseInvoice } from "@/types/purchases";
 import { PurchaseInvoiceStats } from "@/components/purchases/PurchaseInvoiceStats";
-import { mockPurchaseInvoices } from "@/data/mockPurchaseInvoices";
-
-// نستخدم هذا الخطاف لإدارة فواتير المشتريات - في تطبيق حقيقي سيكون API
-const usePurchaseInvoices = () => {
-  const [selectedInvoices, setSelectedInvoices] = React.useState<string[]>([]);
-  const [invoices, setInvoices] = React.useState<PurchaseInvoice[]>(mockPurchaseInvoices);
-  const [isLoading, setIsLoading] = React.useState(false);
-  
-  const deleteInvoices = (ids: string[]) => {
-    setInvoices(prev => prev.filter(invoice => !ids.includes(invoice.id)));
-    setSelectedInvoices([]);
-  };
-  
-  const toggleInvoiceSelection = (id: string) => {
-    if (selectedInvoices.includes(id)) {
-      setSelectedInvoices(prev => prev.filter(invoiceId => invoiceId !== id));
-    } else {
-      setSelectedInvoices(prev => [...prev, id]);
-    }
-  };
-  
-  const selectAllInvoices = () => {
-    setSelectedInvoices(invoices.map(invoice => invoice.id));
-  };
-  
-  const unselectAllInvoices = () => {
-    setSelectedInvoices([]);
-  };
-  
-  // إحصائيات مبسطة
-  const statistics = {
-    total: invoices.length,
-    paid: invoices.filter(inv => inv.status === 'paid').length,
-    pending: invoices.filter(inv => inv.status === 'pending').length,
-    overdue: invoices.filter(inv => inv.status === 'overdue').length,
-    totalAmount: invoices.reduce((sum, inv) => sum + inv.totalAmount, 0),
-  };
-  
-  return {
-    invoices,
-    setInvoices,
-    isLoading,
-    statistics,
-    selectedInvoices,
-    toggleInvoiceSelection,
-    selectAllInvoices,
-    unselectAllInvoices,
-    deleteInvoices
-  };
-};
 
 const PurchaseInvoicesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -214,7 +164,10 @@ const PurchaseInvoicesPage: React.FC = () => {
           {selectedInvoices.length > 0 && (
             <PurchaseInvoiceActions
               selectedCount={selectedInvoices.length}
-              onExport={(format) => handleExport(format)}
+              onExport={(format) => {
+                handleExport(format);
+                return "";
+              }}
               onDelete={onDeleteSelected}
               onPrint={onPrintSelected}
               onSelectAll={selectAllInvoices}
@@ -241,7 +194,10 @@ const PurchaseInvoicesPage: React.FC = () => {
         supportedFormats={['.xlsx', '.csv', '.json']}
         allowedExportTypes={['excel', 'csv', 'pdf', 'json']}
         onImport={handleImport}
-        onExport={handleExport}
+        onExport={(format) => {
+          handleExport(format);
+          return "";
+        }}
         entityName="فواتير المشتريات"
         importInstructions="قم بتحميل ملف يحتوي على بيانات فواتير المشتريات. يجب أن يتضمن الملف الحقول التالية: رقم الفاتورة، اسم المورد، التاريخ، والمبلغ الإجمالي."
         exportInstructions="اختر صيغة التصدير المناسبة. سيتم تصدير جميع الفواتير المعروضة حالياً."
