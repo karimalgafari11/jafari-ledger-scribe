@@ -48,7 +48,7 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
           className="flex items-center gap-1 h-9"
         >
           <Search className="h-4 w-4" />
-          بحث عن منتج
+          البحث في المخزون
         </Button>
       </div>
       
@@ -59,10 +59,10 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
           className="flex items-center gap-1 h-9 bg-primary"
           onClick={handleAddNewItem}
           disabled={isAddingItem || editingItemIndex !== null}
-          title="إضافة صنف جديد"
+          title="إضافة صنف جديد من المخزون"
         >
           <Plus className="h-4 w-4" />
-          إضافة صنف
+          إضافة صنف من المخزون
         </Button>
       </div>
     </div>
