@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Layout } from "@/components/Layout";
 import HRPageHeader from "@/components/hr/HRPageHeader";
@@ -29,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Envelope,
+  Mail,
   Phone,
   MapPin,
   Calendar,
@@ -227,7 +228,7 @@ const HRSupportPage: React.FC = () => {
               </div>
               <div className="mt-4 space-y-2">
                 <div className="flex items-center space-x-2 rtl">
-                  <Envelope className="h-4 w-4 text-gray-500" />
+                  <Mail className="h-4 w-4 text-gray-500" />
                   <a
                     href="mailto:ali.mohammed@example.com"
                     className="text-sm text-blue-500 hover:underline"
