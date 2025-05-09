@@ -95,6 +95,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
       // اختصارات أخرى عامة للجدول
       if (e.key === 'F2' && activeSearchCell) {
         // بدء تحرير الخلية المحددة حاليًا
+        e.preventDefault();
         const { rowIndex, cellName } = activeSearchCell;
         handleCellClick(rowIndex, cellName);
       }
@@ -112,13 +113,16 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   useEffect(() => {
     // التركيز على الخلية الأولى بعد تحميل الجدول وتسجيل جميع المراجع
     if (items.length > 0 && !isAddingItem && editingItemIndex === null && !activeSearchCell) {
-      setTimeout(() => {
+      // استخدم مؤقتًا أطول للتأكد من أن الجدول قد تم رسمه بالكامل
+      const timer = setTimeout(() => {
         // استخدم ترتيب الخلايا للحصول على الخلية الأولى المرئية
         const firstVisibleField = showItemCodes ? 'code' : 'name';
         focusCell(0, firstVisibleField);
-      }, 500); // تأخير صغير لضمان اكتمال تسجيل جميع المراجع
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
-  }, []);
+  }, [items.length]);
 
   // التعامل مع التركيز على الجدول
   const handleTableFocus = () => {
@@ -174,10 +178,12 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     onAddItem(newItem);
     setShowProductSearch(false);
     
-    // بعد إضافة عنصر، ركز على الصف الجديد
-    setTimeout(() => {
+    // بعد إضافة عنصر، ركز على الصف الجديد بعد تأخير كافٍ للسماح بإنشاء العنصر
+    const timer = setTimeout(() => {
       focusCell(items.length, 'quantity');
-    }, 100);
+    }, 200);
+    
+    return () => clearTimeout(timer);
   };
 
   // عرض أكواد العناصر
@@ -264,6 +270,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             onBlur={handleTableBlur}
             onClick={handleTableClick}
             tabIndex={-1}
+            role="grid"
+            aria-label="جدول الفاتورة"
           >
             <Table className={`${showGridLines ? 'table-bordered' : ''} ${isDenseView ? 'table-sm' : ''}`}>
               <TableHeader>
@@ -369,6 +377,15 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         }
         .table-row-active {
           background-color: rgba(59, 130, 246, 0.05);
+        }
+        /* تحسين وضوح الخلية النشطة */
+        [role="gridcell"]:focus {
+          outline: 2px solid #3b82f6;
+          outline-offset: -2px;
+          background-color: rgba(59, 130, 246, 0.1);
+        }
+        [aria-selected="true"] {
+          background-color: rgba(59, 130, 246, 0.1);
         }
         `}
       </style>

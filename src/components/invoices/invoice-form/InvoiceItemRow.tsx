@@ -113,15 +113,21 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
           data-cell-name="code"
           ref={registerCellRef('code')}
           tabIndex={0}
+          aria-selected={isActive('code')}
+          role="gridcell"
         >
           {isEditingCell(index, 'code') ? (
             <input
               ref={inputRefs.code}
               type="text"
-              value={item.code}
+              value={item.code || ""}
               onChange={(e) => handleDirectEdit(index, 'code', e.target.value)}
               className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
               autoFocus
+              onKeyDown={(e) => {
+                // منع انتشار أحداث المفاتيح للخلية الأم
+                e.stopPropagation();
+              }}
             />
           ) : (
             <span className="cursor-text block w-full h-full py-1">{item.code || "—"}</span>
@@ -137,15 +143,21 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
         data-cell-name="name"
         ref={registerCellRef('name')}
         tabIndex={0}
+        aria-selected={isActive('name')}
+        role="gridcell"
       >
         {isEditingCell(index, 'name') ? (
           <input
             ref={inputRefs.name}
             type="text"
-            value={item.name}
+            value={item.name || ""}
             onChange={(e) => handleDirectEdit(index, 'name', e.target.value)}
             className="w-full h-8 border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
+            onKeyDown={(e) => {
+              // منع انتشار أحداث المفاتيح للخلية الأم
+              e.stopPropagation();
+            }}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1 font-medium">{item.name || "انقر لإضافة اسم"}</span>
@@ -160,15 +172,21 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
         data-cell-name="quantity"
         ref={registerCellRef('quantity')}
         tabIndex={0}
+        aria-selected={isActive('quantity')}
+        role="gridcell"
       >
         {isEditingCell(index, 'quantity') ? (
           <input
             ref={inputRefs.quantity}
             type="number"
-            value={item.quantity}
+            value={item.quantity || 0}
             onChange={(e) => handleDirectEdit(index, 'quantity', e.target.value)}
             className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
+            onKeyDown={(e) => {
+              // منع انتشار أحداث المفاتيح للخلية الأم
+              e.stopPropagation();
+            }}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1">{item.quantity}</span>
@@ -183,15 +201,21 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
         data-cell-name="price"
         ref={registerCellRef('price')}
         tabIndex={0}
+        aria-selected={isActive('price')}
+        role="gridcell"
       >
         {isEditingCell(index, 'price') ? (
           <input
             ref={inputRefs.price}
             type="number"
-            value={item.price}
+            value={item.price || 0}
             onChange={(e) => handleDirectEdit(index, 'price', e.target.value)}
             className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
+            onKeyDown={(e) => {
+              // منع انتشار أحداث المفاتيح للخلية الأم
+              e.stopPropagation();
+            }}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1">{formatCurrency(item.price)}</span>
@@ -211,6 +235,8 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
           data-cell-name="notes"
           ref={registerCellRef('notes')}
           tabIndex={0}
+          aria-selected={isActive('notes')}
+          role="gridcell"
         >
           {isEditingCell(index, 'notes') ? (
             <input
@@ -220,6 +246,10 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
               onChange={(e) => handleDirectEdit(index, 'notes', e.target.value)}
               className="w-full h-8 border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
               autoFocus
+              onKeyDown={(e) => {
+                // منع انتشار أحداث المفاتيح للخلية الأم
+                e.stopPropagation();
+              }}
             />
           ) : (
             <span className="cursor-text block w-full h-full py-1">{item.notes || "—"}</span>
@@ -252,4 +282,3 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
     </TableRow>
   );
 };
-

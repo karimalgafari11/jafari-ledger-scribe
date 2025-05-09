@@ -127,23 +127,20 @@ export function useInvoiceTable({
   };
 
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
-    // منع السلوك الافتراضي لضمان عمل التنقل بشكل صحيح
-    const preventDefaultAndNavigate = (key, newRowIndex, newCellName) => {
+    // منع السلوك الافتراضي لمفاتيح الأسهم دائمًا
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter", "Escape"].includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();
-      focusCell(newRowIndex, newCellName);
-    };
+    }
 
     // إذا كان في وضع التحرير، تعامل فقط مع Enter و Escape
     if (isEditingCell && activeSearchCell?.rowIndex === rowIndex && activeSearchCell?.cellName === cellName) {
       if (e.key === 'Escape') {
-        e.preventDefault();
         setIsEditingCell(false);
         return;
       } 
       
       if (e.key === 'Enter') {
-        e.preventDefault();
         setIsEditingCell(false);
         
         // التحرك للخلية التالية بعد الضغط على Enter
@@ -152,13 +149,16 @@ export function useInvoiceTable({
         
         if (currentIndex < cellOrder.length - 1) {
           const nextCellName = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCell(rowIndex, nextCellName), 10);
+          setTimeout(() => focusCell(rowIndex, nextCellName), 50);
         } else if (rowIndex < items.length - 1) {
           // الانتقال إلى الصف التالي، الخلية الأولى
-          setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 10);
+          setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 50);
         }
+        
+        return;
       }
       
+      // باقي المفاتيح يتم تجاهلها في وضع التحرير
       return;
     }
     
@@ -168,58 +168,54 @@ export function useInvoiceTable({
     
     if (currentIndex === -1) return;
     
-    // معالجة أحداث مفاتيح الأسهم
+    // معالجة أحداث مفاتيح الأسهم بشكل صحيح مع مراعاة اتجاه الصفحة من اليمين إلى اليسار
     switch (e.key) {
       case 'ArrowRight':
-        // في الواجهة العربية الانتقال لليمين يعني الخلية السابقة
+        // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليمين يعني الخلية السابقة في الترتيب
         if (currentIndex > 0) {
           const prevCell = cellOrder[currentIndex - 1];
-          preventDefaultAndNavigate(e.key, rowIndex, prevCell);
+          setTimeout(() => focusCell(rowIndex, prevCell), 50);
         }
         break;
       
       case 'ArrowLeft':
-        // في الواجهة العربية الانتقال لليسار يعني الخلية التالية
+        // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليسار يعني الخلية التالية في الترتيب
         if (currentIndex < cellOrder.length - 1) {
           const nextCell = cellOrder[currentIndex + 1];
-          preventDefaultAndNavigate(e.key, rowIndex, nextCell);
+          setTimeout(() => focusCell(rowIndex, nextCell), 50);
         }
         break;
       
       case 'ArrowUp':
         if (rowIndex > 0) {
-          preventDefaultAndNavigate(e.key, rowIndex - 1, cellName);
+          setTimeout(() => focusCell(rowIndex - 1, cellName), 50);
         }
         break;
       
       case 'ArrowDown':
         if (rowIndex < items.length - 1) {
-          preventDefaultAndNavigate(e.key, rowIndex + 1, cellName);
+          setTimeout(() => focusCell(rowIndex + 1, cellName), 50);
         }
         break;
       
       case 'Enter':
         if (!isEditingCell) {
-          e.preventDefault();
           setActiveSearchCell({ rowIndex, cellName });
           setIsEditingCell(true);
         }
         break;
       
       case 'Escape':
-        e.preventDefault();
         finishEditing();
         break;
       
       case 'Tab':
-        e.preventDefault();
         navigateWithTab(rowIndex, cellName, e.shiftKey);
         break;
       
       default:
         // بدء التحرير مباشرة عند كتابة حرف أو رقم
         if (!isEditingCell && /^[a-zA-Z0-9\u0600-\u06FF]$/.test(e.key)) {
-          e.preventDefault();
           setActiveSearchCell({ rowIndex, cellName });
           setIsEditingCell(true);
         }
@@ -229,8 +225,8 @@ export function useInvoiceTable({
   
   // الحصول على ترتيب الخلايا المرئية للتنقل
   const getVisibleCellOrder = () => {
-    const basicCellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
-    return basicCellOrder;
+    // حسب الترتيب الطبيعي للجدول من اليمين إلى اليسار
+    return ['code', 'name', 'quantity', 'price', 'notes'];
   };
   
   // التنقل باستخدام مفتاح Tab
@@ -259,7 +255,7 @@ export function useInvoiceTable({
     }
   };
   
-  // التركيز على خلية معينة
+  // التركيز على خلية معينة مع تحسين الأداء
   const focusCell = (rowIndex: number, cellName: string) => {
     if (rowIndex < 0 || rowIndex >= items.length) return;
     
@@ -267,13 +263,18 @@ export function useInvoiceTable({
     const cell = cellRefs.get(cellId);
     
     if (cell) {
-      // تأجيل التركيز لضمان عمله بشكل صحيح
+      // استخدم تأخيرًا صغيرًا للسماح بإعادة الرسم قبل التركيز
       setTimeout(() => {
-        cell.focus();
-        setActiveSearchCell({ rowIndex, cellName });
-        setLastSelectedRowIndex(rowIndex);
-        setIsEditingCell(false);
-      }, 0);
+        try {
+          cell.focus();
+          cell.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          setActiveSearchCell({ rowIndex, cellName });
+          setLastSelectedRowIndex(rowIndex);
+          setIsEditingCell(false);
+        } catch (err) {
+          console.error("فشل التركيز على الخلية:", err);
+        }
+      }, 20);
     } else {
       console.log(`لم يتم العثور على خلية ${cellId}`, cellRefs);
     }
@@ -306,4 +307,3 @@ export function useInvoiceTable({
     focusCell,
   };
 }
-
