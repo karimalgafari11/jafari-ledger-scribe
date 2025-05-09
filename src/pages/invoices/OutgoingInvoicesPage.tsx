@@ -32,6 +32,9 @@ const OutgoingInvoicesPage: React.FC = () => {
     deleteInvoices
   } = useOutgoingInvoices();
 
+  // Add state for the filter visibility
+  const [showFilters, setShowFilters] = useState(false);
+
   const onDeleteSelected = () => {
     if (selectedInvoices.length === 0) {
       toast.warning("يرجى تحديد الفواتير المراد حذفها أولاً");
@@ -147,6 +150,16 @@ const OutgoingInvoicesPage: React.FC = () => {
     }
   };
 
+  // Handle filter changes
+  const handleFilterChange = (newFilter: any) => {
+    setFilter(newFilter);
+  };
+
+  // Toggle filter visibility
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
   return (
     <Layout>
       <Header title="فواتير المبيعات" showBack={true} backPath="/invoices/outgoing-module">
@@ -164,7 +177,23 @@ const OutgoingInvoicesPage: React.FC = () => {
         <InvoiceStatCards statistics={statistics} isLoading={isLoading} />
 
         <Card className="mt-6 p-4">
-          <InvoiceFilters filter={filter} />
+          {/* Fix: Add the missing props to InvoiceFilters */}
+          {showFilters && (
+            <InvoiceFilters 
+              filter={filter} 
+              onFilterChange={handleFilterChange} 
+              onClose={toggleFilters} 
+            />
+          )}
+
+          {/* Add a button to toggle filters */}
+          {!showFilters && (
+            <div className="mb-4">
+              <Button variant="outline" onClick={toggleFilters}>
+                عرض الفلاتر
+              </Button>
+            </div>
+          )}
 
           {selectedInvoices.length > 0 && (
             <InvoicesActions
