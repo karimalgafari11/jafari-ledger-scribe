@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -114,7 +113,7 @@ const ReturnsPage: React.FC = () => {
       case "rejected":
         return <Badge variant="destructive">مرفوض</Badge>;
       case "completed":
-        return <Badge variant="info">مكتمل</Badge>;
+        return <Badge variant="secondary">مكتمل</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }

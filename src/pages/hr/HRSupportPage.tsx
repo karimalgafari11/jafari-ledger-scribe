@@ -1,297 +1,304 @@
-
 import React from "react";
 import { Layout } from "@/components/Layout";
 import HRPageHeader from "@/components/hr/HRPageHeader";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, CheckCircle, FileText, HelpCircle, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-}
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Envelope,
+  Phone,
+  MapPin,
+  Calendar,
+  HelpCircle,
+  MessageSquare,
+  User,
+  Building2,
+  Briefcase,
+  Link,
+  LucideIcon,
+  Plus,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SupportTicket {
   id: string;
   title: string;
-  status: 'open' | 'pending' | 'resolved' | 'closed';
+  description: string;
+  status: "open" | "pending" | "resolved" | "closed";
+  priority: "low" | "medium" | "high";
   createdAt: Date;
-  category: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  employeeName: string;
-  employeePhoto?: string;
-  lastUpdate?: Date;
+  updatedAt: Date;
+  category:
+    | "technical"
+    | "hr"
+    | "benefits"
+    | "payroll"
+    | "other";
+  assignedTo: string;
+  customer: {
+    name: string;
+    email: string;
+  };
 }
 
-const faqs: FAQ[] = [
+const mockSupportTickets: SupportTicket[] = [
   {
-    id: "faq-001",
-    question: "كيف يمكنني تقديم طلب إجازة؟",
-    answer: "يمكنك تقديم طلب الإجازة من خلال نظام الموارد البشرية عبر الضغط على 'طلب إجازة' في لوحة التحكم. قم بتعبئة النموذج وتحديد نوع الإجازة وتاريخ البداية والنهاية، ثم اضغط على 'تقديم الطلب'.",
-    category: "الإجازات"
-  },
-  {
-    id: "faq-002",
-    question: "ما هي سياسة العمل عن بعد؟",
-    answer: "تسمح الشركة حاليًا بالعمل عن بعد يومين في الأسبوع بعد التنسيق مع المدير المباشر. يجب الحضور إلى المكتب ثلاثة أيام على الأقل. يمكن زيادة أيام العمل عن بعد في حالات خاصة بعد موافقة الإدارة.",
-    category: "سياسات العمل"
-  },
-  {
-    id: "faq-003",
-    question: "كيف يمكنني تحديث بياناتي الشخصية؟",
-    answer: "يمكنك تحديث بياناتك الشخصية من خلال الدخول إلى ملفك الشخصي في نظام الموارد البشرية، ثم النقر على 'تعديل البيانات' وتحديث المعلومات المطلوبة ثم حفظها.",
-    category: "البيانات الشخصية"
-  },
-  {
-    id: "faq-004",
-    question: "متى يتم صرف الراتب الشهري؟",
-    answer: "يتم تحويل الرواتب بشكل شهري في الخامس والعشرين من كل شهر ميلادي. في حالة وقوع هذا التاريخ في عطلة رسمية أو نهاية الأسبوع، يتم التحويل في آخر يوم عمل قبله.",
-    category: "الرواتب والمالية"
-  },
-  {
-    id: "faq-005",
-    question: "كيف يمكنني الحصول على شهادة تعريف بالراتب؟",
-    answer: "يمكنك طلب شهادة تعريف بالراتب من خلال نظام الموارد البشرية بالضغط على 'طلب مستندات' ثم اختيار 'شهادة تعريف بالراتب' وتحديد الجهة الموجهة إليها الشهادة.",
-    category: "الرواتب والمالية"
-  },
-  {
-    id: "faq-006",
-    question: "ما هي خطوات التسجيل في الدورات التدريبية؟",
-    answer: "يمكنك الاطلاع على الدورات التدريبية المتاحة من خلال منصة التدريب والتطوير، ثم اختيار الدورة المناسبة والضغط على 'تسجيل'. بعد ذلك سيتم إرسال الطلب لمديرك المباشر للموافقة.",
-    category: "التدريب والتطوير"
-  },
-];
-
-const tickets: SupportTicket[] = [
-  {
-    id: "ticket-001",
-    title: "طلب تصحيح بيانات التأمين الطبي",
+    id: "ST-001",
+    title: "مشكلة في تسجيل الدخول",
+    description: "لا يمكنني تسجيل الدخول إلى حسابي",
     status: "open",
-    createdAt: new Date("2023-11-05"),
-    category: "التأمين الطبي",
     priority: "high",
-    employeeName: "أحمد محمد علي",
-    lastUpdate: new Date("2023-11-06")
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    category: "technical",
+    assignedTo: "علي محمد",
+    customer: {
+      name: "أحمد خالد",
+      email: "ahmed.khaled@example.com",
+    },
   },
   {
-    id: "ticket-002",
-    title: "استفسار عن آلية حساب مكافأة نهاية الخدمة",
+    id: "ST-002",
+    title: "طلب إجازة",
+    description: "أرغب في طلب إجازة لمدة أسبوع",
     status: "pending",
-    createdAt: new Date("2023-11-03"),
-    category: "الرواتب والمالية",
     priority: "medium",
-    employeeName: "سارة عبدالله الخالدي",
-    lastUpdate: new Date("2023-11-05")
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    category: "hr",
+    assignedTo: "فاطمة سالم",
+    customer: {
+      name: "ليلى عبدالله",
+      email: "layla.abdullah@example.com",
+    },
   },
   {
-    id: "ticket-003",
-    title: "مشكلة في تسجيل ساعات العمل",
+    id: "ST-003",
+    title: "استفسار عن التأمين الطبي",
+    description: "أريد معرفة تفاصيل التأمين الطبي",
     status: "resolved",
-    createdAt: new Date("2023-10-28"),
-    category: "نظام الحضور",
-    priority: "high",
-    employeeName: "محمد عبدالرحمن السعيد",
-    lastUpdate: new Date("2023-11-02")
+    priority: "low",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    category: "benefits",
+    assignedTo: "سارة علي",
+    customer: {
+      name: "محمد إبراهيم",
+      email: "mohammed.ibrahim@example.com",
+    },
   },
   {
-    id: "ticket-004",
-    title: "طلب تعديل مسمى وظيفي",
+    id: "ST-004",
+    title: "مشكلة في كشف الراتب",
+    description: "هناك خطأ في كشف الراتب الخاص بي",
     status: "closed",
-    createdAt: new Date("2023-10-15"),
-    category: "البيانات الوظيفية",
-    priority: "low",
-    employeeName: "فاطمة يوسف العمري",
-    lastUpdate: new Date("2023-10-25")
+    priority: "high",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    category: "payroll",
+    assignedTo: "خالد محمود",
+    customer: {
+      name: "نورة سالم",
+      email: "noura.salem@example.com",
+    },
   },
 ];
 
 const HRSupportPage: React.FC = () => {
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("ar-SA");
-  };
-
-  const getStatusBadge = (status: SupportTicket['status']) => {
-    switch (status) {
-      case "open":
-        return <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">مفتوح</span>;
-      case "pending":
-        return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">قيد المراجعة</span>;
-      case "resolved":
-        return <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">تم الحل</span>;
-      case "closed":
-        return <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">مغلق</span>;
-      default:
-        return null;
-    }
-  };
-
-  const getPriorityBadge = (priority: SupportTicket['priority']) => {
-    switch (priority) {
-      case "urgent":
-        return <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">عاجل</span>;
-      case "high":
-        return <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">مرتفع</span>;
-      case "medium":
-        return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">متوسط</span>;
-      case "low":
-        return <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">منخفض</span>;
-      default:
-        return null;
-    }
-  };
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-6 rtl">
         <HRPageHeader
           title="الدعم والمساعدة"
-          description="دعم ومساعدة فريق الموارد البشرية"
-          showAddButton={false}
+          description="مركز الدعم والمساعدة للموظفين"
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <Card className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* قسم المقالات الشائعة */}
+          <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>مرحباً بك في مركز الدعم</CardTitle>
+              <CardTitle className="text-lg font-bold">المقالات الشائعة</CardTitle>
+              <CardDescription>أكثر المقالات قراءةً واستفادةً</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <ScrollArea className="h-[400px] w-full">
+                <div className="p-4">
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="item-1">
+                      <AccordionTrigger>كيفية طلب إجازة</AccordionTrigger>
+                      <AccordionContent>
+                        لطلب إجازة، يجب عليك تعبئة النموذج الموجود في قسم الموارد
+                        البشرية وتقديمه إلى مديرك المباشر.
+                      </AccordionContent>
+                    </AccordionItem>
+                    <Separator />
+                    <AccordionItem value="item-2">
+                      <AccordionTrigger>
+                        سياسة التأمين الطبي
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        تغطي بوليصة التأمين الطبي جميع الموظفين وعائلاتهم، وتشمل
+                        العيادات والمستشفيات المعتمدة.
+                      </AccordionContent>
+                    </AccordionItem>
+                    <Separator />
+                    <AccordionItem value="item-3">
+                      <AccordionTrigger>
+                        كيفية الحصول على كشف الراتب
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        يمكنك الحصول على كشف الراتب الشهري من خلال نظام الرواتب
+                        الإلكتروني.
+                      </AccordionContent>
+                    </AccordionItem>
+                    <Separator />
+                    <AccordionItem value="item-4">
+                      <AccordionTrigger>
+                        إجراءات تقديم شكوى
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        لتقديم شكوى، يجب عليك تعبئة النموذج المخصص وتقديمه إلى
+                        قسم الموارد البشرية.
+                      </AccordionContent>
+                    </AccordionItem>
+                    <Separator />
+                  </Accordion>
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* قسم التواصل مع الدعم */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold">
+                تواصل مع الدعم
+              </CardTitle>
               <CardDescription>
-                يمكنك العثور على إجابات لأسئلتك الشائعة أو فتح تذكرة دعم جديدة في حالة احتجت مساعدة إضافية.
+                تواصل مع فريق الدعم الفني لحل مشاكلك
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-wrap gap-4">
-              <Button className="flex items-center gap-2">
-                <MessageSquare className="ml-1 h-4 w-4" />
-                فتح تذكرة دعم جديدة
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <HelpCircle className="ml-1 h-4 w-4" />
-                دليل الموظفين
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <FileText className="ml-1 h-4 w-4" />
-                سياسات الشركة
+            <CardContent>
+              <div className="flex items-center space-x-4 rtl">
+                <Avatar>
+                  <AvatarImage src="/images/avatars/avatar-1.png" />
+                  <AvatarFallback>AC</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">علي محمد</p>
+                  <p className="text-sm text-gray-500">
+                    مسؤول الدعم الفني
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center space-x-2 rtl">
+                  <Envelope className="h-4 w-4 text-gray-500" />
+                  <a
+                    href="mailto:ali.mohammed@example.com"
+                    className="text-sm text-blue-500 hover:underline"
+                  >
+                    ali.mohammed@example.com
+                  </a>
+                </div>
+                <div className="flex items-center space-x-2 rtl">
+                  <Phone className="h-4 w-4 text-gray-500" />
+                  <a
+                    href="tel:+966500000000"
+                    className="text-sm text-blue-500 hover:underline"
+                  >
+                    +966500000000
+                  </a>
+                </div>
+              </div>
+              <Button className="mt-4 w-full">
+                <MessageSquare className="h-4 w-4 ml-2" />
+                إرسال رسالة
               </Button>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* قسم التذاكر المفتوحة */}
+          <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>تواصل مع فريق الدعم</CardTitle>
+              <CardTitle className="text-lg font-bold">
+                تذاكر الدعم المفتوحة
+              </CardTitle>
+              <CardDescription>
+                تذاكر الدعم التي لم يتم حلها بعد
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex gap-3 items-center">
-                  <div className="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">البريد الإلكتروني</h3>
-                    <p className="text-sm text-gray-500">hr-support@company.com</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-center">
-                  <div className="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
-                    <HelpCircle className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">رقم الدعم</h3>
-                    <p className="text-sm text-gray-500">1234 (تحويلة داخلية)</p>
-                  </div>
-                </div>
-                <div className="flex gap-3 items-center">
-                  <div className="h-10 w-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">ساعات الدعم</h3>
-                    <p className="text-sm text-gray-500">8:00 ص - 4:00 م، الأحد - الخميس</p>
-                  </div>
-                </div>
-              </div>
+            <CardContent className="p-0">
+              <ScrollArea className="h-[400px] w-full">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">رقم التذكرة</TableHead>
+                      <TableHead>العنوان</TableHead>
+                      <TableHead>الحالة</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockSupportTickets.map((ticket) => (
+                      <TableRow key={ticket.id}>
+                        <TableCell className="font-medium">{ticket.id}</TableCell>
+                        <TableCell>{ticket.title}</TableCell>
+                        <TableCell>
+                          {ticket.status === "open" && (
+                            <Badge variant="destructive">مفتوحة</Badge>
+                          )}
+                          {ticket.status === "pending" && (
+                            <Badge variant="warning">قيد الانتظار</Badge>
+                          )}
+                          {ticket.status === "resolved" && (
+                            <Badge variant="success">تم الحل</Badge>
+                          )}
+                          {ticket.status === "closed" && (
+                            <Badge variant="secondary">مغلقة</Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
-
-        <Tabs defaultValue="faq" className="mb-6">
-          <TabsList className="bg-white shadow-sm rounded-lg p-1 mb-4">
-            <TabsTrigger value="faq">الأسئلة الشائعة</TabsTrigger>
-            <TabsTrigger value="tickets">تذاكر الدعم</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="faq" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {faqs.map((faq) => (
-                <Card key={faq.id} className="overflow-hidden">
-                  <CardHeader className="bg-card pb-2">
-                    <div className="flex gap-2 items-center">
-                      <Badge variant="outline" className="bg-blue-50">
-                        {faq.category}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg mt-2">{faq.question}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <p className="text-gray-700">{faq.answer}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="tickets" className="mt-0">
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
-                  <CardTitle>تذاكر الدعم</CardTitle>
-                  <Button size="sm">تذكرة جديدة</Button>
-                </div>
-                <CardDescription>تابع حالة تذاكر الدعم الخاصة بك</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {tickets.map((ticket) => (
-                    <div key={ticket.id} className="p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={ticket.employeePhoto} />
-                            <AvatarFallback className="bg-primary/10 text-primary">
-                              {ticket.employeeName.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <h3 className="font-medium">{ticket.title}</h3>
-                            <div className="text-sm text-gray-500">{ticket.employeeName}</div>
-                          </div>
-                        </div>
-                        <div className="mt-3 md:mt-0 flex flex-wrap gap-2">
-                          {getStatusBadge(ticket.status)}
-                          {getPriorityBadge(ticket.priority)}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col md:flex-row md:items-center justify-between mt-4">
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <div>تاريخ الإنشاء: {formatDate(ticket.createdAt)}</div>
-                          {ticket.lastUpdate && (
-                            <div>آخر تحديث: {formatDate(ticket.lastUpdate)}</div>
-                          )}
-                          <div>التصنيف: {ticket.category}</div>
-                        </div>
-                        <Button variant="ghost" size="sm" className="mt-3 md:mt-0">
-                          التفاصيل <ArrowRight className="mr-1 h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
     </Layout>
   );

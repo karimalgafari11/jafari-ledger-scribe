@@ -65,7 +65,13 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({
 }) => {
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: employee || {
+    defaultValues: employee ? {
+      ...employee,
+      // Convert date to string if it's a Date object
+      joinDate: employee.joinDate instanceof Date ? 
+        employee.joinDate.toISOString().split("T")[0] : 
+        employee.joinDate,
+    } : {
       name: "",
       employeeId: "",
       position: "",
