@@ -8,46 +8,95 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
 
   // تحسين معالجة أحداث لوحة المفاتيح
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
-    // منع السلوك الافتراضي لمفاتيح الأسهم والتاب دائمًا
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter", "Escape"].includes(e.key)) {
+    // منع السلوك الافتراضي لمفاتيح الأسهم والتاب دائمًا في حالة عدم التحرير
+    if (!isEditingCell(rowIndex, cellName) && 
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter", "Escape"].includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();
     }
 
-    // إذا كان في وضع التحرير، تعامل فقط مع Enter و Escape
-    if (isEditingCell(rowIndex, cellName)) {
-      if (e.key === 'Escape') {
-        setIsEditingCell(false);
-        return;
-      } 
-      
-      if (e.key === 'Enter') {
-        setIsEditingCell(false);
-        
-        // التحرك للخلية التالية بعد الضغط على Enter
-        const cellOrder = getVisibleCellOrder();
-        const currentIndex = cellOrder.indexOf(cellName);
-        
-        if (currentIndex < cellOrder.length - 1) {
-          const nextCellName = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCell(rowIndex, nextCellName), 100);
-        } else if (rowIndex < items.length - 1) {
-          // الانتقال إلى الصف التالي، الخلية الأولى
-          setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 100);
-        }
-        
-        return;
-      }
-      
-      // باقي المفاتيح يتم تجاهلها في وضع التحرير
-      return;
-    }
-    
     // الحصول على ترتيب الخلايا المرئية للتنقل
     const cellOrder = getVisibleCellOrder();
     const currentIndex = cellOrder.indexOf(cellName);
     
     if (currentIndex === -1) return;
+
+    // إذا كان في وضع التحرير، تعامل مع أحداث خاصة فقط
+    if (isEditingCell(rowIndex, cellName)) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setIsEditingCell(false);
+        setIsEditingActive(false);
+        return;
+      } 
+      
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        setIsEditingCell(false);
+        setIsEditingActive(false);
+        
+        // التحرك للخلية التالية بعد الضغط على Enter
+        if (currentIndex < cellOrder.length - 1) {
+          const nextCellName = cellOrder[currentIndex + 1];
+          setTimeout(() => focusCellFn(rowIndex, nextCellName), 100);
+        } else if (rowIndex < items.length - 1) {
+          // الانتقال إلى الصف التالي، الخلية الأولى
+          setTimeout(() => focusCellFn(rowIndex + 1, cellOrder[0]), 100);
+        }
+        
+        return;
+      }
+      
+      // معالجة أحداث مفاتيح الأسهم حتى في وضع التحرير
+      switch (e.key) {
+        case 'ArrowUp':
+          if (rowIndex > 0) {
+            e.preventDefault();
+            setIsEditingCell(false);
+            setIsEditingActive(false);
+            setTimeout(() => focusCellFn(rowIndex - 1, cellName), 100);
+          }
+          break;
+        
+        case 'ArrowDown':
+          if (rowIndex < items.length - 1) {
+            e.preventDefault();
+            setIsEditingCell(false);
+            setIsEditingActive(false);
+            setTimeout(() => focusCellFn(rowIndex + 1, cellName), 100);
+          }
+          break;
+        
+        case 'ArrowRight':
+          // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليمين يعني الخلية السابقة في الترتيب
+          if (currentIndex > 0) {
+            e.preventDefault();
+            setIsEditingCell(false);
+            setIsEditingActive(false);
+            const prevCell = cellOrder[currentIndex - 1];
+            setTimeout(() => focusCellFn(rowIndex, prevCell), 100);
+          }
+          break;
+        
+        case 'ArrowLeft':
+          // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليسار يعني الخلية التالية في الترتيب
+          if (currentIndex < cellOrder.length - 1) {
+            e.preventDefault();
+            setIsEditingCell(false);
+            setIsEditingActive(false);
+            const nextCell = cellOrder[currentIndex + 1];
+            setTimeout(() => focusCellFn(rowIndex, nextCell), 100);
+          }
+          break;
+          
+        case 'Tab':
+          // نسمح بسلوك Tab الافتراضي
+          return;
+      }
+      
+      // باقي المفاتيح يتم تجاهلها في وضع التحرير
+      return;
+    }
     
     // معالجة أحداث مفاتيح الأسهم مع مراعاة اتجاه الصفحة من اليمين إلى اليسار
     switch (e.key) {
@@ -55,11 +104,11 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
         // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليمين يعني الخلية السابقة في الترتيب
         if (currentIndex > 0) {
           const prevCell = cellOrder[currentIndex - 1];
-          setTimeout(() => focusCell(rowIndex, prevCell), 100);
+          setTimeout(() => focusCellFn(rowIndex, prevCell), 100);
         } else {
           // إذا كنا في أول خلية وضغطنا على اليمين، ننتقل إلى الصف السابق آخر خلية
           if (rowIndex > 0) {
-            setTimeout(() => focusCell(rowIndex - 1, cellOrder[cellOrder.length - 1]), 100);
+            setTimeout(() => focusCellFn(rowIndex - 1, cellOrder[cellOrder.length - 1]), 100);
           }
         }
         break;
@@ -68,24 +117,24 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
         // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليسار يعني الخلية التالية في الترتيب
         if (currentIndex < cellOrder.length - 1) {
           const nextCell = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCell(rowIndex, nextCell), 100);
+          setTimeout(() => focusCellFn(rowIndex, nextCell), 100);
         } else {
           // إذا كنا في آخر خلية وضغطنا على اليسار، ننتقل إلى الصف التالي أول خلية
           if (rowIndex < items.length - 1) {
-            setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 100);
+            setTimeout(() => focusCellFn(rowIndex + 1, cellOrder[0]), 100);
           }
         }
         break;
       
       case 'ArrowUp':
         if (rowIndex > 0) {
-          setTimeout(() => focusCell(rowIndex - 1, cellName), 100);
+          setTimeout(() => focusCellFn(rowIndex - 1, cellName), 100);
         }
         break;
       
       case 'ArrowDown':
         if (rowIndex < items.length - 1) {
-          setTimeout(() => focusCell(rowIndex + 1, cellName), 100);
+          setTimeout(() => focusCellFn(rowIndex + 1, cellName), 100);
         }
         break;
       
@@ -93,6 +142,7 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
         if (!isEditingCell(rowIndex, cellName)) {
           setActiveSearchCell({ rowIndex, cellName });
           setIsEditingCell(true);
+          setIsEditingActive(true);
         }
         break;
       
@@ -109,6 +159,7 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
         if (!isEditingCell(rowIndex, cellName) && /^[a-zA-Z0-9\u0600-\u06FF]$/.test(e.key)) {
           setActiveSearchCell({ rowIndex, cellName });
           setIsEditingCell(true);
+          setIsEditingActive(true);
         }
         break;
     }
@@ -117,8 +168,8 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
   // Helper function to check if a cell is being edited
   const isEditingCell = (rowIndex: number, cellName: string) => {
     return isEditingActive && 
-           setActiveSearchCell !== null &&
-           typeof setActiveSearchCell === 'function';
+           activeSearchCell !== null &&
+           typeof activeSearchCell === 'function';
   };
   
   // Function to handle focusing on a cell
@@ -144,19 +195,19 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
       // التنقل للخلف
       if (currentIndex > 0) {
         // الانتقال إلى الخلية السابقة في نفس الصف
-        focusCell(rowIndex, cellOrder[currentIndex - 1]);
+        focusCellFn(rowIndex, cellOrder[currentIndex - 1]);
       } else if (rowIndex > 0) {
         // الانتقال إلى الخلية الأخيرة من الصف السابق
-        focusCell(rowIndex - 1, cellOrder[cellOrder.length - 1]);
+        focusCellFn(rowIndex - 1, cellOrder[cellOrder.length - 1]);
       }
     } else {
       // التنقل للأمام
       if (currentIndex < cellOrder.length - 1) {
         // الانتقال إلى الخلية التالية في نفس الصف
-        focusCell(rowIndex, cellOrder[currentIndex + 1]);
+        focusCellFn(rowIndex, cellOrder[currentIndex + 1]);
       } else if (rowIndex < items.length - 1) {
         // الانتقال إلى الخلية الأولى من الصف التالي
-        focusCell(rowIndex + 1, cellOrder[0]);
+        focusCellFn(rowIndex + 1, cellOrder[0]);
       }
     }
   };
@@ -165,6 +216,7 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
   const finishEditing = () => {
     setActiveSearchCell(null);
     setIsEditingCell(false);
+    setIsEditingActive(false);
     setLastSelectedRowIndex(null);
   };
 

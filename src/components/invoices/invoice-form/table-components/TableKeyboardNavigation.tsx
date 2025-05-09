@@ -20,7 +20,7 @@ export const TableKeyboardNavigation: React.FC<TableKeyboardNavigationProps> = (
 }) => {
   // إضافة مستمع لأحداث لوحة المفاتيح للجدول بأكمله
   useEffect(() => {
-    const handleTableKeyDown = (e: globalThis.KeyboardEvent) => {
+    const handleTableKeyDown = (e: KeyboardEvent) => {
       if (!tableHasFocus) return;
       
       // اختصارات إضافة عنصر جديد

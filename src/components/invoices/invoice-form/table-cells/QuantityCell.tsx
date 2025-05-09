@@ -16,6 +16,14 @@ export const QuantityCell = forwardRef<HTMLTableCellElement, QuantityCellProps>(
   ({ quantity, index, isEditing, isActive, handleCellClick, handleDirectEdit, onKeyDown }, ref) => {
     const inputRef = useRef<HTMLInputElement>(null);
     
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // السماح للأحداث الخاصة بالتنقل بالمرور إلى الأعلى
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Escape", "Tab"].includes(e.key)) {
+        e.stopPropagation(); // منع المعالجة المزدوجة
+        onKeyDown(e as unknown as KeyboardEvent<HTMLTableCellElement>);
+      }
+    };
+    
     return (
       <EditableTableCell
         rowIndex={index}
@@ -34,9 +42,7 @@ export const QuantityCell = forwardRef<HTMLTableCellElement, QuantityCellProps>(
             onChange={(e) => handleDirectEdit(index, 'quantity', e.target.value)}
             className="w-full h-8 text-center border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none"
             autoFocus
-            onKeyDown={(e) => {
-              e.stopPropagation();
-            }}
+            onKeyDown={handleInputKeyDown}
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1">{quantity}</span>
