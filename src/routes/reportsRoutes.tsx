@@ -3,6 +3,7 @@ import { RouteObject } from "react-router-dom";
 import Reports from "@/pages/Reports";
 import SalesReportsPage from "@/pages/reports/SalesReportsPage";
 import SalesStatsPage from "@/pages/reports/SalesStatsPage";
+import ReportsTemplatesPage from "@/pages/reports/ReportsTemplatesPage";
 
 export const reportsRoutes: RouteObject[] = [
   {
@@ -16,5 +17,9 @@ export const reportsRoutes: RouteObject[] = [
   {
     path: "reports/sales-stats",
     element: <SalesStatsPage />,
+  },
+  {
+    path: "reports/templates",
+    element: <ReportsTemplatesPage />,
   }
 ];

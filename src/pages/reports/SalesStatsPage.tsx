@@ -14,16 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 // Import dashboard chart components
-import SalesExpensesChart from "@/components/dashboard/charts/SalesExpensesChart";
-import ProfitMarginChart from "@/components/dashboard/charts/ProfitMarginChart";
-import DailySalesChart from "@/components/dashboard/charts/DailySalesChart";
-import PieChartCard from "@/components/dashboard/charts/PieChartCard";
-
-// Import data transformers
-import { transformCategoryData, transformDailySalesData, transformProfitData, transformSalesData } from "@/utils/chartDataTransformers";
-
-// Import mock data
-import { customerDebtData, dailySalesData, profitData, salesData, supplierCreditData } from "@/data/dashboardData";
+import { BarChart, PieChart as PieChartComponent, LineChart } from "@/components/ui/charts";
 
 const SalesStatsPage: React.FC = () => {
   const { t, language } = useTranslation();
@@ -54,16 +45,6 @@ const SalesStatsPage: React.FC = () => {
       : `Report exported as ${format.toUpperCase()} successfully`
     );
   };
-
-  // Calculate average profit margin
-  const averageProfitMargin = profitData.reduce((sum, item) => sum + parseFloat(item.profitMargin), 0) / profitData.length;
-
-  // Transformed chart data
-  const transformedSalesData = transformSalesData(salesData);
-  const transformedProfitData = transformProfitData(profitData);
-  const transformedDailySalesData = transformDailySalesData(dailySalesData);
-  const transformedCustomerDebtData = transformCategoryData(customerDebtData);
-  const transformedSupplierCreditData = transformCategoryData(supplierCreditData);
 
   return (
     <Layout>
@@ -226,19 +207,37 @@ const SalesStatsPage: React.FC = () => {
 
             <TabsContent value="overview" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <SalesExpensesChart data={salesData} />
-                <ProfitMarginChart data={profitData} averageProfitMargin={averageProfitMargin.toFixed(1)} />
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{language === 'ar' ? "المبيعات والمصروفات" : "Sales & Expenses"}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <BarChart data={revenueData.barChart} />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{language === 'ar' ? "توزيع المبيعات" : "Sales Distribution"}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <PieChartComponent data={revenueData.pieChart} />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <DailySalesChart data={dailySalesData} />
-                <PieChartCard 
-                  title={language === 'ar' ? "المبيعات حسب الفئة" : "Sales by Category"} 
-                  icon={<PieChart className="h-5 w-5" />} 
-                  data={customerDebtData} 
-                  reportButtonText={language === 'ar' ? "عرض تقرير مفصل" : "View Detailed Report"}
-                  onReportClick={() => setActiveTab("products")}
-                />
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{language === 'ar' ? "أداء المبيعات على مدار العام" : "Sales Performance Over Time"}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px]">
+                    <LineChart data={revenueData.lineChart} />
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="products" className="space-y-6">
@@ -288,25 +287,12 @@ const SalesStatsPage: React.FC = () => {
                       </TabsList>
                       <TabsContent value="pie" className="h-full">
                         <div className="h-full">
-                          {/* Use PieChart Component */}
-                          <div className="h-80">
-                            <PieChartCard 
-                              title={language === 'ar' ? "المبيعات حسب المنتج" : "Sales by Product"}
-                              icon={<PieChart className="h-5 w-5" />}
-                              data={productData.slice(0, 5).map(p => ({
-                                name: p.name,
-                                value: p.sales,
-                                percentage: p.percentage
-                              }))}
-                              reportButtonText={language === 'ar' ? "تصدير التقرير" : "Export Report"}
-                              onReportClick={() => handleExport("excel")}
-                            />
-                          </div>
+                          <PieChartComponent data={productCharts.pieChart} />
                         </div>
                       </TabsContent>
                       <TabsContent value="line" className="h-full">
                         <div className="h-full">
-                          {/* Line Chart for Product Trends */}
+                          <LineChart data={productCharts.lineChart} />
                         </div>
                       </TabsContent>
                     </Tabs>
@@ -362,25 +348,12 @@ const SalesStatsPage: React.FC = () => {
                       </TabsList>
                       <TabsContent value="pie" className="h-full">
                         <div className="h-full">
-                          {/* Use PieChart Component */}
-                          <div className="h-80">
-                            <PieChartCard 
-                              title={language === 'ar' ? "المبيعات حسب العميل" : "Sales by Customer"}
-                              icon={<PieChart className="h-5 w-5" />}
-                              data={customerData.slice(0, 5).map(c => ({
-                                name: c.name,
-                                value: c.sales,
-                                percentage: c.percentage
-                              }))}
-                              reportButtonText={language === 'ar' ? "تصدير التقرير" : "Export Report"}
-                              onReportClick={() => handleExport("excel")}
-                            />
-                          </div>
+                          <PieChartComponent data={customerCharts.pieChart} />
                         </div>
                       </TabsContent>
                       <TabsContent value="line" className="h-full">
                         <div className="h-full">
-                          {/* Line Chart for Customer Trends */}
+                          <LineChart data={customerCharts.lineChart} />
                         </div>
                       </TabsContent>
                     </Tabs>

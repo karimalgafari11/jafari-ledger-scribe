@@ -17,6 +17,11 @@ export const reportItems: MenuItem[] = [
         path: "/reports/sales",
         icon: BarChart3,
       },
+      {
+        label: "إحصائيات المبيعات",
+        path: "/reports/sales-stats",
+        icon: BarChart3,
+      },
     ],
   },
 ];
