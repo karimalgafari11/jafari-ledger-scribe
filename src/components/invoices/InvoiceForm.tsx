@@ -91,6 +91,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         handleResizeStart={handleResizeStart}
         onRemoveItem={onRemoveItem}
         onAddItem={onAddItem}
+        onUpdateItem={onUpdateItem}  // Add the missing prop here
         settings={settings}
       />
 
