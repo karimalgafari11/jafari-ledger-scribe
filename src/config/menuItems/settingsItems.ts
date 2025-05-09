@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   Globe,
   Bell,
-  Send
+  Send,
+  Paintbrush
 } from "lucide-react";
 import { MenuItem } from "./types";
 
@@ -39,6 +40,11 @@ export const settingsItems: MenuItem[] = [
         label: "إعدادات الإشعارات",
         path: "/settings/notification-settings",
         icon: SlidersHorizontal,
+      },
+      {
+        label: "تخصيص المظهر",
+        path: "/settings/theme",
+        icon: Paintbrush,
       },
       {
         label: "محرك الذكاء الاصطناعي",
