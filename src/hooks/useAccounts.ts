@@ -118,16 +118,26 @@ export const useAccounts = () => {
       value: account.id
     }));
     
-    // تصفية نهائية للتأكد من عدم وجود قيم فارغة
+    // تصفية نهائية للتأكد من عدم وجود قيم فارغة أو تكرارات
     const filteredOptions = options.filter(option => 
       option.value && 
       typeof option.value === 'string' && 
       option.value.trim() !== ''
     );
     
-    console.log("useAccounts - Final parent options:", filteredOptions);
+    // Remove any duplicate values
+    const uniqueOptions = filteredOptions.reduce((acc, current) => {
+      const x = acc.find(item => item.value === current.value);
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
+    }, [] as { label: string; value: string }[]);
     
-    return filteredOptions;
+    console.log("useAccounts - Final parent options:", uniqueOptions);
+    
+    return uniqueOptions;
   }, [accounts]);
 
   // اقتراح الحسابات بناءً على النوع
