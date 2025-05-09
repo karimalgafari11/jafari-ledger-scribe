@@ -3,14 +3,14 @@ import React from "react";
 import { Invoice } from "@/types/invoices";
 import { InvoiceSettingsType } from "./invoice-form/InvoiceSettings";
 
-// Importing refactored components
+// استيراد المكونات المعاد هيكلتها
 import { InvoiceHeader } from "./invoice-form/InvoiceHeader";
 import { InvoiceDetails } from "./invoice-form/InvoiceDetails";
 import { InvoiceItemsTable } from "./invoice-form/InvoiceItemsTable";
 import { InvoiceSummarySection } from "./invoice-form/InvoiceSummarySection";
 import { InvoiceActions } from "./invoice-form/InvoiceActions";
 
-// Custom hook
+// دالة مساعدة
 import { useInvoiceForm } from "@/hooks/useInvoiceForm";
 
 interface InvoiceFormProps {
@@ -63,8 +63,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   } = useInvoiceForm(invoice, onFieldChange, onAddItem, onUpdateItem, onRemoveItem, onApplyDiscount);
   
   return (
-    <div className="space-y-1 print:p-2 py-0 px-0">
-      {/* Invoice Header with Company Logo and Information */}
+    <div className="space-y-1 print:p-2 py-0 px-0" dir="rtl">
+      {/* رأس الفاتورة مع شعار الشركة والمعلومات */}
       <InvoiceHeader 
         companyInfo={companyInfo} 
         toggleCompanyEdit={toggleCompanyEdit} 
@@ -72,14 +72,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         showLogo={settings?.showCompanyLogo !== false}
       />
 
-      {/* Invoice Details (customer, date, etc) - Condensed */}
+      {/* تفاصيل الفاتورة (العميل، التاريخ، إلخ) */}
       <InvoiceDetails 
         invoice={invoice} 
         onFieldChange={onFieldChange} 
         condensed={true}
       />
       
-      {/* Invoice Items Table */}
+      {/* جدول عناصر الفاتورة */}
       <InvoiceItemsTable
         items={invoice.items}
         isAddingItem={isAddingItem}
@@ -94,7 +94,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         settings={settings}
       />
 
-      {/* Invoice Summary Section */}
+      {/* قسم ملخص الفاتورة */}
       <InvoiceSummarySection 
         invoice={invoice}
         isDiscountFormOpen={isDiscountFormOpen}
@@ -106,7 +106,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         showTax={settings?.showTax !== false}
       />
       
-      {/* Invoice Actions */}
+      {/* إجراءات الفاتورة */}
       <InvoiceActions 
         notes={invoice.notes}
         onNotesChange={handleNotesChange}
@@ -117,7 +117,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         invoiceId={invoice.id}
       />
 
-      {/* Print-only styles */}
+      {/* أنماط الطباعة */}
       <style>
         {`
           @media print {

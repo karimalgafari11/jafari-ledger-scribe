@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, FilePlus, Clock, Settings, Printer, FileText } from "lucide-react";
+import { ArrowLeft, Save, FilePlus, Clock, Settings, Printer, FileText, FileUp } from "lucide-react";
 import { useSalesInvoice } from "@/hooks/sales/useSalesInvoice";
 import { toast } from "sonner";
 import { InvoiceSettings, InvoiceSettingsType } from "@/components/invoices/invoice-form/InvoiceSettings";
@@ -15,7 +15,7 @@ import { InvoiceQuickInfo } from "@/components/invoices/invoice-form/InvoiceQuic
 import { Badge } from "@/components/ui/badge";
 import { InvoiceItem } from "@/types/invoices";
 
-// Define default settings
+// تعريف الإعدادات الافتراضية
 const defaultSettings: InvoiceSettingsType = {
   showCustomerDetails: true,
   showItemCodes: true,
@@ -37,6 +37,7 @@ const SalesInvoicePage: React.FC = () => {
   
   const {
     invoice,
+    isLoading,
     createNewInvoice,
     updateInvoiceField,
     addInvoiceItem,
@@ -45,23 +46,24 @@ const SalesInvoicePage: React.FC = () => {
     applyDiscount,
     calculateTotals,
     saveInvoice,
-    isLoading
+    convertQuoteToInvoice
   } = useSalesInvoice();
 
   useEffect(() => {
-    // Create a new invoice
+    // إنشاء فاتورة جديدة
     createNewInvoice();
-    console.log("Invoice created with settings:", invoiceSettings);
     
-    // Apply the font size from settings globally
+    // تطبيق حجم الخط من الإعدادات عالميًا
     document.documentElement.style.setProperty(
       '--invoice-font-size', 
       invoiceSettings.fontSize === 'small' ? '0.875rem' : 
       invoiceSettings.fontSize === 'large' ? '1.125rem' : '1rem'
     );
     
+    document.body.dir = 'rtl';
+    
     return () => {
-      // Reset font size when unmounting
+      // إعادة تعيين حجم الخط عند إزالة المكون
       document.documentElement.style.removeProperty('--invoice-font-size');
     };
   }, [invoiceSettings.fontSize]);
@@ -86,16 +88,15 @@ const SalesInvoicePage: React.FC = () => {
   };
 
   const handleNewInvoice = () => {
-    // Reset the current invoice and create a new one
+    // إعادة تعيين الفاتورة الحالية وإنشاء فاتورة جديدة
     createNewInvoice();
     toast.info("تم إنشاء فاتورة جديدة");
   };
 
   const handleSettingsChange = (newSettings: InvoiceSettingsType) => {
     setInvoiceSettings(newSettings);
-    console.log("Settings updated:", newSettings);
     
-    // Apply the font size from settings globally
+    // تطبيق حجم الخط من الإعدادات عالميًا
     document.documentElement.style.setProperty(
       '--invoice-font-size', 
       newSettings.fontSize === 'small' ? '0.875rem' : 
@@ -107,12 +108,12 @@ const SalesInvoicePage: React.FC = () => {
     window.print();
   };
 
-  // Create adapter functions to convert between parameter types
+  // إنشاء دوال وسيطة للتحويل بين أنواع المعلمات
   const handleUpdateItem = (index: number, item: Partial<InvoiceItem>) => {
     if (item.id) {
       updateInvoiceItem(item.id, item);
     } else {
-      console.error("Cannot update item without ID");
+      console.error("لا يمكن تحديث العنصر بدون معرف");
     }
   };
 
@@ -121,7 +122,7 @@ const SalesInvoicePage: React.FC = () => {
     if (itemId) {
       removeInvoiceItem(itemId);
     } else {
-      console.error("Cannot remove item at index", index);
+      console.error("لا يمكن إزالة العنصر في الفهرس", index);
     }
   };
 
@@ -157,6 +158,13 @@ const SalesInvoicePage: React.FC = () => {
           .smooth-transition {
             transition: all 0.3s ease-in-out;
           }
+          .table-bordered {
+            border-collapse: collapse;
+          }
+          .table-bordered th,
+          .table-bordered td {
+            border: 1px solid #e2e8f0;
+          }
           @media print {
             body * {
               visibility: hidden;
@@ -179,11 +187,11 @@ const SalesInvoicePage: React.FC = () => {
           }
         `}
       </style>
-      <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible">
+      <div className="h-full w-full flex flex-col overflow-hidden print:overflow-visible" dir="rtl">
         <Header title="فاتورة مبيعات جديدة" showBack={true} onBackClick={handleBack} />
 
         <div className="flex-1 overflow-auto print:overflow-visible print-section py-2 px-4 bg-gray-50">
-          {/* Top action bar */}
+          {/* شريط الإجراءات العلوي */}
           <div className="flex justify-between items-center mb-4 print-hide">
             <div className="flex flex-col">
               <h2 className="text-2xl font-semibold">إنشاء فاتورة مبيعات</h2>
@@ -243,7 +251,7 @@ const SalesInvoicePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Optional tips section */}
+          {/* قسم النصائح الاختياري */}
           {showTips && (
             <Card className="mb-4 bg-blue-50 border-blue-200 shadow-sm print-hide">
               <CardContent className="p-4 flex justify-between items-center">
@@ -252,6 +260,7 @@ const SalesInvoicePage: React.FC = () => {
                   <ul className="list-disc list-inside space-y-1 text-blue-600">
                     <li>اضغط على زر "إضافة صنف" لإضافة منتجات للفاتورة</li>
                     <li>يمكنك تعديل المعلومات بالنقر المباشر على حقول الفاتورة</li>
+                    <li>يمكنك التنقل بين خلايا الجدول باستخدام لوحة المفاتيح</li>
                     <li>يمكن تغيير إعدادات الفاتورة من زر الإعدادات</li>
                     <li>تأكد من تعبئة بيانات العميل قبل حفظ الفاتورة</li>
                   </ul>
@@ -267,7 +276,7 @@ const SalesInvoicePage: React.FC = () => {
             </Card>
           )}
 
-          {/* Tabs for different views */}
+          {/* علامات تبويب لمختلف العروض */}
           <Tabs 
             value={activeTab} 
             onValueChange={setActiveTab}
@@ -279,6 +288,10 @@ const SalesInvoicePage: React.FC = () => {
                 <FileText className="mr-2 h-4 w-4" />
                 تحرير الفاتورة
               </TabsTrigger>
+              <TabsTrigger value="upload" className="text-base">
+                <FileUp className="mr-2 h-4 w-4" />
+                تحميل من PDF
+              </TabsTrigger>
               <TabsTrigger value="preview" className="text-base">
                 <Printer className="mr-2 h-4 w-4" />
                 معاينة الطباعة
@@ -289,10 +302,10 @@ const SalesInvoicePage: React.FC = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Main content area */}
+            {/* منطقة المحتوى الرئيسية */}
             <TabsContent value="editor" className="tab-content">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Main invoice form */}
+                {/* نموذج الفاتورة الرئيسي */}
                 <div className="md:col-span-3">
                   <Card className="mb-2 print:shadow-none print:border-none">
                     <CardContent className="p-4 bg-white">
@@ -310,7 +323,7 @@ const SalesInvoicePage: React.FC = () => {
                   </Card>
                 </div>
                 
-                {/* Sidebar with additional information */}
+                {/* الشريط الجانبي مع معلومات إضافية */}
                 <div className="md:col-span-1 print-hide">
                   <InvoiceQuickInfo 
                     invoice={invoice} 
@@ -318,6 +331,19 @@ const SalesInvoicePage: React.FC = () => {
                   />
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="upload" className="tab-content">
+              <Card className="mb-2">
+                <CardHeader className="bg-gray-50">
+                  <CardTitle>تحميل فاتورة من ملف PDF</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 bg-white">
+                  <p className="text-center py-8">
+                    قريباً: ستتمكن من تحميل فواتير من ملفات PDF لاستخراج البيانات منها تلقائياً
+                  </p>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="preview" className="tab-content">
