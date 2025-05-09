@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { InvoiceItem } from "@/types/invoices";
 import { Product } from "@/types/inventory";
+import { toast } from "sonner";
 
 export function useInvoiceTable({
   items,
@@ -28,9 +29,23 @@ export function useInvoiceTable({
   const handleCellClick = (rowIndex: number, cellName: string) => {
     if (isAddingItem || editingItemIndex !== null) return;
     
-    setActiveSearchCell({ rowIndex, cellName });
-    setLastSelectedRowIndex(rowIndex);
-    setIsEditingCell(true);
+    // إذا كانت الخلية التي تم النقر عليها هي نفس الخلية النشطة، فقم بتفعيل التحرير
+    if (activeSearchCell && 
+        activeSearchCell.rowIndex === rowIndex && 
+        activeSearchCell.cellName === cellName) {
+      setIsEditingCell(true);
+    } else {
+      // تحديث الخلية النشطة
+      setActiveSearchCell({ rowIndex, cellName });
+      setLastSelectedRowIndex(rowIndex);
+      setIsEditingCell(true);
+    }
+    
+    // إظهار رسالة للمستخدم بالنقر المزدوج للتحرير (فقط في المرة الأولى)
+    if (!localStorage.getItem('cellEditHintShown')) {
+      toast.info('يمكنك الضغط على Enter للتحرير أو استخدام أسهم الكيبورد للتنقل');
+      localStorage.setItem('cellEditHintShown', 'true');
+    }
   };
   
   const handleDirectEdit = (index: number, field: string, value: any) => {
@@ -46,7 +61,7 @@ export function useInvoiceTable({
       
       updatedItem[field] = numValue;
       
-      // إذا تم تغيير الكمية أو السعر، أعد حساب المجموع (حسب المنطق الحالي)
+      // إذا تم تغيير الكمية أو السعر، أعد حساب المجموع
       const basePrice = field === 'price' ? numValue : item.price;
       const quantity = field === 'quantity' ? numValue : item.quantity;
       const subtotal = basePrice * quantity;
@@ -81,17 +96,19 @@ export function useInvoiceTable({
         name: product.name,
         price: product.price
       });
+      
+      toast.success(`تم تحديث بيانات "${product.name}"`);
     }
     
     setActiveSearchCell(null);
     setIsEditingCell(false);
   };
   
-  const handleTableClick = () => {
-    // إلغاء تحديد الخلايا عند النقر خارج الجدول
-    if (activeSearchCell) {
+  const handleTableClick = (e: React.MouseEvent) => {
+    // التحقق من النقر خارج الخلايا
+    const isClickOnCell = (e.target as HTMLElement).closest('[data-cell-name]');
+    if (!isClickOnCell && activeSearchCell && !isEditingCell) {
       setActiveSearchCell(null);
-      setIsEditingCell(false);
     }
   };
   
@@ -110,8 +127,32 @@ export function useInvoiceTable({
   };
 
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
+    // منع تمرير الحدث إذا كانت الخلية في وضع التحرير
+    if (isEditingCell && activeSearchCell?.rowIndex === rowIndex && activeSearchCell?.cellName === cellName) {
+      // السماح بإيفنتس معينة فقط في وضع التحرير (Enter و Escape)
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        if (e.key === 'Escape') {
+          setIsEditingCell(false);
+        } else if (e.key === 'Enter') {
+          setIsEditingCell(false);
+          // التحرك للخلية التالية بعد الضغط على Enter
+          const cellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
+          const currentIndex = cellOrder.indexOf(cellName);
+          if (currentIndex < cellOrder.length - 1) {
+            const nextCellName = cellOrder[currentIndex + 1];
+            focusCell(rowIndex, nextCellName);
+          } else if (rowIndex < items.length - 1) {
+            // الانتقال إلى الصف التالي، الخلية الأولى
+            focusCell(rowIndex + 1, cellOrder[0]);
+          }
+        }
+        e.preventDefault();
+      }
+      return;
+    }
+    
     // تعريف ترتيب الخلايا للتنقل
-    const cellOrder = ['code', 'name', 'quantity', 'price', 'total', 'notes'];
+    const cellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
     
     // الحصول على الفهرس الحالي للخلية
     const currentIndex = cellOrder.indexOf(cellName);
@@ -145,12 +186,46 @@ export function useInvoiceTable({
       if (rowIndex < items.length - 1) {
         focusCell(rowIndex + 1, cellName);
       }
-    } else if (e.key === 'Enter') {
+    } else if (e.key === 'Enter' && !isEditingCell) {
       e.preventDefault();
-      handleCellClick(rowIndex, cellName);
+      setActiveSearchCell({ rowIndex, cellName });
+      setIsEditingCell(true);
     } else if (e.key === 'Escape') {
       e.preventDefault();
       finishEditing();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      navigateWithTab(rowIndex, cellName, e.shiftKey);
+    } else if (!isEditingCell && /^[a-zA-Z0-9]$/.test(e.key)) {
+      // بدء التحرير مباشرة عند كتابة حرف أو رقم
+      setActiveSearchCell({ rowIndex, cellName });
+      setIsEditingCell(true);
+    }
+  };
+  
+  // التنقل باستخدام مفتاح Tab
+  const navigateWithTab = (rowIndex: number, cellName: string, isShiftKey: boolean) => {
+    const cellOrder = ['code', 'name', 'quantity', 'price', 'notes'];
+    const currentIndex = cellOrder.indexOf(cellName);
+    
+    if (isShiftKey) {
+      // التنقل للخلف
+      if (currentIndex > 0) {
+        // الانتقال إلى الخلية السابقة في نفس الصف
+        focusCell(rowIndex, cellOrder[currentIndex - 1]);
+      } else if (rowIndex > 0) {
+        // الانتقال إلى الخلية الأخيرة من الصف السابق
+        focusCell(rowIndex - 1, cellOrder[cellOrder.length - 1]);
+      }
+    } else {
+      // التنقل للأمام
+      if (currentIndex < cellOrder.length - 1) {
+        // الانتقال إلى الخلية التالية في نفس الصف
+        focusCell(rowIndex, cellOrder[currentIndex + 1]);
+      } else if (rowIndex < items.length - 1) {
+        // الانتقال إلى الخلية الأولى من الصف التالي
+        focusCell(rowIndex + 1, cellOrder[0]);
+      }
     }
   };
   
@@ -158,9 +233,19 @@ export function useInvoiceTable({
   const focusCell = (rowIndex: number, cellName: string) => {
     const cellId = `${rowIndex}-${cellName}`;
     const cell = cellRefs.get(cellId);
+    
     if (cell) {
       cell.focus();
+      setActiveSearchCell({ rowIndex, cellName });
+      setLastSelectedRowIndex(rowIndex);
     }
+  };
+  
+  // دالة مساعدة للتحقق مما إذا كانت الخلية في وضع التحرير
+  const isCellEditing = (rowIndex: number, cellName: string) => {
+    return isEditingCell && 
+           activeSearchCell?.rowIndex === rowIndex && 
+           activeSearchCell?.cellName === cellName;
   };
   
   return {
@@ -171,11 +256,7 @@ export function useInvoiceTable({
     tableRef,
     cellRefs,
     lastSelectedRowIndex,
-    isEditingCell: (rowIndex, cellName) => {
-      return activeSearchCell !== null && 
-             activeSearchCell.rowIndex === rowIndex && 
-             activeSearchCell.cellName === cellName;
-    },
+    isEditingCell: isCellEditing,
     handleCellClick,
     handleProductSelect,
     handleDirectEdit,

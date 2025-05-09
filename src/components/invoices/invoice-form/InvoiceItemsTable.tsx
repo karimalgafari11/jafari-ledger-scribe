@@ -1,8 +1,8 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceItemRow } from "./InvoiceItemRow";
@@ -12,6 +12,12 @@ import { InvoiceSettingsType } from "./InvoiceSettings";
 import { QuickProductSearch } from "./QuickProductSearch";
 import { Product } from "@/types/inventory";
 import { v4 as uuidv4 } from "uuid";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -24,6 +30,7 @@ interface InvoiceItemsTableProps {
   handleResizeStart: (e: React.MouseEvent) => void;
   onRemoveItem: (index: number) => void;
   onAddItem: (item: Partial<InvoiceItem>) => void;
+  onUpdateItem: (index: number, item: Partial<InvoiceItem>) => void;
   settings?: InvoiceSettingsType;
 }
 
@@ -38,39 +45,78 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   handleResizeStart,
   onRemoveItem,
   onAddItem,
+  onUpdateItem,
   settings
 }) => {
   const [editingItem, setEditingItem] = useState<InvoiceItem | undefined>(
     editingItemIndex !== null ? items[editingItemIndex] : undefined
   );
   const [showProductSearch, setShowProductSearch] = useState(false);
+  const [tableHasFocus, setTableHasFocus] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
+  // استخدام هوك لإدارة جدول الفاتورة
   const {
     activeSearchCell,
     showGridLines,
+    isDenseView,
     handleCellClick,
     handleDirectEdit,
     handleProductSelect,
-    finishEditing,
     handleKeyNavigation,
-    cellRefs
+    cellRefs,
+    isEditingCell,
+    toggleGridLines,
+    toggleDenseView,
+    handleTableClick
   } = useInvoiceTable({
     items,
-    onUpdateItem: (index, item) => {
-      // خاص بالتحديث
-      console.log("Updating item:", index, item);
-    },
+    onUpdateItem,
     onRemoveItem,
     isAddingItem,
     editingItemIndex,
     setEditingItemIndex: handleEditItem
   });
 
-  // التحقق مما إذا كانت الخلية في وضع التحرير
-  const isEditingCell = (rowIndex: number, cellName: string): boolean => {
-    return activeSearchCell !== null && 
-           activeSearchCell.rowIndex === rowIndex && 
-           activeSearchCell.cellName === cellName;
+  // إضافة مستمع لأحداث لوحة المفاتيح للجدول بأكمله
+  useEffect(() => {
+    const handleTableKeyDown = (e: KeyboardEvent) => {
+      if (!tableHasFocus) return;
+      
+      // اختصارات إضافة عنصر جديد
+      if (e.key === 'Insert' || (e.ctrlKey && e.key === 'n')) {
+        e.preventDefault();
+        if (!isAddingItem && editingItemIndex === null) {
+          handleAddItemClick();
+        }
+      }
+      
+      // اختصارات أخرى عامة للجدول
+      if (e.key === 'F2' && activeSearchCell) {
+        // بدء تحرير الخلية المحددة حاليًا
+        const { rowIndex, cellName } = activeSearchCell;
+        handleCellClick(rowIndex, cellName);
+      }
+    };
+    
+    // تسجيل مستمع الأحداث
+    document.addEventListener('keydown', handleTableKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleTableKeyDown);
+    };
+  }, [tableHasFocus, isAddingItem, editingItemIndex, activeSearchCell]);
+
+  // التعامل مع التركيز على الجدول
+  const handleTableFocus = () => {
+    setTableHasFocus(true);
+  };
+
+  const handleTableBlur = (e: React.FocusEvent) => {
+    // التحقق إذا كان التركيز لا يزال ضمن الجدول
+    if (!tableContainerRef.current?.contains(e.relatedTarget as Node)) {
+      setTableHasFocus(false);
+    }
   };
 
   // مقبض لإضافة عنصر جديد
@@ -92,8 +138,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   // مقبضات لحفظ العنصر المحرر
   const handleUpdateItem = (item: Partial<InvoiceItem>) => {
     if (editingItemIndex !== null && items[editingItemIndex]) {
-      // تنفيذ التحديث
-      console.log("Saving edited item:", item);
+      onUpdateItem(editingItemIndex, item);
     }
     handleEditItem(null);
   };
@@ -149,22 +194,60 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         <CardContent className="p-0">
           <div className="flex justify-between items-center p-4 border-b">
             <h3 className="text-lg font-semibold">الأصناف والخدمات</h3>
-            <Button 
-              onClick={handleAddItemClick}
-              disabled={isAddingItem || editingItemIndex !== null}
-              size="sm"
-              className="gap-1"
-            >
-              <Plus className="w-4 h-4" /> إضافة صنف
-            </Button>
+            <div className="flex gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="h-8 gap-1"
+                  >
+                    <Settings className="w-4 h-4" /> خيارات الجدول
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuCheckboxItem
+                    checked={showGridLines}
+                    onCheckedChange={toggleGridLines}
+                  >
+                    إظهار خطوط الجدول
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={isDenseView}
+                    onCheckedChange={toggleDenseView}
+                  >
+                    عرض مضغوط
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <Button 
+                onClick={handleAddItemClick}
+                disabled={isAddingItem || editingItemIndex !== null}
+                size="sm"
+                className="h-8 gap-1"
+              >
+                <Plus className="w-4 h-4" /> إضافة صنف
+              </Button>
+            </div>
           </div>
           
           <div 
-            ref={tableRef} 
-            className="overflow-x-auto" 
+            ref={(node) => {
+              // دمج المرجعين
+              if (tableRef && typeof tableRef === 'object') {
+                (tableRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+              }
+              tableContainerRef.current = node;
+            }}
+            className="overflow-x-auto"
             style={{ width: `${tableWidth}%` }}
+            onFocus={handleTableFocus}
+            onBlur={handleTableBlur}
+            onClick={handleTableClick}
+            tabIndex={-1}
           >
-            <Table className={showGridLines ? 'table-bordered' : ''}>
+            <Table className={`${showGridLines ? 'table-bordered' : ''} ${isDenseView ? 'table-sm' : ''}`}>
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-center w-12">#</TableHead>
@@ -182,9 +265,22 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                   <TableRow>
                     <TableCell 
                       colSpan={showItemCodes && showItemNotes ? 8 : showItemCodes || showItemNotes ? 7 : 6}
-                      className="text-center py-8 text-muted-foreground"
+                      className="text-center py-12 text-muted-foreground"
                     >
-                      لم يتم إضافة أصناف بعد. اضغط على زر "إضافة صنف" لإضافة صنف جديد.
+                      <div className="flex flex-col items-center justify-center space-y-3">
+                        <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                          <Plus className="h-6 w-6 text-gray-400" />
+                        </div>
+                        <p>لم يتم إضافة أصناف بعد</p>
+                        <Button 
+                          onClick={handleAddItemClick}
+                          size="sm"
+                          className="mt-2"
+                          disabled={isAddingItem || editingItemIndex !== null}
+                        >
+                          إضافة صنف جديد
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -215,7 +311,14 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           
           {items.length > 0 && (
             <div className="py-2 px-4 text-sm text-muted-foreground border-t">
-              إجمالي الأصناف: {items.length}
+              <div className="flex justify-between items-center">
+                <div>إجمالي الأصناف: {items.length}</div>
+                <div className="text-xs text-gray-500">
+                  <span className="bg-gray-100 px-2 py-1 rounded">Insert</span> لإضافة صنف | 
+                  <span className="bg-gray-100 px-2 py-1 rounded mr-1">أسهم الكيبورد</span> للتنقل | 
+                  <span className="bg-gray-100 px-2 py-1 rounded mr-1">Enter</span> للتحرير
+                </div>
+              </div>
             </div>
           )}
           
@@ -233,6 +336,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
         .table-bordered td {
           border: 1px solid #e2e8f0;
         }
+        .table-sm th,
+        .table-sm td {
+          padding: 0.5rem;
+          font-size: 0.875rem;
+        }
         .resize-handle {
           cursor: col-resize;
           border-bottom: 4px solid #cbd5e0;
@@ -240,6 +348,9 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           transform: rotate(45deg);
           margin-left: 15px;
           margin-bottom: 10px;
+        }
+        .table-row-active {
+          background-color: rgba(59, 130, 246, 0.05);
         }
         `}
       </style>
