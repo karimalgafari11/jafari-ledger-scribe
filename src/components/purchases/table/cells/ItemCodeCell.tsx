@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -7,37 +7,54 @@ interface ItemCodeCellProps {
   code: string;
   index: number;
   isEditingCell: boolean;
-  handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
+  handleCellClick: (rowIndex: number, cellName: string) => void;
 }
 
 export const ItemCodeCell: React.FC<ItemCodeCellProps> = ({
   code,
   index,
   isEditingCell,
-  handleCellClick,
-  handleDirectEdit
+  handleDirectEdit,
+  handleCellClick
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDirectEdit(index, 'code', e.target.value);
+  const [inputValue, setInputValue] = useState(code);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
-
+  
+  const handleBlur = () => {
+    if (inputValue !== code) {
+      handleDirectEdit(index, 'code', inputValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleDirectEdit(index, 'code', inputValue);
+    }
+  };
+  
   return (
-    <TableCell className="text-center">
+    <TableCell 
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'code')}
+      data-row-index={index}
+      data-cell-name="code"
+    >
       {isEditingCell ? (
         <Input
-          value={code || ''}
-          onChange={handleChange}
-          className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
-          onClick={(e) => e.stopPropagation()}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
         />
       ) : (
-        <div 
-          className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'code')}
-        >
-          {code || ''}
-        </div>
+        <span className="cursor-text">{code}</span>
       )}
     </TableCell>
   );

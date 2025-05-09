@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -12,32 +12,55 @@ interface NotesCellProps {
 }
 
 export const NotesCell: React.FC<NotesCellProps> = ({
-  notes,
+  notes = "",
   index,
   isEditing,
   handleCellClick,
   handleDirectEdit
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDirectEdit(index, 'notes', e.target.value);
+  const [inputValue, setInputValue] = useState(notes);
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(notes);
+    }
+  }, [isEditing, notes]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
-
+  
+  const handleBlur = () => {
+    if (inputValue !== notes) {
+      handleDirectEdit(index, 'notes', inputValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleDirectEdit(index, 'notes', inputValue);
+    }
+  };
+  
   return (
-    <TableCell>
+    <TableCell 
+      className="border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'notes')}
+      data-row-index={index}
+      data-cell-name="notes"
+    >
       {isEditing ? (
         <Input
-          value={notes || ''}
-          onChange={handleChange}
-          className="w-full h-full border-none p-0 focus:ring-2 focus:ring-blue-500"
-          onClick={(e) => e.stopPropagation()}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8"
+          autoFocus
         />
       ) : (
-        <div 
-          className="w-full h-full min-h-[24px] cursor-pointer flex items-center"
-          onClick={() => handleCellClick(index, 'notes')}
-        >
-          {notes || ''}
-        </div>
+        <span className="cursor-text">{notes || "—"}</span>
       )}
     </TableCell>
   );

@@ -3,7 +3,6 @@ import React from "react";
 import { TableBody } from "@/components/ui/table";
 import { PurchaseItem } from "@/types/purchases";
 import { PurchaseItemRow } from "./rows/PurchaseItemRow";
-import { EmptyTableRow } from "./rows/EmptyTableRow";
 
 interface PurchaseTableBodyProps {
   items: PurchaseItem[];
@@ -14,9 +13,9 @@ interface PurchaseTableBodyProps {
   setActiveSearchCell: (cell: { rowIndex: number; cellName: string } | null) => void;
   setEditingItemIndex: (index: number | null) => void;
   onRemoveItem: (index: number) => void;
+  searchInputRef: React.RefObject<HTMLInputElement>;
   isAddingItem: boolean;
   editingItemIndex: number | null;
-  searchInputRef: React.RefObject<HTMLInputElement>;
   setIsAddingItem: (isAdding: boolean) => void;
   isEditingCell: (rowIndex: number, cellName: string) => boolean;
   showItemCodes?: boolean;
@@ -29,39 +28,40 @@ export const PurchaseTableBody: React.FC<PurchaseTableBodyProps> = ({
   handleCellClick,
   handleProductSelect,
   handleDirectEdit,
-  setActiveSearchCell,
   setEditingItemIndex,
   onRemoveItem,
   isAddingItem,
   editingItemIndex,
-  searchInputRef,
-  setIsAddingItem,
   isEditingCell,
   showItemCodes = true,
   showItemNotes = true
 }) => {
-  // Calculate colspan based on display settings
-  const totalColumns = showItemCodes && showItemNotes ? 9 : 
-                      (showItemCodes || showItemNotes) ? 8 : 7;
-  
   return (
     <TableBody>
       {items.length === 0 ? (
-        <EmptyTableRow 
-          colSpan={totalColumns} 
-          isAddingItem={isAddingItem} 
-        />
+        <tr>
+          <td 
+            colSpan={6 + (showItemCodes ? 1 : 0) + (showItemNotes ? 1 : 0)}
+            className="text-center p-4 border border-gray-300 text-gray-500"
+          >
+            لا توجد أصناف بعد. انقر على زر "إضافة صنف" لإضافة أصناف للفاتورة.
+          </td>
+        </tr>
       ) : (
         items.map((item, index) => (
           <PurchaseItemRow
-            key={item.id || index}
+            key={item.id}
             item={item}
             index={index}
             activeSearchCell={activeSearchCell}
             handleCellClick={handleCellClick}
             handleProductSelect={handleProductSelect}
             handleDirectEdit={handleDirectEdit}
-            isEditingCell={isEditingCell}
+            isEditingCell={(rowIndex, cellName) => 
+              isEditingCell && 
+              activeSearchCell?.rowIndex === rowIndex && 
+              activeSearchCell?.cellName === cellName
+            }
             editingItemIndex={editingItemIndex}
             isAddingItem={isAddingItem}
             setEditingItemIndex={setEditingItemIndex}

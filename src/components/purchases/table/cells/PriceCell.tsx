@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -18,30 +18,55 @@ export const PriceCell: React.FC<PriceCellProps> = ({
   handleCellClick,
   handleDirectEdit
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0;
-    handleDirectEdit(index, 'price', value);
+  const [inputValue, setInputValue] = useState(price.toString());
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(price.toString());
+    }
+  }, [isEditing, price]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow only numbers and decimal point
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    setInputValue(value);
   };
-
+  
+  const handleBlur = () => {
+    const numValue = parseFloat(inputValue);
+    if (!isNaN(numValue) && numValue !== price) {
+      handleDirectEdit(index, 'price', numValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const numValue = parseFloat(inputValue);
+      if (!isNaN(numValue)) {
+        handleDirectEdit(index, 'price', numValue);
+      }
+    }
+  };
+  
   return (
-    <TableCell className="text-center">
+    <TableCell 
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'price')}
+      data-row-index={index}
+      data-cell-name="price"
+    >
       {isEditing ? (
         <Input
-          type="number"
-          min="0"
-          step="0.01"
-          value={price}
-          onChange={handleChange}
-          className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
-          onClick={(e) => e.stopPropagation()}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
         />
       ) : (
-        <div 
-          className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'price')}
-        >
-          {price.toFixed(2)}
-        </div>
+        <span className="cursor-text">{price.toFixed(2)}</span>
       )}
     </TableCell>
   );

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -12,32 +12,55 @@ interface UnitCellProps {
 }
 
 export const UnitCell: React.FC<UnitCellProps> = ({
-  unit,
+  unit = "قطعة",
   index,
   isEditing,
   handleCellClick,
   handleDirectEdit
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDirectEdit(index, 'unit', e.target.value);
+  const [inputValue, setInputValue] = useState(unit);
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(unit);
+    }
+  }, [isEditing, unit]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
-
+  
+  const handleBlur = () => {
+    if (inputValue !== unit) {
+      handleDirectEdit(index, 'unit', inputValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleDirectEdit(index, 'unit', inputValue);
+    }
+  };
+  
   return (
-    <TableCell className="text-center">
+    <TableCell 
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'unit')}
+      data-row-index={index}
+      data-cell-name="unit"
+    >
       {isEditing ? (
         <Input
-          value={unit || ''}
-          onChange={handleChange}
-          className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
-          onClick={(e) => e.stopPropagation()}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
         />
       ) : (
-        <div 
-          className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'unit')}
-        >
-          {unit || 'قطعة'}
-        </div>
+        <span className="cursor-text">{unit}</span>
       )}
     </TableCell>
   );

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
@@ -18,30 +18,55 @@ export const QuantityCell: React.FC<QuantityCellProps> = ({
   handleCellClick,
   handleDirectEdit
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0;
-    handleDirectEdit(index, 'quantity', value);
+  const [inputValue, setInputValue] = useState(quantity.toString());
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(quantity.toString());
+    }
+  }, [isEditing, quantity]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow only numbers and decimal point
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    setInputValue(value);
   };
-
+  
+  const handleBlur = () => {
+    const numValue = parseFloat(inputValue);
+    if (!isNaN(numValue) && numValue !== quantity) {
+      handleDirectEdit(index, 'quantity', numValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const numValue = parseFloat(inputValue);
+      if (!isNaN(numValue)) {
+        handleDirectEdit(index, 'quantity', numValue);
+      }
+    }
+  };
+  
   return (
-    <TableCell className="text-center">
+    <TableCell 
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'quantity')}
+      data-row-index={index}
+      data-cell-name="quantity"
+    >
       {isEditing ? (
         <Input
-          type="number"
-          min="0"
-          step="0.01"
-          value={quantity}
-          onChange={handleChange}
-          className="w-full h-full border-none p-0 text-center focus:ring-2 focus:ring-blue-500"
-          onClick={(e) => e.stopPropagation()}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
         />
       ) : (
-        <div 
-          className="w-full h-full min-h-[24px] cursor-pointer flex items-center justify-center"
-          onClick={() => handleCellClick(index, 'quantity')}
-        >
-          {quantity}
-        </div>
+        <span className="cursor-text">{quantity}</span>
       )}
     </TableCell>
   );

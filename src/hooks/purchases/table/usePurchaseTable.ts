@@ -3,7 +3,6 @@ import { useTableState } from './useTableState';
 import { useCellEditing } from './useCellEditing';
 import { useTableEvents } from './useTableEvents';
 import { PurchaseItem } from "@/types/purchases";
-import { toast } from "sonner";
 import { useEffect } from 'react';
 
 export interface UsePurchaseTableProps {
