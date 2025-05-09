@@ -54,6 +54,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [tableHasFocus, setTableHasFocus] = useState(false);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [firstRender, setFirstRender] = useState(true); // لتتبع التحميل الأولي
 
   // استخدام هوك لإدارة جدول الفاتورة
   const {
@@ -111,18 +112,33 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
 
   // عند تحميل الجدول، ركز على أول خلية للعنصر الأول إذا وجد
   useEffect(() => {
-    // التركيز على الخلية الأولى بعد تحميل الجدول وتسجيل جميع المراجع
-    if (items.length > 0 && !isAddingItem && editingItemIndex === null && !activeSearchCell) {
+    // التركيز على الخلية الأولى بعد تحميل الجدول إذا كانت هناك عناصر
+    if (firstRender && items.length > 0 && !isAddingItem && editingItemIndex === null && !activeSearchCell) {
       // استخدم مؤقتًا أطول للتأكد من أن الجدول قد تم رسمه بالكامل
       const timer = setTimeout(() => {
         // استخدم ترتيب الخلايا للحصول على الخلية الأولى المرئية
         const firstVisibleField = showItemCodes ? 'code' : 'name';
         focusCell(0, firstVisibleField);
-      }, 500);
+        setFirstRender(false);
+      }, 800);
       
       return () => clearTimeout(timer);
     }
-  }, [items.length]);
+  }, [items.length, firstRender, isAddingItem, editingItemIndex, activeSearchCell, showItemCodes, focusCell]);
+
+  // تحديث تركيز الجدول عند إضافة عناصر جديدة
+  useEffect(() => {
+    if (items.length > 0 && !activeSearchCell && !isAddingItem && editingItemIndex === null) {
+      // التركيز على آخر عنصر تم إضافته
+      const timer = setTimeout(() => {
+        const lastItemIndex = items.length - 1;
+        const firstVisibleField = showItemCodes ? 'code' : 'name';
+        focusCell(lastItemIndex, firstVisibleField);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [items.length, isAddingItem]);
 
   // التعامل مع التركيز على الجدول
   const handleTableFocus = () => {
@@ -180,8 +196,9 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     
     // بعد إضافة عنصر، ركز على الصف الجديد بعد تأخير كافٍ للسماح بإنشاء العنصر
     const timer = setTimeout(() => {
-      focusCell(items.length, 'quantity');
-    }, 200);
+      const newRowIndex = items.length; // الفهرس الجديد بعد الإضافة
+      focusCell(newRowIndex, 'quantity');
+    }, 300);
     
     return () => clearTimeout(timer);
   };
@@ -269,7 +286,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             onFocus={handleTableFocus}
             onBlur={handleTableBlur}
             onClick={handleTableClick}
-            tabIndex={-1}
+            tabIndex={0}
             role="grid"
             aria-label="جدول الفاتورة"
           >
@@ -312,7 +329,7 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                 ) : (
                   items.map((item, index) => (
                     <InvoiceItemRow
-                      key={item.id}
+                      key={item.id || index}
                       item={item}
                       index={index}
                       activeSearchCell={activeSearchCell}
@@ -341,8 +358,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                 <div>إجمالي الأصناف: {items.length}</div>
                 <div className="text-xs text-gray-500">
                   <span className="bg-gray-100 px-2 py-1 rounded ml-1">Insert</span> لإضافة صنف | 
-                  <span className="bg-gray-100 px-2 py-1 rounded ml-1">أسهم الكيبورد</span> للتنقل | 
-                  <span className="bg-gray-100 px-2 py-1 rounded ml-1">Enter</span> للتحرير
+                  <span className="bg-gray-100 px-2 py-1 rounded mx-1">أسهم الكيبورد</span> للتنقل | 
+                  <span className="bg-gray-100 px-2 py-1 rounded mr-1">Enter</span> للتحرير
                 </div>
               </div>
             </div>

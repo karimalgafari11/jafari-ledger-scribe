@@ -126,8 +126,9 @@ export function useInvoiceTable({
     setLastSelectedRowIndex(null);
   };
 
+  // تحسين معالجة أحداث لوحة المفاتيح
   const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
-    // منع السلوك الافتراضي لمفاتيح الأسهم دائمًا
+    // منع السلوك الافتراضي لمفاتيح الأسهم والتاب دائمًا
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter", "Escape"].includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();
@@ -149,10 +150,10 @@ export function useInvoiceTable({
         
         if (currentIndex < cellOrder.length - 1) {
           const nextCellName = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCell(rowIndex, nextCellName), 50);
+          setTimeout(() => focusCell(rowIndex, nextCellName), 100);
         } else if (rowIndex < items.length - 1) {
           // الانتقال إلى الصف التالي، الخلية الأولى
-          setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 50);
+          setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 100);
         }
         
         return;
@@ -168,13 +169,18 @@ export function useInvoiceTable({
     
     if (currentIndex === -1) return;
     
-    // معالجة أحداث مفاتيح الأسهم بشكل صحيح مع مراعاة اتجاه الصفحة من اليمين إلى اليسار
+    // معالجة أحداث مفاتيح الأسهم مع مراعاة اتجاه الصفحة من اليمين إلى اليسار
     switch (e.key) {
       case 'ArrowRight':
         // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليمين يعني الخلية السابقة في الترتيب
         if (currentIndex > 0) {
           const prevCell = cellOrder[currentIndex - 1];
-          setTimeout(() => focusCell(rowIndex, prevCell), 50);
+          setTimeout(() => focusCell(rowIndex, prevCell), 100);
+        } else {
+          // إذا كنا في أول خلية وضغطنا على اليمين، ننتقل إلى الصف السابق آخر خلية
+          if (rowIndex > 0) {
+            setTimeout(() => focusCell(rowIndex - 1, cellOrder[cellOrder.length - 1]), 100);
+          }
         }
         break;
       
@@ -182,19 +188,24 @@ export function useInvoiceTable({
         // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليسار يعني الخلية التالية في الترتيب
         if (currentIndex < cellOrder.length - 1) {
           const nextCell = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCell(rowIndex, nextCell), 50);
+          setTimeout(() => focusCell(rowIndex, nextCell), 100);
+        } else {
+          // إذا كنا في آخر خلية وضغطنا على اليسار، ننتقل إلى الصف التالي أول خلية
+          if (rowIndex < items.length - 1) {
+            setTimeout(() => focusCell(rowIndex + 1, cellOrder[0]), 100);
+          }
         }
         break;
       
       case 'ArrowUp':
         if (rowIndex > 0) {
-          setTimeout(() => focusCell(rowIndex - 1, cellName), 50);
+          setTimeout(() => focusCell(rowIndex - 1, cellName), 100);
         }
         break;
       
       case 'ArrowDown':
         if (rowIndex < items.length - 1) {
-          setTimeout(() => focusCell(rowIndex + 1, cellName), 50);
+          setTimeout(() => focusCell(rowIndex + 1, cellName), 100);
         }
         break;
       
@@ -226,6 +237,7 @@ export function useInvoiceTable({
   // الحصول على ترتيب الخلايا المرئية للتنقل
   const getVisibleCellOrder = () => {
     // حسب الترتيب الطبيعي للجدول من اليمين إلى اليسار
+    // ملاحظة: تأكد من أن هذا الترتيب متوافق مع ترتيب الخلايا الفعلي في الجدول
     return ['code', 'name', 'quantity', 'price', 'notes'];
   };
   
@@ -255,7 +267,7 @@ export function useInvoiceTable({
     }
   };
   
-  // التركيز على خلية معينة مع تحسين الأداء
+  // تحسين التركيز على خلية معينة
   const focusCell = (rowIndex: number, cellName: string) => {
     if (rowIndex < 0 || rowIndex >= items.length) return;
     
@@ -263,20 +275,20 @@ export function useInvoiceTable({
     const cell = cellRefs.get(cellId);
     
     if (cell) {
-      // استخدم تأخيرًا صغيرًا للسماح بإعادة الرسم قبل التركيز
-      setTimeout(() => {
-        try {
+      try {
+        // تأخير التركيز قليلاً للسماح بإعادة الرسم
+        requestAnimationFrame(() => {
           cell.focus();
           cell.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
           setActiveSearchCell({ rowIndex, cellName });
           setLastSelectedRowIndex(rowIndex);
           setIsEditingCell(false);
-        } catch (err) {
-          console.error("فشل التركيز على الخلية:", err);
-        }
-      }, 20);
+        });
+      } catch (err) {
+        console.error("فشل التركيز على الخلية:", err);
+      }
     } else {
-      console.log(`لم يتم العثور على خلية ${cellId}`, cellRefs);
+      console.warn(`لم يتم العثور على خلية ${cellId}`);
     }
   };
   

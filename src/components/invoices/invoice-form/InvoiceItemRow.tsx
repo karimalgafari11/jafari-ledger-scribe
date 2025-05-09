@@ -101,6 +101,8 @@ export const InvoiceItemRow: React.FC<InvoiceItemRowProps> = ({
         ${activeSearchCell?.rowIndex === index ? 'bg-blue-50' : ''}
         hover:bg-gray-50 transition-colors
       `}
+      data-row-index={index}
+      aria-selected={activeSearchCell?.rowIndex === index}
     >
       <TableCell className="text-center">{index + 1}</TableCell>
       
