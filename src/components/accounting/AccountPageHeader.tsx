@@ -31,6 +31,7 @@ export const AccountPageHeader: React.FC<AccountPageHeaderProps> = ({
   onGenerateReport
 }) => {
   const { setIsAddDialogOpen } = useAccountDialogs();
+  const isFiltered = !!(filterType || minBalance || maxBalance);
 
   return (
     <div className="space-y-4 mb-6">
@@ -55,7 +56,8 @@ export const AccountPageHeader: React.FC<AccountPageHeaderProps> = ({
             minBalance={minBalance}
             maxBalance={maxBalance}
             onFilterChange={onFilterChange}
-            onResetFilters={onResetFilters}
+            onReset={onResetFilters}
+            isFiltered={isFiltered}
           />
           <ReportDialog
             accounts={accounts}

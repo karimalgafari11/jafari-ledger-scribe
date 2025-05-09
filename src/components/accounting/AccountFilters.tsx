@@ -12,7 +12,7 @@ interface AccountFiltersProps {
   maxBalance: string;
   onFilterChange: (type: string, min: string, max: string) => void;
   onReset: () => void;
-  isFiltered: boolean;
+  isFiltered?: boolean;
 }
 
 export function AccountFilters({
@@ -21,7 +21,7 @@ export function AccountFilters({
   maxBalance,
   onFilterChange,
   onReset,
-  isFiltered
+  isFiltered = false
 }: AccountFiltersProps) {
   const [tempType, setTempType] = React.useState(filterType);
   const [tempMin, setTempMin] = React.useState(minBalance);

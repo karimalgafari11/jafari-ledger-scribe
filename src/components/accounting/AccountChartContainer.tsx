@@ -38,7 +38,6 @@ export const AccountChartContainer: React.FC = () => {
           <div className="flex-1 overflow-auto p-4 pb-16">
             <AccountPageHeader
               onSearch={handleSearch}
-              onAddAccount={() => useAccountDialogs().setIsAddDialogOpen(true)}
               filterType={filterType}
               minBalance={minBalance}
               maxBalance={maxBalance}

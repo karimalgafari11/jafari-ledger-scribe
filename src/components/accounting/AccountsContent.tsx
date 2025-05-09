@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Account } from "@/types/accounts";
+import { Account, AccountNode } from "@/types/accounts";
 import { AccountTree } from "./AccountTree";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +8,7 @@ import { AccountAnalysisCharts } from "./AccountAnalysisCharts";
 import { useAccountDialogs } from "./AccountDialogsContext";
 
 interface AccountsContentProps {
-  filteredAccounts: Account[];
+  filteredAccounts: Account[] | AccountNode[];
   filterType: string;
   minBalance: string;
   maxBalance: string;
@@ -46,7 +46,16 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
     if (accountToDelete) {
       onDelete(accountToDelete.id);
     }
+    setIsDeleteConfirmOpen(false);
   };
+
+  // Convert Account[] to AccountNode[] if needed
+  const accountNodes = filteredAccounts.map((acc: any) => {
+    if (!acc.children) {
+      return { ...acc, children: [] };
+    }
+    return acc;
+  }) as AccountNode[];
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4">
@@ -58,7 +67,7 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
 
         <TabsContent value="tree" className="p-2">
           <AccountTree
-            accounts={filteredAccounts}
+            accounts={accountNodes}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
             onShare={onShare}
@@ -68,10 +77,7 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
 
         <TabsContent value="analysis" className="p-2">
           <AccountAnalysisCharts
-            accounts={filteredAccounts}
-            filterType={filterType}
-            minBalance={minBalance}
-            maxBalance={maxBalance}
+            accounts={filteredAccounts as Account[]}
           />
         </TabsContent>
       </Tabs>
