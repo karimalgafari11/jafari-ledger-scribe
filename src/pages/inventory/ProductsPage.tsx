@@ -54,7 +54,13 @@ const ProductsPage = () => {
       id: "price",
       header: "السعر",
       accessorKey: "price",
-      cell: ({ row }) => `${row.price.toFixed(2)} ر.س`,
+      cell: (value, row) => {
+        // Verificamos si row y row.price existen antes de acceder a price
+        if (row && typeof row.price === 'number') {
+          return `${row.price.toFixed(2)} ر.س`;
+        }
+        return "غير محدد"; // "No definido" en árabe
+      },
       isSortable: true,
       isVisible: true,
     },
@@ -64,8 +70,10 @@ const ProductsPage = () => {
       accessorKey: "quantity",
       isSortable: true,
       isVisible: true,
-      cell: ({ row }) => {
-        const quantity = row.quantity;
+      cell: (value, row) => {
+        if (!row) return "0";
+        
+        const quantity = row.quantity || 0;
         const reorderLevel = row.reorderLevel || 5;
         
         if (quantity <= 0) {
@@ -88,11 +96,15 @@ const ProductsPage = () => {
       id: "status",
       header: "الحالة",
       accessorKey: "isActive",
-      cell: ({ row }) => (
-        <span className={`px-2 py-1 rounded-full text-xs ${row.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-          {row.isActive ? 'متوفر' : 'غير متوفر'}
-        </span>
-      ),
+      cell: (value, row) => {
+        if (!row) return "";
+        
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs ${row.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+            {row.isActive ? 'متوفر' : 'غير متوفر'}
+          </span>
+        );
+      },
       isSortable: true,
       isVisible: true,
     },
@@ -237,7 +249,7 @@ const ProductsPage = () => {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-medium text-muted-foreground">سعر البيع</h3>
-                  <p className="text-lg font-medium">{selectedProduct.price.toFixed(2)} ر.س</p>
+                  <p className="text-lg font-medium">{selectedProduct.price?.toFixed(2) || "غير محدد"} ر.س</p>
                 </div>
                 
                 <div>
