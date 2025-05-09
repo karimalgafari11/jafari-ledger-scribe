@@ -12,8 +12,14 @@ interface AccountParentSelectorProps {
 
 export const AccountParentSelector: React.FC<AccountParentSelectorProps> = ({ form, parentOptions }) => {
   // Ensure we have valid parent options before rendering
+  // Strict validation to prevent empty strings or undefined values
   const validParentOptions = parentOptions?.filter(
-    option => option && option.value && typeof option.value === 'string' && option.value.trim() !== ''
+    option => option && 
+      typeof option === 'object' && 
+      'value' in option && 
+      option.value && 
+      typeof option.value === 'string' && 
+      option.value.trim() !== ''
   ) || [];
 
   console.log("Valid parent options in selector:", validParentOptions);
