@@ -6,7 +6,7 @@ import { AccountPageHeader } from "./AccountPageHeader";
 import { AccountsContent } from "./AccountsContent";
 import { AccountDialogs } from "./AccountDialogs";
 import { useAccountChartPage } from "@/hooks/useAccountChartPage";
-import { AccountDialogsProvider } from "./AccountDialogsContext";
+import { AccountDialogsProvider, useAccountDialogs } from "./AccountDialogsContext";
 
 export const AccountChartContainer: React.FC = () => {
   const {
