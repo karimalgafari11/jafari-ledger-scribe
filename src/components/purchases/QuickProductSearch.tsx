@@ -24,22 +24,18 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   initialQuery = ""
 }) => {
   const {
-    searchQuery, 
-    setSearchQuery,
+    searchTerm,
+    setSearchTerm,
     filteredProducts,
-    selectedCategories,
-    toggleCategory,
-    selectedProduct,
-    setSelectedProduct,
-    filterOptions,
-    categories,
-    viewType,
-    setViewType,
-    handleSearchChange,
-    handleCategoryFilter
-  } = useProductSearch(initialQuery);
+    selectedProductId,
+    setSelectedProductId,
+    viewMode,
+    setViewMode,
+    searchInputRef,
+    getStockLevelClass
+  } = useProductSearch();
   
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
   // Focus search input on mount
   useEffect(() => {
@@ -52,6 +48,11 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   const handleSelectProduct = (product: Product) => {
     onSelect(product);
   };
+
+  // Handle search change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
   
   // Handle keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -61,6 +62,9 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
       onClose();
     }
   };
+
+  // This is a mock since these weren't in useProductSearch - will only be used for UI rendering
+  const categories = [];
   
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -69,12 +73,11 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
         onKeyDown={handleKeyDown}
       >
         <SearchHeader 
-          searchQuery={searchQuery} 
-          searchInputRef={searchInputRef} 
-          handleSearchChange={handleSearchChange} 
-          onClose={onClose} 
-          viewType={viewType}
-          setViewType={setViewType}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          searchInputRef={searchInputRef}
         />
         
         <Tabs defaultValue="products" className="flex-1 flex flex-col overflow-hidden">
@@ -84,10 +87,10 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
           </TabsList>
           
           <TabsContent value="products" className="flex-1 overflow-hidden m-0 p-0">
-            {viewType === 'grid' ? (
+            {viewMode === 'grid' ? (
               <ProductGridView 
                 products={filteredProducts} 
-                selectedProductId={selectedProduct?.id || null} 
+                selectedProductId={selectedProductId} 
                 handleSelect={(product) => {
                   setSelectedProduct(product);
                   handleSelectProduct(product); // تعديل ليتم إضافة المنتج فور الاختيار
@@ -96,11 +99,13 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
             ) : (
               <ProductTableView 
                 products={filteredProducts} 
-                selectedProductId={selectedProduct?.id || null} 
+                selectedProductId={selectedProductId}
+                setSelectedProductId={setSelectedProductId}
                 handleSelect={(product) => {
                   setSelectedProduct(product);
                   handleSelectProduct(product); // تعديل ليتم إضافة المنتج فور الاختيار
-                }} 
+                }}
+                getStockLevelClass={getStockLevelClass}
               />
             )}
           </TabsContent>
@@ -110,9 +115,9 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
               {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={selectedCategories.includes(category.id) ? "default" : "outline"}
+                  variant={category.selected ? "default" : "outline"}
                   className="justify-start h-auto py-2"
-                  onClick={() => toggleCategory(category.id)}
+                  onClick={() => {}}
                 >
                   <div className="flex items-center">
                     <div className={`w-3 h-3 rounded-full mr-2 ${category.color}`}></div>
@@ -125,9 +130,15 @@ export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
         </Tabs>
         
         <SearchFooter 
-          selectedProduct={selectedProduct} 
-          onSelect={handleSelectProduct} 
-          onCancel={onClose} 
+          productCount={filteredProducts.length}
+          selectedProductId={selectedProductId}
+          onClose={onClose}
+          handleAddSelected={() => {
+            const product = filteredProducts.find(p => p.id === selectedProductId);
+            if (product) {
+              handleSelectProduct(product);
+            }
+          }}
         />
       </DialogContent>
     </Dialog>
