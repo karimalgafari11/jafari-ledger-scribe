@@ -6,15 +6,12 @@ import { AccountPageHeader } from "./AccountPageHeader";
 import { AccountsContent } from "./AccountsContent";
 import { AccountDialogs } from "./AccountDialogs";
 import { useAccountChartPage } from "@/hooks/useAccountChartPage";
+import { AccountDialogsProvider } from "./AccountDialogsContext";
 
 export const AccountChartContainer: React.FC = () => {
   const {
     filteredAccounts,
     selectedAccount,
-    isAddDialogOpen,
-    setIsAddDialogOpen,
-    isEditDialogOpen,
-    setIsEditDialogOpen,
     filterType,
     minBalance,
     maxBalance,
@@ -34,46 +31,79 @@ export const AccountChartContainer: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col h-screen w-full overflow-hidden">
-        <Header title="دليل الحسابات" showBack={true} />
+      <AccountDialogsProvider initialSelectedAccount={selectedAccount}>
+        <div className="flex flex-col h-screen w-full overflow-hidden">
+          <Header title="دليل الحسابات" showBack={true} />
 
-        <div className="flex-1 overflow-auto p-4 pb-16">
-          <AccountPageHeader
-            onSearch={handleSearch}
-            onAddAccount={() => setIsAddDialogOpen(true)}
-            filterType={filterType}
-            minBalance={minBalance}
-            maxBalance={maxBalance}
-            onFilterChange={handleFilterChange}
-            onResetFilters={handleResetFilters}
-            accounts={filteredAccounts}
-            onGenerateReport={handleGenerateReport}
-          />
+          <div className="flex-1 overflow-auto p-4 pb-16">
+            <AccountPageHeader
+              onSearch={handleSearch}
+              onAddAccount={() => useAccountDialogs().setIsAddDialogOpen(true)}
+              filterType={filterType}
+              minBalance={minBalance}
+              maxBalance={maxBalance}
+              onFilterChange={handleFilterChange}
+              onResetFilters={handleResetFilters}
+              accounts={filteredAccounts}
+              onGenerateReport={handleGenerateReport}
+            />
 
-          <AccountsContent
-            isLoading={isLoading}
-            filteredAccounts={filteredAccounts}
-            filterType={filterType}
-            minBalance={minBalance}
-            maxBalance={maxBalance}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onShare={handleShare}
-          />
+            <AccountsContent
+              isLoading={isLoading}
+              filteredAccounts={filteredAccounts}
+              filterType={filterType}
+              minBalance={minBalance}
+              maxBalance={maxBalance}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onShare={handleShare}
+            />
 
-          <AccountDialogs
-            isAddDialogOpen={isAddDialogOpen}
-            setIsAddDialogOpen={setIsAddDialogOpen}
-            isEditDialogOpen={isEditDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
-            selectedAccount={selectedAccount}
-            parentOptions={getParentAccountOptions()}
-            onAddSubmit={handleAddSubmit}
-            onEditSubmit={handleEditSubmit}
-            onSuggestNumber={suggestAccountNumber}
-          />
+            <AccountDialogsManager
+              parentOptions={getParentAccountOptions()}
+              onAddSubmit={handleAddSubmit}
+              onEditSubmit={handleEditSubmit}
+              onSuggestNumber={suggestAccountNumber}
+            />
+          </div>
         </div>
-      </div>
+      </AccountDialogsProvider>
     </Layout>
+  );
+};
+
+interface AccountDialogsManagerProps {
+  parentOptions: { label: string; value: string }[];
+  onAddSubmit: (data: any) => void;
+  onEditSubmit: (data: any) => void;
+  onSuggestNumber: (type: string, parentId: string | null) => string;
+}
+
+const AccountDialogsManager: React.FC<AccountDialogsManagerProps> = ({
+  parentOptions,
+  onAddSubmit,
+  onEditSubmit,
+  onSuggestNumber
+}) => {
+  const {
+    isAddDialogOpen,
+    setIsAddDialogOpen,
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    selectedAccount
+  } = useAccountDialogs();
+
+  return (
+    <AccountDialogs
+      isAddDialogOpen={isAddDialogOpen}
+      setIsAddDialogOpen={setIsAddDialogOpen}
+      isEditDialogOpen={isEditDialogOpen}
+      setIsEditDialogOpen={setIsEditDialogOpen}
+      selectedAccount={selectedAccount}
+      parentOptions={parentOptions}
+      onAddSubmit={onAddSubmit}
+      onEditSubmit={onEditSubmit}
+      onSuggestNumber={onSuggestNumber}
+    />
   );
 };

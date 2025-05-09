@@ -1,63 +1,89 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { Account } from "@/types/accounts";
 import { AccountTree } from "./AccountTree";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountAnalysisCharts } from "./AccountAnalysisCharts";
-import { Loader } from "lucide-react";
-import { Account, AccountNode } from "@/types/accounts";
+import { useAccountDialogs } from "./AccountDialogsContext";
 
 interface AccountsContentProps {
-  isLoading: boolean;
-  filteredAccounts: AccountNode[];
+  filteredAccounts: Account[];
   filterType: string;
   minBalance: string;
   maxBalance: string;
+  isLoading: boolean;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onShare: (id: string, method: 'link' | 'email' | 'whatsapp') => void;
 }
 
 export const AccountsContent: React.FC<AccountsContentProps> = ({
-  isLoading,
   filteredAccounts,
   filterType,
   minBalance,
   maxBalance,
+  isLoading,
   onEdit,
   onDelete,
-  onShare,
+  onShare
 }) => {
-  return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-4">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : filteredAccounts.length > 0 ? (
-          <>
-            {(filterType || minBalance || maxBalance) && (
-              <div className="mb-4 text-sm text-gray-500">
-                تم العثور على {filteredAccounts.length} حساب
-              </div>
-            )}
-            <AccountTree
-              accounts={filteredAccounts}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onShare={onShare}
-            />
-          </>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            لم يتم العثور على حسابات. أضف حسابًا جديدًا للبدء.
-          </div>
-        )}
-      </div>
+  const { setIsEditDialogOpen } = useAccountDialogs();
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState<{ id: string; name: string } | null>(null);
 
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-lg font-medium mb-4">تحليل الحسابات</h3>
-        <AccountAnalysisCharts accounts={filteredAccounts} />
-      </div>
+  const handleEditClick = (id: string) => {
+    onEdit(id);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDeleteClick = (id: string, name: string) => {
+    setAccountToDelete({ id, name });
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (accountToDelete) {
+      onDelete(accountToDelete.id);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      <Tabs defaultValue="tree" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="tree">شجرة الحسابات</TabsTrigger>
+          <TabsTrigger value="analysis">تحليل الحسابات</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="tree" className="p-2">
+          <AccountTree
+            accounts={filteredAccounts}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
+            onShare={onShare}
+            loading={isLoading}
+          />
+        </TabsContent>
+
+        <TabsContent value="analysis" className="p-2">
+          <AccountAnalysisCharts
+            accounts={filteredAccounts}
+            filterType={filterType}
+            minBalance={minBalance}
+            maxBalance={maxBalance}
+          />
+        </TabsContent>
+      </Tabs>
+
+      {accountToDelete && (
+        <DeleteConfirmDialog
+          open={isDeleteConfirmOpen}
+          onOpenChange={setIsDeleteConfirmOpen}
+          onConfirm={handleDeleteConfirm}
+          accountName={accountToDelete.name}
+        />
+      )}
     </div>
   );
 };

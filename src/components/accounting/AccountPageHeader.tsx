@@ -1,15 +1,15 @@
 
 import React from "react";
-import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Search } from "lucide-react";
 import { AccountFilters } from "./AccountFilters";
 import { ReportDialog } from "./ReportDialog";
+import { Input } from "@/components/ui/input";
 import { Account } from "@/types/accounts";
+import { useAccountDialogs } from "./AccountDialogsContext";
 
 interface AccountPageHeaderProps {
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAddAccount: () => void;
   filterType: string;
   minBalance: string;
   maxBalance: string;
@@ -17,43 +17,52 @@ interface AccountPageHeaderProps {
   onResetFilters: () => void;
   accounts: Account[];
   onGenerateReport: (type: string) => Promise<void>;
+  onAddAccount?: () => void; // Make this optional since we'll use context
 }
 
 export const AccountPageHeader: React.FC<AccountPageHeaderProps> = ({
   onSearch,
-  onAddAccount,
   filterType,
   minBalance,
   maxBalance,
   onFilterChange,
   onResetFilters,
   accounts,
-  onGenerateReport,
+  onGenerateReport
 }) => {
+  const { setIsAddDialogOpen } = useAccountDialogs();
+
   return (
-    <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-4 w-1/2">
-        <SearchBar placeholder="البحث في الحسابات..." onChange={onSearch} />
-        
-        <AccountFilters
-          filterType={filterType}
-          minBalance={minBalance}
-          maxBalance={maxBalance}
-          onFilterChange={onFilterChange}
-          onReset={onResetFilters}
-          isFiltered={!!(filterType || minBalance || maxBalance)}
-        />
-
-        <ReportDialog
-          accounts={accounts}
-          onGenerate={onGenerateReport}
-        />
+    <div className="space-y-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0">
+        <div className="relative w-full sm:w-1/3">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="بحث في الحسابات..."
+            className="pl-10 rtl"
+            onChange={onSearch}
+          />
+        </div>
+        <div className="flex space-x-2 rtl">
+          <Button
+            variant="default"
+            onClick={() => setIsAddDialogOpen(true)}
+          >
+            إضافة حساب جديد
+          </Button>
+          <AccountFilters
+            filterType={filterType}
+            minBalance={minBalance}
+            maxBalance={maxBalance}
+            onFilterChange={onFilterChange}
+            onResetFilters={onResetFilters}
+          />
+          <ReportDialog
+            accounts={accounts}
+            onGenerate={onGenerateReport}
+          />
+        </div>
       </div>
-
-      <Button onClick={onAddAccount}>
-        <Plus className="ml-2 h-4 w-4" />
-        إضافة حساب
-      </Button>
     </div>
   );
 };

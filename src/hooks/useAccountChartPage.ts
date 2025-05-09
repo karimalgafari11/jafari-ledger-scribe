@@ -17,8 +17,6 @@ export const useAccountChartPage = () => {
     suggestAccountNumber,
   } = useAccounts();
 
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [filterType, setFilterType] = useState<string>("");
   const [minBalance, setMinBalance] = useState<string>("");
   const [maxBalance, setMaxBalance] = useState<string>("");
@@ -50,7 +48,6 @@ export const useAccountChartPage = () => {
     const account = findAccount(id);
     if (account) {
       setSelectedAccount(account);
-      setIsEditDialogOpen(true);
     }
   };
 
@@ -104,8 +101,6 @@ export const useAccountChartPage = () => {
       level,
       isActive: true,
     });
-    
-    setIsAddDialogOpen(false);
   };
 
   const handleEditSubmit = (data: any) => {
@@ -120,8 +115,6 @@ export const useAccountChartPage = () => {
       parentId: data.parentId === "null" ? null : data.parentId,
       level,
     });
-    
-    setIsEditDialogOpen(false);
   };
 
   const handleFilterChange = (type: string, min: string, max: string) => {
@@ -154,10 +147,6 @@ export const useAccountChartPage = () => {
     accountTree,
     filteredAccounts,
     selectedAccount,
-    isAddDialogOpen,
-    setIsAddDialogOpen,
-    isEditDialogOpen,
-    setIsEditDialogOpen,
     filterType,
     minBalance,
     maxBalance,
