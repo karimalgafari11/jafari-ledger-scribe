@@ -1,36 +1,85 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Import, Export } from "lucide-react";
+import { Plus, Import } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { InvoiceStatCards } from "@/components/invoices/outgoing/InvoiceStatCards";
-import { InvoicesTable } from "@/components/invoices/outgoing/InvoicesTable";
-import { InvoiceFilters } from "@/components/invoices/outgoing/InvoiceFilters";
-import { InvoicesActions } from "@/components/invoices/outgoing/InvoicesActions";
-import { useOutgoingInvoices } from "@/hooks/invoices/useOutgoingInvoices";
+import { PurchaseInvoicesTable } from "@/components/purchases/PurchaseInvoicesTable";
+import { PurchaseInvoiceFilters } from "@/components/purchases/PurchaseInvoiceFilters";
+import { PurchaseInvoiceActions } from "@/components/purchases/PurchaseInvoiceActions";
+import { usePurchaseInvoices } from "@/hooks/purchases/usePurchaseInvoices";
 import { DataImportExportDialog } from "@/components/data-management/DataImportExportDialog";
 import { useDataImportExport } from "@/hooks/useDataImportExport";
-import { Invoice } from "@/types/invoices";
+import { PurchaseInvoice } from "@/types/purchases";
+import { PurchaseInvoiceStats } from "@/components/purchases/PurchaseInvoiceStats";
+import { mockPurchaseInvoices } from "@/data/mockPurchaseInvoices";
 
-const OutgoingInvoicesPage: React.FC = () => {
-  const navigate = useNavigate();
-  const {
+// نستخدم هذا الخطاف لإدارة فواتير المشتريات - في تطبيق حقيقي سيكون API
+const usePurchaseInvoices = () => {
+  const [selectedInvoices, setSelectedInvoices] = React.useState<string[]>([]);
+  const [invoices, setInvoices] = React.useState<PurchaseInvoice[]>(mockPurchaseInvoices);
+  const [isLoading, setIsLoading] = React.useState(false);
+  
+  const deleteInvoices = (ids: string[]) => {
+    setInvoices(prev => prev.filter(invoice => !ids.includes(invoice.id)));
+    setSelectedInvoices([]);
+  };
+  
+  const toggleInvoiceSelection = (id: string) => {
+    if (selectedInvoices.includes(id)) {
+      setSelectedInvoices(prev => prev.filter(invoiceId => invoiceId !== id));
+    } else {
+      setSelectedInvoices(prev => [...prev, id]);
+    }
+  };
+  
+  const selectAllInvoices = () => {
+    setSelectedInvoices(invoices.map(invoice => invoice.id));
+  };
+  
+  const unselectAllInvoices = () => {
+    setSelectedInvoices([]);
+  };
+  
+  // إحصائيات مبسطة
+  const statistics = {
+    total: invoices.length,
+    paid: invoices.filter(inv => inv.status === 'paid').length,
+    pending: invoices.filter(inv => inv.status === 'pending').length,
+    overdue: invoices.filter(inv => inv.status === 'overdue').length,
+    totalAmount: invoices.reduce((sum, inv) => sum + inv.totalAmount, 0),
+  };
+  
+  return {
     invoices,
+    setInvoices,
     isLoading,
     statistics,
-    filter,
-    setFilter,
     selectedInvoices,
     toggleInvoiceSelection,
     selectAllInvoices,
     unselectAllInvoices,
     deleteInvoices
-  } = useOutgoingInvoices();
+  };
+};
+
+const PurchaseInvoicesPage: React.FC = () => {
+  const navigate = useNavigate();
+  const {
+    invoices,
+    setInvoices,
+    isLoading,
+    statistics,
+    selectedInvoices,
+    toggleInvoiceSelection,
+    selectAllInvoices,
+    unselectAllInvoices,
+    deleteInvoices
+  } = usePurchaseInvoices();
 
   const onDeleteSelected = () => {
     if (selectedInvoices.length === 0) {
@@ -52,14 +101,6 @@ const OutgoingInvoicesPage: React.FC = () => {
     toast.info(`جاري إعداد طباعة ${selectedInvoices.length} فواتير`);
   };
 
-  const onWhatsAppSend = () => {
-    if (selectedInvoices.length === 0) {
-      toast.warning("يرجى تحديد الفواتير المراد إرسالها أولاً");
-      return;
-    }
-    toast.info(`جاري إعداد ${selectedInvoices.length} فواتير للإرسال عبر واتساب`);
-  };
-
   // استخدام الخطاف الجديد لاستيراد/تصدير البيانات
   const {
     dialogOpen,
@@ -76,7 +117,7 @@ const OutgoingInvoicesPage: React.FC = () => {
       }
 
       // التحقق من وجود الحقول الإلزامية
-      const required = ["invoiceNumber", "customerName", "date", "totalAmount"];
+      const required = ["invoiceNumber", "vendorName", "date", "totalAmount"];
       
       for (const item of data) {
         for (const field of required) {
@@ -87,28 +128,34 @@ const OutgoingInvoicesPage: React.FC = () => {
       }
       
       // إضافة حقول افتراضية للبيانات المستوردة
-      return data.map((invoice) => ({
+      const processedData = data.map((invoice) => ({
         id: invoice.id || `imported-${Math.random().toString(36).substring(2, 15)}`,
-        customerId: invoice.customerId || `cust-${Math.random().toString(36).substring(2, 10)}`,
+        vendorId: invoice.vendorId || `vendor-${Math.random().toString(36).substring(2, 10)}`,
         status: invoice.status || "pending",
         items: invoice.items || [],
         ...invoice
       }));
+      
+      // إضافة الفواتير المستوردة إلى القائمة الحالية
+      setInvoices(prevInvoices => [...prevInvoices, ...processedData]);
+      
+      return processedData;
     },
     
     // تحويل البيانات للتصدير
     transformExportData: (data) => {
       // تحضير البيانات للتصدير (إزالة الحقول الغير ضرورية)
-      return data.map((invoice: Invoice) => ({
+      return data.map((invoice: PurchaseInvoice) => ({
         invoiceNumber: invoice.invoiceNumber,
-        customerName: invoice.customerName,
+        vendorName: invoice.vendorName,
         date: invoice.date,
         dueDate: invoice.dueDate || "-",
         totalAmount: invoice.totalAmount,
         status: getStatusInArabic(invoice.status),
         paymentMethod: invoice.paymentMethod === "cash" ? "نقداً" : "آجل",
         amountPaid: invoice.amountPaid || 0,
-        remaining: invoice.totalAmount - (invoice.amountPaid || 0)
+        remaining: invoice.totalAmount - (invoice.amountPaid || 0),
+        warehouseName: invoice.warehouseName || "-"
       }));
     },
     
@@ -118,21 +165,19 @@ const OutgoingInvoicesPage: React.FC = () => {
         return "لا توجد بيانات للاستيراد";
       }
       
-      // يمكن إضافة المزيد من التحقق حسب متطلبات العمل
       return true;
     },
     
     // خيارات إضافية للتصدير
     exportOptions: {
-      fileName: "فواتير_المبيعات",
-      sheetName: "فواتير المبيعات",
+      fileName: "فواتير_المشتريات",
+      sheetName: "فواتير المشتريات",
       includeHeaders: true
     },
     
     // الدالة التي يتم تنفيذها بعد نجاح الاستيراد
     onImportSuccess: (data) => {
       toast.success(`تم استيراد ${data.length} فاتورة بنجاح`);
-      // في التطبيق الحقيقي، ستتم إضافة الفواتير المستوردة إلى قاعدة البيانات
     }
   });
 
@@ -149,9 +194,9 @@ const OutgoingInvoicesPage: React.FC = () => {
 
   return (
     <Layout>
-      <Header title="فواتير المبيعات" showBack={true} backPath="/invoices/outgoing-module">
+      <Header title="فواتير المشتريات" showBack={true} backPath="/purchases">
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate("/invoices/sales")} className="bg-primary">
+          <Button onClick={() => navigate("/purchases/new")} className="bg-primary">
             <Plus className="ml-1 h-4 w-4" /> فاتورة جديدة
           </Button>
           <Button variant="outline" onClick={openImportExportDialog}>
@@ -161,24 +206,23 @@ const OutgoingInvoicesPage: React.FC = () => {
       </Header>
 
       <div className="container mx-auto p-4">
-        <InvoiceStatCards statistics={statistics} />
+        <PurchaseInvoiceStats statistics={statistics} />
 
         <Card className="mt-6 p-4">
-          <InvoiceFilters filter={filter} setFilter={setFilter} />
+          <PurchaseInvoiceFilters />
 
           {selectedInvoices.length > 0 && (
-            <InvoicesActions
+            <PurchaseInvoiceActions
               selectedCount={selectedInvoices.length}
               onExport={(format) => handleExport(format)}
               onDelete={onDeleteSelected}
               onPrint={onPrintSelected}
-              onWhatsApp={onWhatsAppSend}
               onSelectAll={selectAllInvoices}
               onUnselectAll={unselectAllInvoices}
             />
           )}
 
-          <InvoicesTable
+          <PurchaseInvoicesTable
             invoices={invoices}
             isLoading={isLoading}
             selectedInvoices={selectedInvoices}
@@ -191,19 +235,19 @@ const OutgoingInvoicesPage: React.FC = () => {
       <DataImportExportDialog
         open={dialogOpen}
         onClose={closeImportExportDialog}
-        title="استيراد / تصدير فواتير المبيعات"
-        importTitle="استيراد فواتير المبيعات"
-        exportTitle="تصدير فواتير المبيعات"
+        title="استيراد / تصدير فواتير المشتريات"
+        importTitle="استيراد فواتير المشتريات"
+        exportTitle="تصدير فواتير المشتريات"
         supportedFormats={['.xlsx', '.csv', '.json']}
         allowedExportTypes={['excel', 'csv', 'pdf', 'json']}
         onImport={handleImport}
         onExport={handleExport}
-        entityName="فواتير المبيعات"
-        importInstructions="قم بتحميل ملف يحتوي على بيانات الفواتير. يجب أن يتضمن الملف الحقول التالية: رقم الفاتورة، اسم العميل، التاريخ، والمبلغ الإجمالي."
-        exportInstructions="اختر صيغة التصدير المناسبة. سيتم تصدير جميع الفواتير المعروضة حالياً (بعد تطبيق الفلترة)."
+        entityName="فواتير المشتريات"
+        importInstructions="قم بتحميل ملف يحتوي على بيانات فواتير المشتريات. يجب أن يتضمن الملف الحقول التالية: رقم الفاتورة، اسم المورد، التاريخ، والمبلغ الإجمالي."
+        exportInstructions="اختر صيغة التصدير المناسبة. سيتم تصدير جميع الفواتير المعروضة حالياً."
       />
     </Layout>
   );
 };
 
-export default OutgoingInvoicesPage;
+export default PurchaseInvoicesPage;
