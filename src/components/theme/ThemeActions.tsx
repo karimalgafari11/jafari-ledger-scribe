@@ -13,6 +13,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Moon, RotateCcw, Save, Sun } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 interface ThemeActionsProps {
   themeMode: 'light' | 'dark';
@@ -22,6 +25,7 @@ interface ThemeActionsProps {
   onThemeModeToggle: () => void;
   onSaveTheme: () => void;
   onResetTheme: () => void;
+  onSaveAsPreset: (name: string) => void;
 }
 
 export const ThemeActions: React.FC<ThemeActionsProps> = ({
@@ -31,8 +35,18 @@ export const ThemeActions: React.FC<ThemeActionsProps> = ({
   setIsResetDialogOpen,
   onThemeModeToggle,
   onSaveTheme,
-  onResetTheme
+  onResetTheme,
+  onSaveAsPreset
 }) => {
+  const [presetName, setPresetName] = React.useState("");
+  
+  const handleSavePreset = () => {
+    if (presetName.trim()) {
+      onSaveAsPreset(presetName);
+      setPresetName("");
+    }
+  };
+  
   return (
     <div className="flex items-center gap-2">
       <Button 
@@ -43,6 +57,44 @@ export const ThemeActions: React.FC<ThemeActionsProps> = ({
       >
         {themeMode === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
       </Button>
+      
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm">
+            <Save className="h-4 w-4 ml-2" />
+            حفظ كسمة
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80">
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">حفظ كسمة جديدة</h4>
+              <p className="text-sm text-muted-foreground">
+                أدخل اسماً للسمة ليتم حفظها واستخدامها لاحقاً
+              </p>
+            </div>
+            <div className="grid gap-2">
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="presetName">اسم السمة</Label>
+                <Input
+                  id="presetName"
+                  value={presetName}
+                  onChange={(e) => setPresetName(e.target.value)}
+                  placeholder="مثال: السمة الرسمية"
+                  className="col-span-2 h-8"
+                />
+              </div>
+              <Button 
+                onClick={handleSavePreset} 
+                disabled={!presetName.trim()}
+                className="w-full mt-2"
+              >
+                حفظ السمة
+              </Button>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
       
       <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <AlertDialogTrigger asChild>

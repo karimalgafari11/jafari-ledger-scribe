@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from "react";
-import { ThemeSettings } from "@/types/theme";
+import { ThemePreset, ThemeSettings } from "@/types/theme";
 import { useAppContext } from "@/contexts/AppContext";
-import { defaultDarkTheme, defaultLightTheme, fontOptions, fontSizeOptions } from "./themeDefaults";
-import { applyThemeToDOM, loadSavedTheme } from "./themeUtils";
+import { defaultDarkTheme, defaultLightTheme } from "./themeDefaults";
+import { applyThemeToDOM, loadSavedPresets, loadSavedTheme } from "./themeUtils";
 import { createThemeHandlers } from "./themeHandlers";
+import { v4 as uuidv4 } from 'uuid';
 
 export const useThemeCustomization = () => {
   const { themeMode: systemThemeMode, toggleTheme: systemToggleTheme } = useAppContext();
@@ -17,10 +18,35 @@ export const useThemeCustomization = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("colors");
   
-  // Load saved theme on component mount
+  // Presets state
+  const [presets, setPresets] = useState<ThemePreset[]>([
+    {
+      id: 'default-light',
+      name: 'الوضع النهاري الافتراضي',
+      settings: defaultLightTheme,
+      isPredefined: true
+    },
+    {
+      id: 'default-dark',
+      name: 'الوضع الليلي الافتراضي',
+      settings: defaultDarkTheme,
+      isPredefined: true
+    }
+  ]);
+  
+  // Load saved theme and presets on component mount
   useEffect(() => {
     const defaultTheme = systemThemeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
     const savedTheme = loadSavedTheme(defaultTheme);
+    
+    // Load saved presets
+    const savedPresets = loadSavedPresets();
+    if (savedPresets.length > 0) {
+      setPresets(prev => [
+        ...prev.filter(p => p.isPredefined), // Keep predefined presets
+        ...savedPresets // Add user presets
+      ]);
+    }
     
     setCurrentTheme(savedTheme);
     applyThemeToDOM(savedTheme);
@@ -32,7 +58,9 @@ export const useThemeCustomization = () => {
     setCurrentTheme,
     setIsResetDialogOpen,
     setIsSaving,
-    systemToggleTheme
+    systemToggleTheme,
+    presets,
+    setPresets
   });
 
   return {
@@ -42,6 +70,7 @@ export const useThemeCustomization = () => {
     isSaving,
     activeTab,
     setActiveTab,
+    presets,
     ...handlers,
     defaultLightTheme,
     defaultDarkTheme
@@ -49,5 +78,5 @@ export const useThemeCustomization = () => {
 };
 
 // Export constants for external use
-export { fontOptions, fontSizeOptions };
+export { fontOptions, fontSizeOptions } from "./themeDefaults";
 export { themeColorToHsl } from "./themeUtils";
