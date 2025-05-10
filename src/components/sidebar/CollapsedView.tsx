@@ -1,46 +1,87 @@
 
 import React from "react";
-import CollapsedNavButton from "./CollapsedNavButton";
-import { Home, FileText, Database, ShoppingCart, Users, Settings } from "lucide-react";
+import { MenuItem } from "@/types/sidebar";
+import { useSidebarNavigation } from "@/hooks/useSidebarNavigation";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-interface CollapsedViewProps {
-  activePage: string;
-  onChangePage: (page: string) => void;
-}
+// Main CollapsedView component
+const CollapsedView = () => {
+  return (
+    <div className="p-4 border-b flex items-center justify-center">
+      <div className="flex items-center justify-center">
+        <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
+      </div>
+    </div>
+  );
+};
 
-const CollapsedView: React.FC<CollapsedViewProps> = ({ activePage, onChangePage }) => (
-  <div className="flex flex-col items-center gap-4 py-4">
-    <CollapsedNavButton 
-      icon={<Home size={20} />}
-      isActive={activePage === "dashboard"}
-      onClick={() => onChangePage("dashboard")}
-    />
-    <CollapsedNavButton 
-      icon={<FileText size={20} />}
-      isActive={activePage === "reports"}
-      onClick={() => onChangePage("reports")}
-    />
-    <CollapsedNavButton 
-      icon={<Database size={20} />}
-      isActive={activePage === "inventory"}
-      onClick={() => onChangePage("inventory")}
-    />
-    <CollapsedNavButton 
-      icon={<ShoppingCart size={20} />}
-      isActive={activePage === "pos"}
-      onClick={() => onChangePage("pos")}
-    />
-    <CollapsedNavButton 
-      icon={<Users size={20} />}
-      isActive={activePage === "users"}
-      onClick={() => onChangePage("users")}
-    />
-    <CollapsedNavButton 
-      icon={<Settings size={20} />}
-      isActive={activePage === "settings"}
-      onClick={() => onChangePage("settings")}
-    />
-  </div>
-);
+// Section component for CollapsedView
+const Section = ({ 
+  section, 
+  toggleSidebar 
+}: { 
+  section: MenuItem, 
+  toggleSidebar?: () => void 
+}) => {
+  const { handleItemClick } = useSidebarNavigation();
+
+  if (!section.children && section.path) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className="flex items-center justify-center p-2 rounded-md cursor-pointer hover:bg-gray-100 my-2"
+              onClick={() => {
+                handleItemClick(section.path);
+                toggleSidebar?.();
+              }}
+            >
+              <section.icon className="h-5 w-5 text-teal-600" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="left">{section.section}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return (
+    <Popover>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <div className="flex items-center justify-center p-2 rounded-md cursor-pointer hover:bg-gray-100 my-2">
+                <section.icon className="h-5 w-5 text-teal-600" />
+              </div>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="left">{section.section}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <PopoverContent side="left" className="w-48 p-0">
+        <div className="py-1">
+          {section.children?.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center p-2 cursor-pointer hover:bg-gray-100 text-gray-700"
+              onClick={() => {
+                handleItemClick(item.path);
+                toggleSidebar?.();
+              }}
+            >
+              <item.icon className="h-4 w-4 ml-2 text-teal-500" />
+              <span className="text-xs">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+CollapsedView.Section = Section;
 
 export default CollapsedView;

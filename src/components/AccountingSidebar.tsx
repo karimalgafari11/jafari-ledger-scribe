@@ -1,11 +1,11 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ExpandedView } from "@/components/sidebar/ExpandedView";
-import { CollapsedView } from "@/components/sidebar/CollapsedView";
+import ExpandedView from "@/components/sidebar/ExpandedView";
+import CollapsedView from "@/components/sidebar/CollapsedView";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { useSidebarContext } from "@/components/ui/sidebar";
-import { useMediaQuery } from "@/hooks/use-mobile";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { LogOut, UserCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,24 +13,24 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 // Importing menu items
-import dashboardItems from "@/config/menuItems/dashboardItems";
-import accountingItems from "@/config/menuItems/accountingItems";
-import invoiceItems from "@/config/menuItems/invoiceItems";
-import inventoryItems from "@/config/menuItems/inventoryItems";
-import purchaseItems from "@/config/menuItems/purchaseItems";
-import customerItems from "@/config/menuItems/customerItems";
-import vendorItems from "@/config/menuItems/vendorItems";
-import expenseItems from "@/config/menuItems/expenseItems";
-import hrItems from "@/config/menuItems/hrItems";
-import reportItems from "@/config/menuItems/reportItems";
-import definitionItems from "@/config/menuItems/definitionItems";
-import aiItems from "@/config/menuItems/aiItems";
-import aboutItems from "@/config/menuItems/aboutItems";
-import settingsItems from "@/config/menuItems/settingsItems";
+import { dashboardItems } from "@/config/menuItems/dashboardItems";
+import { accountingItems } from "@/config/menuItems/accountingItems";
+import { invoiceItems } from "@/config/menuItems/invoiceItems";
+import { inventoryItems } from "@/config/menuItems/inventoryItems";
+import { purchaseItems } from "@/config/menuItems/purchaseItems";
+import { customerItems } from "@/config/menuItems/customerItems";
+import { vendorItems } from "@/config/menuItems/vendorItems";
+import { expenseItems } from "@/config/menuItems/expenseItems";
+import { hrItems } from "@/config/menuItems/hrItems";
+import { reportItems } from "@/config/menuItems/reportItems";
+import { definitionItems } from "@/config/menuItems/definitionItems";
+import { aiItems } from "@/config/menuItems/aiItems";
+import { aboutItems } from "@/config/menuItems/aboutItems";
+import { settingsItems } from "@/config/menuItems/settingsItems";
 
 const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
-  const { open, setOpen } = useSidebarContext();
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { open, setOpen } = useSidebar();
+  const isDesktop = useIsMobile();
   const { user, profile, signOut } = useAuth();
 
   const handleSignOut = async () => {
