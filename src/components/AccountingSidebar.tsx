@@ -62,7 +62,7 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
   return (
     <aside 
       data-open={open}
-      className="h-screen border-l data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-sidebar print:hidden z-40 shrink-0"
+      className="h-screen border-l data-[open=false]:w-[70px] data-[open=true]:w-64 transition-all duration-300 bg-sidebar print:hidden z-40 shrink-0 shadow-lg"
       dir="rtl"
     >
       <div className="flex flex-col h-full">
@@ -75,31 +75,31 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
             {open ? (
               <div className="space-y-1">
                 {user && profile && (
-                  <div className="mb-6 p-3 bg-gray-50 rounded-md">
+                  <div className="mb-6 p-4 bg-sidebar-primary/20 rounded-lg shadow-sm border border-sidebar-accent/20">
                     <div className="flex items-center space-x-3 space-x-reverse">
-                      <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                      <div className="h-12 w-12 rounded-full bg-sidebar-accent flex items-center justify-center shadow-md">
                         {profile.avatar_url ? (
                           <img
                             src={profile.avatar_url}
                             alt={profile.full_name}
-                            className="h-10 w-10 rounded-full"
+                            className="h-12 w-12 rounded-full"
                           />
                         ) : (
-                          <UserCircle className="h-6 w-6 text-teal-600" />
+                          <UserCircle className="h-7 w-7 text-sidebar-accent-foreground" />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-sm">{profile.full_name || "مستخدم"}</p>
-                        <p className="text-xs text-muted-foreground">{profile.email}</p>
+                        <p className="font-medium text-base">{profile.full_name || "مستخدم"}</p>
+                        <p className="text-sm text-sidebar-foreground/70">{profile.email}</p>
                       </div>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full mt-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      className="w-full mt-3 text-red-100 hover:bg-sidebar-primary hover:text-white font-medium"
                       onClick={handleSignOut}
                     >
-                      <LogOut className="h-4 w-4 ml-2" />
+                      <LogOut className="h-5 w-5 ml-2" />
                       تسجيل الخروج
                     </Button>
                   </div>
@@ -117,9 +117,9 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
             ) : (
               <div className="space-y-1">
                 {user && (
-                  <div className="mb-4 flex justify-center">
+                  <div className="mb-6 flex justify-center">
                     <div 
-                      className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center cursor-pointer"
+                      className="h-12 w-12 rounded-full bg-sidebar-accent flex items-center justify-center cursor-pointer shadow-md"
                       title="تسجيل الخروج"
                       onClick={handleSignOut}
                     >
@@ -127,10 +127,10 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
                         <img
                           src={profile.avatar_url}
                           alt={profile.full_name}
-                          className="h-10 w-10 rounded-full"
+                          className="h-12 w-12 rounded-full"
                         />
                       ) : (
-                        <UserCircle className="h-6 w-6 text-teal-600" />
+                        <UserCircle className="h-7 w-7 text-sidebar-accent-foreground" />
                       )}
                     </div>
                   </div>
@@ -150,7 +150,7 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
         </ScrollArea>
 
         {/* Sidebar Footer */}
-        <div className="border-t p-3 flex items-center justify-between">
+        <div className="border-t border-sidebar-border p-3 flex items-center justify-between bg-sidebar-primary/20">
           <ThemeSwitcher />
           <LanguageSwitcher />
         </div>

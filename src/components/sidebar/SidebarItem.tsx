@@ -25,11 +25,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     <div
       onClick={onItemClick}
       className={cn(
-        "flex items-center gap-2 py-2 px-4 rounded-md mb-0.5 cursor-pointer transition-all duration-200 group relative",
+        "flex items-center gap-3 py-2.5 px-4 rounded-lg mb-1 cursor-pointer transition-all duration-200 group relative",
         isActive 
-          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm translate-x-1.5" 
-          : "text-sidebar-foreground hover:bg-sidebar-primary/30 hover:text-sidebar-foreground",
-        depth > 0 && "py-1.5 text-sm"
+          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-md translate-x-1.5" 
+          : "text-sidebar-foreground hover:bg-sidebar-primary/40 hover:text-sidebar-foreground hover:translate-x-1",
+        depth > 0 && "py-2 text-base"
       )}
     >
       <SidebarItemIcon icon={icon} isActive={isActive} />

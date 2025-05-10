@@ -67,6 +67,21 @@ export default {
 					DEFAULT: '#0a6e78',
 					light: '#e0f7fa',
           dark: '#004d40',
+				},
+				burgundy: {
+					DEFAULT: '#800020',
+					light: '#A3384F',
+					dark: '#4E0013',
+					50: '#FCE6EB',
+					100: '#F9CDD6',
+					200: '#F29AAD',
+					300: '#E76983',
+					400: '#DC385A',
+					500: '#800020',
+					600: '#73001C',
+					700: '#660018',
+					800: '#590014',
+					900: '#4E0013',
 				}
 			},
 			borderRadius: {

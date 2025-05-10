@@ -37,14 +37,15 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 187 76% 26%;
+    /* تغيير لون القائمة الجانبية إلى البوردو */
+    --sidebar-background: 345 100% 25%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 187 76% 15%;
+    --sidebar-primary: 345 100% 15%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 187 30% 94%;
-    --sidebar-accent-foreground: 187 76% 26%;
-    --sidebar-border: 187 30% 30%;
-    --sidebar-ring: 187 76% 26%;
+    --sidebar-accent: 345 30% 94%;
+    --sidebar-accent-foreground: 345 100% 25%;
+    --sidebar-border: 345 30% 30%;
+    --sidebar-ring: 345 100% 25%;
   }
 
   .dark {
@@ -76,14 +77,15 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     
-    --sidebar-background: 187 76% 15%;
+    /* تغيير لون القائمة الجانبية في الوضع المظلم إلى بوردو داكن */
+    --sidebar-background: 345 100% 15%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 187 76% 26%;
+    --sidebar-primary: 345 100% 25%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 187 30% 20%;
+    --sidebar-accent: 345 30% 20%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 187 30% 30%;
-    --sidebar-ring: 187 76% 26%;
+    --sidebar-border: 345 30% 30%;
+    --sidebar-ring: 345 100% 25%;
   }
 }
 
@@ -101,8 +103,8 @@
     padding: 0;
     overflow: hidden;
     /* تكبير حجم الخط الأساسي */
-    font-size: 1.05rem;
-    line-height: 1.6;
+    font-size: 1.1rem;
+    line-height: 1.7;
   }
   
   html {
@@ -129,39 +131,44 @@
 
   /* تكبير العناوين */
   h1 {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
     font-weight: 700;
   }
 
   h2 {
-    font-size: 1.875rem;
+    font-size: 2.1rem;
     font-weight: 600;
   }
 
   h3 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 600;
   }
 
   h4 {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     font-weight: 600;
   }
 
   h5 {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 500;
   }
 
   /* تكبير نص الزر */
   button, .btn {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
   }
 
   /* تكبير نص الإدخال */
   input, select, textarea {
-    font-size: 1rem;
+    font-size: 1.1rem;
+  }
+
+  /* تكبير النصوص في القائمة الجانبية */
+  [data-sidebar="sidebar"] {
+    font-size: 1.1rem;
   }
 }
 
@@ -196,15 +203,15 @@ html[dir="rtl"] .flip-in-rtl {
   }
   
   .page-content {
-    @apply flex-1 p-4 overflow-auto;
+    @apply flex-1 p-5 overflow-auto;
   }
   
   .card-container {
-    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4 h-full;
+    @apply bg-white rounded-lg shadow-md border border-gray-100 p-5 h-full;
   }
   
   .page-header {
-    @apply mb-4 flex items-center justify-between;
+    @apply mb-5 flex items-center justify-between;
   }
   
   .page-title {
@@ -230,5 +237,26 @@ html[dir="rtl"] .flip-in-rtl {
   .dark .popover-content {
     @apply bg-gray-900 border-gray-700;
     background-color: #1a1f2c !important;
+  }
+  
+  /* تحسين مظهر العناصر */
+  button, .btn {
+    @apply shadow-sm transition-all duration-200;
+  }
+
+  input, select, textarea {
+    @apply shadow-sm;
+  }
+
+  /* تحسين القوائم المنسدلة */
+  select {
+    @apply appearance-none bg-no-repeat;
+    background-position: left 0.75rem center;
+    background-size: 0.75rem;
+  }
+  
+  /* تحسين مظهر البطاقات */
+  .card-container:hover {
+    @apply shadow-md transition-shadow duration-200;
   }
 }

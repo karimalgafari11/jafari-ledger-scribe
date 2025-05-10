@@ -23,17 +23,17 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
   <button
     onClick={onClick}
     className={cn(
-      "flex items-center gap-2 py-2 px-4 w-full rounded-md transition-all duration-200 ease-in-out group",
+      "flex items-center gap-3 py-2.5 px-4 w-full rounded-lg transition-all duration-200 ease-in-out group text-base font-medium",
       active 
-        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium translate-x-1.5 shadow-sm" 
-        : "text-sidebar-foreground hover:bg-sidebar-primary/30"
+        ? "bg-sidebar-accent text-sidebar-accent-foreground translate-x-1.5 shadow-md" 
+        : "text-sidebar-foreground hover:bg-sidebar-primary/40 hover:translate-x-1"
     )}
   >
-    <span className="text-xl">{icon}</span>
+    <span className="text-xl flex-shrink-0">{icon}</span>
     <span className="flex-grow">{label}</span>
     {hasChildren && (
       <ChevronDown 
-        size={16} 
+        size={18} 
         className={cn(
           "transition-transform duration-200 ease-in-out",
           isExpanded ? "transform rotate-180" : ""
