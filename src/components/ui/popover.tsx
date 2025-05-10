@@ -23,13 +23,19 @@ const PopoverContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // Client-side only effect
+  // تأثير خاص بجانب العميل فقط
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsMounted(true);
-    }
+    const handleMount = () => {
+      if (typeof window !== 'undefined') {
+        setIsMounted(true);
+      }
+    };
+    
+    // تأخير قصير للتأكد من تحميل DOM بالكامل
+    const timer = setTimeout(handleMount, 50);
     
     return () => {
+      clearTimeout(timer);
       setIsMounted(false);
     };
   }, []);
@@ -48,7 +54,7 @@ const PopoverContent = React.forwardRef<
     />
   );
 
-  // Use static positioning during SSR, before client-side hydration, or when drag is disabled
+  // استخدام موضع ثابت أثناء SSR، قبل التحميل على جانب العميل، أو عندما يكون السحب معطلاً
   if (!isMounted || typeof window === 'undefined' || disableDrag) {
     return (
       <PopoverPrimitive.Portal>
@@ -57,7 +63,7 @@ const PopoverContent = React.forwardRef<
     );
   }
 
-  // Otherwise, wrap in Draggable with client-side only rendering to avoid DOM mismatch
+  // في حالة أخرى، استخدام Draggable
   return (
     <PopoverPrimitive.Portal>
       <Draggable
@@ -67,7 +73,7 @@ const PopoverContent = React.forwardRef<
         defaultPosition={{ x: 0, y: 0 }}
         positionOffset={{ x: 0, y: -32 }}
         onStart={(e) => {
-          // Prevent dragging when clicking on interactive elements
+          // منع السحب عند النقر على العناصر التفاعلية
           const target = e.target as HTMLElement;
           if (target.closest('button') || target.closest('input') || target.closest('select')) {
             return false;

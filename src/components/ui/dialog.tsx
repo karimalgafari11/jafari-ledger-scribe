@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -39,29 +38,36 @@ const DialogContent = React.forwardRef<
     disableResize?: boolean;
   }
 >(({ className, children, disableDrag = false, disableResize = false, ...props }, ref) => {
-  // Don't use state for size since it might cause hydration mismatches
-  const [size] = React.useState({ width: 'auto', height: 'auto' });
+  // عدم استخدام حالة للحجم لتجنب حدوث تعارض في التوافق
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
 
-  // Default position for the dialog
+  // موقع افتراضي للمربع الحواري
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
   
-  // Client-side only effect
+  // تأثير خاص بجانب العميل فقط
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsMounted(true);
-      setDefaultPosition({
-        x: Math.max(0, (window.innerWidth / 2) - 225),
-        y: Math.max(0, (window.innerHeight / 2) - 150)
-      });
-    }
+    const handleMount = () => {
+      if (typeof window !== 'undefined') {
+        setIsMounted(true);
+        // تعيين الموقع الافتراضي في الوسط
+        setDefaultPosition({
+          x: Math.max(0, (window.innerWidth / 2) - 225),
+          y: Math.max(0, (window.innerHeight / 2) - 150)
+        });
+      }
+    };
+    
+    // تأخير قصير للتأكد من تحميل DOM بالكامل
+    const timer = setTimeout(handleMount, 50);
     
     return () => {
+      clearTimeout(timer);
       setIsMounted(false);
     };
   }, []);
-  
+
+  // محتوى المربع الحواري الداخلي
   const innerContent = (
     <DialogPrimitive.Content
       ref={ref}
@@ -72,8 +78,6 @@ const DialogContent = React.forwardRef<
         className
       )}
       style={{ 
-        width: size.width,
-        height: size.height,
         transform: disableDrag ? 'translate(-50%, -50%)' : 'none',
         left: disableDrag ? '50%' : undefined,
         top: disableDrag ? '50%' : undefined,
@@ -83,12 +87,12 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
         <X className="h-5 w-5" />
-        <span className="sr-only">Close</span>
+        <span className="sr-only">إغلاق</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   );
 
-  // Only use static positioning during SSR or before client-side hydration
+  // استخدام موضع ثابت أثناء SSR أو قبل تحميل جانب العميل
   if (!isMounted || typeof window === 'undefined') {
     return (
       <DialogPortal>
@@ -100,7 +104,7 @@ const DialogContent = React.forwardRef<
     );
   }
 
-  // Use static positioning when drag is disabled
+  // استخدام موضع ثابت عند تعطيل السحب
   if (disableDrag) {
     return (
       <DialogPortal>
@@ -110,7 +114,7 @@ const DialogContent = React.forwardRef<
     );
   }
 
-  // Otherwise, wrap in Draggable
+  // في حالة أخرى، استخدام Draggable
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -119,9 +123,8 @@ const DialogContent = React.forwardRef<
         handle=".drag-handle"
         bounds="body"
         defaultPosition={defaultPosition}
-        positionOffset={{ x: 0, y: 0 }}
         onStart={(e) => {
-          // Prevent dragging when clicking on interactive elements
+          // منع السحب عند النقر على العناصر التفاعلية
           const target = e.target as HTMLElement;
           if (target.closest('button') || target.closest('input') || target.closest('select')) {
             return false;
@@ -129,7 +132,7 @@ const DialogContent = React.forwardRef<
         }}
       >
         <div ref={nodeRef} className="fixed z-50">
-          {/* Handle area at the top of the dialog */}
+          {/* منطقة المقبض في أعلى المربع الحواري */}
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />
           {innerContent}
         </div>

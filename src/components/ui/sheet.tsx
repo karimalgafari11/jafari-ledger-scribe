@@ -63,14 +63,20 @@ const SheetContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // Client-side only effect
+  // تأثير خاص بجانب العميل فقط
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsMounted(true);
-      setInitialY(Math.max(0, (window.innerHeight / 2) - 200));
-    }
+    const handleMount = () => {
+      if (typeof window !== 'undefined') {
+        setIsMounted(true);
+        setInitialY(Math.max(0, (window.innerHeight / 2) - 200));
+      }
+    };
+    
+    // تأخير قصير للتأكد من تحميل DOM بالكامل
+    const timer = setTimeout(handleMount, 50);
     
     return () => {
+      clearTimeout(timer);
       setIsMounted(false);
     };
   }, []);
@@ -84,12 +90,12 @@ const SheetContent = React.forwardRef<
       {children}
       <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
         <X className="h-5 w-5" />
-        <span className="sr-only">Close</span>
+        <span className="sr-only">إغلاق</span>
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>
   );
 
-  // Use static positioning during SSR or before client-side hydration
+  // استخدام موضع ثابت أثناء SSR أو قبل تحميل جانب العميل
   if (!isMounted || typeof window === 'undefined') {
     return (
       <SheetPortal>
@@ -99,7 +105,7 @@ const SheetContent = React.forwardRef<
     );
   }
 
-  // Sheets for top and bottom shouldn't be draggable
+  // الجانب العلوي والسفلي لا يجب أن يكونا قابلين للسحب
   if (disableDrag || side === "top" || side === "bottom") {
     return (
       <SheetPortal>
@@ -109,18 +115,18 @@ const SheetContent = React.forwardRef<
     );
   }
 
-  // For left and right sides, make them draggable vertically only
+  // للجانبين الأيسر والأيمن، اجعلهما قابلين للسحب عموديًا فقط
   return (
     <SheetPortal>
       <SheetOverlay />
       <Draggable
         nodeRef={nodeRef}
         handle=".drag-handle"
-        bounds={{ left: 0, right: 0 }} // Restrict horizontal movement
+        bounds={{ left: 0, right: 0 }} // تقييد الحركة الأفقية
         defaultPosition={{ x: 0, y: initialY }}
-        axis="y" // Only allow vertical dragging
+        axis="y" // السماح بالسحب العمودي فقط
         onStart={(e) => {
-          // Prevent dragging when clicking on interactive elements
+          // منع السحب عند النقر على العناصر التفاعلية
           const target = e.target as HTMLElement;
           if (target.closest('button') || target.closest('input') || target.closest('select')) {
             return false;

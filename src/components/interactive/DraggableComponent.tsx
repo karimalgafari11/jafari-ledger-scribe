@@ -28,9 +28,8 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
   
-  // We need to use client-side only rendering for Draggable
+  // نستخدم useEffect للتأكد من أن الكود يعمل فقط بعد التحميل في جانب العميل
   useEffect(() => {
-    // Only run in browser environment
     if (typeof window !== 'undefined') {
       setIsMounted(true);
     }
@@ -44,7 +43,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
     setPosition({ x: data.x, y: data.y });
   };
 
-  // Return regular div during SSR or before mounting
+  // عرض div عادي أثناء SSR أو قبل التحميل
   if (!isMounted || typeof window === 'undefined') {
     return (
       <div className={cn('relative', className)}>
@@ -53,7 +52,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
     );
   }
 
-  // Only render Draggable on the client side after mounting
+  // تقديم Draggable فقط بعد التحميل على جانب العميل
   return (
     <Draggable
       nodeRef={nodeRef}

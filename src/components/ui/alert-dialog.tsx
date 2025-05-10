@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import Draggable from "react-draggable"
@@ -42,17 +41,23 @@ const AlertDialogContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // Client-side only effect
+  // تأثير خاص بجانب العميل فقط
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsMounted(true);
-      setDefaultPosition({
-        x: Math.max(0, (window.innerWidth / 2) - 225),
-        y: Math.max(0, (window.innerHeight / 2) - 150)
-      });
-    }
+    const handleMount = () => {
+      if (typeof window !== 'undefined') {
+        setIsMounted(true);
+        setDefaultPosition({
+          x: Math.max(0, (window.innerWidth / 2) - 225),
+          y: Math.max(0, (window.innerHeight / 2) - 150)
+        });
+      }
+    };
+    
+    // تأخير قصير للتأكد من تحميل DOM بالكامل
+    const timer = setTimeout(handleMount, 50);
     
     return () => {
+      clearTimeout(timer);
       setIsMounted(false);
     };
   }, []);
@@ -74,7 +79,7 @@ const AlertDialogContent = React.forwardRef<
     />
   )
 
-  // Use static positioning during SSR or before client-side hydration
+  // استخدام موضع ثابت أثناء SSR أو قبل تحميل جانب العميل
   if (!isMounted || typeof window === 'undefined') {
     return (
       <AlertDialogPortal>
@@ -86,7 +91,7 @@ const AlertDialogContent = React.forwardRef<
     );
   }
 
-  // Use static positioning if dragging is disabled
+  // استخدام موضع ثابت إذا كان السحب معطلاً
   if (disableDrag) {
     return (
       <AlertDialogPortal>
@@ -96,7 +101,7 @@ const AlertDialogContent = React.forwardRef<
     )
   }
 
-  // Otherwise, wrap in Draggable
+  // في حالة أخرى، استخدام Draggable
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
@@ -105,9 +110,8 @@ const AlertDialogContent = React.forwardRef<
         handle=".drag-handle"
         bounds="body"
         defaultPosition={defaultPosition}
-        positionOffset={{ x: 0, y: 0 }}
         onStart={(e) => {
-          // Prevent dragging when clicking on interactive elements
+          // منع السحب عند النقر على العناصر التفاعلية
           const target = e.target as HTMLElement;
           if (target.closest('button') || target.closest('input') || target.closest('select')) {
             return false;
