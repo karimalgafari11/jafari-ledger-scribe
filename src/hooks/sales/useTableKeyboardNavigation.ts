@@ -167,9 +167,8 @@ export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEdit
   
   // Helper function to check if a cell is being edited
   const isEditingCell = (rowIndex: number, cellName: string) => {
-    return isEditingActive && 
-           activeSearchCell !== null &&
-           typeof activeSearchCell === 'function';
+    // We need to use the callback pattern to get the current activeSearchCell value
+    return isEditingActive && typeof setActiveSearchCell === 'function';
   };
   
   // Function to handle focusing on a cell
