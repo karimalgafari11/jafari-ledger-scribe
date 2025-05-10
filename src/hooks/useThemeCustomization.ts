@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ThemeSettings, ThemeColors, ThemeFonts } from "@/types/theme";
 import { toast } from "sonner";
@@ -110,7 +109,7 @@ export const useThemeCustomization = () => {
       }
     }
     
-    document.body.style.fontFamily = `'${theme.fonts.family}', sans-serif`;
+    document.body.style.fontFamily = `'${theme.fonts.family}', sans-serif';
     
     // Apply theme mode
     if (theme.mode === 'dark') {
