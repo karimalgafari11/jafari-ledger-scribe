@@ -42,6 +42,7 @@ const DialogContent = React.forwardRef<
   const [size, setSize] = React.useState({ width: 'auto', height: 'auto' });
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
   const [isMounted, setIsMounted] = React.useState(false);
+  const nodeRef = React.useRef(null);
   
   // Use useEffect to safely access window for client-side only code
   React.useEffect(() => {
@@ -52,6 +53,8 @@ const DialogContent = React.forwardRef<
         y: Math.max(0, (window.innerHeight / 2) - 150)
       });
     }
+    
+    return () => setIsMounted(false);
   }, []);
   
   const innerContent = (
@@ -107,12 +110,13 @@ const DialogContent = React.forwardRef<
     <DialogPortal>
       <DialogOverlay />
       <Draggable
+        nodeRef={nodeRef}
         handle=".drag-handle"
         bounds="body"
         defaultPosition={defaultPosition}
         positionOffset={{ x: 0, y: 0 }}
       >
-        <div className="fixed z-50">
+        <div ref={nodeRef} className="fixed z-50">
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />
           {innerContent}
         </div>

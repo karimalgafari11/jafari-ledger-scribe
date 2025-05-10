@@ -61,6 +61,7 @@ const SheetContent = React.forwardRef<
 >(({ side = "right", className, children, disableDrag = false, ...props }, ref) => {
   const [initialY, setInitialY] = React.useState(0);
   const [isMounted, setIsMounted] = React.useState(false);
+  const nodeRef = React.useRef(null);
   
   // Use useEffect to safely access window
   React.useEffect(() => {
@@ -68,6 +69,8 @@ const SheetContent = React.forwardRef<
     if (typeof window !== 'undefined') {
       setInitialY(Math.max(0, (window.innerHeight / 2) - 200));
     }
+    
+    return () => setIsMounted(false);
   }, []);
   
   const innerContent = (
@@ -110,12 +113,13 @@ const SheetContent = React.forwardRef<
     <SheetPortal>
       <SheetOverlay />
       <Draggable
+        nodeRef={nodeRef}
         handle=".drag-handle"
         bounds={{ left: 0, right: 0 }} // Restrict horizontal movement
         defaultPosition={{ x: 0, y: initialY }}
         axis="y" // Only allow vertical dragging
       >
-        <div className="fixed" style={{ 
+        <div ref={nodeRef} className="fixed" style={{ 
           [side === "left" ? "left" : "right"]: 0
         }}>
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />

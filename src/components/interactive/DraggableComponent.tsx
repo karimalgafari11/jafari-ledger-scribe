@@ -1,5 +1,5 @@
 
-import React, { useState, ReactNode, useEffect } from 'react';
+import React, { useState, ReactNode, useEffect, useRef } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { cn } from '@/lib/utils';
 
@@ -26,10 +26,12 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
 }) => {
   const [position, setPosition] = useState(defaultPosition);
   const [isMounted, setIsMounted] = useState(false);
+  const nodeRef = useRef(null);
   
   // Ensure component is mounted before accessing DOM
   useEffect(() => {
     setIsMounted(true);
+    return () => setIsMounted(false);
   }, []);
   
   // Updated handleDrag function with proper typing
@@ -44,6 +46,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
 
   return (
     <Draggable
+      nodeRef={nodeRef}
       position={position}
       defaultPosition={defaultPosition}
       onDrag={handleDrag}
@@ -53,7 +56,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
       onStart={onDragStart}
       onStop={onDragEnd}
     >
-      <div className={cn('relative', className)}>
+      <div ref={nodeRef} className={cn('relative', className)}>
         {children}
       </div>
     </Draggable>
