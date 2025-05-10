@@ -42,7 +42,7 @@ const PopoverContent = React.forwardRef<
     );
   }
 
-  // Otherwise, wrap in Draggable
+  // Otherwise, wrap in Draggable with client-side only rendering to avoid DOM mismatch
   return (
     <PopoverPrimitive.Portal>
       <Draggable

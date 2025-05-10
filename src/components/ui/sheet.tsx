@@ -59,6 +59,15 @@ const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
 >(({ side = "right", className, children, disableDrag = false, ...props }, ref) => {
+  const [initialY, setInitialY] = React.useState(0);
+  
+  // Use useEffect to safely access window
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setInitialY(window.innerHeight / 2 - 200);
+    }
+  }, []);
+  
   const innerContent = (
     <SheetPrimitive.Content
       ref={ref}
@@ -85,8 +94,6 @@ const SheetContent = React.forwardRef<
 
   // For left and right, we can make them draggable but only vertically
   // since the horizontal position is fixed
-  const initialY = window.innerHeight / 2 - 200;
-  
   return (
     <SheetPortal>
       <SheetOverlay />

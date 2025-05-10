@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import Draggable from "react-draggable"
@@ -37,6 +38,18 @@ const AlertDialogContent = React.forwardRef<
     disableDrag?: boolean;
   }
 >(({ className, disableDrag = false, ...props }, ref) => {
+  const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
+  
+  // Use useEffect to safely access window
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setDefaultPosition({
+        x: window.innerWidth / 2 - 225,
+        y: window.innerHeight / 2 - 150
+      });
+    }
+  }, []);
+  
   const innerContent = (
     <AlertDialogPrimitive.Content
       ref={ref}
@@ -71,7 +84,8 @@ const AlertDialogContent = React.forwardRef<
       <Draggable
         handle=".drag-handle"
         bounds="body"
-        defaultPosition={{x: window.innerWidth / 2 - 225, y: window.innerHeight / 2 - 150}}
+        defaultPosition={defaultPosition}
+        positionOffset={{ x: 0, y: 0 }}
       >
         <div className="fixed z-50">
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />

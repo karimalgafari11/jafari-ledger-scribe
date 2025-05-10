@@ -40,6 +40,17 @@ const DialogContent = React.forwardRef<
   }
 >(({ className, children, disableDrag = false, disableResize = false, ...props }, ref) => {
   const [size, setSize] = React.useState({ width: 'auto', height: 'auto' });
+  const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
+  
+  // Use useEffect to safely access window for client-side only code
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setDefaultPosition({
+        x: window.innerWidth / 2 - 225,
+        y: window.innerHeight / 2 - 150
+      });
+    }
+  }, []);
   
   const innerContent = (
     <DialogPrimitive.Content
@@ -84,7 +95,8 @@ const DialogContent = React.forwardRef<
       <Draggable
         handle=".drag-handle"
         bounds="body"
-        defaultPosition={{x: window.innerWidth / 2 - 225, y: window.innerHeight / 2 - 150}}
+        defaultPosition={defaultPosition}
+        positionOffset={{ x: 0, y: 0 }}
       >
         <div className="fixed z-50">
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />
