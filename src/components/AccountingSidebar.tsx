@@ -30,7 +30,7 @@ import { settingsItems } from "@/config/menuItems/settingsItems";
 
 const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
   const { open, setOpen } = useSidebar();
-  const isDesktop = useIsMobile();
+  const isMobile = useIsMobile();
   const { user, profile, signOut } = useAuth();
 
   const handleSignOut = async () => {
@@ -60,71 +60,25 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
   ];
 
   return (
-    <>
-      <div
-        data-open={open}
-        className="border-l group fixed inset-0 z-30 h-full data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-sidebar print:hidden"
-        dir="rtl"
-      >
-        <div className="flex flex-col h-full">
-          {/* Sidebar Header */}
-          {open ? <ExpandedView /> : <CollapsedView />}
+    <div
+      data-open={open}
+      className="border-l group fixed inset-0 z-30 h-screen data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-sidebar print:hidden"
+      dir="rtl"
+    >
+      <div className="flex flex-col h-full">
+        {/* Sidebar Header */}
+        {open ? <ExpandedView /> : <CollapsedView />}
 
-          {/* Sidebar Menu */}
-          <ScrollArea className="flex-1" dir="rtl">
-            <div className="px-3 py-2">
-              {open ? (
-                <div className="space-y-1">
-                  {user && profile && (
-                    <div className="mb-6 p-3 bg-gray-50 rounded-md">
-                      <div className="flex items-center space-x-3 space-x-reverse">
-                        <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
-                          {profile.avatar_url ? (
-                            <img
-                              src={profile.avatar_url}
-                              alt={profile.full_name}
-                              className="h-10 w-10 rounded-full"
-                            />
-                          ) : (
-                            <UserCircle className="h-6 w-6 text-teal-600" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">{profile.full_name || "مستخدم"}</p>
-                          <p className="text-xs text-muted-foreground">{profile.email}</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full mt-2 text-red-600 hover:bg-red-50 hover:text-red-700"
-                        onClick={handleSignOut}
-                      >
-                        <LogOut className="h-4 w-4 ml-2" />
-                        تسجيل الخروج
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* مكونات القائمة */}
-                  {menuItems.map((section, idx) => (
-                    <ExpandedView.Section
-                      key={idx}
-                      section={section}
-                      toggleSidebar={autoClose ? () => setOpen(false) : undefined}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  {user && (
-                    <div className="mb-4 flex justify-center">
-                      <div 
-                        className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center cursor-pointer"
-                        title="تسجيل الخروج"
-                        onClick={handleSignOut}
-                      >
-                        {profile?.avatar_url ? (
+        {/* Sidebar Menu */}
+        <ScrollArea className="flex-1" dir="rtl">
+          <div className="px-3 py-2">
+            {open ? (
+              <div className="space-y-1">
+                {user && profile && (
+                  <div className="mb-6 p-3 bg-gray-50 rounded-md">
+                    <div className="flex items-center space-x-3 space-x-reverse">
+                      <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                        {profile.avatar_url ? (
                           <img
                             src={profile.avatar_url}
                             alt={profile.full_name}
@@ -134,30 +88,74 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
                           <UserCircle className="h-6 w-6 text-teal-600" />
                         )}
                       </div>
+                      <div>
+                        <p className="font-medium text-sm">{profile.full_name || "مستخدم"}</p>
+                        <p className="text-xs text-muted-foreground">{profile.email}</p>
+                      </div>
                     </div>
-                  )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="h-4 w-4 ml-2" />
+                      تسجيل الخروج
+                    </Button>
+                  </div>
+                )}
 
-                  {/* مكونات القائمة للعرض المطوي */}
-                  {menuItems.map((section, idx) => (
-                    <CollapsedView.Section 
-                      key={idx} 
-                      section={section} 
-                      toggleSidebar={autoClose ? () => setOpen(false) : undefined} 
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </ScrollArea>
+                {/* مكونات القائمة */}
+                {menuItems.map((section, idx) => (
+                  <ExpandedView.Section
+                    key={idx}
+                    section={section}
+                    toggleSidebar={autoClose ? () => setOpen(false) : undefined}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {user && (
+                  <div className="mb-4 flex justify-center">
+                    <div 
+                      className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center cursor-pointer"
+                      title="تسجيل الخروج"
+                      onClick={handleSignOut}
+                    >
+                      {profile?.avatar_url ? (
+                        <img
+                          src={profile.avatar_url}
+                          alt={profile.full_name}
+                          className="h-10 w-10 rounded-full"
+                        />
+                      ) : (
+                        <UserCircle className="h-6 w-6 text-teal-600" />
+                      )}
+                    </div>
+                  </div>
+                )}
 
-          {/* Sidebar Footer */}
-          <div className="border-t p-3 flex items-center justify-between">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
+                {/* مكونات القائمة للعرض المطوي */}
+                {menuItems.map((section, idx) => (
+                  <CollapsedView.Section 
+                    key={idx} 
+                    section={section} 
+                    toggleSidebar={autoClose ? () => setOpen(false) : undefined} 
+                  />
+                ))}
+              </div>
+            )}
           </div>
+        </ScrollArea>
+
+        {/* Sidebar Footer */}
+        <div className="border-t p-3 flex items-center justify-between">
+          <ThemeSwitcher />
+          <LanguageSwitcher />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -7,8 +7,8 @@ import { DueNotificationsModule } from "@/components/accounting/commercialpapers
 
 const CommercialPapersPage = () => {
   return (
-    <Layout>
-      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
+    <Layout className="p-0">
+      <div className="flex flex-col h-full w-full overflow-hidden rtl">
         <Header title="إدارة الأوراق التجارية" showBack={true} />
         
         <div className="flex-1 overflow-auto p-4 pb-16">

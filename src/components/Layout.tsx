@@ -20,7 +20,7 @@ export function Layout({
   return (
     <div 
       className={`min-h-screen w-full flex-1 flex flex-col bg-gradient-to-b from-cyan-50 to-blue-50 
-      ${isMobile ? '' : ''} ${className}`}
+      ${isMobile ? 'px-2' : 'px-4'} py-4 ${className}`}
     >
       {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">

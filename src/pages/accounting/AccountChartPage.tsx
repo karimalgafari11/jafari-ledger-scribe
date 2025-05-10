@@ -5,7 +5,7 @@ import { AccountChartContainer } from "@/components/accounting/AccountChartConta
 
 const AccountChartPage: React.FC = () => {
   return (
-    <Layout className="min-h-screen w-full">
+    <Layout className="min-h-screen w-full p-0 md:p-4">
       <AccountChartContainer />
     </Layout>
   );

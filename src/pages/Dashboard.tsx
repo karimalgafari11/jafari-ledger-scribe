@@ -1,7 +1,7 @@
+
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import DashboardContent from "@/components/dashboard/DashboardContent";
-import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 import { SystemAlert } from "@/types/ai";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import {
@@ -175,7 +175,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="w-full h-full min-h-screen flex flex-col">
+    <div className="w-full h-full flex flex-col overflow-hidden">
       <Header title="لوحة التحكم" showBack={false} className="w-full" />
 
       <div className="flex-1 p-4 overflow-auto">

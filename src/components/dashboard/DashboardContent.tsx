@@ -61,7 +61,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const performance = analyzePerformance();
 
   const dashboardContent = (
-    <div className="w-full">
+    <div className="w-full max-w-full">
       {/* عرض الاختصارات إذا كان هناك اختصارات مفعلة */}
       {shortcuts && shortcuts.length > 0 && (
         <div className="mb-6">
