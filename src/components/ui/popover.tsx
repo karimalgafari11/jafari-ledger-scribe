@@ -57,6 +57,7 @@ const PopoverContent = React.forwardRef<
         handle=".drag-handle"
         bounds="body"
         positionOffset={{ x: 0, y: -32 }}
+        defaultPosition={{ x: 0, y: 0 }}
       >
         <div>
           <div className="drag-handle absolute inset-x-0 top-0 h-6 cursor-move rounded-t-md" />

@@ -1,5 +1,5 @@
 
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useEffect } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { cn } from '@/lib/utils';
 
@@ -25,11 +25,22 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   onDragEnd
 }) => {
   const [position, setPosition] = useState(defaultPosition);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // Ensure component is mounted before accessing DOM
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   // Updated handleDrag function with proper typing
   const handleDrag = (e: DraggableEvent, data: DraggableData) => {
     setPosition({ x: data.x, y: data.y });
   };
+
+  // If not mounted yet, render children without Draggable to avoid DOM issues
+  if (!isMounted) {
+    return <div className={cn('relative', className)}>{children}</div>;
+  }
 
   return (
     <Draggable

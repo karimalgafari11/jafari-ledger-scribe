@@ -66,7 +66,7 @@ const SheetContent = React.forwardRef<
   React.useEffect(() => {
     setIsMounted(true);
     if (typeof window !== 'undefined') {
-      setInitialY(window.innerHeight / 2 - 200);
+      setInitialY(Math.max(0, (window.innerHeight / 2) - 200));
     }
   }, []);
   

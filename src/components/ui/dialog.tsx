@@ -48,8 +48,8 @@ const DialogContent = React.forwardRef<
     setIsMounted(true);
     if (typeof window !== 'undefined') {
       setDefaultPosition({
-        x: window.innerWidth / 2 - 225,
-        y: window.innerHeight / 2 - 150
+        x: Math.max(0, (window.innerWidth / 2) - 225),
+        y: Math.max(0, (window.innerHeight / 2) - 150)
       });
     }
   }, []);
@@ -85,7 +85,9 @@ const DialogContent = React.forwardRef<
     return (
       <DialogPortal>
         <DialogOverlay />
-        {innerContent}
+        <div style={{ position: 'fixed', zIndex: 50 }}>
+          {innerContent}
+        </div>
       </DialogPortal>
     );
   }
