@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -19,6 +20,13 @@ const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   PopoverContentProps
 >(({ className, align = "center", sideOffset = 4, disableDrag = false, ...props }, ref) => {
+  const [isMounted, setIsMounted] = React.useState(false);
+  
+  // Use useEffect to handle client-side mounting
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
   const innerContent = (
     <PopoverPrimitive.Content
       ref={ref}
@@ -33,8 +41,8 @@ const PopoverContent = React.forwardRef<
     />
   );
 
-  // If dragging is disabled, render content directly
-  if (disableDrag) {
+  // If not mounted yet or dragging is disabled, render content directly
+  if (!isMounted || disableDrag) {
     return (
       <PopoverPrimitive.Portal>
         {innerContent}

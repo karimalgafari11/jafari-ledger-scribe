@@ -41,9 +41,11 @@ const DialogContent = React.forwardRef<
 >(({ className, children, disableDrag = false, disableResize = false, ...props }, ref) => {
   const [size, setSize] = React.useState({ width: 'auto', height: 'auto' });
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
+  const [isMounted, setIsMounted] = React.useState(false);
   
   // Use useEffect to safely access window for client-side only code
   React.useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== 'undefined') {
       setDefaultPosition({
         x: window.innerWidth / 2 - 225,
@@ -77,6 +79,16 @@ const DialogContent = React.forwardRef<
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   );
+
+  // Only render the draggable content on the client side
+  if (!isMounted) {
+    return (
+      <DialogPortal>
+        <DialogOverlay />
+        {innerContent}
+      </DialogPortal>
+    );
+  }
 
   // If dragging is disabled, render content directly
   if (disableDrag) {

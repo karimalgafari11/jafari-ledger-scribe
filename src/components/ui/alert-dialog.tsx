@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import Draggable from "react-draggable"
@@ -39,9 +38,11 @@ const AlertDialogContent = React.forwardRef<
   }
 >(({ className, disableDrag = false, ...props }, ref) => {
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
+  const [isMounted, setIsMounted] = React.useState(false);
   
   // Use useEffect to safely access window
   React.useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== 'undefined') {
       setDefaultPosition({
         x: window.innerWidth / 2 - 225,
@@ -66,6 +67,16 @@ const AlertDialogContent = React.forwardRef<
       {...props}
     />
   )
+
+  // Only render the draggable content on the client side
+  if (!isMounted) {
+    return (
+      <AlertDialogPortal>
+        <AlertDialogOverlay />
+        {innerContent}
+      </AlertDialogPortal>
+    )
+  }
 
   // If dragging is disabled, render content directly
   if (disableDrag) {

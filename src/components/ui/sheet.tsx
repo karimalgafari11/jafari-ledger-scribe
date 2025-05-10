@@ -60,9 +60,11 @@ const SheetContent = React.forwardRef<
   SheetContentProps
 >(({ side = "right", className, children, disableDrag = false, ...props }, ref) => {
   const [initialY, setInitialY] = React.useState(0);
+  const [isMounted, setIsMounted] = React.useState(false);
   
   // Use useEffect to safely access window
   React.useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== 'undefined') {
       setInitialY(window.innerHeight / 2 - 200);
     }
@@ -81,6 +83,16 @@ const SheetContent = React.forwardRef<
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>
   );
+
+  // Only render the draggable content on the client side
+  if (!isMounted) {
+    return (
+      <SheetPortal>
+        <SheetOverlay />
+        {innerContent}
+      </SheetPortal>
+    );
+  }
 
   // Sheets for top and bottom shouldn't be draggable
   if (disableDrag || side === "top" || side === "bottom") {
