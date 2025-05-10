@@ -1,6 +1,10 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { AuthProvider } from "./AuthContext";
+import { defaultDarkTheme, defaultLightTheme } from "@/hooks/theme/themeDefaults";
+import { applyThemeToDOM } from "@/hooks/theme/themeUtils";
+import { ThemeSettings } from "@/types/theme";
+import { loadSavedTheme } from "@/hooks/theme/themeUtils";
 
 // تعريف نوع اللغة
 export type Language = "ar" | "en";
@@ -40,13 +44,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return savedLanguage || "ar";
   });
 
+  // Apply theme immediately on startup
+  useEffect(() => {
+    const defaultTheme = themeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
+    const savedTheme = loadSavedTheme(defaultTheme);
+    applyThemeToDOM(savedTheme);
+  }, []);
+
   // تأثير لتطبيق السمة عند تغييرها
   useEffect(() => {
     // تحديث سمة الصفحة
     if (themeMode === "dark") {
       document.documentElement.classList.add("dark");
+      // Apply dark theme
+      const savedTheme = loadSavedTheme(defaultDarkTheme);
+      applyThemeToDOM(savedTheme);
     } else {
       document.documentElement.classList.remove("dark");
+      // Apply light theme
+      const savedTheme = loadSavedTheme(defaultLightTheme);
+      applyThemeToDOM(savedTheme);
     }
     // حفظ السمة في التخزين المحلي
     localStorage.setItem("themeMode", themeMode);

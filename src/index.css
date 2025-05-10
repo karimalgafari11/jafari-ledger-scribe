@@ -37,15 +37,7 @@
 
     --radius: 0.5rem;
 
-    /* تغيير لون القائمة الجانبية إلى البوردو */
-    --sidebar-background: 345 100% 25%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 345 100% 15%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 345 30% 94%;
-    --sidebar-accent-foreground: 345 100% 25%;
-    --sidebar-border: 345 30% 30%;
-    --sidebar-ring: 345 100% 25%;
+    /* Custom sidebar variables will be applied dynamically from theme */
   }
 
   .dark {
@@ -77,15 +69,7 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     
-    /* تغيير لون القائمة الجانبية في الوضع المظلم إلى بوردو داكن */
-    --sidebar-background: 345 100% 15%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 345 100% 25%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 345 30% 20%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 345 30% 30%;
-    --sidebar-ring: 345 100% 25%;
+    /* Custom sidebar variables will be applied dynamically from theme */
   }
 }
 

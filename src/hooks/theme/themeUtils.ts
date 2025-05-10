@@ -24,13 +24,29 @@ export const applyThemeToDOM = (theme: ThemeSettings): void => {
   root.style.setProperty('--link', themeColorToHsl(theme.colors.link));
   root.style.setProperty('--header-bg', themeColorToHsl(theme.colors.header));
   
-  // Apply sidebar colors
-  root.style.setProperty('--sidebar-background', themeColorToHsl(theme.colors.sidebar.background));
-  root.style.setProperty('--sidebar-foreground', themeColorToHsl(theme.colors.sidebar.foreground));
-  root.style.setProperty('--sidebar-item-active', themeColorToHsl(theme.colors.sidebar.item.active));
-  root.style.setProperty('--sidebar-item-hover', themeColorToHsl(theme.colors.sidebar.item.hover));
-  root.style.setProperty('--sidebar-item-text', themeColorToHsl(theme.colors.sidebar.item.text));
-  root.style.setProperty('--sidebar-item-active-text', themeColorToHsl(theme.colors.sidebar.item.activeText));
+  // Apply sidebar colors - with direct style properties for higher specificity
+  document.querySelectorAll('.bg-sidebar').forEach(el => {
+    (el as HTMLElement).style.backgroundColor = theme.colors.sidebar.background;
+  });
+  
+  document.querySelectorAll('.text-sidebar-foreground').forEach(el => {
+    (el as HTMLElement).style.color = theme.colors.sidebar.foreground;
+  });
+  
+  // Create dynamic CSS for sidebar items
+  const style = document.querySelector('#theme-sidebar-style') || document.createElement('style');
+  style.id = 'theme-sidebar-style';
+  style.textContent = `
+    .bg-sidebar { background-color: ${theme.colors.sidebar.background} !important; }
+    .text-sidebar-foreground { color: ${theme.colors.sidebar.foreground} !important; }
+    .hover\\:bg-sidebar-primary:hover { background-color: ${theme.colors.sidebar.item.hover} !important; }
+    .bg-sidebar-accent { background-color: ${theme.colors.sidebar.item.active} !important; }
+    .text-sidebar-accent-foreground { color: ${theme.colors.sidebar.item.activeText} !important; }
+  `;
+  
+  if (!document.querySelector('#theme-sidebar-style')) {
+    document.head.appendChild(style);
+  }
   
   // Apply font size
   const fontSizeScale = fontSizeOptions.find(option => option.value === theme.fonts.size)?.scale || 1;
@@ -97,9 +113,9 @@ export const applyThemeToDOM = (theme: ThemeSettings): void => {
   }
 
   // Apply custom CSS for headings
-  const style = document.querySelector('#theme-heading-style') || document.createElement('style');
-  style.id = 'theme-heading-style';
-  style.textContent = `
+  const headingStyle = document.querySelector('#theme-heading-style') || document.createElement('style');
+  headingStyle.id = 'theme-heading-style';
+  headingStyle.textContent = `
     h1, h2, h3, h4, h5, h6 {
       font-family: '${theme.fonts.headings.family}', sans-serif;
       font-weight: ${headingFontWeight};
@@ -107,7 +123,7 @@ export const applyThemeToDOM = (theme: ThemeSettings): void => {
   `;
   
   if (!document.querySelector('#theme-heading-style')) {
-    document.head.appendChild(style);
+    document.head.appendChild(headingStyle);
   }
 };
 
