@@ -63,7 +63,7 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
     <>
       <div
         data-open={open}
-        className="border-l group fixed inset-0 h-full z-30 data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-white print:hidden"
+        className="border-l group fixed inset-0 z-30 h-full data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-sidebar print:hidden"
         dir="rtl"
       >
         <div className="flex flex-col h-full">

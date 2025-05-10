@@ -11,7 +11,7 @@ const Index = () => {
 
   return (
     <SidebarProvider defaultOpen={!isMobile}>
-      <div className="flex h-screen w-full overflow-hidden bg-cyan-50">
+      <div className="flex h-screen w-full overflow-hidden bg-gradient-to-b from-cyan-50 to-blue-100">
         <AccountingSidebar autoClose={true} />
         <div className="flex-1 overflow-auto w-full">
           <Outlet />

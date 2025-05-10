@@ -11,18 +11,19 @@ const PurchasesPage = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <Layout className="min-h-screen w-full">
       <Header 
         title="نظام المشتريات" 
         showBack={false}
+        className="bg-teal-600"
       >
-        <span className="text-sm text-gray-300">إدارة عمليات الشراء والموردين والمخزون</span>
+        <span className="text-sm text-gray-100">إدارة عمليات الشراء والموردين والمخزون</span>
       </Header>
 
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 lg:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {/* فاتورة شراء جديدة */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/purchases/new")}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/new")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">فاتورة شراء جديدة</CardTitle>
               <Receipt className="h-6 w-6 text-primary" />
@@ -38,7 +39,7 @@ const PurchasesPage = () => {
           </Card>
 
           {/* فواتير الشراء */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/purchases/invoices")}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/invoices")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">فواتير الشراء</CardTitle>
               <FileText className="h-6 w-6 text-blue-500" />
@@ -54,7 +55,7 @@ const PurchasesPage = () => {
           </Card>
 
           {/* أوامر الشراء */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/purchases/orders")}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/orders")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">أوامر الشراء</CardTitle>
               <ShoppingBag className="h-6 w-6 text-green-500" />
@@ -70,7 +71,7 @@ const PurchasesPage = () => {
           </Card>
 
           {/* مرتجعات المشتريات */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/purchases/returns")}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/returns")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-xl">مرتجعات المشتريات</CardTitle>
               <FileDown className="h-6 w-6 text-red-500" />
@@ -93,21 +94,21 @@ const PurchasesPage = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="flex flex-col">
+              <div className="flex flex-col p-4 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg shadow-sm">
                 <span className="text-sm text-muted-foreground">إجمالي المشتريات (هذا الشهر)</span>
-                <span className="text-2xl font-bold">١٢٥,٧٥٠ ريال</span>
+                <span className="text-2xl font-bold text-teal-700">١٢٥,٧٥٠ ريال</span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-sm">
                 <span className="text-sm text-muted-foreground">عدد الفواتير</span>
-                <span className="text-2xl font-bold">٤٨</span>
+                <span className="text-2xl font-bold text-blue-700">٤٨</span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col p-4 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg shadow-sm">
                 <span className="text-sm text-muted-foreground">فواتير غير مدفوعة</span>
                 <span className="text-2xl font-bold text-amber-600">١٢</span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg shadow-sm">
                 <span className="text-sm text-muted-foreground">عدد الموردين النشطين</span>
-                <span className="text-2xl font-bold">١٥</span>
+                <span className="text-2xl font-bold text-emerald-700">١٥</span>
               </div>
             </div>
           </CardContent>
@@ -115,16 +116,16 @@ const PurchasesPage = () => {
 
         {/* الإجراءات السريعة */}
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => navigate("/purchases/new")}>
+          <Button className="bg-teal-600 hover:bg-teal-700" onClick={() => navigate("/purchases/new")}>
             <Receipt className="mr-2 h-4 w-4" /> فاتورة شراء جديدة
           </Button>
-          <Button variant="outline" onClick={() => navigate("/purchases/orders/new")}>
+          <Button variant="outline" className="hover:bg-teal-50" onClick={() => navigate("/purchases/orders/new")}>
             <ShoppingBag className="mr-2 h-4 w-4" /> أمر شراء جديد
           </Button>
-          <Button variant="outline" onClick={() => navigate("/vendors")}>
+          <Button variant="outline" className="hover:bg-teal-50" onClick={() => navigate("/vendors")}>
             إدارة الموردين
           </Button>
-          <Button variant="outline" onClick={() => navigate("/inventory/reorder")}>
+          <Button variant="outline" className="hover:bg-teal-50" onClick={() => navigate("/inventory/reorder")}>
             مراقبة المخزون
           </Button>
         </div>

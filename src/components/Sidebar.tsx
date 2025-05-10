@@ -50,19 +50,17 @@ export function Sidebar({ activePage, onChangePage }: SidebarProps) {
 
       <div className="flex flex-col gap-1 p-2 overflow-y-auto flex-grow">
         {!collapsed ? (
-          // We'll use the default export here and handle props in the component
-          <div>
-            {/* Placeholder for the expanded view content */}
-            {/* The actual components should be reimplemented to accept these props */}
-            <p className="text-sm text-gray-500 px-4 py-2">Expanded View</p>
-          </div>
+          <ExpandedView 
+            activePage={activePage}
+            expandedSections={expandedSections}
+            toggleSection={toggleSection}
+            onChangePage={onChangePage}
+          />
         ) : (
-          // We'll use the default export here and handle props in the component
-          <div>
-            {/* Placeholder for the collapsed view content */}
-            {/* The actual components should be reimplemented to accept these props */}
-            <p className="text-sm text-gray-500 px-4 py-2">Collapsed View</p>
-          </div>
+          <CollapsedView 
+            activePage={activePage}
+            onChangePage={onChangePage}
+          />
         )}
       </div>
       

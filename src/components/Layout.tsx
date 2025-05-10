@@ -19,8 +19,8 @@ export function Layout({
   
   return (
     <div 
-      className={`min-h-screen w-full bg-gradient-to-b from-cyan-50 to-blue-50 flex flex-col 
-      ${isMobile ? 'overflow-hidden' : ''} ${className}`}
+      className={`min-h-screen w-full flex-1 bg-gradient-to-b from-cyan-50 to-blue-50 
+      ${isMobile ? '' : ''} ${className}`}
     >
       {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
@@ -44,8 +44,8 @@ export function Layout({
       )}
       
       <TooltipProvider>
-        <div className={`flex flex-col flex-1 ${isMobile ? 'h-[100dvh] overflow-hidden' : ''}`}>
-          <div className={`flex-1 flex flex-col ${isMobile ? 'overflow-auto' : ''}`}>
+        <div className={`flex flex-col w-full h-full min-h-screen ${isMobile ? 'h-[100dvh]' : ''}`}>
+          <div className={`flex-1 flex flex-col w-full h-full overflow-auto`}>
             {children || <Outlet />}
           </div>
         </div>
