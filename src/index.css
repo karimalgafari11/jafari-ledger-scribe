@@ -100,6 +100,9 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+    /* تكبير حجم الخط الأساسي */
+    font-size: 1.05rem;
+    line-height: 1.6;
   }
   
   html {
@@ -122,6 +125,43 @@
   
   html[dir="ltr"] {
     text-align: left;
+  }
+
+  /* تكبير العناوين */
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  /* تكبير نص الزر */
+  button, .btn {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  /* تكبير نص الإدخال */
+  input, select, textarea {
+    font-size: 1rem;
   }
 }
 
@@ -173,5 +213,22 @@ html[dir="rtl"] .flip-in-rtl {
   
   .page-actions {
     @apply flex items-center space-x-reverse space-x-2;
+  }
+
+  /* تعديل النوافذ المنبثقة لتكون غير شفافة */
+  .dialog-content, 
+  [role="dialog"],
+  .popover-content {
+    @apply bg-white shadow-lg border border-gray-200;
+    backdrop-filter: none !important;
+    background-color: white !important;
+    background-opacity: 100% !important;
+  }
+
+  .dark .dialog-content,
+  .dark [role="dialog"],
+  .dark .popover-content {
+    @apply bg-gray-900 border-gray-700;
+    background-color: #1a1f2c !important;
   }
 }
