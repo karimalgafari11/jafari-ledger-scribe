@@ -82,6 +82,7 @@ const Section = ({
   );
 };
 
+// Attach Section to CollapsedView
 CollapsedView.Section = Section;
 
 export default CollapsedView;

@@ -43,20 +43,20 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
   };
 
   const menuItems = [
-    dashboardItems,
-    accountingItems,
-    invoiceItems,
-    inventoryItems,
-    purchaseItems,
-    customerItems,
-    vendorItems,
-    expenseItems,
-    hrItems,
-    reportItems,
-    aiItems,
-    definitionItems,
-    aboutItems,
-    settingsItems,
+    dashboardItems[0],
+    accountingItems[0],
+    invoiceItems[0],
+    inventoryItems[0],
+    purchaseItems[0],
+    customerItems[0],
+    vendorItems[0],
+    expenseItems[0],
+    hrItems[0],
+    reportItems[0],
+    aiItems[0],
+    definitionItems[0],
+    aboutItems[0],
+    settingsItems[0],
   ];
 
   return (

@@ -79,6 +79,7 @@ const Section = ({
   );
 };
 
+// Attach Section to ExpandedView
 ExpandedView.Section = Section;
 
 export default ExpandedView;
