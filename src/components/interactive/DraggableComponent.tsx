@@ -26,7 +26,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
 }) => {
   const [position, setPosition] = useState(defaultPosition);
   const [isMounted, setIsMounted] = useState(false);
-  const nodeRef = useRef(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
   
   // Ensure component is mounted before accessing DOM
   useEffect(() => {
@@ -41,7 +41,11 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
 
   // If not mounted yet, render children without Draggable to avoid DOM issues
   if (!isMounted) {
-    return <div className={cn('relative', className)}>{children}</div>;
+    return (
+      <div className={cn('relative', className)} ref={nodeRef}>
+        {children}
+      </div>
+    );
   }
 
   return (

@@ -61,7 +61,7 @@ const SheetContent = React.forwardRef<
 >(({ side = "right", className, children, disableDrag = false, ...props }, ref) => {
   const [initialY, setInitialY] = React.useState(0);
   const [isMounted, setIsMounted] = React.useState(false);
-  const nodeRef = React.useRef(null);
+  const nodeRef = React.useRef<HTMLDivElement>(null);
   
   // Use useEffect to safely access window
   React.useEffect(() => {

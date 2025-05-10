@@ -21,7 +21,7 @@ const PopoverContent = React.forwardRef<
   PopoverContentProps
 >(({ className, align = "center", sideOffset = 4, disableDrag = false, ...props }, ref) => {
   const [isMounted, setIsMounted] = React.useState(false);
-  const nodeRef = React.useRef(null);
+  const nodeRef = React.useRef<HTMLDivElement>(null);
   
   // Use useEffect to handle client-side mounting
   React.useEffect(() => {
@@ -59,8 +59,8 @@ const PopoverContent = React.forwardRef<
         nodeRef={nodeRef}
         handle=".drag-handle"
         bounds="body"
-        positionOffset={{ x: 0, y: -32 }}
         defaultPosition={{ x: 0, y: 0 }}
+        positionOffset={{ x: 0, y: -32 }}
       >
         <div ref={nodeRef}>
           <div className="drag-handle absolute inset-x-0 top-0 h-6 cursor-move rounded-t-md" />

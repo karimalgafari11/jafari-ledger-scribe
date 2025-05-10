@@ -40,7 +40,7 @@ const AlertDialogContent = React.forwardRef<
 >(({ className, disableDrag = false, ...props }, ref) => {
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
   const [isMounted, setIsMounted] = React.useState(false);
-  const nodeRef = React.useRef(null);
+  const nodeRef = React.useRef<HTMLDivElement>(null);
   
   // Use useEffect to safely access window
   React.useEffect(() => {
@@ -77,7 +77,7 @@ const AlertDialogContent = React.forwardRef<
     return (
       <AlertDialogPortal>
         <AlertDialogOverlay />
-        <div style={{ position: 'fixed', zIndex: 50 }}>
+        <div className="fixed z-50">
           {innerContent}
         </div>
       </AlertDialogPortal>

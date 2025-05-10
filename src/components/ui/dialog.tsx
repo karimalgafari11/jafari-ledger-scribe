@@ -42,7 +42,7 @@ const DialogContent = React.forwardRef<
   const [size, setSize] = React.useState({ width: 'auto', height: 'auto' });
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
   const [isMounted, setIsMounted] = React.useState(false);
-  const nodeRef = React.useRef(null);
+  const nodeRef = React.useRef<HTMLDivElement>(null);
   
   // Use useEffect to safely access window for client-side only code
   React.useEffect(() => {
