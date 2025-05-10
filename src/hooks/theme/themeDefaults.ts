@@ -1,3 +1,4 @@
+
 import { ThemeSettings, ThemeSizeOption } from "@/types/theme";
 
 // Default theme values
@@ -12,13 +13,13 @@ export const defaultLightTheme: ThemeSettings = {
     textSecondary: '#4b5563',
     link: '#0a6e78',
     sidebar: {
-      background: '#800020', // لون البوردو الداكن
+      background: '#222222', // لون أسود غامق
       foreground: '#ffffff',
       item: {
-        active: '#f9e6eb',
-        hover: '#a3384f',
+        active: '#333333',
+        hover: '#444444',
         text: '#ffffff',
-        activeText: '#800020'
+        activeText: '#ffffff'
       }
     }
   },
@@ -54,11 +55,11 @@ export const defaultDarkTheme: ThemeSettings = {
     textSecondary: '#a0aec0',
     link: '#4fd1c5',
     sidebar: {
-      background: '#4E0013', // لون البوردو الداكن للوضع الليلي
+      background: '#000000', // لون أسود غامق للوضع الليلي
       foreground: '#ffffff',
       item: {
-        active: '#660018',
-        hover: '#73001C',
+        active: '#222222',
+        hover: '#333333',
         text: '#ffffff',
         activeText: '#ffffff'
       }
