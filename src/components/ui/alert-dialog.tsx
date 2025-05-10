@@ -44,15 +44,17 @@ const AlertDialogContent = React.forwardRef<
   
   // Use useEffect to safely access window
   React.useEffect(() => {
-    setIsMounted(true);
     if (typeof window !== 'undefined') {
+      setIsMounted(true);
       setDefaultPosition({
         x: Math.max(0, (window.innerWidth / 2) - 225),
         y: Math.max(0, (window.innerHeight / 2) - 150)
       });
     }
     
-    return () => setIsMounted(false);
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
   
   const innerContent = (
@@ -72,16 +74,16 @@ const AlertDialogContent = React.forwardRef<
     />
   )
 
-  // Only render the draggable content on the client side
-  if (!isMounted) {
+  // Only render basic content during SSR or before client-side hydration
+  if (!isMounted || typeof window === 'undefined') {
     return (
       <AlertDialogPortal>
         <AlertDialogOverlay />
-        <div className="fixed z-50">
+        <div className="fixed z-50 left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2">
           {innerContent}
         </div>
       </AlertDialogPortal>
-    )
+    );
   }
 
   // If dragging is disabled, render content directly

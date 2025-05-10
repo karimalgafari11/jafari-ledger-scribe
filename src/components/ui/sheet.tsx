@@ -65,12 +65,14 @@ const SheetContent = React.forwardRef<
   
   // Use useEffect to safely access window
   React.useEffect(() => {
-    setIsMounted(true);
     if (typeof window !== 'undefined') {
+      setIsMounted(true);
       setInitialY(Math.max(0, (window.innerHeight / 2) - 200));
     }
     
-    return () => setIsMounted(false);
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
   
   const innerContent = (
@@ -87,8 +89,8 @@ const SheetContent = React.forwardRef<
     </SheetPrimitive.Content>
   );
 
-  // Only render the draggable content on the client side
-  if (!isMounted) {
+  // Only render basic content during SSR or before mounting
+  if (!isMounted || typeof window === 'undefined') {
     return (
       <SheetPortal>
         <SheetOverlay />

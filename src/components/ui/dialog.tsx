@@ -46,15 +46,17 @@ const DialogContent = React.forwardRef<
   
   // Use useEffect to safely access window for client-side only code
   React.useEffect(() => {
-    setIsMounted(true);
     if (typeof window !== 'undefined') {
+      setIsMounted(true);
       setDefaultPosition({
         x: Math.max(0, (window.innerWidth / 2) - 225),
         y: Math.max(0, (window.innerHeight / 2) - 150)
       });
     }
     
-    return () => setIsMounted(false);
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
   
   const innerContent = (
@@ -84,11 +86,11 @@ const DialogContent = React.forwardRef<
   );
 
   // Only render the draggable content on the client side
-  if (!isMounted) {
+  if (!isMounted || typeof window === 'undefined') {
     return (
       <DialogPortal>
         <DialogOverlay />
-        <div style={{ position: 'fixed', zIndex: 50 }}>
+        <div className="fixed z-50 left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2">
           {innerContent}
         </div>
       </DialogPortal>

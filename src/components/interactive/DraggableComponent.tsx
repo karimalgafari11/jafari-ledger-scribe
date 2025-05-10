@@ -28,10 +28,15 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
   
-  // Ensure component is mounted before accessing DOM
+  // Use useEffect to safely handle client-side only code
   useEffect(() => {
+    // Set isMounted to true when component mounts on client
     setIsMounted(true);
-    return () => setIsMounted(false);
+    
+    // Clean up function to set isMounted to false when unmounting
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
   
   // Updated handleDrag function with proper typing
@@ -39,8 +44,8 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
     setPosition({ x: data.x, y: data.y });
   };
 
-  // If not mounted yet, render children without Draggable to avoid DOM issues
-  if (!isMounted) {
+  // Prevent trying to use Draggable during SSR or before mounting
+  if (!isMounted || typeof window === 'undefined') {
     return (
       <div className={cn('relative', className)} ref={nodeRef}>
         {children}

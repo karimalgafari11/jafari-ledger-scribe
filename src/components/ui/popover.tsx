@@ -25,8 +25,13 @@ const PopoverContent = React.forwardRef<
   
   // Use useEffect to handle client-side mounting
   React.useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
+    if (typeof window !== 'undefined') {
+      setIsMounted(true);
+    }
+    
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
   
   const innerContent = (
@@ -43,8 +48,8 @@ const PopoverContent = React.forwardRef<
     />
   );
 
-  // If not mounted yet or dragging is disabled, render content directly
-  if (!isMounted || disableDrag) {
+  // If not mounted yet or running in SSR, render content directly
+  if (!isMounted || typeof window === 'undefined' || disableDrag) {
     return (
       <PopoverPrimitive.Portal>
         {innerContent}
