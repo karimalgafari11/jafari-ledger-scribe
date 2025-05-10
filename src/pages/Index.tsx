@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -11,7 +10,7 @@ const Index = () => {
   return (
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="flex h-screen w-full overflow-hidden bg-gradient-to-b from-cyan-50 to-blue-100">
-        <AccountingSidebar autoClose={true} />
+        <AccountingSidebar autoClose={isMobile} />
         <div className="flex-1 overflow-auto w-full">
           <Outlet />
         </div>

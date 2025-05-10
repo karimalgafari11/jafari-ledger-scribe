@@ -175,83 +175,87 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="container mx-auto p-4">
-      <Header title="لوحة التحكم" showBack={false} />
+    <div className="w-full h-full min-h-screen flex flex-col">
+      <Header title="لوحة التحكم" showBack={false} className="w-full" />
 
-      <div className="mb-4">
-        <h2 className="text-2xl font-semibold mb-2">نظرة عامة</h2>
-        <p className="text-gray-600">
-          مرحباً بك في لوحة التحكم الخاصة بك. يمكنك هنا الاطلاع على أهم
-          المؤشرات والبيانات الخاصة بعملك.
-        </p>
-      </div>
+      <div className="flex-1 p-4 overflow-auto">
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold mb-2">نظرة عامة</h2>
+          <p className="text-gray-600">
+            مرحباً بك في لوحة التحكم الخاصة بك. يمكنك هنا الاطلاع على أهم
+            المؤشرات والبيانات الخاصة بعملك.
+          </p>
+        </div>
 
-      <DashboardContent
-        totalSales={156750.25}
-        totalExpenses={78325.12}
-        netProfit={78425.13}
-        profitMargin="50.03%"
-        overdueInvoices={12}
-        overdueTotalAmount={18500.75}
-        kpis={dashboardKpis}
-        salesData={transformedSalesData}
-        profitData={transformedProfitData}
-        customerDebtData={transformedCustomerDebtData}
-        supplierCreditData={transformedSupplierCreditData}
-        costCenterData={transformedCostCenterData}
-        dailySalesData={transformedDailySalesData}
-        systemAlerts={alerts}
-        interactiveMode={false}
-        displayOptions={displayOptions}
-        shortcuts={shortcuts}
-      />
+        <DashboardContent
+          totalSales={156750.25}
+          totalExpenses={78325.12}
+          netProfit={78425.13}
+          profitMargin="50.03%"
+          overdueInvoices={12}
+          overdueTotalAmount={18500.75}
+          kpis={dashboardKpis}
+          salesData={transformedSalesData}
+          profitData={transformedProfitData}
+          customerDebtData={transformedCustomerDebtData}
+          supplierCreditData={transformedSupplierCreditData}
+          costCenterData={transformedCostCenterData}
+          dailySalesData={transformedDailySalesData}
+          systemAlerts={alerts}
+          interactiveMode={false}
+          displayOptions={displayOptions}
+          shortcuts={shortcuts}
+        />
 
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">خيارات العرض</h3>
-        <label className="inline-flex items-center">
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-600"
-            checked={displayOptions.showStats}
-            onChange={(e) =>
-              setDisplayOptions({ ...displayOptions, showStats: e.target.checked })
-            }
-          />
-          <span className="ml-2 text-gray-700">إظهار الإحصائيات الرئيسية</span>
-        </label>
-        <label className="inline-flex items-center ml-4">
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-600"
-            checked={displayOptions.showKpis}
-            onChange={(e) =>
-              setDisplayOptions({ ...displayOptions, showKpis: e.target.checked })
-            }
-          />
-          <span className="ml-2 text-gray-700">إظهار مؤشرات الأداء الرئيسية</span>
-        </label>
-        <label className="inline-flex items-center ml-4">
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-600"
-            checked={displayOptions.showCharts}
-            onChange={(e) =>
-              setDisplayOptions({ ...displayOptions, showCharts: e.target.checked })
-            }
-          />
-          <span className="ml-2 text-gray-700">إظهار الرسوم البيانية</span>
-        </label>
-        <label className="inline-flex items-center ml-4">
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-600"
-            checked={displayOptions.showAiWidget}
-            onChange={(e) =>
-              setDisplayOptions({ ...displayOptions, showAiWidget: e.target.checked })
-            }
-          />
-          <span className="ml-2 text-gray-700">إظهار أدوات الذكاء الاصطناعي</span>
-        </label>
+        <div className="mt-6 pb-4">
+          <h3 className="text-xl font-semibold mb-2">خيارات العرض</h3>
+          <div className="flex flex-wrap gap-3">
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={displayOptions.showStats}
+                onChange={(e) =>
+                  setDisplayOptions({ ...displayOptions, showStats: e.target.checked })
+                }
+              />
+              <span className="mr-2 text-gray-700">إظهار الإحصائيات الرئيسية</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={displayOptions.showKpis}
+                onChange={(e) =>
+                  setDisplayOptions({ ...displayOptions, showKpis: e.target.checked })
+                }
+              />
+              <span className="mr-2 text-gray-700">إظهار مؤشرات الأداء الرئيسية</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={displayOptions.showCharts}
+                onChange={(e) =>
+                  setDisplayOptions({ ...displayOptions, showCharts: e.target.checked })
+                }
+              />
+              <span className="mr-2 text-gray-700">إظهار الرسوم البيانية</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={displayOptions.showAiWidget}
+                onChange={(e) =>
+                  setDisplayOptions({ ...displayOptions, showAiWidget: e.target.checked })
+                }
+              />
+              <span className="mr-2 text-gray-700">إظهار أدوات الذكاء الاصطناعي</span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   );

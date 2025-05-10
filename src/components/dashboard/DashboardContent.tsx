@@ -61,7 +61,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const performance = analyzePerformance();
 
   const dashboardContent = (
-    <>
+    <div className="w-full">
       {/* عرض الاختصارات إذا كان هناك اختصارات مفعلة */}
       {shortcuts && shortcuts.length > 0 && (
         <div className="mb-6">
@@ -107,11 +107,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           <FinancialDecisionsWidget performance={performance} />
         </div>
       )}
-    </>
+    </div>
   );
 
   return (
-    <div className={`flex-1 overflow-auto w-full ${isMobile ? 'px-2' : ''}`}>
+    <div className="w-full flex-1 overflow-auto">
       {interactiveMode ? (
         <InteractiveLayout 
           enableDrag={true} 
