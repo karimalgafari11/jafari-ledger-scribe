@@ -18,10 +18,7 @@ export function Layout({
   const isMobile = useIsMobile();
   
   return (
-    <div 
-      className={`min-h-screen w-full flex-1 flex flex-col bg-gradient-to-b from-cyan-50 to-blue-50 
-      ${isMobile ? 'px-2' : 'px-4'} py-4 ${className}`}
-    >
+    <div className={`page-container ${className}`}>
       {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
           <img 
@@ -44,7 +41,7 @@ export function Layout({
       )}
       
       <TooltipProvider>
-        <div className="flex flex-col w-full h-full min-h-screen">
+        <div className="w-full h-full flex flex-col">
           <div className="flex-1 flex flex-col w-full h-full overflow-auto">
             {children || <Outlet />}
           </div>

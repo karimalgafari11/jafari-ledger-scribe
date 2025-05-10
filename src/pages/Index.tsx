@@ -9,9 +9,9 @@ const Index = () => {
 
   return (
     <SidebarProvider defaultOpen={!isMobile}>
-      <div className="flex h-screen w-full overflow-hidden bg-gradient-to-b from-cyan-50 to-blue-100">
+      <div className="app-container">
         <AccountingSidebar autoClose={isMobile} />
-        <div className="flex-1 overflow-auto w-full">
+        <div className="app-content">
           <div className="min-h-screen w-full">
             <Outlet />
           </div>

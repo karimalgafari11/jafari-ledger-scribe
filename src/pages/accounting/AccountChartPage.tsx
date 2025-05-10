@@ -2,12 +2,16 @@
 import React from "react";
 import { Layout } from "@/components/Layout";
 import { AccountChartContainer } from "@/components/accounting/AccountChartContainer";
+import { Header } from "@/components/Header";
 
 const AccountChartPage: React.FC = () => {
   return (
-    <Layout className="min-h-screen w-full p-0 md:p-4">
-      <AccountChartContainer />
-    </Layout>
+    <div className="page-container">
+      <Header title="مخطط الحسابات" showBack={true} className="w-full" />
+      <div className="page-content">
+        <AccountChartContainer />
+      </div>
+    </div>
   );
 };
 

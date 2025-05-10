@@ -60,9 +60,9 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
   ];
 
   return (
-    <div
+    <aside 
       data-open={open}
-      className="border-l group fixed inset-0 z-30 h-screen data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-sidebar print:hidden"
+      className="h-screen border-l data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-sidebar print:hidden z-40 shrink-0"
       dir="rtl"
     >
       <div className="flex flex-col h-full">
@@ -155,7 +155,7 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
           <LanguageSwitcher />
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

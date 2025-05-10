@@ -28,10 +28,10 @@ const Dashboard = () => {
   } = useDashboard();
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden">
+    <div className="page-container">
       <Header title="لوحة التحكم" showBack={false} className="w-full" />
 
-      <div className="flex-1 p-4 overflow-auto">
+      <div className="page-content">
         <DashboardWelcomeBanner />
 
         <DashboardContent
@@ -57,6 +57,7 @@ const Dashboard = () => {
         <DisplayOptionsForm 
           displayOptions={displayOptions} 
           setDisplayOptions={setDisplayOptions} 
+          className="mb-6"
         />
       </div>
     </div>

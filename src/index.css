@@ -140,3 +140,38 @@ html[dir="ltr"] .rtl-element {
 html[dir="rtl"] .flip-in-rtl {
   transform: scaleX(-1);
 }
+
+/* اضافة طبقات مخصصة للتطبيق */
+@layer components {
+  .app-container {
+    @apply flex h-screen w-full overflow-hidden bg-gradient-to-b from-cyan-50 to-blue-50;
+  }
+  
+  .app-content {
+    @apply flex-1 overflow-auto w-full min-h-screen;
+  }
+
+  .page-container {
+    @apply w-full h-full flex flex-col overflow-hidden;
+  }
+  
+  .page-content {
+    @apply flex-1 p-4 overflow-auto;
+  }
+  
+  .card-container {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4 h-full;
+  }
+  
+  .page-header {
+    @apply mb-4 flex items-center justify-between;
+  }
+  
+  .page-title {
+    @apply text-2xl font-semibold;
+  }
+  
+  .page-actions {
+    @apply flex items-center space-x-reverse space-x-2;
+  }
+}
