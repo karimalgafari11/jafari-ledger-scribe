@@ -28,31 +28,32 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
   
-  // Use useEffect to safely handle client-side only code
+  // We need to use client-side only rendering for Draggable
   useEffect(() => {
-    // Set isMounted to true when component mounts on client
-    setIsMounted(true);
+    // Only run in browser environment
+    if (typeof window !== 'undefined') {
+      setIsMounted(true);
+    }
     
-    // Clean up function to set isMounted to false when unmounting
     return () => {
       setIsMounted(false);
     };
   }, []);
   
-  // Updated handleDrag function with proper typing
   const handleDrag = (e: DraggableEvent, data: DraggableData) => {
     setPosition({ x: data.x, y: data.y });
   };
 
-  // Prevent trying to use Draggable during SSR or before mounting
+  // Return regular div during SSR or before mounting
   if (!isMounted || typeof window === 'undefined') {
     return (
-      <div className={cn('relative', className)} ref={nodeRef}>
+      <div className={cn('relative', className)}>
         {children}
       </div>
     );
   }
 
+  // Only render Draggable on the client side after mounting
   return (
     <Draggable
       nodeRef={nodeRef}

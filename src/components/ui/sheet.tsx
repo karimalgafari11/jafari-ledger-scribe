@@ -63,7 +63,7 @@ const SheetContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // Use useEffect to safely access window
+  // Client-side only effect
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsMounted(true);
@@ -89,7 +89,7 @@ const SheetContent = React.forwardRef<
     </SheetPrimitive.Content>
   );
 
-  // Only render basic content during SSR or before mounting
+  // Use static positioning during SSR or before client-side hydration
   if (!isMounted || typeof window === 'undefined') {
     return (
       <SheetPortal>
@@ -109,8 +109,7 @@ const SheetContent = React.forwardRef<
     );
   }
 
-  // For left and right, we can make them draggable but only vertically
-  // since the horizontal position is fixed
+  // For left and right sides, make them draggable vertically only
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -120,6 +119,13 @@ const SheetContent = React.forwardRef<
         bounds={{ left: 0, right: 0 }} // Restrict horizontal movement
         defaultPosition={{ x: 0, y: initialY }}
         axis="y" // Only allow vertical dragging
+        onStart={(e) => {
+          // Prevent dragging when clicking on interactive elements
+          const target = e.target as HTMLElement;
+          if (target.closest('button') || target.closest('input') || target.closest('select')) {
+            return false;
+          }
+        }}
       >
         <div ref={nodeRef} className="fixed" style={{ 
           [side === "left" ? "left" : "right"]: 0

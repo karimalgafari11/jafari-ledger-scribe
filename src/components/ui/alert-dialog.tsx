@@ -42,7 +42,7 @@ const AlertDialogContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // Use useEffect to safely access window
+  // Client-side only effect
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsMounted(true);
@@ -74,7 +74,7 @@ const AlertDialogContent = React.forwardRef<
     />
   )
 
-  // Only render basic content during SSR or before client-side hydration
+  // Use static positioning during SSR or before client-side hydration
   if (!isMounted || typeof window === 'undefined') {
     return (
       <AlertDialogPortal>
@@ -86,7 +86,7 @@ const AlertDialogContent = React.forwardRef<
     );
   }
 
-  // If dragging is disabled, render content directly
+  // Use static positioning if dragging is disabled
   if (disableDrag) {
     return (
       <AlertDialogPortal>
@@ -106,6 +106,13 @@ const AlertDialogContent = React.forwardRef<
         bounds="body"
         defaultPosition={defaultPosition}
         positionOffset={{ x: 0, y: 0 }}
+        onStart={(e) => {
+          // Prevent dragging when clicking on interactive elements
+          const target = e.target as HTMLElement;
+          if (target.closest('button') || target.closest('input') || target.closest('select')) {
+            return false;
+          }
+        }}
       >
         <div ref={nodeRef} className="fixed z-50">
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />

@@ -23,7 +23,7 @@ const PopoverContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // Use useEffect to handle client-side mounting
+  // Client-side only effect
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsMounted(true);
@@ -48,7 +48,7 @@ const PopoverContent = React.forwardRef<
     />
   );
 
-  // If not mounted yet or running in SSR, render content directly
+  // Use static positioning during SSR, before client-side hydration, or when drag is disabled
   if (!isMounted || typeof window === 'undefined' || disableDrag) {
     return (
       <PopoverPrimitive.Portal>
@@ -66,6 +66,13 @@ const PopoverContent = React.forwardRef<
         bounds="body"
         defaultPosition={{ x: 0, y: 0 }}
         positionOffset={{ x: 0, y: -32 }}
+        onStart={(e) => {
+          // Prevent dragging when clicking on interactive elements
+          const target = e.target as HTMLElement;
+          if (target.closest('button') || target.closest('input') || target.closest('select')) {
+            return false;
+          }
+        }}
       >
         <div ref={nodeRef}>
           <div className="drag-handle absolute inset-x-0 top-0 h-6 cursor-move rounded-t-md" />

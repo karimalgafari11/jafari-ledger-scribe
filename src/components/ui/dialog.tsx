@@ -39,12 +39,15 @@ const DialogContent = React.forwardRef<
     disableResize?: boolean;
   }
 >(({ className, children, disableDrag = false, disableResize = false, ...props }, ref) => {
-  const [size, setSize] = React.useState({ width: 'auto', height: 'auto' });
-  const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
+  // Don't use state for size since it might cause hydration mismatches
+  const [size] = React.useState({ width: 'auto', height: 'auto' });
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
+
+  // Default position for the dialog
+  const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
   
-  // Use useEffect to safely access window for client-side only code
+  // Client-side only effect
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsMounted(true);
@@ -85,7 +88,7 @@ const DialogContent = React.forwardRef<
     </DialogPrimitive.Content>
   );
 
-  // Only render the draggable content on the client side
+  // Only use static positioning during SSR or before client-side hydration
   if (!isMounted || typeof window === 'undefined') {
     return (
       <DialogPortal>
@@ -97,7 +100,7 @@ const DialogContent = React.forwardRef<
     );
   }
 
-  // If dragging is disabled, render content directly
+  // Use static positioning when drag is disabled
   if (disableDrag) {
     return (
       <DialogPortal>
@@ -117,8 +120,16 @@ const DialogContent = React.forwardRef<
         bounds="body"
         defaultPosition={defaultPosition}
         positionOffset={{ x: 0, y: 0 }}
+        onStart={(e) => {
+          // Prevent dragging when clicking on interactive elements
+          const target = e.target as HTMLElement;
+          if (target.closest('button') || target.closest('input') || target.closest('select')) {
+            return false;
+          }
+        }}
       >
         <div ref={nodeRef} className="fixed z-50">
+          {/* Handle area at the top of the dialog */}
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />
           {innerContent}
         </div>
