@@ -28,13 +28,17 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
   
-  // نستخدم useEffect للتأكد من أن الكود يعمل فقط بعد التحميل في جانب العميل
+  // Use useEffect to ensure code only runs after mounting on client side
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsMounted(true);
-    }
+    // Set mounted state only after component is fully mounted
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        setIsMounted(true);
+      }
+    }, 10);
     
     return () => {
+      clearTimeout(timer);
       setIsMounted(false);
     };
   }, []);
@@ -43,16 +47,16 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
     setPosition({ x: data.x, y: data.y });
   };
 
-  // عرض div عادي أثناء SSR أو قبل التحميل
+  // Render regular div during SSR or before mounting
   if (!isMounted || typeof window === 'undefined') {
     return (
-      <div className={cn('relative', className)}>
+      <div ref={nodeRef} className={cn('relative', className)}>
         {children}
       </div>
     );
   }
 
-  // تقديم Draggable فقط بعد التحميل على جانب العميل
+  // Only render Draggable after fully mounted on client side
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -62,7 +66,18 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
       handle={handle}
       bounds={bounds}
       disabled={disabled}
-      onStart={onDragStart}
+      onStart={(e) => {
+        // Prevent dragging when clicking on interactive elements
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || 
+            target.closest('input') || 
+            target.closest('select') || 
+            target.closest('a')) {
+          return false;
+        }
+        onDragStart?.();
+        return true;
+      }}
       onStop={onDragEnd}
     >
       <div ref={nodeRef} className={cn('relative', className)}>
