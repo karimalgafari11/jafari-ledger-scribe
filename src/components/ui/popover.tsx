@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -74,7 +75,7 @@ const PopoverContent = React.forwardRef<
           if (target.closest('button') || target.closest('input') || target.closest('select')) {
             return false;
           }
-          return;
+          // Don't return anything explicitly (undefined is compatible with void)
         }}
       >
         <div ref={nodeRef}>

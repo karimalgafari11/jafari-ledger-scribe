@@ -60,7 +60,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
     if (onDragStart) {
       onDragStart();
     }
-    return;
+    // Don't return anything (implicitly returns undefined which is compatible with void)
   };
 
   // Render regular div during SSR or before mounting

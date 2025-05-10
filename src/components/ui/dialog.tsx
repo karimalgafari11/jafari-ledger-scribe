@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
-import Draggable from "react-draggable"
+import Draggable, { DraggableEventHandler } from "react-draggable"
 import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "./resizable"
 
 import { cn } from "@/lib/utils"
@@ -38,28 +38,24 @@ const DialogContent = React.forwardRef<
     disableResize?: boolean;
   }
 >(({ className, children, disableDrag = false, disableResize = false, ...props }, ref) => {
-  // عدم استخدام حالة للحجم لتجنب حدوث تعارض في التوافق
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
 
-  // موقع افتراضي للمربع الحواري
+  // Default position for dialog
   const [defaultPosition, setDefaultPosition] = React.useState({ x: 0, y: 0 });
   
-  // تأثير خاص بجانب العميل فقط
+  // Client-side effect only
   React.useEffect(() => {
-    const handleMount = () => {
+    const timer = setTimeout(() => {
       if (typeof window !== 'undefined') {
         setIsMounted(true);
-        // تعيين الموقع الافتراضي في الوسط
+        // Set default position in the center
         setDefaultPosition({
           x: Math.max(0, (window.innerWidth / 2) - 225),
           y: Math.max(0, (window.innerHeight / 2) - 150)
         });
       }
-    };
-    
-    // تأخير قصير للتأكد من تحميل DOM بالكامل
-    const timer = setTimeout(handleMount, 50);
+    }, 100); // Increased timeout to ensure DOM is fully ready
     
     return () => {
       clearTimeout(timer);
@@ -67,7 +63,7 @@ const DialogContent = React.forwardRef<
     };
   }, []);
 
-  // محتوى المربع الحواري الداخلي
+  // Inner dialog content
   const innerContent = (
     <DialogPrimitive.Content
       ref={ref}
@@ -92,7 +88,7 @@ const DialogContent = React.forwardRef<
     </DialogPrimitive.Content>
   );
 
-  // استخدام موضع ثابت أثناء SSR أو قبل تحميل جانب العميل
+  // Use fixed positioning during SSR or before client-side loading
   if (!isMounted || typeof window === 'undefined') {
     return (
       <DialogPortal>
@@ -104,7 +100,7 @@ const DialogContent = React.forwardRef<
     );
   }
 
-  // استخدام موضع ثابت عند تعطيل السحب
+  // Use fixed positioning when dragging is disabled
   if (disableDrag) {
     return (
       <DialogPortal>
@@ -114,7 +110,16 @@ const DialogContent = React.forwardRef<
     );
   }
 
-  // في حالة أخرى، استخدام Draggable
+  const handleDragStart: DraggableEventHandler = (e) => {
+    // Prevent dragging when clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('input') || target.closest('select')) {
+      return false;
+    }
+    // Don't return anything explicitly (undefined is compatible with void)
+  };
+
+  // Otherwise, use Draggable
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -123,16 +128,10 @@ const DialogContent = React.forwardRef<
         handle=".drag-handle"
         bounds="body"
         defaultPosition={defaultPosition}
-        onStart={(e) => {
-          // منع السحب عند النقر على العناصر التفاعلية
-          const target = e.target as HTMLElement;
-          if (target.closest('button') || target.closest('input') || target.closest('select')) {
-            return false;
-          }
-        }}
+        onStart={handleDragStart}
       >
         <div ref={nodeRef} className="fixed z-50">
-          {/* منطقة المقبض في أعلى المربع الحواري */}
+          {/* Drag handle area at the top of dialog */}
           <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />
           {innerContent}
         </div>

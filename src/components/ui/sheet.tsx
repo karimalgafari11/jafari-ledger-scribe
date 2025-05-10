@@ -3,7 +3,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
 import * as React from "react"
-import Draggable from "react-draggable"
+import Draggable, { DraggableEventHandler } from "react-draggable"
 
 import { cn } from "@/lib/utils"
 
@@ -63,17 +63,14 @@ const SheetContent = React.forwardRef<
   const [isMounted, setIsMounted] = React.useState(false);
   const nodeRef = React.useRef<HTMLDivElement>(null);
   
-  // تأثير خاص بجانب العميل فقط
+  // Client-side effect only
   React.useEffect(() => {
-    const handleMount = () => {
+    const timer = setTimeout(() => {
       if (typeof window !== 'undefined') {
         setIsMounted(true);
         setInitialY(Math.max(0, (window.innerHeight / 2) - 200));
       }
-    };
-    
-    // تأخير قصير للتأكد من تحميل DOM بالكامل
-    const timer = setTimeout(handleMount, 50);
+    }, 100); // Increased timeout to ensure DOM is fully ready
     
     return () => {
       clearTimeout(timer);
@@ -95,7 +92,7 @@ const SheetContent = React.forwardRef<
     </SheetPrimitive.Content>
   );
 
-  // استخدام موضع ثابت أثناء SSR أو قبل تحميل جانب العميل
+  // Use fixed positioning during SSR or before client-side loading
   if (!isMounted || typeof window === 'undefined') {
     return (
       <SheetPortal>
@@ -105,7 +102,7 @@ const SheetContent = React.forwardRef<
     );
   }
 
-  // الجانب العلوي والسفلي لا يجب أن يكونا قابلين للسحب
+  // Top and bottom sides should not be draggable
   if (disableDrag || side === "top" || side === "bottom") {
     return (
       <SheetPortal>
@@ -115,23 +112,26 @@ const SheetContent = React.forwardRef<
     );
   }
 
-  // للجانبين الأيسر والأيمن، اجعلهما قابلين للسحب عموديًا فقط
+  // For left and right sides, make them draggable vertically only
+  const handleDragStart: DraggableEventHandler = (e) => {
+    // Prevent dragging when clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('input') || target.closest('select')) {
+      return false;
+    }
+    // Don't return anything explicitly (undefined is compatible with void)
+  };
+
   return (
     <SheetPortal>
       <SheetOverlay />
       <Draggable
         nodeRef={nodeRef}
         handle=".drag-handle"
-        bounds={{ left: 0, right: 0 }} // تقييد الحركة الأفقية
+        bounds={{ left: 0, right: 0 }} // Restrict horizontal movement
         defaultPosition={{ x: 0, y: initialY }}
-        axis="y" // السماح بالسحب العمودي فقط
-        onStart={(e) => {
-          // منع السحب عند النقر على العناصر التفاعلية
-          const target = e.target as HTMLElement;
-          if (target.closest('button') || target.closest('input') || target.closest('select')) {
-            return false;
-          }
-        }}
+        axis="y" // Allow vertical dragging only
+        onStart={handleDragStart}
       >
         <div ref={nodeRef} className="fixed" style={{ 
           [side === "left" ? "left" : "right"]: 0
