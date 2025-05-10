@@ -1,9 +1,10 @@
-
 "use client"
 
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
+import Draggable from "react-draggable"
+import ResizablePanel, { ResizableHandle, ResizablePanelGroup } from "./resizable"
 
 import { cn } from "@/lib/utils"
 
@@ -32,16 +33,29 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+    disableDrag?: boolean;
+    disableResize?: boolean;
+  }
+>(({ className, children, disableDrag = false, disableResize = false, ...props }, ref) => {
+  const [size, setSize] = React.useState({ width: 'auto', height: 'auto' });
+  
+  const innerContent = (
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg dark:bg-gray-900",
+        disableDrag ? "" : "cursor-move",
+        disableResize ? "" : "resize",
         className
       )}
+      style={{ 
+        width: size.width,
+        height: size.height,
+        transform: disableDrag ? 'translate(-50%, -50%)' : 'none',
+        left: disableDrag ? '50%' : undefined,
+        top: disableDrag ? '50%' : undefined,
+      }}
       {...props}
     >
       {children}
@@ -50,8 +64,35 @@ const DialogContent = React.forwardRef<
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
-  </DialogPortal>
-))
+  );
+
+  // If dragging is disabled, render content directly
+  if (disableDrag) {
+    return (
+      <DialogPortal>
+        <DialogOverlay />
+        {innerContent}
+      </DialogPortal>
+    );
+  }
+
+  // Otherwise, wrap in Draggable
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <Draggable
+        handle=".drag-handle"
+        bounds="body"
+        defaultPosition={{x: window.innerWidth / 2 - 225, y: window.innerHeight / 2 - 150}}
+      >
+        <div className="fixed z-50">
+          <div className="drag-handle absolute inset-x-0 top-0 h-8 cursor-move" />
+          {innerContent}
+        </div>
+      </Draggable>
+    </DialogPortal>
+  );
+})
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({
