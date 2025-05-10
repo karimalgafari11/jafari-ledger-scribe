@@ -6,7 +6,10 @@ import Dashboard from "@/pages/Dashboard";
 import Reports from "@/pages/Reports";
 import NotFound from "@/pages/NotFound";
 import LoginPage from "@/pages/auth/LoginPage";
+import RegisterPage from "@/pages/auth/RegisterPage";
 import NotificationsPage from "@/pages/settings/NotificationsPage";
+import { PublicRoute } from "@/components/auth/PublicRoute";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 // صفحات الميزات المتقدمة الجديدة
 import FinancialAnalysisPage from "@/pages/financial/FinancialAnalysisPage";
@@ -35,11 +38,15 @@ import { hrRoutes } from "./hrRoutes";
 export const appRoutes: RouteObject[] = [
   {
     path: "/login",
-    element: <LoginPage />
+    element: <PublicRoute><LoginPage /></PublicRoute>
+  },
+  {
+    path: "/auth/register",
+    element: <PublicRoute><RegisterPage /></PublicRoute>
   },
   {
     path: "/",
-    element: <Index />,
+    element: <AuthGuard><Index /></AuthGuard>,
     children: [
       { index: true, element: <Dashboard /> },
       { path: "dashboard", element: <Dashboard /> },
