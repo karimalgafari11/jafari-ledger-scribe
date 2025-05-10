@@ -1,10 +1,11 @@
+
 "use client"
 
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 import Draggable from "react-draggable"
-import ResizablePanel, { ResizableHandle, ResizablePanelGroup } from "./resizable"
+import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "./resizable"
 
 import { cn } from "@/lib/utils"
 
