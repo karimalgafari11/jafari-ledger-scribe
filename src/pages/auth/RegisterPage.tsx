@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -8,28 +8,40 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signIn, isLoading, user } = useAuth();
+  const [fullName, setFullName] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const { signUp, isLoading } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // إذا كان المستخدم مسجل الدخول بالفعل، انتقل إلى الصفحة الرئيسية
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      toast.error("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+    if (!email || !password || !passwordConfirm || !fullName) {
+      toast.error("الرجاء إكمال جميع الحقول المطلوبة");
       return;
     }
 
-    await signIn(email, password);
+    if (password !== passwordConfirm) {
+      toast.error("كلمتا المرور غير متطابقتين");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+      return;
+    }
+
+    try {
+      await signUp(email, password, { 
+        full_name: fullName 
+      });
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
   };
 
   return (
@@ -52,11 +64,24 @@ const LoginPage: React.FC = () => {
         
         <Card>
           <CardHeader className="text-center">
-            <h2 className="text-xl font-medium">تسجيل الدخول</h2>
+            <h2 className="text-xl font-medium">إنشاء حساب جديد</h2>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
+                <div>
+                  <label htmlFor="fullName" className="block text-sm font-medium mb-1">الاسم الكامل</label>
+                  <Input 
+                    id="fullName"
+                    type="text" 
+                    value={fullName} 
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="أدخل الاسم الكامل"
+                    className="rtl"
+                    required
+                  />
+                </div>
+                
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-1">البريد الإلكتروني</label>
                   <Input 
@@ -82,6 +107,19 @@ const LoginPage: React.FC = () => {
                     required
                   />
                 </div>
+
+                <div>
+                  <label htmlFor="passwordConfirm" className="block text-sm font-medium mb-1">تأكيد كلمة المرور</label>
+                  <Input 
+                    id="passwordConfirm"
+                    type="password" 
+                    value={passwordConfirm} 
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    placeholder="أعد إدخال كلمة المرور"
+                    className="rtl"
+                    required
+                  />
+                </div>
               </div>
               
               <Button 
@@ -89,15 +127,15 @@ const LoginPage: React.FC = () => {
                 className="w-full mt-6"
                 disabled={isLoading}
               >
-                {isLoading ? "جاري التحقق..." : "تسجيل الدخول"}
+                {isLoading ? "جاري التسجيل..." : "إنشاء حساب"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center space-y-2 flex-col">
             <div className="text-sm text-center">
-              ليس لديك حساب؟{" "}
-              <Link to="/auth/register" className="text-blue-600 hover:underline">
-                إنشاء حساب جديد
+              لديك حساب بالفعل؟{" "}
+              <Link to="/auth/login" className="text-blue-600 hover:underline">
+                تسجيل الدخول
               </Link>
             </div>
             <div className="text-sm text-muted-foreground text-center">
@@ -110,4 +148,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

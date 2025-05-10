@@ -9,7 +9,96 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          branch: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          is_active: boolean | null
+          last_login: string | null
+          phone: string | null
+          role: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          branch?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          is_active?: boolean | null
+          last_login?: string | null
+          phone?: string | null
+          role?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          branch?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_login?: string | null
+          phone?: string | null
+          role?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      system_settings: {
+        Row: {
+          address: string | null
+          company_name: string
+          created_at: string | null
+          currency: string | null
+          email: string | null
+          fiscal_year_start: string | null
+          id: string
+          language: string | null
+          logo: string | null
+          phone: string | null
+          tax_number: string | null
+          theme: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          company_name?: string
+          created_at?: string | null
+          currency?: string | null
+          email?: string | null
+          fiscal_year_start?: string | null
+          id?: string
+          language?: string | null
+          logo?: string | null
+          phone?: string | null
+          tax_number?: string | null
+          theme?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          company_name?: string
+          created_at?: string | null
+          currency?: string | null
+          email?: string | null
+          fiscal_year_start?: string | null
+          id?: string
+          language?: string | null
+          logo?: string | null
+          phone?: string | null
+          tax_number?: string | null
+          theme?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

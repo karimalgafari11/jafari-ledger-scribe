@@ -1,174 +1,163 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { menuItems } from "@/config/menuItems";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ExpandedView } from "@/components/sidebar/ExpandedView";
+import { CollapsedView } from "@/components/sidebar/CollapsedView";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useSidebarContext } from "@/components/ui/sidebar";
+import { useMediaQuery } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { LogOut, UserCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarGroupLabel,
-  SidebarGroup,
-  SidebarGroupContent,
-  useSidebar
-} from "@/components/ui/sidebar";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import SidebarItem from "./sidebar/SidebarItem";
 
-interface SidebarMenuProps {
-  autoClose?: boolean;
-}
+// Importing menu items
+import dashboardItems from "@/config/menuItems/dashboardItems";
+import accountingItems from "@/config/menuItems/accountingItems";
+import invoiceItems from "@/config/menuItems/invoiceItems";
+import inventoryItems from "@/config/menuItems/inventoryItems";
+import purchaseItems from "@/config/menuItems/purchaseItems";
+import customerItems from "@/config/menuItems/customerItems";
+import vendorItems from "@/config/menuItems/vendorItems";
+import expenseItems from "@/config/menuItems/expenseItems";
+import hrItems from "@/config/menuItems/hrItems";
+import reportItems from "@/config/menuItems/reportItems";
+import definitionItems from "@/config/menuItems/definitionItems";
+import aiItems from "@/config/menuItems/aiItems";
+import aboutItems from "@/config/menuItems/aboutItems";
+import settingsItems from "@/config/menuItems/settingsItems";
 
-const AccountingSidebar: React.FC<SidebarMenuProps> = ({
-  autoClose = true
-}) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const { isMobile, setOpenMobile } = useSidebar();
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
+  const { open, setOpen } = useSidebarContext();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { user, profile, signOut } = useAuth();
 
-  const isSectionActive = (section: any): boolean => {
-    if (section.path && currentPath === section.path) return true;
-    if (section.children && section.children.length > 0) {
-      return section.children.some((child: any) => {
-        if (child.path === currentPath) return true;
-        if (child.path && currentPath.startsWith(child.path + '/')) return true;
-        return false;
-      });
-    }
-    return false;
-  };
-
-  useEffect(() => {
-    const newExpandedSections: Record<string, boolean> = {};
-    menuItems.forEach(section => {
-      if (isSectionActive(section)) {
-        newExpandedSections[section.section] = true;
-      }
-    });
-    setExpandedSections(newExpandedSections);
-  }, [currentPath]);
-
-  const toggleSection = (section: string) => {
-    if (autoClose) {
-      const newExpandedSections: Record<string, boolean> = {};
-      if (!expandedSections[section]) {
-        newExpandedSections[section] = true;
-      }
-      setExpandedSections(newExpandedSections);
-    } else {
-      setExpandedSections(prev => ({
-        ...prev,
-        [section]: !prev[section]
-      }));
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("تم تسجيل الخروج بنجاح");
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
 
-  const handleItemClick = (path: string) => {
-    // تأكد من أن المسار يبدأ بـ /
-    const finalPath = path.startsWith('/') ? path : `/${path}`;
-    navigate(finalPath);
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-  };
-
-  // تحقق من وجود المسار قبل الانتقال إليه
-  const safeNavigate = (path: string) => {
-    // تأكد من أن المسار يبدأ بـ /
-    const finalPath = path.startsWith('/') ? path : `/${path}`;
-    
-    // التأكد من أن المسار موجود في routes أو المسارات المعروفة
-    const knownRoutes = [
-      '/dashboard', '/reports', '/ai/financial-decisions', 
-      '/invoices', '/accounting', '/customers', '/vendors', 
-      '/purchases', '/inventory', '/settings'
-    ];
-    
-    // إذا كان المسار موجوداً أو يبدأ بأحد المسارات المعروفة، انتقل إليه
-    if (knownRoutes.some(route => finalPath === route || finalPath.startsWith(`${route}/`))) {
-      navigate(finalPath);
-      if (isMobile) {
-        setOpenMobile(false);
-      }
-    } else {
-      // إذا المسار غير معروف، أرسل المستخدم إلى الصفحة الرئيسية أو أظهر رسالة
-      console.warn(`المسار غير متوفر: ${finalPath}`);
-      toast.warning('هذه الصفحة قيد التطوير');
-    }
-  };
+  const menuItems = [
+    dashboardItems,
+    accountingItems,
+    invoiceItems,
+    inventoryItems,
+    purchaseItems,
+    customerItems,
+    vendorItems,
+    expenseItems,
+    hrItems,
+    reportItems,
+    aiItems,
+    definitionItems,
+    aboutItems,
+    settingsItems,
+  ];
 
   return (
-    <Sidebar collapsible={isMobile ? "offcanvas" : "icon"} side="right">
-      <SidebarHeader>
-        <div className="p-4 flex justify-between items-center bg-orange-600 py-[22px] my-px rounded-full px-[44px]">
-          <div className="text-sidebar-foreground font-bold text-xl px-[6px] py-px my-0 mx-0 rounded-lg bg-pink-950">الجعفري</div>
-        </div>
-      </SidebarHeader>
+    <>
+      <div
+        data-open={open}
+        className="border-l group fixed inset-0 h-full z-30 data-[open=false]:w-[70px] data-[open=true]:w-60 transition-all duration-300 bg-white print:hidden"
+        dir="rtl"
+      >
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          {open ? <ExpandedView /> : <CollapsedView />}
 
-      <SidebarContent>
-        <div className="p-2 space-y-1 rtl max-h-[calc(100vh-150px)] overflow-y-auto">
-          {menuItems.map(item => (
-            <div key={item.section} className="mb-1">
-              {item.children && item.children.length > 0 ? (
-                <Collapsible 
-                  open={expandedSections[item.section]} 
-                  onOpenChange={() => toggleSection(item.section)} 
-                  className="transition-all duration-200"
-                >
-                  <CollapsibleTrigger className="w-full text-right">
-                    <SidebarItem 
-                      icon={<item.icon size={20} />} 
-                      label={item.section} 
-                      isActive={isSectionActive(item)} 
-                      hasChildren={true} 
-                      isExpanded={expandedSections[item.section]} 
-                    />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-3 animate-accordion-down">
-                    <div className="mt-1 mr-2 border-r-2 border-sidebar-border pr-2 space-y-1">
-                      {item.children.map(child => (
-                        <SidebarItem 
-                          key={child.path} 
-                          icon={<child.icon size={18} />} 
-                          label={child.label} 
-                          path={child.path} 
-                          isActive={currentPath === child.path || currentPath.startsWith(child.path + '/')} 
-                          onClick={() => handleItemClick(child.path)} 
-                          depth={1} 
-                        />
-                      ))}
+          {/* Sidebar Menu */}
+          <ScrollArea className="flex-1" dir="rtl">
+            <div className="px-3 py-2">
+              {open ? (
+                <div className="space-y-1">
+                  {user && profile && (
+                    <div className="mb-6 p-3 bg-gray-50 rounded-md">
+                      <div className="flex items-center space-x-3 space-x-reverse">
+                        <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                          {profile.avatar_url ? (
+                            <img
+                              src={profile.avatar_url}
+                              alt={profile.full_name}
+                              className="h-10 w-10 rounded-full"
+                            />
+                          ) : (
+                            <UserCircle className="h-6 w-6 text-teal-600" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{profile.full_name || "مستخدم"}</p>
+                          <p className="text-xs text-muted-foreground">{profile.email}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full mt-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        onClick={handleSignOut}
+                      >
+                        <LogOut className="h-4 w-4 ml-2" />
+                        تسجيل الخروج
+                      </Button>
                     </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                  )}
+
+                  {/* مكونات القائمة */}
+                  {menuItems.map((section, idx) => (
+                    <ExpandedView.Section
+                      key={idx}
+                      section={section}
+                      toggleSidebar={autoClose ? () => setOpen(false) : undefined}
+                    />
+                  ))}
+                </div>
               ) : (
-                <SidebarItem 
-                  icon={<item.icon size={20} />} 
-                  label={item.section} 
-                  path={item.path} 
-                  isActive={currentPath === item.path || (item.path && currentPath.startsWith(item.path + '/'))} 
-                  onClick={() => item.path && handleItemClick(item.path)} 
-                />
+                <div className="space-y-1">
+                  {user && (
+                    <div className="mb-4 flex justify-center">
+                      <div 
+                        className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center cursor-pointer"
+                        title="تسجيل الخروج"
+                        onClick={handleSignOut}
+                      >
+                        {profile?.avatar_url ? (
+                          <img
+                            src={profile.avatar_url}
+                            alt={profile.full_name}
+                            className="h-10 w-10 rounded-full"
+                          />
+                        ) : (
+                          <UserCircle className="h-6 w-6 text-teal-600" />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* مكونات القائمة للعرض المطوي */}
+                  {menuItems.map((section, idx) => (
+                    <CollapsedView.Section 
+                      key={idx} 
+                      section={section} 
+                      toggleSidebar={autoClose ? () => setOpen(false) : undefined} 
+                    />
+                  ))}
+                </div>
               )}
             </div>
-          ))}
-        </div>
-      </SidebarContent>
+          </ScrollArea>
 
-      <SidebarFooter>
-        <div className="p-4 border-t border-sidebar-border rtl">
-          <div className="text-sidebar-foreground text-sm">
-            <p>مرحباً بك، أحمد</p>
-            <p className="text-xs opacity-70">مدير النظام</p>
+          {/* Sidebar Footer */}
+          <div className="border-t p-3 flex items-center justify-between">
+            <ThemeSwitcher />
+            <LanguageSwitcher />
           </div>
         </div>
-      </SidebarFooter>
-    </Sidebar>
+      </div>
+    </>
   );
 };
 
