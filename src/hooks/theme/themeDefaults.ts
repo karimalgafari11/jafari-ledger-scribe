@@ -1,4 +1,3 @@
-
 import { ThemeSettings, ThemeSizeOption } from "@/types/theme";
 
 // Default theme values
@@ -13,13 +12,13 @@ export const defaultLightTheme: ThemeSettings = {
     textSecondary: '#4b5563',
     link: '#0a6e78',
     sidebar: {
-      background: '#222222', // لون أسود غامق
-      foreground: '#ffffff',
+      background: '#F1EBE0', // لون بيج فاتح
+      foreground: '#333333',
       item: {
-        active: '#333333',
-        hover: '#444444',
-        text: '#ffffff',
-        activeText: '#ffffff'
+        active: '#E8DCCA',
+        hover: '#D8CDB6',
+        text: '#333333',
+        activeText: '#1A1F2C'
       }
     }
   },
@@ -55,13 +54,13 @@ export const defaultDarkTheme: ThemeSettings = {
     textSecondary: '#a0aec0',
     link: '#4fd1c5',
     sidebar: {
-      background: '#000000', // لون أسود غامق للوضع الليلي
-      foreground: '#ffffff',
+      background: '#D8CDB6', // لون بيج داكن للوضع الليلي
+      foreground: '#333333',
       item: {
-        active: '#222222',
-        hover: '#333333',
-        text: '#ffffff',
-        activeText: '#ffffff'
+        active: '#C3B091',
+        hover: '#B5A484',
+        text: '#333333',
+        activeText: '#1A1F2C'
       }
     }
   },
