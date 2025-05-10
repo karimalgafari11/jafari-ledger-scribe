@@ -1,6 +1,6 @@
 
 import React, { useState, ReactNode, useEffect, useRef } from 'react';
-import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
+import Draggable, { DraggableData, DraggableEvent, DraggableEventHandler } from 'react-draggable';
 import { cn } from '@/lib/utils';
 
 interface DraggableComponentProps {
@@ -32,10 +32,8 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   useEffect(() => {
     // Set mounted state only after component is fully mounted
     const timer = setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        setIsMounted(true);
-      }
-    }, 10);
+      setIsMounted(true);
+    }, 100); // Increased timeout to ensure DOM is fully ready
     
     return () => {
       clearTimeout(timer);
@@ -45,6 +43,24 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
   
   const handleDrag = (e: DraggableEvent, data: DraggableData) => {
     setPosition({ x: data.x, y: data.y });
+  };
+
+  const handleDragStart: DraggableEventHandler = (e) => {
+    // Prevent dragging when clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('button') || 
+      target.closest('input') || 
+      target.closest('select') || 
+      target.closest('a')
+    ) {
+      return false;
+    }
+    
+    if (onDragStart) {
+      onDragStart();
+    }
+    return;
   };
 
   // Render regular div during SSR or before mounting
@@ -66,18 +82,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({
       handle={handle}
       bounds={bounds}
       disabled={disabled}
-      onStart={(e) => {
-        // Prevent dragging when clicking on interactive elements
-        const target = e.target as HTMLElement;
-        if (target.closest('button') || 
-            target.closest('input') || 
-            target.closest('select') || 
-            target.closest('a')) {
-          return false;
-        }
-        onDragStart?.();
-        return true;
-      }}
+      onStart={handleDragStart}
       onStop={onDragEnd}
     >
       <div ref={nodeRef} className={cn('relative', className)}>
