@@ -5,6 +5,12 @@ import { useSidebarNavigation } from "@/hooks/useSidebarNavigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+// Define props type for Section component
+interface SectionProps {
+  section: MenuItem;
+  toggleSidebar?: () => void;
+}
+
 // Main CollapsedView component
 const CollapsedView = () => {
   return (
@@ -20,10 +26,7 @@ const CollapsedView = () => {
 const Section = ({ 
   section, 
   toggleSidebar 
-}: { 
-  section: MenuItem, 
-  toggleSidebar?: () => void 
-}) => {
+}: SectionProps) => {
   const { handleItemClick } = useSidebarNavigation();
 
   if (!section.children && section.path) {

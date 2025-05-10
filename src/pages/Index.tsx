@@ -6,7 +6,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AccountingSidebar from "@/components/AccountingSidebar";
 
 const Index = () => {
-  const [activePage, setActivePage] = useState("dashboard");
   const isMobile = useIsMobile();
 
   return (

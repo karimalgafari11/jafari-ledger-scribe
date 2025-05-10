@@ -7,6 +7,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
+// Define prop types for Section component
+interface SectionProps {
+  section: MenuItem;
+  toggleSidebar?: () => void;
+}
+
 // Main ExpandedView component
 const ExpandedView = () => {
   return (
@@ -23,10 +29,7 @@ const ExpandedView = () => {
 const Section = ({ 
   section, 
   toggleSidebar 
-}: { 
-  section: MenuItem, 
-  toggleSidebar?: () => void 
-}) => {
+}: SectionProps) => {
   const { handleItemClick } = useSidebarNavigation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -51,7 +54,7 @@ const Section = ({
       onOpenChange={setIsOpen}
       className="w-full"
     >
-      <CollapsibleTrigger className="w-full flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100 text-gray-700">
+      <CollapsibleTrigger className="w-full flex items-between justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100 text-gray-700">
         <div className="flex items-center">
           <section.icon className="h-5 w-5 ml-2 text-teal-600" />
           <span className="text-sm">{section.section}</span>

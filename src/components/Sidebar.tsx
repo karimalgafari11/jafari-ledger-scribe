@@ -6,21 +6,8 @@ import SidebarFooter from "./sidebar/SidebarFooter";
 import ExpandedView from "./sidebar/ExpandedView";
 import CollapsedView from "./sidebar/CollapsedView";
 
-// Define proper types for our exported components to match what we're passing
+// Define proper types for our exported component
 interface SidebarProps {
-  activePage: string;
-  onChangePage: (page: string) => void;
-}
-
-// Define props for our internal components
-interface ExpandedViewProps {
-  activePage: string;
-  expandedSections: Record<string, boolean>;
-  toggleSection: (section: string) => void;
-  onChangePage: (page: string) => void;
-}
-
-interface CollapsedViewProps {
   activePage: string;
   onChangePage: (page: string) => void;
 }
@@ -50,17 +37,9 @@ export function Sidebar({ activePage, onChangePage }: SidebarProps) {
 
       <div className="flex flex-col gap-1 p-2 overflow-y-auto flex-grow">
         {!collapsed ? (
-          <ExpandedView 
-            activePage={activePage}
-            expandedSections={expandedSections}
-            toggleSection={toggleSection}
-            onChangePage={onChangePage}
-          />
+          <ExpandedView />
         ) : (
-          <CollapsedView 
-            activePage={activePage}
-            onChangePage={onChangePage}
-          />
+          <CollapsedView />
         )}
       </div>
       
