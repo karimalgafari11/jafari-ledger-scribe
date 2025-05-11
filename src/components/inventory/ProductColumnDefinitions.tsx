@@ -8,9 +8,9 @@ export const getDefaultProductColumns = (): ColumnDefinition[] => {
       id: "index",
       header: "الرقم التسلسلي",
       accessorKey: "index",
-      cell: (_, row) => {
+      cell: (_, row, rowIndex) => {
         // تحسين الرقم التسلسلي ليبدأ من 1
-        return row.index + 1;
+        return rowIndex + 1;
       },
       isSortable: false,
       isVisible: true,

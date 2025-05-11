@@ -95,7 +95,7 @@ export const DataGrid = ({
   return (
     <div className={`border rounded-lg overflow-hidden bg-white ${className || ''}`}>
       <div className="overflow-x-auto">
-        <Table gridLines striped hoverable>
+        <Table gridLines striped hoverable bordered>
           <TableHeader>
             <TableRow>
               {selectable && (
@@ -111,14 +111,14 @@ export const DataGrid = ({
               {columns.map((column) => (
                 <TableHead 
                   key={column.id} 
-                  className="text-right" 
+                  className="text-right border border-gray-200" 
                   style={{ width: column.width }}
                 >
                   {column.header}
                 </TableHead>
               ))}
               {actions.length > 0 && (
-                <TableHead className="text-center">الإجراءات</TableHead>
+                <TableHead className="text-center border border-gray-200">الإجراءات</TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -126,7 +126,7 @@ export const DataGrid = ({
             {data.map((row, rowIndex) => (
               <TableRow key={row[idField] || rowIndex} className="hover:bg-muted/25 border-b border-gray-200">
                 {selectable && (
-                  <TableCell className="text-center">
+                  <TableCell className="text-center border border-gray-100">
                     <input
                       type="checkbox"
                       className="rounded border-gray-300"
@@ -136,15 +136,15 @@ export const DataGrid = ({
                   </TableCell>
                 )}
                 {columns.map((column) => (
-                  <TableCell key={`${row[idField] || rowIndex}-${column.id}`} className="text-right border-x border-gray-100">
+                  <TableCell key={`${row[idField] || rowIndex}-${column.id}`} className="text-right border border-gray-100">
                     {column.cell 
-                      ? column.cell(row[column.accessorKey], row)
+                      ? column.cell(row[column.accessorKey], row, rowIndex)
                       : row[column.accessorKey]
                     }
                   </TableCell>
                 ))}
                 {actions.length > 0 && (
-                  <TableCell className="text-center">
+                  <TableCell className="text-center border border-gray-100">
                     <div className="flex justify-center space-x-1 rtl:space-x-reverse">
                       {actions.map((action, actionIndex) => {
                         if (action.condition && !action.condition(row)) {

@@ -1,6 +1,7 @@
 
 import { RouteObject } from "react-router-dom";
 import ProductsPage from "@/pages/inventory/ProductsPage";
+import AddProductPage from "@/pages/inventory/AddProductPage";
 import StockMovementsPage from "@/pages/inventory/StockMovementsPage";
 import CountingPage from "@/pages/inventory/CountingPage";
 import ReorderPage from "@/pages/inventory/ReorderPage";
@@ -11,6 +12,10 @@ export const inventoryRoutes: RouteObject[] = [
   {
     path: "inventory/products",
     element: <ProductsPage />,
+  },
+  {
+    path: "inventory/products/add",
+    element: <AddProductPage />,
   },
   {
     path: "inventory/movements",

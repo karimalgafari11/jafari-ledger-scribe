@@ -29,6 +29,10 @@ export const ProductsToolbar = ({
 }: ProductsToolbarProps) => {
   const navigate = useNavigate();
 
+  const handleAddProduct = () => {
+    navigate("/inventory/products/add");
+  };
+
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4">
       <div className="flex flex-1 items-center gap-2">
@@ -44,7 +48,7 @@ export const ProductsToolbar = ({
         
         {/* إضافة منتج جديد */}
         <Button 
-          onClick={() => navigate("/inventory/products/add")}
+          onClick={handleAddProduct}
           className="gap-1 bg-primary"
         >
           <Plus size={16} />

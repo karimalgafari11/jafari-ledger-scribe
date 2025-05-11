@@ -20,7 +20,7 @@ const Table = React.forwardRef<
       className={cn(
         "w-full caption-bottom text-sm",
         gridLines && "border-collapse",
-        bordered && "border border-border",
+        bordered && "border border-border [&_th]:border [&_td]:border [&_th]:border-gray-200 [&_td]:border-gray-100",
         dense && "text-xs [&_th]:py-1 [&_td]:py-1",
         striped && "[&_tbody_tr:nth-child(even)]:bg-muted/50",
         hoverable && "[&_tbody_tr:hover]:bg-muted/60",
