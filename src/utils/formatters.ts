@@ -1,22 +1,36 @@
 
 /**
- * Formats a number as currency (SAR)
+ * تنسيق العملة بالآلاف والفواصل
  */
 export function formatCurrency(amount: number): string {
-  return amount.toFixed(2) + " ر.س";
+  return amount.toLocaleString('ar-SA');
 }
 
 /**
- * Formats a date as a string (YYYY-MM-DD)
+ * تنسيق التاريخ بالعربية
  */
 export function formatDate(date: Date | string): string {
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toISOString().split('T')[0];
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+  return date.toLocaleDateString('ar-SA');
 }
 
 /**
- * Formats a number with thousand separators
+ * تنسيق النص للعرض بالطول المحدد
  */
-export function formatNumber(amount: number): string {
-  return amount.toLocaleString('ar-SA');
+export function truncateText(text: string, maxLength: number = 50): string {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength)}...`;
+}
+
+/**
+ * تحويل النص إلى تنسيق العنوان (أول حرف كبير من كل كلمة)
+ */
+export function toTitleCase(text: string): string {
+  return text
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
