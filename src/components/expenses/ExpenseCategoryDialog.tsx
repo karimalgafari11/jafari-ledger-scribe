@@ -55,10 +55,18 @@ export const ExpenseCategoryDialog: React.FC<ExpenseCategoryDialogProps> = ({
   }, [category, isOpen, form]);
 
   const handleSubmit = (values: FormValues) => {
+    // Fixed: Ensure all required fields are included with proper types
     if (category) {
       onSave({ ...category, ...values });
     } else {
-      onSave(values);
+      // Ensure we're passing a complete object that matches Omit<ExpenseCategory, "id">
+      const newCategory: Omit<ExpenseCategory, "id"> = {
+        name: values.name,
+        description: values.description,
+        budgetLimit: values.budgetLimit,
+        isActive: values.isActive,
+      };
+      onSave(newCategory);
     }
   };
 
