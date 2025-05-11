@@ -1,17 +1,89 @@
+
 import React from "react";
-import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { PageContainer } from "@/components/PageContainer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const NewExpensePage = () => {
+  const navigate = useNavigate();
+  
+  const handleSave = () => {
+    toast.success("تم حفظ المصروف بنجاح");
+    navigate("/expenses");
+  };
+
   return (
-    <Layout className="h-screen overflow-hidden">
-      <div className="flex flex-col h-full w-full">
-        <Header title="مصروف جديد" showBack={true} />
-        <div className="flex-1 overflow-auto p-6">
-          {/* محتوى الصفحة */}
-        </div>
+    <PageContainer title="مصروف جديد">
+      <div className="p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>إضافة مصروف جديد</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="amount">المبلغ</Label>
+                  <Input id="amount" type="number" placeholder="أدخل المبلغ" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="date">التاريخ</Label>
+                  <Input id="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="category">التصنيف</Label>
+                  <Select>
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="اختر تصنيف المصروف" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rent">إيجار</SelectItem>
+                      <SelectItem value="utilities">مرافق</SelectItem>
+                      <SelectItem value="salaries">رواتب</SelectItem>
+                      <SelectItem value="supplies">مستلزمات</SelectItem>
+                      <SelectItem value="other">أخرى</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="payment">طريقة الدفع</Label>
+                  <Select>
+                    <SelectTrigger id="payment">
+                      <SelectValue placeholder="اختر طريقة الدفع" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cash">نقدي</SelectItem>
+                      <SelectItem value="bank">تحويل بنكي</SelectItem>
+                      <SelectItem value="card">بطاقة ائتمانية</SelectItem>
+                      <SelectItem value="check">شيك</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">التفاصيل</Label>
+                <Textarea id="description" placeholder="أدخل تفاصيل المصروف" />
+              </div>
+              
+              <div className="flex justify-end space-x-2 rtl:space-x-reverse pt-4">
+                <Button variant="outline" onClick={() => navigate("/expenses")}>إلغاء</Button>
+                <Button type="button" onClick={handleSave}>حفظ المصروف</Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 
