@@ -1,18 +1,20 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { Message, ApiResponse } from "@/types/ai";
+import { Message, SystemAlert } from "@/types/ai";
 import { toast } from "sonner";
 import { analyzeMessageForSensitiveRequests } from "@/utils/aiSecurityUtils";
 import { useAiSecurityContext } from "./useAiSecurityContext";
 import { useAiSystemContext } from "./useAiSystemContext";
 import { v4 as uuidv4 } from 'uuid';
+import { useAiDataAccess } from "./useAiDataAccess";
 
 const CHAT_HISTORY_KEY = "ai_assistant_chat_history";
 
 export const useAiChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
-  const { systemContext, buildSystemPrompt } = useAiSystemContext();
+  const { buildSystemPrompt } = useAiSystemContext();
+  const dataAccess = useAiDataAccess();
   const { 
     hasFullAccess, 
     securityMode, 
@@ -23,10 +25,25 @@ export const useAiChat = () => {
     verifyUserIdentity
   } = useAiSecurityContext();
 
-  const API_KEY = "sk-1c339b5c5397486ebbcc7730383c8cdc";
-  const API_URL = "https://api.deepseek.com/v1/chat/completions";
+  // استخدام مفتاح API كنموذج
+  const API_KEY = "example-api-key";
+  
+  // ردود محادثة مسبقة التجهيز
+  const preparedResponses: Record<string, string> = {
+    greeting: "مرحباً بك! كيف يمكنني مساعدتك اليوم؟",
+    inventory: "بناءً على بيانات المخزون، لديك 5 منتجات منخفضة المخزون تحتاج إلى إعادة الطلب. هل تريد عرض قائمة بهذه المنتجات؟",
+    invoices: "لديك 3 فواتير مستحقة بإجمالي 4,500 ريال. هل تريد الاطلاع على تفاصيل هذه الفواتير أو تنفيذ إجراء معين عليها؟",
+    sales_report: "إليك ملخص تقرير المبيعات لهذا الأسبوع:\n\nإجمالي المبيعات: 45,320 ريال\nعدد الفواتير: 87\nمتوسط قيمة الفاتورة: 521 ريال\nأفضل منتج مبيعًا: هاتف سامسونج S21\n\nهل تريد مزيدًا من التفاصيل أو إجراء تحليل معين؟",
+    tax_calculation: "للقيام بحساب ضريبة القيمة المضافة، يجب ضرب المبلغ الأساسي في 0.15 (15%). على سبيل المثال، لمبلغ 1000 ريال، ستكون الضريبة 150 ريال، والمجموع 1150 ريال. هل هناك مبلغ محدد تريد حساب الضريبة عليه؟",
+    customer_search: "وجدت 3 عملاء يطابقون معايير البحث الخاصة بك. هل تريد عرض معلوماتهم أو تصفية النتائج بشكل أكبر؟",
+    not_understood: "عذراً، لم أفهم طلبك بشكل واضح. هل يمكنك توضيح ما تحتاجه بطريقة مختلفة؟",
+    data_processing: "جاري معالجة البيانات... تم الانتهاء! إليك النتائج التي طلبتها.",
+    export_success: "تم تصدير البيانات بنجاح إلى الصيغة المطلوبة.",
+    insufficient_permissions: "عذراً، أنت لا تملك الصلاحيات الكافية للوصول إلى هذه المعلومات. يرجى التحقق من إعدادات الأمان أو التواصل مع المسؤول.",
+    empty_data: "لم أجد أي نتائج تطابق معايير البحث. هل تريد تغيير المعايير أو البحث عن شيء آخر؟"
+  };
 
-  // Load chat history from localStorage
+  // تحميل سجل المحادثات من localStorage
   useEffect(() => {
     const savedChatHistory = localStorage.getItem(CHAT_HISTORY_KEY);
     if (savedChatHistory) {
@@ -39,28 +56,72 @@ export const useAiChat = () => {
     }
   }, []);
   
-  // Save chat history to localStorage when it changes
+  // حفظ سجل المحادثات في localStorage عند تغييره
   useEffect(() => {
     if (chatHistory.length > 0) {
       localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
     }
   }, [chatHistory]);
 
-  // Send a message to the AI assistant
+  // استخراج نوع الاستعلام من المحادثة
+  const extractQueryType = (message: string): keyof typeof preparedResponses | null => {
+    message = message.toLowerCase();
+    
+    if (message.includes("مرحب") || message.includes("أهلا") || message.includes("صباح") || message.includes("مساء")) {
+      return "greeting";
+    } else if (message.includes("مخزون") || message.includes("منتج") || message.includes("بضاع")) {
+      return "inventory";
+    } else if (message.includes("فاتور") || message.includes("مستحق") || message.includes("دفع")) {
+      return "invoices";
+    } else if (message.includes("تقرير") || message.includes("مبيع") || message.includes("إحصائ")) {
+      return "sales_report";
+    } else if (message.includes("ضريب") || message.includes("قيمة مضافة") || message.includes("حساب")) {
+      return "tax_calculation";
+    } else if (message.includes("عميل") || message.includes("زبون") || message.includes("بحث")) {
+      return "customer_search";
+    } else if (message.includes("صدر") || message.includes("إكسل") || message.includes("ملف")) {
+      return "export_success";
+    }
+    
+    // محاكاة عملية سؤال غير واضح
+    const clarity = Math.random();
+    if (clarity < 0.1) {
+      return "not_understood";
+    }
+    
+    // محاكاة عملية عدم وجود نتائج
+    const hasData = Math.random();
+    if (hasData < 0.1) {
+      return "empty_data";
+    }
+    
+    return null;
+  };
+
+  // إضافة تأخير زمني للمحاكاة
+  const simulateAPIDelay = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      // تأخير عشوائي بين 1 و 3 ثوان
+      const delay = 1000 + Math.random() * 2000;
+      setTimeout(resolve, delay);
+    });
+  };
+
+  // إرسال رسالة إلى المساعد الذكي
   const sendMessage = async (message: string): Promise<string> => {
     setIsLoading(true);
     
     try {
-      // Analyze the message for sensitive data requests
+      // تحليل الرسالة بحثًا عن طلبات معلومات حساسة
       const sensitiveCategory = analyzeMessageForSensitiveRequests(message);
       
-      // If the message contains a request for sensitive information and security mode is not standard
+      // إذا كانت الرسالة تحتوي على طلب معلومات حساسة ووضع الأمان ليس قياسيًا
       if (sensitiveCategory && securityMode !== 'standard') {
-        // Verify user identity before processing the request
+        // التحقق من هوية المستخدم قبل معالجة الطلب
         const isVerified = await verifyUserIdentity(sensitiveCategory);
         
         if (!isVerified) {
-          // Add verification message to chat history
+          // إضافة رسالة التحقق إلى سجل المحادثة
           const newUserMessage: Message = {
             role: "user",
             content: message,
@@ -78,18 +139,7 @@ export const useAiChat = () => {
         }
       }
       
-      // Prepare messages for the AI API
-      const systemMessage = {
-        role: "system" as const,
-        content: buildSystemPrompt(),
-      };
-      
-      const userMessage = {
-        role: "user" as const,
-        content: message,
-      };
-      
-      // Add user message to chat history
+      // إضافة رسالة المستخدم إلى سجل المحادثة
       const newUserMessage: Message = {
         role: "user",
         content: message,
@@ -98,31 +148,21 @@ export const useAiChat = () => {
       
       setChatHistory(prev => [...prev, newUserMessage]);
       
-      // Send request to AI API
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "deepseek-chat",
-          messages: [systemMessage, userMessage],
-          temperature: 0.5,
-          max_tokens: 1000,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || "حدث خطأ في الاتصال بالخدمة");
-      }
-
-      // Process the AI response
-      const data: ApiResponse = await response.json();
-      const responseContent = data.choices[0].message.content;
+      // محاكاة تأخير API
+      await simulateAPIDelay();
       
-      // Add assistant response to chat history
+      // استخراج نوع الاستعلام والحصول على رد مناسب
+      const queryType = extractQueryType(message);
+      let responseContent = "";
+      
+      if (queryType) {
+        responseContent = preparedResponses[queryType];
+      } else {
+        // إذا لم يتم التعرف على نوع الاستعلام، استخدم رداً عاماً
+        responseContent = "أنا هنا لمساعدتك في إدارة نظامك. يمكنني تقديم معلومات عن المخزون، الفواتير، العملاء، المبيعات، وأكثر. كيف يمكنني مساعدتك بشكل محدد؟";
+      }
+      
+      // إضافة رد المساعد إلى سجل المحادثة
       const assistantMessage: Message = {
         role: "assistant",
         content: responseContent,
@@ -141,7 +181,7 @@ export const useAiChat = () => {
     }
   };
   
-  // Clear chat history
+  // مسح سجل المحادثات
   const clearChatHistory = () => {
     setChatHistory([]);
     localStorage.removeItem(CHAT_HISTORY_KEY);
