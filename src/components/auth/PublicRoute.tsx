@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -9,6 +9,15 @@ interface PublicRouteProps {
 
 export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
+  // استخدام حالة داخلية لتجنب التحديثات المتكررة
+  const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    // فحص حالة المستخدم مرة واحدة فقط بعد اكتمال التحميل
+    if (!isLoading) {
+      setIsChecked(true);
+    }
+  }, [isLoading]);
 
   // إذا كان التطبيق لا يزال يتحقق من حالة المصادقة، نعرض شاشة تحميل
   if (isLoading) {
@@ -19,8 +28,8 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
     );
   }
 
-  // إذا كان المستخدم مسجل الدخول بالفعل، نوجهه إلى الصفحة الرئيسية
-  if (user) {
+  // بعد اكتمال التحقق، إذا كان المستخدم مسجل الدخول بالفعل، نوجهه إلى الصفحة الرئيسية
+  if (isChecked && user) {
     return <Navigate to="/" replace />;
   }
 
