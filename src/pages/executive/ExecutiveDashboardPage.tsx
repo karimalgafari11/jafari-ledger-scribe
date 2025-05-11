@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -28,7 +27,7 @@ import { BarChart } from "@/components/ui/BarChart";
 import { PieChart } from "@/components/ui/PieChart";
 import useExecutiveDashboard from "@/hooks/executive/useExecutiveDashboard";
 
-const ExecutiveDashboardPage: React.FC = () => {
+const ExecutiveDashboardPage = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   
   const {
@@ -97,11 +96,10 @@ const ExecutiveDashboardPage: React.FC = () => {
             </SelectContent>
           </Select>
 
-          <DateRangePicker 
-            value={dateRange} 
-            onChange={handleDateRangeChange}
-            align="start"
-            className="w-auto" 
+          <DateRangePicker
+            value={dateRange}
+            onChange={setDateRange}
+            className="w-full"
           />
         </div>
 

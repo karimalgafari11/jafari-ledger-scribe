@@ -3,7 +3,7 @@ import React, { useState, useMemo } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, FileSpreadsheet, Search, Filter, Download, Share2, WhatsApp, RefreshCw, Calendar } from "lucide-react";
+import { FileText, FileSpreadsheet, Search, Filter, Download, Share2, RefreshCw, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

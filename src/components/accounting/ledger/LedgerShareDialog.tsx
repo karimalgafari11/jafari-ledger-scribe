@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { WhatsApp, Mail, Copy, Share2 } from "lucide-react";
+import { MessageSquare, Mail, Copy, Share2 } from "lucide-react";
 import { Transaction } from "@/types/transactions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface LedgerShareDialogProps {
@@ -58,7 +59,7 @@ export const LedgerShareDialog: React.FC<LedgerShareDialogProps> = ({
           <Tabs defaultValue="whatsapp">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="whatsapp" className="flex items-center gap-1">
-                <WhatsApp className="h-4 w-4" />
+                <MessageSquare className="h-4 w-4" />
                 واتساب
               </TabsTrigger>
               <TabsTrigger value="email" className="flex items-center gap-1">
@@ -95,7 +96,7 @@ export const LedgerShareDialog: React.FC<LedgerShareDialogProps> = ({
                 className="w-full bg-green-500 hover:bg-green-600 text-white"
                 onClick={handleShareWhatsApp}
               >
-                <WhatsApp className="ml-2 h-4 w-4" />
+                <MessageSquare className="ml-2 h-4 w-4" />
                 مشاركة عبر واتساب
               </Button>
             </TabsContent>

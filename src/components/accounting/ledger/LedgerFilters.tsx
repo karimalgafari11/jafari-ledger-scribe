@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
+import { DateRange } from "react-day-picker";
 
 interface LedgerFiltersProps {
   searchTerm: string;
@@ -18,13 +19,15 @@ export const LedgerFilters: React.FC<LedgerFiltersProps> = ({
   onSearch,
   onPeriodSelect
 }) => {
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined
   });
+
+  // Handle date range changes
+  const handleDateRangeChange = (range: DateRange) => {
+    setDateRange(range);
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-3">
@@ -69,7 +72,7 @@ export const LedgerFilters: React.FC<LedgerFiltersProps> = ({
                 <div className="pt-2">
                   <DateRangePicker 
                     value={dateRange}
-                    onChange={setDateRange}
+                    onChange={handleDateRangeChange}
                     locale="ar-SA"
                     placeholder="اختر الفترة الزمنية" 
                   />

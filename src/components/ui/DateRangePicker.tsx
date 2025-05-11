@@ -40,7 +40,7 @@ export function DateRangePicker({
             variant={"outline"}
             className={cn(
               "w-full justify-start text-right font-normal",
-              !value && "text-muted-foreground"
+              !value?.from && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="ml-2 h-4 w-4" />
