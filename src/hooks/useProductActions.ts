@@ -25,6 +25,10 @@ export const useProductActions = (
     toast.success("تم نسخ المنتج، يمكنك الآن تعديل النسخة الجديدة");
   };
 
+  const handleAddProduct = () => {
+    navigate("/inventory/products/add");
+  };
+
   const handleBulkDelete = (selectedProducts: string[], bulkDeleteProducts: () => void) => {
     if (selectedProducts.length === 0) {
       toast.error("الرجاء تحديد المنتجات المراد حذفها أولاً");
@@ -39,6 +43,7 @@ export const useProductActions = (
     handleViewProduct,
     handleDeleteProduct,
     handleDuplicateProduct,
+    handleAddProduct,
     handleBulkDelete
   };
 };

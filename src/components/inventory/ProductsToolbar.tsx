@@ -2,21 +2,9 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  Search, 
-  Plus, 
-  FileText, 
-  FileSpreadsheet, 
-  Share2, 
-  Trash2, 
-  Filter, 
-  Download, 
-  ArrowUpDown 
-} from "lucide-react";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
 import { FilterOptions } from "@/types/inventory";
+import { Search, Plus, Trash2, FileText, Share2, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ProductsToolbarProps {
   searchQuery: string;
@@ -29,7 +17,7 @@ interface ProductsToolbarProps {
   onShare: () => void;
 }
 
-export function ProductsToolbar({
+export const ProductsToolbar = ({
   searchQuery,
   setSearchQuery,
   filterOptions,
@@ -37,130 +25,67 @@ export function ProductsToolbar({
   selectedCount,
   onBulkDelete,
   onExport,
-  onShare
-}: ProductsToolbarProps) {
-  const form = useForm<FilterOptions>({
-    defaultValues: filterOptions
-  });
-  
-  const handleFilterSubmit = (data: FilterOptions) => {
-    setFilterOptions(data);
-  };
-  
+  onShare,
+}: ProductsToolbarProps) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="space-y-4 rtl w-full">
-      {/* Search and Actions Row */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-          <Input 
-            type="text" 
-            placeholder="البحث عن منتج..." 
-            value={searchQuery} 
-            onChange={e => setSearchQuery(e.target.value)} 
-            className="w-full pl-8" 
+    <div className="flex flex-col md:flex-row justify-between gap-4">
+      <div className="flex flex-1 items-center gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="بحث عن منتج..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-3 pr-10 w-full"
           />
         </div>
+        
+        {/* إضافة منتج جديد */}
+        <Button 
+          onClick={() => navigate("/inventory/products/add")}
+          className="gap-1 bg-primary"
+        >
+          <Plus size={16} />
+          <span className="hidden md:inline">إضافة منتج</span>
+        </Button>
+      </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button className="gap-2 bg-teal-600 hover:bg-teal-700">
-            <Plus size={18} />
-            منتج جديد
-          </Button>
-          
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Filter size={18} />
-                تصفية
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleFilterSubmit)} className="space-y-4">
-                  <FormField 
-                    control={form.control} 
-                    name="category" 
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>التصنيف</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="اختر التصنيف" />
-                        </FormControl>
-                      </FormItem>
-                    )} 
-                  />
-                  
-                  <FormField 
-                    control={form.control} 
-                    name="brand" 
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>الشركة الصانعة</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="اختر الشركة" />
-                        </FormControl>
-                      </FormItem>
-                    )} 
-                  />
-                  
-                  <div className="flex gap-2">
-                    <FormField 
-                      control={form.control} 
-                      name="minPrice" 
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>السعر من</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" placeholder="0" />
-                          </FormControl>
-                        </FormItem>
-                      )} 
-                    />
-                    
-                    <FormField 
-                      control={form.control} 
-                      name="maxPrice" 
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>إلى</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="number" placeholder="10000" />
-                          </FormControl>
-                        </FormItem>
-                      )} 
-                    />
-                  </div>
-                  
-                  <div className="flex justify-end pt-2">
-                    <Button type="submit">تطبيق</Button>
-                  </div>
-                </form>
-              </Form>
-            </PopoverContent>
-          </Popover>
-          
-          <Button variant="outline" onClick={onExport} className="gap-2">
-            <Download size={18} />
-            تصدير
-          </Button>
-          
-          <Button variant="outline" onClick={onShare} className="gap-2">
-            <Share2 size={18} />
-            مشاركة
-          </Button>
-          
-          <Button 
-            variant="destructive" 
-            onClick={onBulkDelete} 
-            disabled={selectedCount === 0} 
-            className="gap-2"
+      <div className="flex flex-wrap gap-2 items-center">
+        {/* أزرار الإجراءات الجماعية */}
+        {selectedCount > 0 && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={onBulkDelete}
+            className="gap-1"
           >
-            <Trash2 size={18} />
-            حذف ({selectedCount})
+            <Trash2 size={16} />
+            <span>حذف ({selectedCount})</span>
           </Button>
-        </div>
+        )}
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onExport}
+          className="gap-1"
+        >
+          <FileText size={16} />
+          <span className="hidden md:inline">تصدير</span>
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onShare}
+          className="gap-1"
+        >
+          <Share2 size={16} />
+          <span className="hidden md:inline">مشاركة</span>
+        </Button>
       </div>
     </div>
   );
-}
+};

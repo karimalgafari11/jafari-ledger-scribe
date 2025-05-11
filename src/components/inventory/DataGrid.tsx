@@ -18,8 +18,8 @@ interface DataGridProps {
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
-  idField?: string; // Added missing property
-  className?: string; // Added missing property
+  idField?: string;
+  className?: string; 
 }
 
 export const DataGrid = ({
@@ -34,8 +34,8 @@ export const DataGrid = ({
   isLoading = false,
   error = null,
   onRetry,
-  idField = "id", // Set default value for idField
-  className // Added className prop
+  idField = "id",
+  className
 }: DataGridProps) => {
   // تحديد ما إذا كانت جميع الصفوف محددة
   const isAllSelected = data.length > 0 && selectedRows.length === data.length;
@@ -95,7 +95,7 @@ export const DataGrid = ({
   return (
     <div className={`border rounded-lg overflow-hidden bg-white ${className || ''}`}>
       <div className="overflow-x-auto">
-        <Table>
+        <Table gridLines striped hoverable>
           <TableHeader>
             <TableRow>
               {selectable && (
@@ -124,7 +124,7 @@ export const DataGrid = ({
           </TableHeader>
           <TableBody>
             {data.map((row, rowIndex) => (
-              <TableRow key={row[idField] || rowIndex} className="hover:bg-muted/25">
+              <TableRow key={row[idField] || rowIndex} className="hover:bg-muted/25 border-b border-gray-200">
                 {selectable && (
                   <TableCell className="text-center">
                     <input
@@ -136,7 +136,7 @@ export const DataGrid = ({
                   </TableCell>
                 )}
                 {columns.map((column) => (
-                  <TableCell key={`${row[idField] || rowIndex}-${column.id}`} className="text-right">
+                  <TableCell key={`${row[idField] || rowIndex}-${column.id}`} className="text-right border-x border-gray-100">
                     {column.cell 
                       ? column.cell(row[column.accessorKey], row)
                       : row[column.accessorKey]
