@@ -1,17 +1,17 @@
+
 import React from "react";
-import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { PageContainer } from "@/components/PageContainer";
 
 const FinancialForecastPage = () => {
   return (
-    <Layout className="h-screen overflow-hidden">
-      <div className="flex flex-col h-full w-full">
-        <Header title="التوقعات المالية" showBack={true} />
-        <div className="flex-1 overflow-auto p-6">
-          {/* محتوى الصفحة */}
+    <PageContainer title="التوقعات المالية">
+      <div className="p-6">
+        {/* محتوى الصفحة */}
+        <div className="bg-gray-100 p-6 rounded-md text-center">
+          <p className="text-xl text-gray-600">سيتم تطوير هذه الصفحة قريباً</p>
         </div>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

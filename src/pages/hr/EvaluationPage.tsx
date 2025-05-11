@@ -1,7 +1,5 @@
-
 import React from "react";
-import { Layout } from "@/components/Layout";
-import HRPageHeader from "@/components/hr/HRPageHeader";
+import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, BarChart3, Calendar, FileCheck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -102,14 +100,14 @@ const getStatusBadge = (status: EmployeeEvaluation['status']) => {
 
 const EvaluationPage: React.FC = () => {
   return (
-    <Layout>
+    <PageContainer title="التقييم الوظيفي">
       <div className="container mx-auto px-4 py-6 rtl">
-        <HRPageHeader
-          title="التقييم الوظيفي"
-          description="إدارة عمليات تقييم أداء الموظفين"
-          onAddNew={() => console.log("إضافة تقييم جديد")}
-          addButtonLabel="إضافة تقييم جديد"
-        />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">إدارة عمليات تقييم أداء الموظفين</h2>
+          <Button onClick={() => console.log("إضافة تقييم جديد")}>
+            إضافة تقييم جديد
+          </Button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Card>
@@ -286,7 +284,7 @@ const EvaluationPage: React.FC = () => {
           </Card>
         </div>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

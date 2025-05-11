@@ -1,7 +1,5 @@
-
 import React, { useState } from "react";
-import { Layout } from "@/components/Layout";
-import HRPageHeader from "@/components/hr/HRPageHeader";
+import { PageContainer } from "@/components/PageContainer";
 import { Calendar, Clock } from "lucide-react";
 import { Attendance } from "@/types/hr";
 import {
@@ -20,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const mockAttendanceData: Attendance[] = [
   {
@@ -109,98 +108,100 @@ const AttendancePage: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <PageContainer title="الإجازات والغياب">
       <div className="container mx-auto px-4 py-6 rtl">
-        <HRPageHeader
-          title="الإجازات والغياب"
-          description="إدارة الحضور والغياب والإجازات للموظفين"
-          onAddNew={() => console.log("إضافة حضور/غياب")}
-          addButtonLabel="تسجيل حضور/غياب"
-        />
-
-        <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex items-center">
-                <Calendar className="ml-2 h-5 w-5 text-gray-500" />
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="الشهر" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">يناير</SelectItem>
-                    <SelectItem value="2">فبراير</SelectItem>
-                    <SelectItem value="3">مارس</SelectItem>
-                    <SelectItem value="4">أبريل</SelectItem>
-                    <SelectItem value="5">مايو</SelectItem>
-                    <SelectItem value="6">يونيو</SelectItem>
-                    <SelectItem value="7">يوليو</SelectItem>
-                    <SelectItem value="8">أغسطس</SelectItem>
-                    <SelectItem value="9">سبتمبر</SelectItem>
-                    <SelectItem value="10">أكتوبر</SelectItem>
-                    <SelectItem value="11">نوفمبر</SelectItem>
-                    <SelectItem value="12">ديسمبر</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center">
-                <Select value={selectedYear} onValueChange={setSelectedYear}>
-                  <SelectTrigger className="w-28">
-                    <SelectValue placeholder="السنة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2023">2023</SelectItem>
-                    <SelectItem value="2024">2024</SelectItem>
-                    <SelectItem value="2025">2025</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Button variant="outline">
-                طباعة التقرير
-              </Button>
-              <Button variant="outline">
-                تصدير البيانات
-              </Button>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <Table striped>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>الموظف</TableHead>
-                  <TableHead>التاريخ</TableHead>
-                  <TableHead>وقت الحضور</TableHead>
-                  <TableHead>وقت الانصراف</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>ملاحظات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockAttendanceData.map((record) => (
-                  <TableRow key={record.id}>
-                    <TableCell className="font-medium">
-                      {getEmployeeName(record.employeeId)}
-                    </TableCell>
-                    <TableCell>
-                      {record.date.toLocaleDateString("ar-SA")}
-                    </TableCell>
-                    <TableCell>{formatTime(record.checkIn)}</TableCell>
-                    <TableCell>{formatTime(record.checkOut)}</TableCell>
-                    <TableCell>{getStatusBadge(record.status)}</TableCell>
-                    <TableCell>{record.notes || "-"}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">إدارة الحضور والغياب والإجازات</h2>
+          <Button onClick={() => console.log("إضافة حضور/غياب")}>
+            تسجيل حضور/غياب
+          </Button>
         </div>
+
+        <Card className="bg-white shadow-sm rounded-lg mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center">
+                  <Calendar className="ml-2 h-5 w-5 text-gray-500" />
+                  <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder="الشهر" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">يناير</SelectItem>
+                      <SelectItem value="2">فبراير</SelectItem>
+                      <SelectItem value="3">مارس</SelectItem>
+                      <SelectItem value="4">أبريل</SelectItem>
+                      <SelectItem value="5">مايو</SelectItem>
+                      <SelectItem value="6">يونيو</SelectItem>
+                      <SelectItem value="7">يوليو</SelectItem>
+                      <SelectItem value="8">أغسطس</SelectItem>
+                      <SelectItem value="9">سبتمبر</SelectItem>
+                      <SelectItem value="10">أكتوبر</SelectItem>
+                      <SelectItem value="11">نوفمبر</SelectItem>
+                      <SelectItem value="12">ديسمبر</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center">
+                  <Select value={selectedYear} onValueChange={setSelectedYear}>
+                    <SelectTrigger className="w-28">
+                      <SelectValue placeholder="السنة" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2023">2023</SelectItem>
+                      <SelectItem value="2024">2024</SelectItem>
+                      <SelectItem value="2025">2025</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline">
+                  طباعة التقرير
+                </Button>
+                <Button variant="outline">
+                  تصدير البيانات
+                </Button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <Table striped>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>الموظف</TableHead>
+                    <TableHead>التاريخ</TableHead>
+                    <TableHead>وقت الحضور</TableHead>
+                    <TableHead>وقت الانصراف</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead>ملاحظات</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mockAttendanceData.map((record) => (
+                    <TableRow key={record.id}>
+                      <TableCell className="font-medium">
+                        {getEmployeeName(record.employeeId)}
+                      </TableCell>
+                      <TableCell>
+                        {record.date.toLocaleDateString("ar-SA")}
+                      </TableCell>
+                      <TableCell>{formatTime(record.checkIn)}</TableCell>
+                      <TableCell>{formatTime(record.checkOut)}</TableCell>
+                      <TableCell>{getStatusBadge(record.status)}</TableCell>
+                      <TableCell>{record.notes || "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

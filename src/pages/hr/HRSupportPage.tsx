@@ -1,7 +1,5 @@
-
 import React from "react";
-import { Layout } from "@/components/Layout";
-import HRPageHeader from "@/components/hr/HRPageHeader";
+import { PageContainer } from "@/components/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -40,20 +38,11 @@ import {
   Building2,
   Briefcase,
   Link,
-  LucideIcon,
   Plus,
   Edit,
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface SupportTicket {
   id: string;
@@ -141,12 +130,11 @@ const mockSupportTickets: SupportTicket[] = [
 
 const HRSupportPage: React.FC = () => {
   return (
-    <Layout>
+    <PageContainer title="الدعم والمساعدة">
       <div className="container mx-auto px-4 py-6 rtl">
-        <HRPageHeader
-          title="الدعم والمساعدة"
-          description="مركز الدعم والمساعدة للموظفين"
-        />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">مركز الدعم والمساعدة للموظفين</h2>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* قسم المقالات الشائعة */}
@@ -301,7 +289,7 @@ const HRSupportPage: React.FC = () => {
           </Card>
         </div>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

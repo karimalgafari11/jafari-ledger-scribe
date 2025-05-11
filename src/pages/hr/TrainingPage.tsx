@@ -1,7 +1,5 @@
-
 import React from "react";
-import { Layout } from "@/components/Layout";
-import HRPageHeader from "@/components/hr/HRPageHeader";
+import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -129,14 +127,14 @@ const TrainingPage: React.FC = () => {
   const completedTrainings = trainingData.filter(t => t.status === "completed");
 
   return (
-    <Layout>
+    <PageContainer title="التدريب والتطوير">
       <div className="container mx-auto px-4 py-6 rtl">
-        <HRPageHeader
-          title="التدريب والتطوير"
-          description="إدارة برامج التدريب وتطوير مهارات الموظفين"
-          onAddNew={() => console.log("إضافة تدريب جديد")}
-          addButtonLabel="إضافة برنامج تدريبي جديد"
-        />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">إدارة برامج التدريب وتطوير مهارات الموظفين</h2>
+          <Button onClick={() => console.log("إضافة تدريب جديد")}>
+            إضافة برنامج تدريبي جديد
+          </Button>
+        </div>
 
         <div className="mb-6">
           <Tabs defaultValue="all" className="w-full">
@@ -201,7 +199,7 @@ const TrainingPage: React.FC = () => {
           </Tabs>
         </div>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

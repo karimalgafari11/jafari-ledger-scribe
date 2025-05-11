@@ -1,17 +1,24 @@
+
 import React from "react";
-import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { PageContainer } from "@/components/PageContainer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const BasicDefinitionsPage = () => {
   return (
-    <Layout className="h-screen overflow-hidden">
-      <div className="flex flex-col h-full w-full">
-        <Header title="التعاريف الأساسية" showBack={true} />
-        <div className="flex-1 overflow-auto p-6">
-          {/* محتوى الصفحة */}
-        </div>
+    <PageContainer title="التعاريف الأساسية">
+      <div className="p-6">
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>التعاريف الأساسية للنظام</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-gray-100 p-6 rounded-md text-center">
+              <p className="text-xl text-gray-600">سيتم تطوير هذه الصفحة قريباً</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

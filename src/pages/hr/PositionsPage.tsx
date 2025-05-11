@@ -1,7 +1,5 @@
-
 import React, { useState } from "react";
-import { Layout } from "@/components/Layout";
-import HRPageHeader from "@/components/hr/HRPageHeader";
+import { PageContainer } from "@/components/PageContainer";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -95,16 +93,16 @@ const PositionsPage: React.FC = () => {
   );
 
   return (
-    <Layout>
+    <PageContainer title="الوظائف والمناصب">
       <div className="container mx-auto px-4 py-6 rtl">
-        <HRPageHeader
-          title="الوظائف والمناصب"
-          description="تعريف الوظائف والمناصب وهيكلها التنظيمي"
-          onAddNew={() => console.log("إضافة منصب جديد")}
-          addButtonLabel="إضافة منصب جديد"
-        />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">تعريف الوظائف والمناصب وهيكلها التنظيمي</h2>
+          <Button onClick={() => console.log("إضافة منصب جديد")}>
+            إضافة منصب جديد
+          </Button>
+        </div>
 
-        <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
+        <Card className="bg-white shadow-sm rounded-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6">
             <div className="relative w-full md:max-w-sm">
               <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
@@ -162,9 +160,9 @@ const PositionsPage: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </div>
+        </Card>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 

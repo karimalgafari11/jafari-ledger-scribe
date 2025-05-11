@@ -1,7 +1,5 @@
-
 import React from "react";
-import { Layout } from "@/components/Layout";
-import HRPageHeader from "@/components/hr/HRPageHeader";
+import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Award, Calendar, ChevronRight, DollarSign, Gift, Star, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -162,14 +160,14 @@ const RecentRewardCard = ({ reward }: { reward: RewardItem }) => {
 
 const RewardsPage: React.FC = () => {
   return (
-    <Layout>
+    <PageContainer title="المكافآت والحوافز">
       <div className="container mx-auto px-4 py-6 rtl">
-        <HRPageHeader
-          title="المكافآت والحوافز"
-          description="إدارة المكافآت والحوافز للموظفين"
-          onAddNew={() => console.log("إضافة مكافأة جديدة")}
-          addButtonLabel="إضافة مكافأة جديدة"
-        />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">إدارة المكافآت والحوافز للموظفين</h2>
+          <Button onClick={() => console.log("إضافة مكافأة جديدة")}>
+            إضافة مكافأة جديدة
+          </Button>
+        </div>
 
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">أنواع المكافآت</h2>
@@ -225,7 +223,7 @@ const RewardsPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </PageContainer>
   );
 };
 
