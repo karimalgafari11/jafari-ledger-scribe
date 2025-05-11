@@ -105,12 +105,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({
   });
 
   const handleSubmit = (values: EmployeeFormValues) => {
-    // تحويل النص المفصول بفواصل إلى مصفوفة للمهارات
-    const processedValues = {
-      ...values,
-      skills: values.skills ? values.skills.split(',').map(skill => skill.trim()) : [],
-    };
-    onSubmit(processedValues);
+    onSubmit(values);
     setOpen(false);
   };
 
@@ -422,3 +417,4 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({
 };
 
 export default EmployeeDialog;
+

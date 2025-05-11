@@ -103,10 +103,16 @@ export const useEmployees = () => {
   };
 
   // إضافة موظف جديد
-  const addEmployee = (employee: Omit<Employee, "id">) => {
+  const addEmployee = (employeeData: Omit<Employee, "id">) => {
+    // Process skills: if it's a string, convert to array
+    const skills = typeof employeeData.skills === 'string' 
+      ? employeeData.skills.split(',').map(s => s.trim()).filter(Boolean)
+      : employeeData.skills;
+      
     const newEmployee = {
-      ...employee,
+      ...employeeData,
       id: `emp-${String(employees.length + 1).padStart(3, "0")}`,
+      skills: skills
     } as Employee;
     
     setEmployees([...employees, newEmployee]);
@@ -114,7 +120,17 @@ export const useEmployees = () => {
   };
 
   // تحديث بيانات موظف
-  const updateEmployee = (updatedEmployee: Employee) => {
+  const updateEmployee = (updatedEmployeeData: Employee) => {
+    // Process skills: if it's a string, convert to array
+    const skills = typeof updatedEmployeeData.skills === 'string' 
+      ? updatedEmployeeData.skills.split(',').map(s => s.trim()).filter(Boolean)
+      : updatedEmployeeData.skills;
+    
+    const updatedEmployee = {
+      ...updatedEmployeeData,
+      skills: skills
+    };
+    
     setEmployees(
       employees.map((emp) =>
         emp.id === updatedEmployee.id ? updatedEmployee : emp
@@ -158,3 +174,4 @@ export const useEmployees = () => {
     changeEmployeeStatus,
   };
 };
+

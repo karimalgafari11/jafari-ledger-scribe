@@ -59,21 +59,23 @@ const EmployeesPage = () => {
   };
 
   const handleDialogSubmit = (data: any) => {
+    // Handle skills from string to array before sending to addEmployee or updateEmployee
+    const preparedData = {
+      ...data,
+      joinDate: new Date(data.joinDate),
+      birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
+      skills: data.skills ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : []
+    };
+    
     if (selectedEmployee) {
       // إذا كان هناك موظف محدد، قم بتحديث بياناته
       updateEmployee({
         ...selectedEmployee,
-        ...data,
-        joinDate: new Date(data.joinDate),
-        birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
+        ...preparedData
       });
     } else {
       // إذا لم يكن هناك موظف محدد، أضف موظفًا جديدًا
-      addEmployee({
-        ...data,
-        joinDate: new Date(data.joinDate),
-        birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
-      });
+      addEmployee(preparedData);
     }
   };
 
