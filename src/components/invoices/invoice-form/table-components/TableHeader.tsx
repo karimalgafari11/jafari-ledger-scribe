@@ -57,15 +57,6 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        
-        <Button 
-          onClick={handleAddItemClick}
-          disabled={isAddingItem || editingItemIndex !== null}
-          size="sm"
-          className="h-8 gap-1"
-        >
-          <Plus className="w-4 h-4" /> إضافة صنف
-        </Button>
       </div>
     </div>
   );

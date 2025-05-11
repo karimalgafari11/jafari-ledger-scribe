@@ -1,7 +1,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody } from "@/components/ui/table";
+import { Plus, Search } from "lucide-react";
 import { InvoiceItem } from "@/types/invoices";
 import { InvoiceItemRow } from "./InvoiceItemRow";
 import { InvoiceItemSection } from "./InvoiceItemSection";
@@ -19,6 +21,7 @@ import { EmptyTableContent } from "./table-components/EmptyTableContent";
 import { TableStyles } from "./table-components/TableStyles";
 import { useTableInitialFocus } from "./table-components/TableInitialFocus";
 import { TableKeyboardNavigation } from "./table-components/TableKeyboardNavigation";
+import { ItemFormDialog } from "./table-components/ItemFormDialog";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -59,6 +62,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   );
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [tableHasFocus, setTableHasFocus] = useState(false);
+  const [showItemDialog, setShowItemDialog] = useState(false); // إضافة حالة للتحكم في ظهور نافذة إضافة الصنف
+  const [currentEditItem, setCurrentEditItem] = useState<InvoiceItem | null>(null); // حالة لتخزين العنصر الحالي للتحرير
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [firstRender, setFirstRender] = useState(true); // لتتبع التحميل الأولي
 
@@ -112,8 +117,9 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
 
   // مقبض لإضافة عنصر جديد
   const handleAddItemClick = () => {
-    if (editingItemIndex === null) {
-      setShowProductSearch(true);
+    if (editingItemIndex === null && !isAddingItem) {
+      setShowItemDialog(true);
+      setCurrentEditItem(null);
     }
   };
 
@@ -132,6 +138,37 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
       onUpdateItem(editingItemIndex, item);
     }
     handleEditItem(null);
+  };
+
+  // معالج إغلاق نافذة إضافة/تعديل العنصر
+  const handleCloseItemDialog = () => {
+    setShowItemDialog(false);
+    setCurrentEditItem(null);
+  };
+
+  // معالج حفظ الصنف من النافذة
+  const handleSubmitItemForm = (item: Partial<InvoiceItem>) => {
+    if (currentEditItem) {
+      // تحديث صنف موجود
+      const index = items.findIndex(i => i.id === currentEditItem.id);
+      if (index !== -1) {
+        onUpdateItem(index, item);
+      }
+    } else {
+      // إضافة صنف جديد
+      onAddItem(item);
+    }
+    setShowItemDialog(false);
+    setCurrentEditItem(null);
+  };
+
+  // معالج تعديل صنف موجود
+  const handleEditExistingItem = (index: number) => {
+    const item = items[index];
+    if (item) {
+      setCurrentEditItem(item);
+      setShowItemDialog(true);
+    }
   };
 
   // معالج اختيار المنتج من البحث السريع
@@ -161,6 +198,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
     return () => clearTimeout(timer);
   };
 
+  // معالج تبديل البحث السريع
+  const handleToggleSearch = () => {
+    setShowProductSearch(!showProductSearch);
+  };
+
   return (
     <div className="space-y-4">
       {/* قسم إضافة/تحرير العنصر */}
@@ -182,6 +224,15 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
           onSelect={handleProductSelected}
         />
       )}
+
+      {/* نافذة إضافة/تعديل الصنف */}
+      <ItemFormDialog 
+        open={showItemDialog}
+        currentEditItem={currentEditItem}
+        onClose={handleCloseItemDialog}
+        onSubmit={handleSubmitItemForm}
+        includeNotes={showItemNotes}
+      />
 
       {/* إضافة مستمع أحداث لوحة المفاتيح */}
       <TableKeyboardNavigation
@@ -205,6 +256,29 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
             toggleGridLines={toggleGridLines}
             toggleDenseView={toggleDenseView}
           />
+          
+          <div className="p-4 flex flex-wrap gap-2 border-b">
+            <Button
+              onClick={handleAddItemClick}
+              className="flex items-center gap-2"
+              size="sm"
+              disabled={isAddingItem || editingItemIndex !== null || showItemDialog}
+            >
+              <Plus className="h-4 w-4" />
+              إضافة صنف جديد
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleSearch}
+              className="flex items-center gap-2"
+              disabled={isAddingItem || editingItemIndex !== null || showItemDialog}
+            >
+              <Search className="h-4 w-4" />
+              البحث عن صنف
+            </Button>
+          </div>
           
           <div 
             ref={(node) => {
@@ -249,7 +323,10 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                       isEditingCell={isEditingCell}
                       editingItemIndex={editingItemIndex}
                       isAddingItem={isAddingItem}
-                      setEditingItemIndex={handleEditItem}
+                      setEditingItemIndex={(idx) => {
+                        if (idx === index) handleEditExistingItem(index);
+                        else handleEditItem(idx);
+                      }}
                       onRemoveItem={onRemoveItem}
                       showItemCodes={showItemCodes}
                       showItemNotes={showItemNotes}

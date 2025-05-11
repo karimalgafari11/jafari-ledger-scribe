@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { InvoiceItem } from "@/types/invoices";
 import { mockProducts } from "@/data/mockProducts";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 export const useInvoiceItemsTable = (
   items: InvoiceItem[],
@@ -16,14 +17,8 @@ export const useInvoiceItemsTable = (
   const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
   const [showItemForm, setShowItemForm] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState<InvoiceItem | null>(null);
+  const [showItemDialog, setShowItemDialog] = useState(false);
   
-  // إزالة الجزء الذي يفتح المربع تلقائيًا
-  // useEffect(() => {
-  //   if (items.length === 0 && !isSearching && !quickSearchActive && !showItemForm) {
-  //     setQuickSearchActive(true);
-  //   }
-  // }, [items.length, isSearching, quickSearchActive, showItemForm]);
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setSearchTerm(term);
@@ -43,6 +38,7 @@ export const useInvoiceItemsTable = (
   const handleQuickSelect = (product: any) => {
     console.log("Adding product from quick select:", product);
     const newItem = {
+      id: uuidv4(),
       productId: product.id,
       code: product.code,
       name: product.name,
@@ -77,12 +73,14 @@ export const useInvoiceItemsTable = (
   };
 
   const handleAddNewItem = () => {
-    setQuickSearchActive(true);
+    setShowItemDialog(true);
+    setCurrentEditItem(null);
   };
 
   const handleFormCancel = () => {
     setShowItemForm(false);
     setCurrentEditItem(null);
+    setShowItemDialog(false);
   };
 
   const handleFormSubmit = (item: Partial<InvoiceItem>) => {
@@ -96,6 +94,7 @@ export const useInvoiceItemsTable = (
     }
     setShowItemForm(false);
     setCurrentEditItem(null);
+    setShowItemDialog(false);
   };
 
   return {
@@ -104,6 +103,7 @@ export const useInvoiceItemsTable = (
     searchResults,
     quickSearchActive,
     showItemForm,
+    showItemDialog,
     currentEditItem,
     handleSearchChange,
     toggleSearch,
@@ -114,5 +114,7 @@ export const useInvoiceItemsTable = (
     handleFormSubmit,
     setQuickSearchActive,
     setShowItemForm,
+    setShowItemDialog,
+    setCurrentEditItem,
   };
 };

@@ -8,6 +8,7 @@ import { useInvoiceForm } from "@/hooks/useInvoiceForm";
 import { v4 as uuid } from "uuid";
 import { format } from "date-fns";
 import { InvoiceItem } from "@/types/invoices";
+import { toast } from "sonner";
 
 const SalesInvoicePage = () => {
   // Use the sales invoice hook to get all the necessary data and functions
@@ -18,6 +19,7 @@ const SalesInvoicePage = () => {
     updateInvoiceItem,
     removeInvoiceItem,
     applyDiscount,
+    calculateTotals,
     isLoading,
   } = useSalesInvoice();
 
@@ -57,6 +59,7 @@ const SalesInvoicePage = () => {
     const itemId = invoice.items[index]?.id;
     if (itemId) {
       updateInvoiceItem(itemId, item);
+      calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
     }
   };
 
@@ -64,7 +67,15 @@ const SalesInvoicePage = () => {
     const itemId = invoice.items[index]?.id;
     if (itemId) {
       removeInvoiceItem(itemId);
+      calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
+      toast.success("تم حذف الصنف من الفاتورة");
     }
+  };
+
+  const handleAddInvoiceItem = (item: Partial<InvoiceItem>) => {
+    addInvoiceItem(item);
+    calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
+    toast.success(`تم إضافة العنصر إلى الفاتورة`);
   };
 
   // Settings for the invoice form with all required properties
@@ -89,7 +100,7 @@ const SalesInvoicePage = () => {
           <InvoiceForm
             invoice={invoice}
             onFieldChange={updateInvoiceField}
-            onAddItem={addInvoiceItem}
+            onAddItem={handleAddInvoiceItem}
             onUpdateItem={handleUpdateInvoiceItem}
             onRemoveItem={handleRemoveInvoiceItem}
             onApplyDiscount={applyDiscount}
