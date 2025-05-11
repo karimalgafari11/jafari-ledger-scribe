@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Eye, FileText, Trash2 } from "lucide-react";
-import { ActionDefinition } from "@/components/inventory/DataGrid";
+import { ActionDefinition } from "@/components/inventory/types";
 
 interface StockMovementActionsProps {
   onViewDetails: (id: string) => void;

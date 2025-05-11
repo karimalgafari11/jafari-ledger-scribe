@@ -2,8 +2,7 @@
 import React from "react";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ColumnDefinition } from "@/components/inventory/types";
-import { ActionDefinition } from "@/components/inventory/types";
+import { ColumnDefinition, ActionDefinition } from "@/components/inventory/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, AlertCircle } from "lucide-react";
 
@@ -19,6 +18,8 @@ interface DataGridProps {
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
+  idField?: string; // Added missing property
+  className?: string; // Added missing property
 }
 
 export const DataGrid = ({
@@ -32,7 +33,9 @@ export const DataGrid = ({
   emptyMessage = "لا توجد بيانات",
   isLoading = false,
   error = null,
-  onRetry
+  onRetry,
+  idField = "id", // Set default value for idField
+  className // Added className prop
 }: DataGridProps) => {
   // تحديد ما إذا كانت جميع الصفوف محددة
   const isAllSelected = data.length > 0 && selectedRows.length === data.length;
@@ -81,7 +84,7 @@ export const DataGrid = ({
   // عرض حالة البيانات الفارغة
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className={className}>
         <CardContent className="p-6 text-center">
           <p className="text-muted-foreground">{emptyMessage}</p>
         </CardContent>
@@ -90,7 +93,7 @@ export const DataGrid = ({
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-white">
+    <div className={`border rounded-lg overflow-hidden bg-white ${className || ''}`}>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -121,19 +124,19 @@ export const DataGrid = ({
           </TableHeader>
           <TableBody>
             {data.map((row, rowIndex) => (
-              <TableRow key={row.id || rowIndex} className="hover:bg-muted/25">
+              <TableRow key={row[idField] || rowIndex} className="hover:bg-muted/25">
                 {selectable && (
                   <TableCell className="text-center">
                     <input
                       type="checkbox"
                       className="rounded border-gray-300"
-                      checked={selectedRows.includes(row.id)}
-                      onChange={() => onToggleSelection && onToggleSelection(row.id)}
+                      checked={selectedRows.includes(row[idField])}
+                      onChange={() => onToggleSelection && onToggleSelection(row[idField])}
                     />
                   </TableCell>
                 )}
                 {columns.map((column) => (
-                  <TableCell key={`${row.id || rowIndex}-${column.id}`} className="text-right">
+                  <TableCell key={`${row[idField] || rowIndex}-${column.id}`} className="text-right">
                     {column.cell 
                       ? column.cell(row[column.accessorKey], row)
                       : row[column.accessorKey]
@@ -143,18 +146,24 @@ export const DataGrid = ({
                 {actions.length > 0 && (
                   <TableCell className="text-center">
                     <div className="flex justify-center space-x-1 rtl:space-x-reverse">
-                      {actions.map((action, actionIndex) => (
-                        <Button
-                          key={actionIndex}
-                          variant={action.variant || "ghost"}
-                          size="icon"
-                          onClick={() => action.onClick(row)}
-                          className={action.className}
-                          title={action.label}
-                        >
-                          {action.icon}
-                        </Button>
-                      ))}
+                      {actions.map((action, actionIndex) => {
+                        if (action.condition && !action.condition(row)) {
+                          return null; // Skip rendering if condition is false
+                        }
+                        
+                        return (
+                          <Button
+                            key={actionIndex}
+                            variant={action.variant || "ghost"}
+                            size="icon"
+                            onClick={() => action.onClick(row)}
+                            className={action.className}
+                            title={action.label}
+                          >
+                            {action.icon}
+                          </Button>
+                        );
+                      })}
                     </div>
                   </TableCell>
                 )}

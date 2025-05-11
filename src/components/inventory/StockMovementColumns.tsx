@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { ColumnDefinition } from "@/components/inventory/DataGrid";
+import { ColumnDefinition } from "@/components/inventory/types";
 
 interface CreateColumnsOptions {
   formatDate: (date: Date) => string;

@@ -6,7 +6,7 @@ import { ReorderToolbar } from "@/components/inventory/ReorderToolbar";
 import { useReorderLevels } from "@/hooks/useReorderLevels";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ColumnDefinition } from "@/components/inventory/DataGrid";
+import { ColumnDefinition } from "@/components/inventory/types";
 import { Layout } from "@/components/Layout";
 
 const ReorderPage = () => {
