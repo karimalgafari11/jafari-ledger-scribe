@@ -16,7 +16,8 @@ export const productSchema = z.object({
   description: z.string().optional(),
   isActive: z.boolean().default(true),
   barcode: z.string().optional(), // حقل الباركود
-  taxRate: z.coerce.number().min(0, { message: "يجب أن تكون نسبة الضريبة قيمة موجبة" }).optional(), // إضافة حقل نسبة الضريبة
+  taxRate: z.coerce.number().min(0, { message: "يجب أن تكون نسبة الضريبة قيمة موجبة" }).optional(), // حقل نسبة الضريبة
+  unit: z.string().optional(), // إضافة حقل وحدة القياس
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;
@@ -36,4 +37,5 @@ export const defaultProductValues: ProductFormValues = {
   isActive: true,
   barcode: "", // قيمة افتراضية للباركود
   taxRate: 0, // قيمة افتراضية لنسبة الضريبة
+  unit: "", // قيمة افتراضية لوحدة القياس
 };

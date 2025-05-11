@@ -28,6 +28,21 @@ export const ProductInventoryFields: React.FC<ProductInventoryFieldsProps> = ({ 
         )}
       />
 
+      {/* وحدة القياس */}
+      <FormField
+        control={control}
+        name="unit"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>وحدة القياس</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="أدخل وحدة القياس" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       {/* المقاس */}
       <FormField
         control={control}
