@@ -198,7 +198,7 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
           <Progress 
             value={isIncrease ? Math.min(priceChangePercentage * 2, 100) : Math.min(Math.abs(priceChangePercentage) * 2, 100)} 
             className="h-2"
-            indicatorClassName={isIncrease ? 'bg-green-500' : 'bg-red-500'}
+            indicatorClass={isIncrease ? 'bg-green-500' : 'bg-red-500'}
           />
         </div>
         
@@ -216,7 +216,7 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
                 <Progress 
                   value={pricingDecision.demandFactor * 100} 
                   className="h-2 w-1/2"
-                  indicatorClassName="bg-blue-500"
+                  indicatorClass="bg-blue-500"
                 />
                 <span className="text-sm font-medium">{(pricingDecision.demandFactor * 100).toFixed(0)}%</span>
               </div>
@@ -228,7 +228,7 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
                 <Progress 
                   value={pricingDecision.costFactor * 100} 
                   className="h-2 w-1/2"
-                  indicatorClassName="bg-orange-500"
+                  indicatorClass="bg-orange-500"
                 />
                 <span className="text-sm font-medium">{(pricingDecision.costFactor * 100).toFixed(0)}%</span>
               </div>
@@ -240,7 +240,7 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
                 <Progress 
                   value={pricingDecision.competitionFactor * 100} 
                   className="h-2 w-1/2"
-                  indicatorClassName="bg-purple-500"
+                  indicatorClass="bg-purple-500"
                 />
                 <span className="text-sm font-medium">{(pricingDecision.competitionFactor * 100).toFixed(0)}%</span>
               </div>
@@ -332,7 +332,7 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
           <Progress 
             value={Math.min(Math.abs(provisionChangePercentage), 100)} 
             className="h-2"
-            indicatorClassName={isIncrease ? 'bg-amber-500' : 'bg-green-500'}
+            indicatorClass={isIncrease ? 'bg-amber-500' : 'bg-green-500'}
           />
         </div>
 
@@ -453,7 +453,7 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
             <Progress 
               value={50 + (isPositive ? Math.min(varianceDecision.variancePercentage, 50) : -Math.min(Math.abs(varianceDecision.variancePercentage), 50))} 
               className="h-2 flex-1"
-              indicatorClassName={isPositive ? 'bg-green-500' : 'bg-red-500'}
+              indicatorClass={isPositive ? 'bg-green-500' : 'bg-red-500'}
             />
             <span className="text-sm">{varianceDecision.actualAmount.toLocaleString()}</span>
           </div>
@@ -627,3 +627,4 @@ export const FinancialDecisionDetails: React.FC<FinancialDecisionDetailsProps> =
 };
 
 export default FinancialDecisionDetails;
+
