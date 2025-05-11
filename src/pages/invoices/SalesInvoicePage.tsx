@@ -7,6 +7,7 @@ import { useSalesInvoice } from "@/hooks/sales";
 import { useInvoiceForm } from "@/hooks/useInvoiceForm";
 import { v4 as uuid } from "uuid";
 import { format } from "date-fns";
+import { InvoiceItem } from "@/types/invoices";
 
 const SalesInvoicePage = () => {
   // Use the sales invoice hook to get all the necessary data and functions
@@ -51,11 +52,33 @@ const SalesInvoicePage = () => {
     }
   }, []);
 
-  // Settings for the invoice form
+  // Adapter functions to convert index-based functions to id-based functions
+  const handleUpdateInvoiceItem = (index: number, item: Partial<InvoiceItem>) => {
+    const itemId = invoice.items[index]?.id;
+    if (itemId) {
+      updateInvoiceItem(itemId, item);
+    }
+  };
+
+  const handleRemoveInvoiceItem = (index: number) => {
+    const itemId = invoice.items[index]?.id;
+    if (itemId) {
+      removeInvoiceItem(itemId);
+    }
+  };
+
+  // Settings for the invoice form with all required properties
   const invoiceSettings = {
     showCompanyLogo: true,
     showDiscount: true,
     showTax: true,
+    showCustomerDetails: true,
+    showItemCodes: true,
+    showItemNotes: true,
+    showSignature: false,
+    fontSize: 'medium' as const,
+    tableColumns: ['serial', 'name', 'quantity', 'price', 'total', 'notes'],
+    tableWidth: 100
   };
 
   return (
@@ -67,8 +90,8 @@ const SalesInvoicePage = () => {
             invoice={invoice}
             onFieldChange={updateInvoiceField}
             onAddItem={addInvoiceItem}
-            onUpdateItem={updateInvoiceItem}
-            onRemoveItem={removeInvoiceItem}
+            onUpdateItem={handleUpdateInvoiceItem}
+            onRemoveItem={handleRemoveInvoiceItem}
             onApplyDiscount={applyDiscount}
             isLoading={isLoading}
             settings={invoiceSettings}
