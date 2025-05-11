@@ -4,7 +4,7 @@ import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Plus, Building, CreditCard, Bank, CalendarRange, User, Settings } from "lucide-react";
+import { Plus, Building, CreditCard, Landmark, CalendarRange, User, Settings } from "lucide-react";
 
 const BasicDefinitionsPage = () => {
   return (
@@ -195,7 +195,7 @@ const BasicDefinitionsPage = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Bank className="mr-2 h-5 w-5 text-primary" />
+                  <Landmark className="mr-2 h-5 w-5 text-primary" />
                   البنوك وحساباتها
                 </CardTitle>
               </CardHeader>
