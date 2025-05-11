@@ -104,15 +104,21 @@ export const useEmployees = () => {
 
   // إضافة موظف جديد
   const addEmployee = (employeeData: Omit<Employee, "id">) => {
-    // Process skills: if it's a string, convert to array
-    const skills = typeof employeeData.skills === 'string' 
-      ? employeeData.skills.split(',').map(s => s.trim()).filter(Boolean)
-      : employeeData.skills;
+    // معالجة المهارات: إذا كانت نصية تحول إلى مصفوفة
+    let skillsArray: string[] = [];
+    
+    if (employeeData.skills) {
+      if (typeof employeeData.skills === 'string') {
+        skillsArray = employeeData.skills.split(',').map(s => s.trim()).filter(Boolean);
+      } else {
+        skillsArray = employeeData.skills;
+      }
+    }
       
     const newEmployee = {
       ...employeeData,
       id: `emp-${String(employees.length + 1).padStart(3, "0")}`,
-      skills: skills
+      skills: skillsArray
     } as Employee;
     
     setEmployees([...employees, newEmployee]);
@@ -121,14 +127,20 @@ export const useEmployees = () => {
 
   // تحديث بيانات موظف
   const updateEmployee = (updatedEmployeeData: Employee) => {
-    // Process skills: if it's a string, convert to array
-    const skills = typeof updatedEmployeeData.skills === 'string' 
-      ? updatedEmployeeData.skills.split(',').map(s => s.trim()).filter(Boolean)
-      : updatedEmployeeData.skills;
+    // معالجة المهارات: إذا كانت نصية تحول إلى مصفوفة
+    let skillsArray: string[] = [];
+    
+    if (updatedEmployeeData.skills) {
+      if (typeof updatedEmployeeData.skills === 'string') {
+        skillsArray = updatedEmployeeData.skills.split(',').map(s => s.trim()).filter(Boolean);
+      } else {
+        skillsArray = updatedEmployeeData.skills;
+      }
+    }
     
     const updatedEmployee = {
       ...updatedEmployeeData,
-      skills: skills
+      skills: skillsArray
     };
     
     setEmployees(
@@ -174,4 +186,3 @@ export const useEmployees = () => {
     changeEmployeeStatus,
   };
 };
-

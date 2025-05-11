@@ -59,12 +59,12 @@ const EmployeesPage = () => {
   };
 
   const handleDialogSubmit = (data: any) => {
-    // Handle skills from string to array before sending to addEmployee or updateEmployee
+    // تجهيز البيانات قبل الإرسال
     const preparedData = {
       ...data,
       joinDate: new Date(data.joinDate),
       birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
-      skills: data.skills ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : []
+      // لا نحتاج لمعالجة المهارات هنا، سيتم ذلك في الهوك
     };
     
     if (selectedEmployee) {
