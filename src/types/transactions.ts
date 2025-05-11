@@ -8,4 +8,25 @@ export interface Transaction {
   debit: number;
   credit: number;
   balance: number;
+  attachments?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  createdBy?: string;
+}
+
+export interface TransactionFilter {
+  accountId?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  type?: 'invoice' | 'payment' | 'return';
+  minAmount?: number;
+  maxAmount?: number;
+  searchTerm?: string;
+}
+
+export interface AccountTransaction extends Transaction {
+  accountId: string;
+  accountName: string;
+  opposingAccountId?: string;
+  opposingAccountName?: string;
 }
