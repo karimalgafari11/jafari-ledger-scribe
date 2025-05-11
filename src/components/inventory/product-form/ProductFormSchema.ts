@@ -15,6 +15,7 @@ export const productSchema = z.object({
   size: z.string().optional(),
   description: z.string().optional(),
   isActive: z.boolean().default(true),
+  barcode: z.string().optional(), // إضافة حقل الباركود
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;
@@ -32,4 +33,5 @@ export const defaultProductValues: ProductFormValues = {
   size: "",
   description: "",
   isActive: true,
+  barcode: "", // إضافة قيمة افتراضية للباركود
 };

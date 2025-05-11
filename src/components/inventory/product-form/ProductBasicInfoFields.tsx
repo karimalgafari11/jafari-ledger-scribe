@@ -11,51 +11,78 @@ interface ProductBasicInfoFieldsProps {
 
 export const ProductBasicInfoFields: React.FC<ProductBasicInfoFieldsProps> = ({ control }) => {
   return (
-    <>
-      {/* اسم المنتج */}
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">المعلومات الأساسية</h3>
+      
       <FormField
         control={control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>اسم المنتج *</FormLabel>
+            <FormLabel>اسم المنتج</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="أدخل اسم المنتج" />
+              <Input placeholder="أدخل اسم المنتج" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      {/* رقم المنتج */}
+      
       <FormField
         control={control}
         name="code"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>رقم المنتج *</FormLabel>
+            <FormLabel>رمز المنتج</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="أدخل رقم المنتج" />
+              <Input placeholder="أدخل رمز المنتج" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      {/* الشركة الصانعة */}
+      
+      <FormField
+        control={control}
+        name="barcode"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>باركود</FormLabel>
+            <FormControl>
+              <Input placeholder="أدخل باركود المنتج" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      <FormField
+        control={control}
+        name="category"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>الفئة</FormLabel>
+            <FormControl>
+              <Input placeholder="أدخل فئة المنتج" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
       <FormField
         control={control}
         name="brand"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>الشركة الصانعة</FormLabel>
+            <FormLabel>العلامة التجارية</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="أدخل اسم الشركة الصانعة" />
+              <Input placeholder="أدخل العلامة التجارية" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-    </>
+    </div>
   );
 };

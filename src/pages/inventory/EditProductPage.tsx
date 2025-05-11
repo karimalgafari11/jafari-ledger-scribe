@@ -52,7 +52,7 @@ const EditProductPage = () => {
     return {
       name: product.name,
       code: product.code,
-      barcode: product.barcode || '',
+      barcode: product.barcode || '', // الآن لدينا حقل barcode في النموذج
       description: product.description || '',
       price: product.price,
       costPrice: product.cost || 0,
