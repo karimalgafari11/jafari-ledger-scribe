@@ -21,28 +21,34 @@ import {
   BrainCircuit
 } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
+import { QuickActionCard } from "./QuickActionCard";
+import { motion } from "framer-motion";
 
 export const AiAssistantFeatures = () => {
   const { sendMessage } = useAiAssistant();
 
   const quickActions = [
     { 
-      label: "تقرير المبيعات اليوم", 
+      title: "تقرير المبيعات اليوم", 
+      description: "إنشاء ملخص لمبيعات اليوم الحالي",
       action: () => sendMessage("قم بإنشاء تقرير مختصر عن مبيعات اليوم"),
       icon: <FileText className="h-4 w-4" />
     },
     { 
-      label: "المنتجات منخفضة المخزون", 
+      title: "المنتجات منخفضة المخزون", 
+      description: "عرض المنتجات التي توشك على النفاذ",
       action: () => sendMessage("ما هي المنتجات التي توشك على النفاذ؟"),
       icon: <ShoppingCart className="h-4 w-4" />
     },
     { 
-      label: "الفواتير المستحقة", 
+      title: "الفواتير المستحقة", 
+      description: "قائمة الفواتير المستحقة هذا الأسبوع",
       action: () => sendMessage("اعرض قائمة الفواتير المستحقة هذا الأسبوع"),
       icon: <FileSpreadsheet className="h-4 w-4" />
     },
     { 
-      label: "العملاء النشطين", 
+      title: "العملاء النشطين", 
+      description: "تقرير بأكثر العملاء نشاطًا هذا الشهر",
       action: () => sendMessage("من هم أكثر العملاء نشاطًا هذا الشهر؟"),
       icon: <Users className="h-4 w-4" />
     },
@@ -71,35 +77,41 @@ export const AiAssistantFeatures = () => {
     },
   ];
 
+  const handleSuggestedQuestion = (question: string) => {
+    sendMessage(question);
+  };
+
   return (
     <div className="space-y-4">
-      <Card className="bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border-indigo-100">
+      <Card className="bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border-indigo-100 backdrop-blur-sm hover:shadow-md transition-all">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center text-indigo-700">
             <Zap className="mr-2 h-5 w-5 text-indigo-600" />
             إجراءات سريعة
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2 pb-4">
           <div className="grid grid-cols-1 gap-2">
             {quickActions.map((action, index) => (
-              <Button
+              <motion.div
                 key={index}
-                variant="secondary"
-                className="flex justify-start items-center gap-2 h-auto py-2 bg-white hover:bg-indigo-50 border border-indigo-100 text-indigo-700"
-                onClick={action.action}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                <div className="bg-indigo-100 p-1.5 rounded-md">
-                  {action.icon}
-                </div>
-                <span>{action.label}</span>
-              </Button>
+                <QuickActionCard
+                  title={action.title}
+                  description={action.description}
+                  onClick={action.action}
+                  icon={action.icon}
+                />
+              </motion.div>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-blue-50/80 to-cyan-50/80 border-blue-100">
+      <Card className="bg-gradient-to-br from-blue-50/80 to-cyan-50/80 border-blue-100 backdrop-blur-sm hover:shadow-md transition-all">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center text-blue-700">
             <BrainCircuit className="mr-2 h-5 w-5 text-blue-600" />
@@ -108,53 +120,67 @@ export const AiAssistantFeatures = () => {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex flex-wrap gap-2">
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("قم بتحليل أداء المبيعات")}
-            >
-              تحليل المبيعات
-            </Badge>
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("أنشئ فاتورة جديدة")}
-            >
-              إنشاء فاتورة
-            </Badge>
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("ابحث عن منتج برمز ABC123")}
-            >
-              بحث عن منتج
-            </Badge>
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("ما هي المصروفات المستحقة؟")}
-            >
-              المصروفات المستحقة
-            </Badge>
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("لخص أداء المبيعات لهذا الشهر")}
-            >
-              ملخص الأداء
-            </Badge>
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("حساب الضريبة على مبلغ 1000 ريال")}
-            >
-              حساب الضريبة
-            </Badge>
-            <Badge
-              className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-              onClick={() => sendMessage("قارن بين مبيعات الشهر الحالي والشهر السابق")}
-            >
-              مقارنة المبيعات
-            </Badge>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("قم بتحليل أداء المبيعات")}
+              >
+                تحليل المبيعات
+              </Badge>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("أنشئ فاتورة جديدة")}
+              >
+                إنشاء فاتورة
+              </Badge>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("ابحث عن منتج برمز ABC123")}
+              >
+                بحث عن منتج
+              </Badge>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("ما هي المصروفات المستحقة؟")}
+              >
+                المصروفات المستحقة
+              </Badge>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("لخص أداء المبيعات لهذا الشهر")}
+              >
+                ملخص الأداء
+              </Badge>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("حساب الضريبة على مبلغ 1000 ريال")}
+              >
+                حساب الضريبة
+              </Badge>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Badge
+                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                onClick={() => handleSuggestedQuestion("قارن بين مبيعات الشهر الحالي والشهر السابق")}
+              >
+                مقارنة المبيعات
+              </Badge>
+            </motion.div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-purple-50/80 to-indigo-50/80 border-purple-100">
+      <Card className="bg-gradient-to-br from-purple-50/80 to-indigo-50/80 border-purple-100 backdrop-blur-sm hover:shadow-md transition-all">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center text-purple-700">
             <Bot className="mr-2 h-5 w-5 text-purple-600" />
@@ -164,7 +190,11 @@ export const AiAssistantFeatures = () => {
         <CardContent>
           <div className="grid grid-cols-1 gap-4">
             {capabilities.map((category, idx) => (
-              <div key={idx} className="bg-white/80 backdrop-blur-sm p-3 rounded-lg border border-purple-100">
+              <motion.div 
+                key={idx} 
+                className="bg-white/80 backdrop-blur-sm p-3 rounded-lg border border-purple-100 hover:shadow-sm transition-all"
+                whileHover={{ scale: 1.01, y: -2 }}
+              >
                 <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
                   {category.icon}
                   <span className="text-purple-800">{category.title}</span>
@@ -177,7 +207,7 @@ export const AiAssistantFeatures = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </CardContent>
