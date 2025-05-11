@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { ProductsToolbar } from "@/components/inventory/ProductsToolbar";
@@ -7,7 +7,11 @@ import { DataGrid } from "@/components/inventory/DataGrid";
 import { ColumnDefinition, ActionDefinition } from "@/components/inventory/types";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
 import { Product } from "@/types/inventory";
-import { Eye, Pencil, Trash2, FilePlus } from "lucide-react";
+import { useInventoryProductSettings } from "@/hooks/useInventoryProductSettings";
+import { ColumnManager } from "@/components/inventory/ColumnManager";
+import { ProductExportDialog } from "@/components/inventory/ProductExportDialog";
+import { ProductShareDialog } from "@/components/inventory/ProductShareDialog";
+import { Eye, Pencil, Trash2, FilePlus, ArrowUpDown, SlidersHorizontal, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -22,26 +26,17 @@ const ProductsPage = () => {
   const navigate = useNavigate();
   const [showDetails, setShowDetails] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   
-  const {
-    products,
-    searchQuery,
-    setSearchQuery,
-    filterOptions,
-    setFilterOptions,
-    deleteProduct,
-    bulkDeleteProducts,
-    selectedProducts,
-    toggleProductSelection,
-    clearSelectedProducts,
-  } = useInventoryProducts();
-
-  const columns: ColumnDefinition[] = [
+  // Define columns
+  const defaultColumns: ColumnDefinition[] = [
     {
-      id: "code",
-      header: "رقم المنتج",
-      accessorKey: "code",
-      isSortable: true,
+      id: "index",
+      header: "الرقم التسلسلي",
+      accessorKey: "index",
+      cell: (_, __, index) => index + 1,
+      isSortable: false,
       isVisible: true,
     },
     {
@@ -52,22 +47,23 @@ const ProductsPage = () => {
       isVisible: true,
     },
     {
-      id: "price",
-      header: "السعر",
-      accessorKey: "price",
-      cell: (value, row) => {
-        // Verificamos si row y row.price existen antes de acceder a price
-        if (row && typeof row.price === 'number') {
-          return `${row.price.toFixed(2)} ر.س`;
-        }
-        return "غير محدد"; // "No definido" en árabe
-      },
+      id: "code",
+      header: "رقم المنتج",
+      accessorKey: "code",
       isSortable: true,
       isVisible: true,
     },
     {
+      id: "brand",
+      header: "الشركة الصانعة",
+      accessorKey: "brand",
+      isSortable: true,
+      isVisible: true,
+      cell: (value) => value || "غير محدد",
+    },
+    {
       id: "quantity",
-      header: "الكمية المتاحة",
+      header: "الكمية المتوفرة",
       accessorKey: "quantity",
       isSortable: true,
       isVisible: true,
@@ -87,6 +83,48 @@ const ProductsPage = () => {
       }
     },
     {
+      id: "price",
+      header: "سعر البيع",
+      accessorKey: "price",
+      cell: (_, row) => {
+        if (row && typeof row.price === 'number') {
+          return `${row.price.toFixed(2)} ر.س`;
+        }
+        return "غير محدد";
+      },
+      isSortable: true,
+      isVisible: true,
+    },
+    {
+      id: "costPrice",
+      header: "سعر الشراء",
+      accessorKey: "costPrice",
+      cell: (_, row) => {
+        if (row && typeof row.costPrice === 'number') {
+          return `${row.costPrice.toFixed(2)} ر.س`;
+        }
+        return "غير محدد";
+      },
+      isSortable: true,
+      isVisible: true,
+    },
+    {
+      id: "size",
+      header: "المقاس",
+      accessorKey: "size",
+      isSortable: true,
+      isVisible: true,
+      cell: (value) => value || "غير محدد",
+    },
+    {
+      id: "notes",
+      header: "الملاحظات",
+      accessorKey: "description",
+      isSortable: false,
+      isVisible: true,
+      cell: (value) => value || "-",
+    },
+    {
       id: "category",
       header: "التصنيف",
       accessorKey: "category",
@@ -97,7 +135,7 @@ const ProductsPage = () => {
       id: "status",
       header: "الحالة",
       accessorKey: "isActive",
-      cell: (value, row) => {
+      cell: (_, row) => {
         if (!row) return "";
         
         return (
@@ -110,6 +148,34 @@ const ProductsPage = () => {
       isVisible: true,
     },
   ];
+
+  const {
+    products,
+    searchQuery,
+    setSearchQuery,
+    filterOptions,
+    setFilterOptions,
+    deleteProduct,
+    bulkDeleteProducts,
+    selectedProducts,
+    toggleProductSelection,
+    clearSelectedProducts,
+  } = useInventoryProducts();
+  
+  // Use the column settings hook
+  const { visibleColumns, columnOrder, toggleColumnVisibility, updateColumnOrder } = 
+    useInventoryProductSettings(defaultColumns);
+
+  // Apply column visibility and order
+  const displayColumns = defaultColumns
+    .filter(col => visibleColumns.includes(col.id))
+    .sort((a, b) => {
+      const aIndex = columnOrder.indexOf(a.id);
+      const bIndex = columnOrder.indexOf(b.id);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
 
   const actions: ActionDefinition[] = [
     {
@@ -160,17 +226,12 @@ const ProductsPage = () => {
     toast.success(`تم حذف ${selectedProducts.length} منتج بنجاح`);
   };
 
-  const handleExport = (type: "pdf" | "excel") => {
-    toast.success(`تم تصدير المنتجات بتنسيق ${type} بنجاح`);
+  const handleExport = () => {
+    setShowExportDialog(true);
   };
 
   const handleShare = () => {
-    toast.success("تم نسخ رابط المنتجات للمشاركة");
-  };
-
-  const handleProductVisibility = (id: string, visible: boolean) => {
-    // This would update product visibility in a real app
-    toast.success(`تم تغيير حالة المنتج ${visible ? 'إلى متوفر' : 'إلى غير متوفر'}`);
+    setShowShareDialog(true);
   };
 
   const onSelectAll = (selected: boolean) => {
@@ -186,25 +247,43 @@ const ProductsPage = () => {
     }
   };
 
+  // Add size to products data
+  const enrichedProducts = products.map(product => ({
+    ...product,
+    size: product.size || (Math.random() > 0.5 ? "16mm" : "24mm"), // Placeholder for demo
+  }));
+
   return (
     <Layout>
       <Header title="إدارة المنتجات" />
       
       <div className="p-4 md:p-6 space-y-6">
-        <ProductsToolbar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          filterOptions={filterOptions}
-          setFilterOptions={setFilterOptions}
-          selectedCount={selectedProducts.length}
-          onBulkDelete={handleBulkDelete}
-          onExport={handleExport}
-          onShare={handleShare}
-        />
+        <div className="flex items-center justify-between mb-6">
+          <ProductsToolbar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filterOptions={filterOptions}
+            setFilterOptions={setFilterOptions}
+            selectedCount={selectedProducts.length}
+            onBulkDelete={handleBulkDelete}
+            onExport={handleExport}
+            onShare={handleShare}
+          />
+          
+          <div className="flex gap-2">
+            <ColumnManager 
+              columns={defaultColumns}
+              visibleColumns={visibleColumns}
+              columnOrder={columnOrder}
+              onVisibilityChange={toggleColumnVisibility}
+              onOrderChange={updateColumnOrder}
+            />
+          </div>
+        </div>
 
         <DataGrid
-          data={products}
-          columns={columns}
+          data={enrichedProducts}
+          columns={displayColumns}
           actions={actions}
           selectable={true}
           selectedRows={selectedProducts}
@@ -227,23 +306,28 @@ const ProductsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-muted-foreground">رمز المنتج</h3>
-                  <p className="text-lg">{selectedProduct.code}</p>
-                </div>
-                
-                <div>
                   <h3 className="font-medium text-muted-foreground">اسم المنتج</h3>
                   <p className="text-lg">{selectedProduct.name}</p>
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-muted-foreground">الوصف</h3>
-                  <p>{selectedProduct.description || "لا يوجد وصف"}</p>
+                  <h3 className="font-medium text-muted-foreground">رمز المنتج</h3>
+                  <p className="text-lg">{selectedProduct.code}</p>
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-muted-foreground">التصنيف</h3>
-                  <p>{selectedProduct.category || "غير مصنف"}</p>
+                  <h3 className="font-medium text-muted-foreground">الشركة الصانعة</h3>
+                  <p>{selectedProduct.brand || "غير محدد"}</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">المقاس</h3>
+                  <p>{selectedProduct.size || "غير محدد"}</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-muted-foreground">الوصف</h3>
+                  <p>{selectedProduct.description || "لا يوجد وصف"}</p>
                 </div>
               </div>
               
@@ -266,6 +350,11 @@ const ProductsPage = () => {
                 </div>
                 
                 <div>
+                  <h3 className="font-medium text-muted-foreground">التصنيف</h3>
+                  <p>{selectedProduct.category || "غير مصنف"}</p>
+                </div>
+                
+                <div>
                   <h3 className="font-medium text-muted-foreground">الباركود</h3>
                   <p>{selectedProduct.barcode || "غير محدد"}</p>
                 </div>
@@ -284,6 +373,24 @@ const ProductsPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Export Dialog */}
+      <ProductExportDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        products={enrichedProducts}
+        selectedProducts={selectedProducts}
+        columns={defaultColumns}
+        visibleColumns={visibleColumns}
+      />
+
+      {/* Share Dialog */}
+      <ProductShareDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        data={enrichedProducts}
+        selectedProducts={selectedProducts}
+      />
     </Layout>
   );
 };

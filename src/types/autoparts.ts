@@ -1,4 +1,3 @@
-
 export interface AutoPart {
   id: string;
   code: string;
@@ -30,4 +29,18 @@ export interface Supplier {
   email: string;
   address: string;
   isActive: boolean;
+}
+
+export interface AutoPartColumn {
+  id: string;
+  name: string;
+  accessorKey: string;
+  visible: boolean;
+  order: number;
+}
+
+export interface AutoPartSettings {
+  columns: AutoPartColumn[];
+  defaultView: 'table' | 'grid';
+  itemsPerPage: number;
 }

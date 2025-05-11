@@ -2,7 +2,17 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, File, FileSpreadsheet, Share2, Trash2, Filter } from "lucide-react";
+import { 
+  Search, 
+  Plus, 
+  FileText, 
+  FileSpreadsheet, 
+  Share2, 
+  Trash2, 
+  Filter, 
+  Download, 
+  ArrowUpDown 
+} from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -15,7 +25,7 @@ interface ProductsToolbarProps {
   setFilterOptions: (options: FilterOptions) => void;
   selectedCount: number;
   onBulkDelete: () => void;
-  onExport: (type: 'pdf' | 'excel') => void;
+  onExport: () => void;
   onShare: () => void;
 }
 
@@ -37,18 +47,25 @@ export function ProductsToolbar({
     setFilterOptions(data);
   };
   
-  return <div className="mb-6 space-y-4 rtl">
+  return (
+    <div className="space-y-4 rtl w-full">
       {/* Search and Actions Row */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between bg-cyan-200 px-[2px]">
+      <div className="flex flex-col md:flex-row gap-4 justify-between">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-          <Input type="text" placeholder="البحث عن قطع غيار..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-8" />
+          <Input 
+            type="text" 
+            placeholder="البحث عن منتج..." 
+            value={searchQuery} 
+            onChange={e => setSearchQuery(e.target.value)} 
+            className="w-full pl-8" 
+          />
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <Button className="bg-teal hover:bg-teal-dark text-white gap-2">
+          <Button className="gap-2 bg-teal-600 hover:bg-teal-700">
             <Plus size={18} />
-            قطعة جديدة
+            منتج جديد
           </Button>
           
           <Popover>
@@ -76,12 +93,12 @@ export function ProductsToolbar({
                   
                   <FormField 
                     control={form.control} 
-                    name="status" 
+                    name="brand" 
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>الحالة</FormLabel>
+                        <FormLabel>الشركة الصانعة</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="الحالة" />
+                          <Input {...field} placeholder="اختر الشركة" />
                         </FormControl>
                       </FormItem>
                     )} 
@@ -123,14 +140,9 @@ export function ProductsToolbar({
             </PopoverContent>
           </Popover>
           
-          <Button variant="outline" onClick={() => onExport('pdf')} className="gap-2">
-            <File size={18} />
-            PDF
-          </Button>
-          
-          <Button variant="outline" onClick={() => onExport('excel')} className="gap-2">
-            <FileSpreadsheet size={18} />
-            Excel
+          <Button variant="outline" onClick={onExport} className="gap-2">
+            <Download size={18} />
+            تصدير
           </Button>
           
           <Button variant="outline" onClick={onShare} className="gap-2">
@@ -138,11 +150,17 @@ export function ProductsToolbar({
             مشاركة
           </Button>
           
-          <Button variant="destructive" onClick={onBulkDelete} disabled={selectedCount === 0} className="gap-2">
+          <Button 
+            variant="destructive" 
+            onClick={onBulkDelete} 
+            disabled={selectedCount === 0} 
+            className="gap-2"
+          >
             <Trash2 size={18} />
             حذف ({selectedCount})
           </Button>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 }
