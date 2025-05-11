@@ -21,34 +21,45 @@ export const useStockMovements = () => {
     endDate: null
   });
   const [selectedMovements, setSelectedMovements] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load initial data
+  // تحميل البيانات الأولية
   useEffect(() => {
-    // In a real app, this would be an API call
-    setMovements(mockStockMovements);
-    setFilteredMovements(mockStockMovements);
+    const loadInitialData = async () => {
+      try {
+        // في تطبيق حقيقي، سيكون هنا استدعاء للـ API
+        setMovements(mockStockMovements);
+        setFilteredMovements(mockStockMovements);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("خطأ في تحميل بيانات المخزون:", error);
+        setIsLoading(false);
+      }
+    };
+    
+    loadInitialData();
   }, []);
 
-  // Apply search and filters
+  // تطبيق البحث والتصفية
   useEffect(() => {
     let result = [...movements];
     
-    // Apply search
+    // تطبيق البحث
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(item => 
-        item.productName.toLowerCase().includes(query) ||
+        item.productName?.toLowerCase().includes(query) ||
         item.sourceWarehouseName?.toLowerCase().includes(query) || 
         item.destinationWarehouseName?.toLowerCase().includes(query)
       );
     }
     
-    // Apply type filter
+    // تطبيق تصفية النوع
     if (filterOptions.type) {
       result = result.filter(item => item.type === filterOptions.type);
     }
     
-    // Apply warehouse filter (source or destination)
+    // تطبيق تصفية المستودع (المصدر أو الوجهة)
     if (filterOptions.warehouse) {
       result = result.filter(item => 
         (item.sourceWarehouseName?.toLowerCase() || "").includes(filterOptions.warehouse.toLowerCase()) ||
@@ -56,7 +67,7 @@ export const useStockMovements = () => {
       );
     }
     
-    // Apply date range filter
+    // تطبيق تصفية نطاق التاريخ
     if (filterOptions.startDate) {
       result = result.filter(item => item.date >= filterOptions.startDate!);
     }
@@ -89,6 +100,7 @@ export const useStockMovements = () => {
 
   return {
     movements: filteredMovements,
+    setMovements,
     searchQuery,
     setSearchQuery,
     filterOptions,
@@ -97,5 +109,6 @@ export const useStockMovements = () => {
     selectedMovements,
     toggleMovementSelection,
     clearSelectedMovements,
+    isLoading
   };
 };
