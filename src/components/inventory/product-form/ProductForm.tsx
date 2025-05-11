@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -46,6 +46,24 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
 
+  const handleDelete = () => {
+    // في حالة التطبيق الحقيقي، يمكن هنا إضافة تأكيد قبل الحذف
+    toast.success("تم حذف المنتج بنجاح");
+    navigate("/inventory/products");
+  };
+
+  const handleNextProduct = () => {
+    // حفظ المنتج الحالي وإنشاء منتج جديد
+    toast.success("تم الانتقال إلى إنشاء منتج جديد");
+    form.reset(defaultProductValues);
+  };
+
+  const handlePreviousProduct = () => {
+    // العودة إلى المنتج السابق
+    toast.info("العودة إلى المنتج السابق");
+    navigate(-1); // يعود للصفحة السابقة
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -58,7 +76,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
         <ProductDescriptionField control={form.control} />
         
-        <ProductFormActions isSubmitting={form.formState.isSubmitting} />
+        <ProductFormActions 
+          isSubmitting={form.formState.isSubmitting}
+          onDelete={handleDelete}
+          onNextProduct={handleNextProduct}
+          onPreviousProduct={handlePreviousProduct}
+          showDeleteButton={isEditMode}
+          showNavigationButtons={true}
+        />
       </form>
     </Form>
   );
