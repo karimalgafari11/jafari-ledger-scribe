@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/popover";
 
 interface DateRangePickerProps {
-  value: DateRange;
-  onChange: (value: DateRange) => void;
+  value?: DateRange;
+  date?: DateRange;
+  onChange?: (value: DateRange) => void;
+  setDate?: (value: DateRange) => void;
   locale?: string;
   placeholder?: string;
   className?: string;
@@ -24,13 +26,19 @@ interface DateRangePickerProps {
 
 export function DateRangePicker({
   value,
+  date,
   onChange,
+  setDate,
   locale = "en-US",
   placeholder = "Select date range",
   className,
 }: DateRangePickerProps) {
   const localeObj = locale.startsWith("ar") ? ar : undefined;
   
+  // Handle both naming conventions
+  const selectedDate = value || date;
+  const handleDateChange = onChange || setDate;
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -40,18 +48,18 @@ export function DateRangePicker({
             variant={"outline"}
             className={cn(
               "w-full justify-start text-right font-normal",
-              !value?.from && "text-muted-foreground"
+              !selectedDate?.from && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="ml-2 h-4 w-4" />
-            {value?.from ? (
-              value.to ? (
+            {selectedDate?.from ? (
+              selectedDate.to ? (
                 <>
-                  {format(value.from, "LLL dd, y", { locale: localeObj })} -{" "}
-                  {format(value.to, "LLL dd, y", { locale: localeObj })}
+                  {format(selectedDate.from, "LLL dd, y", { locale: localeObj })} -{" "}
+                  {format(selectedDate.to, "LLL dd, y", { locale: localeObj })}
                 </>
               ) : (
-                format(value.from, "LLL dd, y", { locale: localeObj })
+                format(selectedDate.from, "LLL dd, y", { locale: localeObj })
               )
             ) : (
               placeholder
@@ -62,11 +70,12 @@ export function DateRangePicker({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={value?.from}
-            selected={value}
-            onSelect={onChange}
+            defaultMonth={selectedDate?.from}
+            selected={selectedDate}
+            onSelect={handleDateChange}
             numberOfMonths={2}
             locale={localeObj}
+            className="p-3 pointer-events-auto"
           />
         </PopoverContent>
       </Popover>

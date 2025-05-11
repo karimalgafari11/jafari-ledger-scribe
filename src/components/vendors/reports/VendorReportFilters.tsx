@@ -35,8 +35,8 @@ export const VendorReportFilters: React.FC<VendorReportFiltersProps> = ({
         <div className="space-y-2">
           <label className="text-sm font-medium">نطاق التاريخ</label>
           <DateRangePicker
-            date={dateRange}
-            setDate={setDateRange}
+            value={dateRange}
+            onChange={setDateRange}
             locale="ar"
             className="w-full"
           />

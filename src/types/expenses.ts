@@ -1,4 +1,12 @@
 
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  description: string;
+  budgetLimit: number;
+  isActive: boolean;
+}
+
 export interface Expense {
   id: string;
   date: Date;
@@ -15,4 +23,5 @@ export interface Expense {
   notes?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  attachments?: string[];
 }

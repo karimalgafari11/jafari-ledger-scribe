@@ -2,7 +2,14 @@
 import { Transaction } from "@/types/transactions";
 import { Customer } from "@/types/customers";
 import { TransactionsTable } from "@/components/customers/TransactionsTable";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { 
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from "@/components/ui/pagination";
 import { EmptyStatementNotice } from "./EmptyStatementNotice";
 
 interface StatementContentProps {

@@ -8,7 +8,7 @@ import { VendorReportCharts } from "@/components/vendors/reports/VendorReportCha
 import { VendorReportList } from "@/components/vendors/reports/VendorReportList";
 import { useVendorReports } from "@/hooks/useVendorReports";
 import { Card, CardContent } from "@/components/ui/card";
-import { FilePdf, FileText, Download, Printer } from "lucide-react";
+import { FileText, Download, Printer } from "lucide-react";
 import { toast } from "sonner";
 
 const VendorReportsPage = () => {
@@ -62,7 +62,7 @@ const VendorReportsPage = () => {
             className="flex items-center gap-1"
             onClick={() => toast.info("جاري إنشاء تقرير PDF...")}
           >
-            <FilePdf size={16} />
+            <FileText size={16} />
             <span>PDF</span>
           </Button>
           <Button
