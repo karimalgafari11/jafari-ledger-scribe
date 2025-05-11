@@ -63,11 +63,19 @@ export const ProductExportDialog: React.FC<ProductExportDialogProps> = ({
     const exportData = productsToExport.map(product => {
       const row: Record<string, any> = {};
       visibleColumnDefs.forEach(col => {
-        const key = col.header;
-        const value = col.cell 
-          ? col.cell(product[col.accessorKey as keyof Product], product)
-          : product[col.accessorKey as keyof Product];
-        row[key] = value;
+        // Fix: Convert column header to string if it's not already
+        const key = typeof col.header === 'string' ? col.header : col.id;
+        
+        // Access product data safely
+        const value = col.accessorKey && product[col.accessorKey as keyof Product];
+        
+        // Get formatted value using cell renderer if available
+        const formattedValue = col.cell && value !== undefined 
+          ? col.cell(value, product) 
+          : value;
+          
+        // Store in row object with string key
+        row[key] = formattedValue !== undefined ? formattedValue : '';
       });
       return row;
     });
@@ -142,7 +150,9 @@ export const ProductExportDialog: React.FC<ProductExportDialogProps> = ({
                     checked={exportColumns.includes(column.id)} 
                     onCheckedChange={() => toggleColumn(column.id)} 
                   />
-                  <Label htmlFor={`export-${column.id}`} className="mr-2 flex-1">{column.header}</Label>
+                  <Label htmlFor={`export-${column.id}`} className="mr-2 flex-1">
+                    {typeof column.header === 'string' ? column.header : column.id}
+                  </Label>
                 </div>
               ))}
             </div>
