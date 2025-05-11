@@ -8,7 +8,7 @@ export const getDefaultProductColumns = (): ColumnDefinition[] => {
       id: "index",
       header: "الرقم التسلسلي",
       accessorKey: "index",
-      cell: (_, row, rowIndex) => {
+      cell: (value, row, rowIndex) => {
         // تحسين الرقم التسلسلي ليبدأ من 1
         return rowIndex + 1;
       },
@@ -62,7 +62,7 @@ export const getDefaultProductColumns = (): ColumnDefinition[] => {
       id: "price",
       header: "سعر البيع",
       accessorKey: "price",
-      cell: (_, row) => {
+      cell: (value, row) => {
         if (row && typeof row.price === 'number') {
           return `${row.price.toFixed(2)} ر.س`;
         }
@@ -75,7 +75,7 @@ export const getDefaultProductColumns = (): ColumnDefinition[] => {
       id: "costPrice",
       header: "سعر الشراء",
       accessorKey: "costPrice",
-      cell: (_, row) => {
+      cell: (value, row) => {
         if (row && typeof row.costPrice === 'number') {
           return `${row.costPrice.toFixed(2)} ر.س`;
         }
@@ -111,7 +111,7 @@ export const getDefaultProductColumns = (): ColumnDefinition[] => {
       id: "status",
       header: "الحالة",
       accessorKey: "isActive",
-      cell: (_, row) => {
+      cell: (value, row) => {
         if (!row) return "";
         
         return (
