@@ -109,8 +109,8 @@ export const useEmployees = () => {
     
     if (employeeData.skills) {
       if (typeof employeeData.skills === 'string') {
-        skillsArray = employeeData.skills.split(',').map(s => s.trim()).filter(Boolean);
-      } else {
+        skillsArray = (employeeData.skills as string).split(',').map(s => s.trim()).filter(Boolean);
+      } else if (Array.isArray(employeeData.skills)) {
         skillsArray = employeeData.skills;
       }
     }
@@ -132,8 +132,8 @@ export const useEmployees = () => {
     
     if (updatedEmployeeData.skills) {
       if (typeof updatedEmployeeData.skills === 'string') {
-        skillsArray = updatedEmployeeData.skills.split(',').map(s => s.trim()).filter(Boolean);
-      } else {
+        skillsArray = (updatedEmployeeData.skills as string).split(',').map(s => s.trim()).filter(Boolean);
+      } else if (Array.isArray(updatedEmployeeData.skills)) {
         skillsArray = updatedEmployeeData.skills;
       }
     }
