@@ -10,7 +10,7 @@ import {
   FormLabel 
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox"; // Replace Switch with Checkbox
 import { ReportTemplateSettings } from "@/types/reportTemplate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
