@@ -1,16 +1,19 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { Layout } from "@/components/Layout";
+import { Header } from "@/components/Header";
 
 const CustomersPage = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // توجيه المستخدم مباشرة إلى صفحة إدارة العملاء
-    navigate("/customers/manage");
-  }, [navigate]);
-
-  return null; // لا نحتاج لعرض أي شيء، لأننا سننتقل مباشرة
+  return (
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full">
+        <Header title="قائمة العملاء" showBack={true} />
+        <div className="flex-1 overflow-auto p-6">
+          {/* محتوى الصفحة */}
+        </div>
+      </div>
+    </Layout>
+  );
 };
 
 export default CustomersPage;

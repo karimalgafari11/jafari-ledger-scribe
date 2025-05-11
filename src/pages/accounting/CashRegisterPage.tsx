@@ -10,7 +10,7 @@ const CashRegisterPage = () => {
   const [activeTab, setActiveTab] = React.useState("registers");
 
   return (
-    <Layout>
+    <Layout className="h-screen overflow-hidden">
       <div className="flex flex-col h-screen w-full overflow-hidden rtl">
         <Header title="إدارة صناديق النقدية" showBack={true} />
         

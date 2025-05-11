@@ -18,7 +18,7 @@ export function Layout({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`page-container ${className}`}>
+    <div className={`page-container h-screen w-full flex flex-col ${className}`}>
       {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
           <img 

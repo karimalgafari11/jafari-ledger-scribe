@@ -1,133 +1,14 @@
-
 import React from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { FileText, ShoppingBag, Receipt, FileDown, ArrowLeft } from "lucide-react";
 
 const PurchasesPage = () => {
-  const navigate = useNavigate();
-
   return (
-    <Layout className="min-h-screen w-full">
-      <Header 
-        title="نظام المشتريات" 
-        showBack={false}
-        className="bg-teal-600"
-      >
-        <span className="text-sm text-gray-100">إدارة عمليات الشراء والموردين والمخزون</span>
-      </Header>
-
-      <div className="container mx-auto p-4 lg:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {/* فاتورة شراء جديدة */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/new")}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">فاتورة شراء جديدة</CardTitle>
-              <Receipt className="h-6 w-6 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                إنشاء فاتورة شراء جديدة مع إمكانية تحديد المورد والمنتجات والأسعار والخصومات
-              </p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/purchases/new"); }}>
-                إنشاء فاتورة <ArrowLeft className="mr-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* فواتير الشراء */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/invoices")}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">فواتير الشراء</CardTitle>
-              <FileText className="h-6 w-6 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                عرض وإدارة فواتير الشراء السابقة مع إمكانية البحث والفلترة حسب المورد والتاريخ والحالة
-              </p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/purchases/invoices"); }}>
-                عرض الفواتير <ArrowLeft className="mr-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* أوامر الشراء */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/orders")}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">أوامر الشراء</CardTitle>
-              <ShoppingBag className="h-6 w-6 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                إدارة وإنشاء أوامر الشراء للموردين مع إمكانية تحويلها إلى فواتير شراء لاحقًا
-              </p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/purchases/orders"); }}>
-                إدارة أوامر الشراء <ArrowLeft className="mr-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* مرتجعات المشتريات */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer hover:scale-[1.01] transform duration-200" onClick={() => navigate("/purchases/returns")}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">مرتجعات المشتريات</CardTitle>
-              <FileDown className="h-6 w-6 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                إدارة مرتجعات المشتريات للموردين وتسجيل الأسباب وحالة الاسترداد
-              </p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => { e.stopPropagation(); navigate("/purchases/returns"); }}>
-                إدارة المرتجعات <ArrowLeft className="mr-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* إحصائيات سريعة */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>الإحصائيات السريعة للمشتريات</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="flex flex-col p-4 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg shadow-sm">
-                <span className="text-sm text-muted-foreground">إجمالي المشتريات (هذا الشهر)</span>
-                <span className="text-2xl font-bold text-teal-700">١٢٥,٧٥٠ ريال</span>
-              </div>
-              <div className="flex flex-col p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-sm">
-                <span className="text-sm text-muted-foreground">عدد الفواتير</span>
-                <span className="text-2xl font-bold text-blue-700">٤٨</span>
-              </div>
-              <div className="flex flex-col p-4 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg shadow-sm">
-                <span className="text-sm text-muted-foreground">فواتير غير مدفوعة</span>
-                <span className="text-2xl font-bold text-amber-600">١٢</span>
-              </div>
-              <div className="flex flex-col p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg shadow-sm">
-                <span className="text-sm text-muted-foreground">عدد الموردين النشطين</span>
-                <span className="text-2xl font-bold text-emerald-700">١٥</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* الإجراءات السريعة */}
-        <div className="flex flex-wrap gap-2">
-          <Button className="bg-teal-600 hover:bg-teal-700" onClick={() => navigate("/purchases/new")}>
-            <Receipt className="mr-2 h-4 w-4" /> فاتورة شراء جديدة
-          </Button>
-          <Button variant="outline" className="hover:bg-teal-50" onClick={() => navigate("/purchases/orders/new")}>
-            <ShoppingBag className="mr-2 h-4 w-4" /> أمر شراء جديد
-          </Button>
-          <Button variant="outline" className="hover:bg-teal-50" onClick={() => navigate("/vendors")}>
-            إدارة الموردين
-          </Button>
-          <Button variant="outline" className="hover:bg-teal-50" onClick={() => navigate("/inventory/reorder")}>
-            مراقبة المخزون
-          </Button>
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full">
+        <Header title="نظام المشتريات" showBack={true} />
+        <div className="flex-1 overflow-auto p-6">
+          {/* محتوى الصفحة */}
         </div>
       </div>
     </Layout>

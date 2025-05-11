@@ -6,9 +6,9 @@ import { Header } from "@/components/Header";
 
 const AccountChartPage: React.FC = () => {
   return (
-    <div className="page-container">
+    <div className="page-container h-screen overflow-hidden flex flex-col">
       <Header title="مخطط الحسابات" showBack={true} className="w-full" />
-      <div className="page-content">
+      <div className="flex-1 overflow-auto">
         <AccountChartContainer />
       </div>
     </div>

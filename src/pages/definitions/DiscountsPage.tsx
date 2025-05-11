@@ -1,20 +1,15 @@
-
 import React from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
-import { DiscountsModule } from "@/components/definitions/discounts/DiscountsModule";
-import { Card, CardContent } from "@/components/ui/card";
 
-const DiscountsPage: React.FC = () => {
+const DiscountsPage = () => {
   return (
-    <Layout>
-      <div className="container mx-auto p-6 rtl">
-        <Header title="إدارة الخصومات" showBack={true} />
-        <Card className="mt-6">
-          <CardContent className="p-6">
-            <DiscountsModule />
-          </CardContent>
-        </Card>
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full">
+        <Header title="الخصومات" showBack={true} />
+        <div className="flex-1 overflow-auto p-6">
+          {/* محتوى الصفحة */}
+        </div>
       </div>
     </Layout>
   );

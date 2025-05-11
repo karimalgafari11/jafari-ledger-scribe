@@ -11,7 +11,7 @@ const AccountingRulesPage = () => {
   const [activeTab, setActiveTab] = useState("basic-rules");
 
   return (
-    <Layout>
+    <Layout className="h-screen overflow-hidden">
       <div className="flex flex-col h-screen w-full overflow-hidden rtl">
         <Header title="قوانين وأوامر المحاسبة" showBack={true} />
         

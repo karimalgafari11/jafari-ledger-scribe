@@ -1,53 +1,17 @@
-
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import RolesManagement from "@/components/settings/roles/RolesManagement";
-import SecuritySettings from "@/components/settings/security/SecuritySettings";
-import { usePermissions } from "@/hooks/usePermissions";
+import React from "react";
+import { Layout } from "@/components/Layout";
+import { Header } from "@/components/Header";
 
 const UserRolesPage = () => {
-  const [activeTab, setActiveTab] = useState("roles");
-  const { 
-    roles, 
-    permissionGroups, 
-    securitySettings,
-    addRole,
-    updateRole,
-    deleteRole,
-    updateSecuritySettings,
-    isLoading
-  } = usePermissions();
-
   return (
-    <div className="container mx-auto p-6 rtl">
-      <h1 className="text-2xl font-bold mb-6">إدارة الصلاحيات والأمان</h1>
-
-      <Tabs defaultValue="roles" value={activeTab} onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="mb-6">
-          <TabsTrigger value="roles">مجموعات المستخدمين والصلاحيات</TabsTrigger>
-          <TabsTrigger value="security">إعدادات الأمان والخصوصية</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="roles">
-          <RolesManagement 
-            roles={roles} 
-            permissionGroups={permissionGroups}
-            onAddRole={addRole}
-            onUpdateRole={updateRole}
-            onDeleteRole={deleteRole}
-            isLoading={isLoading}
-          />
-        </TabsContent>
-        
-        <TabsContent value="security">
-          <SecuritySettings 
-            settings={securitySettings}
-            onUpdateSettings={updateSecuritySettings}
-            isLoading={isLoading}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full">
+        <Header title="أدوار المستخدمين" showBack={true} />
+        <div className="flex-1 overflow-auto p-6">
+          {/* محتوى الصفحة */}
+        </div>
+      </div>
+    </Layout>
   );
 };
 

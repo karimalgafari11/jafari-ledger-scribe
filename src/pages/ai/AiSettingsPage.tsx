@@ -8,10 +8,10 @@ const AiSettingsPage: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="container mx-auto p-6 rtl">
+    <div className="container mx-auto p-6 rtl h-screen overflow-hidden flex flex-col">
       <Header title="إعدادات الذكاء الاصطناعي" showBack={true} onBackClick={() => navigate("/ai")} />
       
-      <div className="mt-6">
+      <div className="mt-6 flex-1 overflow-auto">
         <AiSettingsPanel />
       </div>
     </div>

@@ -1,113 +1,15 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
-import { BranchesModule } from "@/components/definitions/branches/BranchesModule";
-import { WarehousesModule } from "@/components/definitions/warehouses/WarehousesModule";
-import { CostCentersTab } from "@/components/definitions/costcenters/CostCentersTab";
-import { BanksModule } from "@/components/definitions/banks/BanksModule";
-import { CurrenciesModule } from "@/components/definitions/currencies/CurrenciesModule";
-import { AccountingPeriodsModule } from "@/components/definitions/periods/AccountingPeriodsModule";
-import { VoucherTypesModule } from "@/components/definitions/vouchertypes/VoucherTypesModule";
-import { PaymentMethodsModule } from "@/components/definitions/paymentmethods/PaymentMethodsModule";
-import { SalesRepsModule } from "@/components/definitions/salesreps/SalesRepsModule";
-import { CashRegistersModule } from "@/components/definitions/cashregisters/CashRegistersModule";
-import { Building, Database, Tag, Calendar, Currency, FileText, Banknote, Users, ListCheck, ArrowUpRight, WalletCards } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const BasicDefinitionsPage = () => {
-  const [activeTab, setActiveTab] = useState("branches");
-  
   return (
-    <Layout>
-      <div className="container mx-auto p-6 rtl">
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full">
         <Header title="التعاريف الأساسية" showBack={true} />
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 md:grid-cols-5 mb-6">
-            <TabsTrigger value="branches" className="flex items-center gap-2">
-              <Building className="h-4 w-4" />
-              <span>الفروع</span>
-            </TabsTrigger>
-            <TabsTrigger value="warehouses" className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              <span>المستودعات</span>
-            </TabsTrigger>
-            <TabsTrigger value="costcenters" className="flex items-center gap-2">
-              <Tag className="h-4 w-4" />
-              <span>مراكز الكلفة</span>
-            </TabsTrigger>
-            <TabsTrigger value="banks" className="flex items-center gap-2">
-              <Banknote className="h-4 w-4" />
-              <span>البنوك</span>
-            </TabsTrigger>
-            <TabsTrigger value="currencies" className="flex items-center gap-2">
-              <Currency className="h-4 w-4" />
-              <span>العملات</span>
-            </TabsTrigger>
-            <TabsTrigger value="periods" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span>الفترات المحاسبية</span>
-            </TabsTrigger>
-            <TabsTrigger value="voucher-types" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              <span>أنواع القيود</span>
-            </TabsTrigger>
-            <TabsTrigger value="payment-methods" className="flex items-center gap-2">
-              <ListCheck className="h-4 w-4" />
-              <span>طرق الدفع</span>
-            </TabsTrigger>
-            <TabsTrigger value="sales-reps" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span>مندوبي المبيعات</span>
-            </TabsTrigger>
-            <TabsTrigger value="cash-registers" className="flex items-center gap-2">
-              <WalletCards className="h-4 w-4" />
-              <span>صناديق النقدية</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="branches">
-            <BranchesModule />
-          </TabsContent>
-          <TabsContent value="warehouses">
-            <WarehousesModule />
-          </TabsContent>
-          <TabsContent value="costcenters">
-            <CostCentersTab />
-          </TabsContent>
-          <TabsContent value="banks">
-            <BanksModule />
-          </TabsContent>
-          <TabsContent value="currencies">
-            <div className="mb-4">
-              <Button asChild variant="outline" className="flex gap-1 items-center">
-                <Link to="/definitions/currencies">
-                  <span>الإدارة المتقدمة للعملات وأسعار الصرف</span>
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            <CurrenciesModule />
-          </TabsContent>
-          <TabsContent value="periods">
-            <AccountingPeriodsModule />
-          </TabsContent>
-          <TabsContent value="voucher-types">
-            <VoucherTypesModule />
-          </TabsContent>
-          <TabsContent value="payment-methods">
-            <PaymentMethodsModule />
-          </TabsContent>
-          <TabsContent value="sales-reps">
-            <SalesRepsModule />
-          </TabsContent>
-          <TabsContent value="cash-registers">
-            <CashRegistersModule />
-          </TabsContent>
-        </Tabs>
+        <div className="flex-1 overflow-auto p-6">
+          {/* محتوى الصفحة */}
+        </div>
       </div>
     </Layout>
   );
