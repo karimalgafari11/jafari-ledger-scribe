@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FileImage, Save, Layout } from "lucide-react";
+import { FileImage, Save, Layout, Eye } from "lucide-react";
 import { ReportTemplate } from "@/types/reportTemplate";
 import { TemplateHeaderForm } from "./TemplateHeaderForm";
 import { TemplateDesignTab } from "./TemplateDesignTab";
 import { TemplateSettingsTab } from "./TemplateSettingsTab";
+import { ReportTemplatePreview } from "../ReportTemplatePreview";
 
 interface ReportTemplateEditorProps {
   initialTemplate?: ReportTemplate;
@@ -41,6 +42,7 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
 
   const [activeTab, setActiveTab] = useState<'design' | 'settings'>('design');
   const [activeSection, setActiveSection] = useState<'header' | 'body' | 'footer'>('body');
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleSave = () => {
     if (!template.name) {
@@ -49,7 +51,6 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
     }
     
     onSave(template);
-    toast.success("تم حفظ القالب بنجاح");
   };
 
   const handleAddElement = (type: 'text' | 'image' | 'table' | 'chart') => {
@@ -95,6 +96,13 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
           <CardTitle className="flex justify-between items-center">
             <span>محرر القالب</span>
             <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsPreviewOpen(true)}
+              >
+                <Eye className="ml-2 h-4 w-4" />
+                معاينة
+              </Button>
               <Button 
                 variant="outline" 
                 onClick={onCancel}
@@ -156,6 +164,12 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
           )}
         </CardContent>
       </Card>
+
+      <ReportTemplatePreview
+        template={isPreviewOpen ? template : null}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
     </div>
   );
 };

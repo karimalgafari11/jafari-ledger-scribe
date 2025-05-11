@@ -4,6 +4,7 @@ import Reports from "@/pages/Reports";
 import SalesReportsPage from "@/pages/reports/SalesReportsPage";
 import SalesStatsPage from "@/pages/reports/SalesStatsPage";
 import ReportTemplatesPage from "@/pages/reports/ReportTemplatesPage";
+import CustomReportsPage from "@/pages/reports/CustomReportsPage";
 
 export const reportsRoutes: RouteObject[] = [
   {
@@ -17,5 +18,9 @@ export const reportsRoutes: RouteObject[] = [
   {
     path: "reports/templates",
     element: <ReportTemplatesPage />,
+  },
+  {
+    path: "reports/custom",
+    element: <CustomReportsPage />,
   }
 ];
