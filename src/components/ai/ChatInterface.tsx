@@ -17,7 +17,9 @@ import {
   Lock,
   LockKeyhole,
   Fingerprint,
-  KeyRound
+  KeyRound,
+  Sparkles,
+  BrainCircuit
 } from "lucide-react";
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { Message, SystemAlert } from "@/types/ai";
@@ -134,6 +136,9 @@ export const ChatInterface = () => {
   const [showSuggestions, setShowSuggestions] = useState(true);
   const speechRecognition = useRef<SpeechRecognition | null>(null);
   const [showFullAccessControls, setShowFullAccessControls] = useState(false);
+  const [typingEffect, setTypingEffect] = useState(false);
+  const [currentlyTypingMessage, setCurrentlyTypingMessage] = useState("");
+  const [showThinkingIndicator, setShowThinkingIndicator] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -165,7 +170,7 @@ export const ChatInterface = () => {
             setIsVerificationDialogOpen(false);
             toast.success("تم التحقق من هويتك بنجاح");
             
-            // هن�� نجري عملية تحقق حقيقية مع pendingVerification
+            // هنا نجري عملية تحقق حقيقية مع pendingVerification
             if (pendingVerification) {
               verifyUserIdentity(pendingVerification.category);
             }
@@ -174,6 +179,23 @@ export const ChatInterface = () => {
         return newProgress;
       });
     }, 200);
+  };
+
+  // محاكاة تأثير الكتابة التدريجية للرسائل
+  const simulateTypingEffect = (message: string) => {
+    setTypingEffect(true);
+    setCurrentlyTypingMessage("");
+    let i = 0;
+    
+    const interval = setInterval(() => {
+      if (i < message.length) {
+        setCurrentlyTypingMessage(prev => prev + message[i]);
+        i++;
+      } else {
+        clearInterval(interval);
+        setTypingEffect(false);
+      }
+    }, 20); // سرعة الكتابة
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -189,14 +211,20 @@ export const ChatInterface = () => {
     }
     
     setInput("");
+    setShowThinkingIndicator(true);
     
     try {
+      // عرض تأثير التفكير قبل إرسال الرسالة
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       await sendMessage(input);
+      setShowThinkingIndicator(false);
       
       // توليد اقتراحات جديدة بناء على المحادثة
       generateSuggestedQuestions();
     } catch (error) {
       console.error("Error sending message:", error);
+      setShowThinkingIndicator(false);
       toastNotify({
         title: "حدث خطأ",
         description: "لم نتمكن من الاتصال بالمساعد الذكي. يرجى المحاولة مرة أخرى.",
@@ -217,11 +245,11 @@ export const ChatInterface = () => {
       "قم بإنشاء تقرير ميزانية عمومية",
       "ما هي أفضل المنتجات مبيعاً هذا الشهر؟",
       "ما هي حالة المخزون الحالية؟",
-      "أرسل تذكيرات للعملاء الم��أخرين عن السداد",
+      "أرسل تذكيرات للعملاء المتأخرين عن السداد",
       "قم بتحليل الإيرادات والمصروفات للربع الحالي",
       "أنشئ قيداً محاسبياً لتسوية المخزون",
-      "افحص النظام بحثاً عن أخطاء",
-      "حلل أداء فريق المبيعات"
+      "احسب نسبة الضريبة على فاتورة بمبلغ ١٠٠٠ ريال",
+      "قارن بين المبيعات في الأشهر ال��لاثة الماضية"
     ];
     setSuggestedQuestions(prevSuggestions => {
       // مزج الاقتراحات الحالية مع الاقتراحات الجديدة وأخذ 6 اقتراحات عشوائية
@@ -375,21 +403,22 @@ export const ChatInterface = () => {
     : [
         {
           role: "assistant",
-          content: "مرحباً بك في المساعد الذكي آمن! كيف يمكنني مساعدتك اليوم؟",
+          content: "مرحباً بك في المساعد الذكي! كيف يمكنني مساعدتك اليوم؟",
           timestamp: new Date()
         },
       ];
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
+    <div className="flex flex-col h-full bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="relative">
-          <div className="absolute inset-0 blur-xl bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-xl -z-10"></div>
-          <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-blue-100 p-3">
-            <h3 className="text-lg font-medium text-blue-800 flex items-center">
-              <Bot className="mr-2 h-5 w-5" /> مرحباً بك في المساعد الذكي 👋
+          <div className="absolute inset-0 blur-xl bg-gradient-to-r from-indigo-200/30 via-purple-200/30 to-blue-200/30 rounded-xl -z-10"></div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-indigo-100 p-3">
+            <h3 className="text-lg font-medium text-indigo-800 flex items-center">
+              <BrainCircuit className="mr-2 h-5 w-5 text-indigo-600" /> 
+              مرحباً بك في المساعد الذكي 👋
             </h3>
-            <p className="text-sm text-blue-600">
+            <p className="text-sm text-indigo-600">
               أنا هنا لمساعدتك في إدارة النظام وحل المشكلات وتقديم التحليلات
             </p>
           </div>
@@ -424,15 +453,18 @@ export const ChatInterface = () => {
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="bg-white hover:bg-blue-50"
+                className="bg-white hover:bg-indigo-50 border-indigo-100"
                 onClick={() => setShowFullAccessControls(true)}
               >
-                <Shield className="h-4 w-4 text-blue-600" />
+                <Shield className="h-4 w-4 text-indigo-600" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
               <div className="space-y-4">
-                <h3 className="font-medium text-blue-900">إعد��دات الأمان والصلاحيات</h3>
+                <h3 className="font-medium text-indigo-900 flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  إعدادات الأمان والصلاحيات
+                </h3>
                 
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">مستوى الأمان</h4>
@@ -476,7 +508,7 @@ export const ChatInterface = () => {
                     onClick={handleScanSystem}
                   >
                     <AlertCircle className="mr-2 h-4 w-4" />
-                    فحص النظام بحثاً عن أ��طاء
+                    فحص النظام بحثاً عن أخطاء
                   </Button>
                 </div>
               </div>
@@ -486,7 +518,7 @@ export const ChatInterface = () => {
           <Button 
             variant="outline" 
             size="icon" 
-            className="bg-white hover:bg-red-50"
+            className="bg-white hover:bg-red-50 border-red-100"
             onClick={clearChatHistory}
           >
             <Trash2 className="h-4 w-4 text-red-500" />
@@ -494,7 +526,7 @@ export const ChatInterface = () => {
         </div>
       </div>
 
-      <ScrollArea className="flex-1 rounded-lg mb-4 bg-white/70 backdrop-blur-sm border border-blue-100 p-3">
+      <ScrollArea className="flex-1 rounded-lg mb-4 bg-white/80 backdrop-blur-sm border border-indigo-100 p-3">
         {/* System Security Info */}
         <div className="mb-4 bg-blue-50/70 rounded-lg p-2 border border-blue-200">
           <div className="flex items-center justify-between text-xs text-blue-700">
@@ -518,26 +550,28 @@ export const ChatInterface = () => {
           >
             <Card className={`max-w-[80%] border-0 shadow-sm ${
               message.role === "user" 
-                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white" 
-                : "bg-white border-blue-100"
+                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white" 
+                : "bg-white border-indigo-100"
             }`}>
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
                   {message.role === "assistant" && (
-                    <div className="bg-blue-100 rounded-full p-1 mt-1">
-                      <Bot className="h-4 w-4 text-blue-600" />
+                    <div className="bg-indigo-100 rounded-full p-1.5 mt-1">
+                      <BrainCircuit className="h-4 w-4 text-indigo-600" />
                     </div>
                   )}
                   <div>
                     <div className={`whitespace-pre-wrap ${message.role === "user" ? "text-white" : "text-gray-800"}`}>
-                      {message.content}
+                      {index === displayMessages.length - 1 && message.role === "assistant" && typingEffect 
+                        ? currentlyTypingMessage 
+                        : message.content}
                     </div>
                     <div className={`text-xs mt-1 ${message.role === "user" ? "text-blue-100" : "text-gray-500"}`}>
                       {formatMessageTime(message.timestamp)}
                     </div>
                   </div>
                   {message.role === "user" && (
-                    <div className="bg-white/20 rounded-full p-1 mt-1">
+                    <div className="bg-white/20 rounded-full p-1.5 mt-1">
                       <MessageSquare className="h-4 w-4 text-white" />
                     </div>
                   )}
@@ -546,17 +580,44 @@ export const ChatInterface = () => {
             </Card>
           </div>
         ))}
+        
+        {/* مؤشر التفكير */}
+        {showThinkingIndicator && (
+          <div className="mb-4 flex justify-start">
+            <Card className="max-w-[80%] border-0 shadow-sm bg-white border-indigo-100">
+              <CardContent className="p-3">
+                <div className="flex items-start gap-2">
+                  <div className="bg-indigo-100 rounded-full p-1.5 mt-1">
+                    <BrainCircuit className="h-4 w-4 text-indigo-600" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex space-x-1 rtl:space-x-reverse">
+                      <div className="w-2 h-2 rounded-full bg-indigo-300 animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                    </div>
+                    <span className="text-sm text-indigo-600">يفكر المساعد...</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </ScrollArea>
 
       {showSuggestions && suggestedQuestions.length > 0 && (
-        <div className="mb-3 bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 p-3">
+        <div className="mb-3 bg-white/80 backdrop-blur-sm rounded-lg border border-indigo-100 p-3">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-medium text-blue-800">اقتراحات للأسئلة</h3>
+            <h3 className="text-sm font-medium text-indigo-800 flex items-center">
+              <Sparkles className="h-4 w-4 mr-2 text-indigo-500" />
+              اقتراحات للأسئلة
+            </h3>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-5 w-5 text-blue-500 hover:text-blue-700 hover:bg-blue-50" 
+              className="h-5 w-5 text-indigo-500 hover:text-indigo-700 hover:bg-indigo-50" 
               onClick={() => setShowSuggestions(false)}
             >
               <X className="h-3 w-3" />
@@ -567,7 +628,7 @@ export const ChatInterface = () => {
               <Badge 
                 key={index} 
                 variant="outline" 
-                className="cursor-pointer bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors" 
+                className="cursor-pointer bg-indigo-50/80 border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition-colors" 
                 onClick={() => handleSuggestedQuestion(question)}
               >
                 {question}
@@ -583,16 +644,16 @@ export const ChatInterface = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="اكتب سؤالك أو استفسارك هنا..."
-            className="pr-10 pl-10 bg-white border-blue-200 focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+            className="pr-10 pl-10 bg-white border-indigo-200 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400"
             disabled={isLoading || listening}
           />
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-indigo-400" />
           {!showSuggestions && (
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 h-6 w-6 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 h-6 w-6 text-indigo-500 hover:text-indigo-700 hover:bg-indigo-50"
               onClick={() => setShowSuggestions(true)}
             >
               <ChevronDown className="h-4 w-4" />
@@ -607,7 +668,7 @@ export const ChatInterface = () => {
                 type="button"
                 variant={listening ? "destructive" : "outline"}
                 size="icon"
-                className={listening ? "animate-pulse" : ""}
+                className={listening ? "animate-pulse bg-red-500 hover:bg-red-600" : "bg-white hover:bg-indigo-50 border-indigo-200"}
                 onClick={listening ? stopSpeechRecognition : startSpeechRecognition}
                 disabled={isLoading}
               >
@@ -626,7 +687,7 @@ export const ChatInterface = () => {
               <Button 
                 type="submit" 
                 disabled={isLoading || !input.trim()}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white transition-all"
               >
                 {isLoading ? 
                   <div className="flex items-center">
@@ -646,16 +707,19 @@ export const ChatInterface = () => {
       
       {/* محادثة نشطة */}
       {listening && (
-        <div className="mt-2 text-center text-sm text-blue-600 animate-pulse">
+        <div className="mt-2 text-center text-sm text-indigo-600 animate-pulse">
           جارٍ الاستماع... تحدث الآن
         </div>
       )}
       
       {/* نافذة التحقق من الهوية */}
       <Dialog open={isVerificationDialogOpen} onOpenChange={setIsVerificationDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-gradient-to-b from-white to-indigo-50/50 border border-indigo-100">
           <DialogHeader>
-            <DialogTitle>التحقق من هويتك</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 text-indigo-900">
+              <Fingerprint className="h-5 w-5 text-indigo-600" />
+              التحقق من هويتك
+            </DialogTitle>
             <DialogDescription>
               يتطلب الوصول إلى المعلومات الحساسة التحقق من هويتك.
               اختر طريقة التحقق المناسبة.
@@ -669,21 +733,21 @@ export const ChatInterface = () => {
               className="flex flex-col space-y-3"
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="password" id="password" />
+                <RadioGroupItem value="password" id="password" className="border-indigo-400 text-indigo-600" />
                 <Label htmlFor="password" className="mr-2 flex items-center gap-2">
                   <Lock className="h-4 w-4 text-amber-500" />
                   <span>كلمة المرور</span>
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="2fa" id="2fa" />
+                <RadioGroupItem value="2fa" id="2fa" className="border-indigo-400 text-indigo-600" />
                 <Label htmlFor="2fa" className="mr-2 flex items-center gap-2">
                   <KeyRound className="h-4 w-4 text-green-500" />
                   <span>التحقق الثنائي</span>
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="biometric" id="biometric" />
+                <RadioGroupItem value="biometric" id="biometric" className="border-indigo-400 text-indigo-600" />
                 <Label htmlFor="biometric" className="mr-2 flex items-center gap-2">
                   <Fingerprint className="h-4 w-4 text-blue-500" />
                   <span>البصمة البيومترية</span>
@@ -702,6 +766,7 @@ export const ChatInterface = () => {
                   placeholder={verificationMethod === "password" ? "أدخل كلمة المرور" : "أدخل رمز التحقق من 6 أرقام"}
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
+                  className="border-indigo-200 focus:ring-indigo-300 focus:border-indigo-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {verificationMethod === "password" 
@@ -714,7 +779,7 @@ export const ChatInterface = () => {
             {verificationProgress > 0 && (
               <div className="space-y-2">
                 <Label>جاري التحقق...</Label>
-                <Progress value={verificationProgress} className="h-2" />
+                <Progress value={verificationProgress} className="h-2 bg-indigo-100" indicatorClass="bg-indigo-600" />
               </div>
             )}
           </div>
@@ -723,6 +788,7 @@ export const ChatInterface = () => {
             <Button
               variant="ghost"
               onClick={() => setIsVerificationDialogOpen(false)}
+              className="text-gray-700 hover:bg-gray-100"
             >
               إلغاء
             </Button>
@@ -730,7 +796,7 @@ export const ChatInterface = () => {
               type="button"
               onClick={handleManualVerification}
               disabled={verificationProgress > 0 || (verificationMethod !== "biometric" && !verificationCode)}
-              className="mr-2"
+              className="mr-2 bg-indigo-600 text-white hover:bg-indigo-700"
             >
               {verificationMethod === "biometric" ? "استخدام البصمة" : "تحقق"}
             </Button>
