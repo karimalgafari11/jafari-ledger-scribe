@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { UserPlus, FileText } from "lucide-react";
+import { UserPlus, FileText, Filter, Download, Upload, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEmployees } from "@/hooks/hr/useEmployees";
 import { Employee } from "@/types/hr";
@@ -36,6 +36,7 @@ const EmployeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   const handleAddNewClick = () => {
     setSelectedEmployee(null);
@@ -64,12 +65,14 @@ const EmployeesPage = () => {
         ...selectedEmployee,
         ...data,
         joinDate: new Date(data.joinDate),
+        birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
       });
     } else {
       // إذا لم يكن هناك موظف محدد، أضف موظفًا جديدًا
       addEmployee({
         ...data,
         joinDate: new Date(data.joinDate),
+        birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
       });
     }
   };
@@ -94,6 +97,10 @@ const EmployeesPage = () => {
     return matchesSearch && matchesStatus && matchesDepartment;
   });
 
+  const toggleFilters = () => {
+    setFiltersVisible(!filtersVisible);
+  };
+
   return (
     <PageContainer title="إدارة الموظفين">
       <div className="p-6">
@@ -108,25 +115,81 @@ const EmployeesPage = () => {
         {/* بطاقات الإحصائيات */}
         <HRStatsCards stats={stats} />
 
+        {/* شريط الأدوات والإجراءات */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 mt-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleAddNewClick}
+              className="flex items-center gap-1"
+            >
+              <UserPlus className="h-4 w-4" />
+              إضافة موظف
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={toggleFilters}
+              className="flex items-center gap-1"
+            >
+              <Filter className="h-4 w-4" />
+              {filtersVisible ? 'إخفاء الفلاتر' : 'عرض الفلاتر'}
+            </Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              تصدير البيانات
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <Upload className="h-4 w-4" />
+              استيراد البيانات
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <Printer className="h-4 w-4" />
+              طباعة
+            </Button>
+          </div>
+        </div>
+
         {/* تصفية الموظفين */}
-        <EmployeeFilters
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          departmentFilter={departmentFilter}
-          setDepartmentFilter={setDepartmentFilter}
-          departments={departments}
-        />
+        {filtersVisible && (
+          <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-100 shadow-sm">
+            <EmployeeFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              departmentFilter={departmentFilter}
+              setDepartmentFilter={setDepartmentFilter}
+              departments={departments}
+            />
+          </div>
+        )}
 
         {/* جدول الموظفين */}
-        <EmployeesTable
-          employees={filteredEmployees}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onViewDetails={handleViewDetails}
-          onChangeStatus={handleChangeStatus}
-        />
+        <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100">
+          <EmployeesTable
+            employees={filteredEmployees}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
+            onChangeStatus={handleChangeStatus}
+          />
+        </div>
 
         {/* حوار إضافة/تعديل موظف */}
         <EmployeeDialog
