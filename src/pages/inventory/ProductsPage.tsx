@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { ProductsToolbar } from "@/components/inventory/ProductsToolbar";
 import { DataGrid } from "@/components/inventory/DataGrid";
-import { ColumnDefinition, ActionDefinition } from "@/components/inventory/types";
+import { ActionDefinition } from "@/components/inventory/types";
 import { useInventoryProducts } from "@/hooks/useInventoryProducts";
 import { Product } from "@/types/inventory";
 import { useInventoryProductSettings } from "@/hooks/useInventoryProductSettings";
 import { ColumnManager } from "@/components/inventory/ColumnManager";
 import { ProductExportDialog } from "@/components/inventory/ProductExportDialog";
 import { ProductShareDialog } from "@/components/inventory/ProductShareDialog";
-import { Eye, Pencil, Trash2, FilePlus, ArrowUpDown, SlidersHorizontal, FileDown } from "lucide-react";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { ProductDetails } from "@/components/inventory/ProductDetails";
+import { getDefaultProductColumns } from "@/components/inventory/ProductColumnDefinitions";
+import { useProductActions } from "@/hooks/useProductActions";
+import { Eye, Pencil, Trash2, FilePlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const ProductsPage = () => {
@@ -28,128 +24,8 @@ const ProductsPage = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   
-  // Define columns
-  const defaultColumns: ColumnDefinition[] = [
-    {
-      id: "index",
-      header: "الرقم التسلسلي",
-      accessorKey: "index",
-      cell: (value: any, row: any) => {
-        const index = row.index || 0;
-        return index + 1;
-      },
-      isSortable: false,
-      isVisible: true,
-    },
-    {
-      id: "name",
-      header: "اسم المنتج",
-      accessorKey: "name",
-      isSortable: true,
-      isVisible: true,
-    },
-    {
-      id: "code",
-      header: "رقم المنتج",
-      accessorKey: "code",
-      isSortable: true,
-      isVisible: true,
-    },
-    {
-      id: "brand",
-      header: "الشركة الصانعة",
-      accessorKey: "brand",
-      isSortable: true,
-      isVisible: true,
-      cell: (value) => value || "غير محدد",
-    },
-    {
-      id: "quantity",
-      header: "الكمية المتوفرة",
-      accessorKey: "quantity",
-      isSortable: true,
-      isVisible: true,
-      cell: (value, row) => {
-        if (!row) return "0";
-        
-        const quantity = row.quantity || 0;
-        const reorderLevel = row.reorderLevel || 5;
-        
-        if (quantity <= 0) {
-          return <span className="text-red-700 font-bold">{quantity}</span>;
-        } else if (quantity < reorderLevel) {
-          return <span className="text-orange-500 font-bold">{quantity}</span>;
-        }
-        
-        return quantity;
-      }
-    },
-    {
-      id: "price",
-      header: "سعر البيع",
-      accessorKey: "price",
-      cell: (_, row) => {
-        if (row && typeof row.price === 'number') {
-          return `${row.price.toFixed(2)} ر.س`;
-        }
-        return "غير محدد";
-      },
-      isSortable: true,
-      isVisible: true,
-    },
-    {
-      id: "costPrice",
-      header: "سعر الشراء",
-      accessorKey: "costPrice",
-      cell: (_, row) => {
-        if (row && typeof row.costPrice === 'number') {
-          return `${row.costPrice.toFixed(2)} ر.س`;
-        }
-        return "غير محدد";
-      },
-      isSortable: true,
-      isVisible: true,
-    },
-    {
-      id: "size",
-      header: "المقاس",
-      accessorKey: "size",
-      isSortable: true,
-      isVisible: true,
-      cell: (value) => value || "غير محدد",
-    },
-    {
-      id: "notes",
-      header: "الملاحظات",
-      accessorKey: "description",
-      isSortable: false,
-      isVisible: true,
-      cell: (value) => value || "-",
-    },
-    {
-      id: "category",
-      header: "التصنيف",
-      accessorKey: "category",
-      isSortable: true,
-      isVisible: true,
-    },
-    {
-      id: "status",
-      header: "الحالة",
-      accessorKey: "isActive",
-      cell: (_, row) => {
-        if (!row) return "";
-        
-        return (
-          <span className={`px-2 py-1 rounded-full text-xs ${row.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-            {row.isActive ? 'متوفر' : 'غير متوفر'}
-          </span>
-        );
-      },
-      isSortable: true,
-      isVisible: true,
-    },
-  ];
+  // Define default columns
+  const defaultColumns = getDefaultProductColumns();
 
   const {
     products,
@@ -179,6 +55,18 @@ const ProductsPage = () => {
       return aIndex - bIndex;
     });
 
+  // Use product actions hook
+  const { 
+    handleViewProduct, 
+    handleDeleteProduct, 
+    handleDuplicateProduct, 
+    handleBulkDelete 
+  } = useProductActions(
+    deleteProduct, 
+    setSelectedProduct, 
+    setShowDetails
+  );
+
   const actions: ActionDefinition[] = [
     {
       icon: <Eye className="h-4 w-4" />,
@@ -202,39 +90,6 @@ const ProductsPage = () => {
       onClick: (product: Product) => handleDuplicateProduct(product),
     },
   ];
-
-  const handleViewProduct = (product: Product) => {
-    setSelectedProduct(product);
-    setShowDetails(true);
-  };
-
-  const handleDeleteProduct = (id: string) => {
-    deleteProduct(id);
-    toast.success("تم حذف المنتج بنجاح");
-  };
-
-  const handleDuplicateProduct = (product: Product) => {
-    navigate(`/inventory/products/duplicate/${product.id}`);
-    toast.success("تم نسخ المنتج، يمكنك الآن تعديل النسخة الجديدة");
-  };
-
-  const handleBulkDelete = () => {
-    if (selectedProducts.length === 0) {
-      toast.error("الرجاء تحديد المنتجات المراد حذفها أولاً");
-      return;
-    }
-
-    bulkDeleteProducts();
-    toast.success(`تم حذف ${selectedProducts.length} منتج بنجاح`);
-  };
-
-  const handleExport = () => {
-    setShowExportDialog(true);
-  };
-
-  const handleShare = () => {
-    setShowShareDialog(true);
-  };
 
   const onSelectAll = (selected: boolean) => {
     if (!selected) {
@@ -267,9 +122,9 @@ const ProductsPage = () => {
             filterOptions={filterOptions}
             setFilterOptions={setFilterOptions}
             selectedCount={selectedProducts.length}
-            onBulkDelete={handleBulkDelete}
-            onExport={handleExport}
-            onShare={handleShare}
+            onBulkDelete={() => handleBulkDelete(selectedProducts, bulkDeleteProducts)}
+            onExport={() => setShowExportDialog(true)}
+            onShare={() => setShowShareDialog(true)}
           />
           
           <div className="flex gap-2">
@@ -298,83 +153,11 @@ const ProductsPage = () => {
       </div>
 
       {/* Product Details Dialog */}
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">تفاصيل المنتج</DialogTitle>
-          </DialogHeader>
-          
-          {selectedProduct && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-muted-foreground">اسم المنتج</h3>
-                  <p className="text-lg">{selectedProduct.name}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">رمز المنتج</h3>
-                  <p className="text-lg">{selectedProduct.code}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">الشركة الصانعة</h3>
-                  <p>{selectedProduct.brand || "غير محدد"}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">المقاس</h3>
-                  <p>{selectedProduct.size || "غير محدد"}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">الوصف</h3>
-                  <p>{selectedProduct.description || "لا يوجد وصف"}</p>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-muted-foreground">سعر البيع</h3>
-                  <p className="text-lg font-medium">{selectedProduct.price?.toFixed(2) || "غير محدد"} ر.س</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">سعر التكلفة</h3>
-                  <p>{selectedProduct.costPrice?.toFixed(2) || "غير محدد"} ر.س</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">الكمية المتوفرة</h3>
-                  <p className={`font-medium ${selectedProduct.quantity <= 5 ? 'text-red-600' : ''}`}>
-                    {selectedProduct.quantity}
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">التصنيف</h3>
-                  <p>{selectedProduct.category || "غير مصنف"}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-muted-foreground">الباركود</h3>
-                  <p>{selectedProduct.barcode || "غير محدد"}</p>
-                </div>
-              </div>
-              
-              <div className="md:col-span-2 flex justify-end gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate(`/inventory/products/edit/${selectedProduct.id}`)}
-                >
-                  تعديل المنتج
-                </Button>
-                <Button onClick={() => setShowDetails(false)}>إغلاق</Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ProductDetails 
+        open={showDetails}
+        onOpenChange={setShowDetails}
+        product={selectedProduct}
+      />
 
       {/* Export Dialog */}
       <ProductExportDialog
