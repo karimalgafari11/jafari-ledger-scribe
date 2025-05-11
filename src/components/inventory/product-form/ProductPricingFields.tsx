@@ -41,6 +41,21 @@ export const ProductPricingFields: React.FC<ProductPricingFieldsProps> = ({ cont
           </FormItem>
         )}
       />
+      
+      {/* نسبة الضريبة */}
+      <FormField
+        control={control}
+        name="taxRate"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>نسبة الضريبة (%)</FormLabel>
+            <FormControl>
+              <Input type="number" step="0.01" {...field} placeholder="أدخل نسبة الضريبة" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </>
   );
 };

@@ -31,7 +31,8 @@ const EditProductPage = () => {
           unit: 'قطعة',
           category: 'إلكترونيات',
           barcode: '123456789',
-          isActive: true
+          isActive: true,
+          taxRate: 15 // إضافة قيمة ضريبة افتراضية للمنتج المسترجع
         });
         setLoading(false);
       } catch (error) {
@@ -52,11 +53,11 @@ const EditProductPage = () => {
     return {
       name: product.name,
       code: product.code,
-      barcode: product.barcode || '', // الآن لدينا حقل barcode في النموذج
+      barcode: product.barcode || '',
       description: product.description || '',
       price: product.price,
       costPrice: product.cost || 0,
-      taxRate: product.taxRate || 0,
+      taxRate: product.taxRate || 0, // الآن لدينا حقل taxRate في النموذج
       quantity: product.quantity || 0,
       unit: product.unit || '',
       category: product.category || '',
