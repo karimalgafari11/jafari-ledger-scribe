@@ -7,6 +7,13 @@ export function formatCurrency(amount: number): string {
 }
 
 /**
+ * تنسيق الأرقام بالفواصل العشرية
+ */
+export function formatNumber(amount: number): string {
+  return amount.toLocaleString('ar-SA');
+}
+
+/**
  * تنسيق التاريخ بالعربية
  */
 export function formatDate(date: Date | string): string {
