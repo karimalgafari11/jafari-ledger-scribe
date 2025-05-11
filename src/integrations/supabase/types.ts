@@ -537,6 +537,137 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_invoice_items: {
+        Row: {
+          code: string | null
+          created_at: string | null
+          description: string | null
+          discount: number | null
+          discount_type: string | null
+          id: string
+          invoice_id: string
+          name: string
+          notes: string | null
+          price: number
+          product_id: string
+          quantity: number
+          tax: number | null
+          total: number
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount?: number | null
+          discount_type?: string | null
+          id: string
+          invoice_id: string
+          name: string
+          notes?: string | null
+          price: number
+          product_id: string
+          quantity: number
+          tax?: number | null
+          total: number
+        }
+        Update: {
+          code?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount?: number | null
+          discount_type?: string | null
+          id?: string
+          invoice_id?: string
+          name?: string
+          notes?: string | null
+          price?: number
+          product_id?: string
+          quantity?: number
+          tax?: number | null
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_invoices: {
+        Row: {
+          amount_paid: number | null
+          created_at: string | null
+          customer_account_number: string | null
+          customer_id: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          date: string
+          discount: number | null
+          discount_type: string | null
+          due_date: string | null
+          id: string
+          invoice_number: string
+          notes: string | null
+          payment_method: string
+          status: string
+          subtotal: number | null
+          tax: number | null
+          total_amount: number
+          updated_at: string | null
+          warehouse_id: string | null
+          warehouse_name: string | null
+        }
+        Insert: {
+          amount_paid?: number | null
+          created_at?: string | null
+          customer_account_number?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          date: string
+          discount?: number | null
+          discount_type?: string | null
+          due_date?: string | null
+          id: string
+          invoice_number: string
+          notes?: string | null
+          payment_method: string
+          status: string
+          subtotal?: number | null
+          tax?: number | null
+          total_amount: number
+          updated_at?: string | null
+          warehouse_id?: string | null
+          warehouse_name?: string | null
+        }
+        Update: {
+          amount_paid?: number | null
+          created_at?: string | null
+          customer_account_number?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          date?: string
+          discount?: number | null
+          discount_type?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          notes?: string | null
+          payment_method?: string
+          status?: string
+          subtotal?: number | null
+          tax?: number | null
+          total_amount?: number
+          updated_at?: string | null
+          warehouse_id?: string | null
+          warehouse_name?: string | null
+        }
+        Relationships: []
+      }
       system_settings: {
         Row: {
           address: string | null

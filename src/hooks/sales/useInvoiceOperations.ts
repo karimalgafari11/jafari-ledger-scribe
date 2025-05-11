@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Invoice } from "@/types/invoices";
+import { Invoice, InvoiceItem } from "@/types/invoices";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useInvoiceOperations = (
   invoice: any,
@@ -11,8 +12,69 @@ export const useInvoiceOperations = (
   const saveInvoice = async () => {
     setIsLoading(true);
     try {
-      // Simulate saving the invoice (in a real app, this would save to a database)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save invoice to Supabase
+      const { data: savedInvoice, error: invoiceError } = await supabase
+        .from('sales_invoices')
+        .upsert({
+          id: invoice.id,
+          invoice_number: invoice.invoiceNumber,
+          customer_id: invoice.customerId,
+          customer_name: invoice.customerName,
+          customer_phone: invoice.customerPhone,
+          customer_account_number: invoice.customerAccountNumber,
+          date: invoice.date,
+          due_date: invoice.dueDate,
+          status: invoice.paymentMethod === 'cash' ? "paid" : "pending",
+          payment_method: invoice.paymentMethod,
+          subtotal: invoice.subtotal || 0,
+          discount: invoice.discount || 0,
+          discount_type: invoice.discountType,
+          tax: invoice.tax || 0,
+          total_amount: invoice.totalAmount,
+          amount_paid: invoice.amountPaid || 0,
+          notes: invoice.notes,
+          warehouse_id: invoice.warehouseId,
+          warehouse_name: invoice.warehouseName,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+      
+      if (invoiceError) throw invoiceError;
+      
+      // Save invoice items to Supabase
+      const invoiceItems = invoice.items.map((item: InvoiceItem) => ({
+        id: item.id,
+        invoice_id: invoice.id,
+        product_id: item.productId,
+        code: item.code,
+        name: item.name,
+        description: item.description || "",
+        quantity: item.quantity,
+        price: item.price,
+        discount: item.discount,
+        discount_type: item.discountType,
+        tax: item.tax,
+        total: item.total,
+        notes: item.notes
+      }));
+
+      // First, delete any existing items for this invoice (to handle removed items)
+      const { error: deleteError } = await supabase
+        .from('sales_invoice_items')
+        .delete()
+        .eq('invoice_id', invoice.id);
+
+      if (deleteError) throw deleteError;
+      
+      // Then insert all current items
+      if (invoiceItems.length > 0) {
+        const { error: itemsError } = await supabase
+          .from('sales_invoice_items')
+          .insert(invoiceItems);
+        
+        if (itemsError) throw itemsError;
+      }
       
       // Update invoice status
       setInvoice(prev => ({
@@ -22,10 +84,12 @@ export const useInvoiceOperations = (
       }));
       
       setIsLoading(false);
+      toast.success("تم حفظ الفاتورة بنجاح");
       return true;
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Error saving invoice:", error);
       setIsLoading(false);
-      toast.error("حدث خطأ أثناء حفظ الفاتورة");
+      toast.error(`حدث خطأ أثناء حفظ الفاتورة: ${error.message}`);
       return false;
     }
   };
