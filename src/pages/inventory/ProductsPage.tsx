@@ -14,8 +14,9 @@ import { ProductShareDialog } from "@/components/inventory/ProductShareDialog";
 import { ProductDetails } from "@/components/inventory/ProductDetails";
 import { getDefaultProductColumns } from "@/components/inventory/ProductColumnDefinitions";
 import { useProductActions } from "@/hooks/useProductActions";
-import { Eye, Pencil, Trash2, FilePlus } from "lucide-react";
+import { Eye, Pencil, Trash2, FilePlus, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -60,7 +61,8 @@ const ProductsPage = () => {
     handleViewProduct, 
     handleDeleteProduct, 
     handleDuplicateProduct, 
-    handleBulkDelete 
+    handleBulkDelete,
+    handleAddProduct 
   } = useProductActions(
     deleteProduct, 
     setSelectedProduct, 
@@ -110,24 +112,42 @@ const ProductsPage = () => {
     size: product.size || (Math.random() > 0.5 ? "16mm" : "24mm"), // Placeholder for demo
   }));
 
+  const goToAddProduct = () => navigate("/inventory/products/add");
+
   return (
     <Layout>
-      <Header title="إدارة المنتجات" />
+      <Header title="إدارة المنتجات">
+        {/* إضافة زر إضافة منتج بارز في الهيدر */}
+        <Button 
+          onClick={goToAddProduct}
+          className="flex items-center gap-2 bg-primary hover:bg-primary/80 transition-colors text-white mr-4"
+          size="lg"
+        >
+          <Plus className="h-5 w-5" />
+          إضافة منتج جديد
+        </Button>
+      </Header>
       
       <div className="p-4 md:p-6 space-y-6">
-        <div className="flex items-center justify-between mb-6">
-          <ProductsToolbar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            filterOptions={filterOptions}
-            setFilterOptions={setFilterOptions}
-            selectedCount={selectedProducts.length}
-            onBulkDelete={() => handleBulkDelete(selectedProducts, bulkDeleteProducts)}
-            onExport={() => setShowExportDialog(true)}
-            onShare={() => setShowShareDialog(true)}
-          />
+        {/* تعديل هيكل الصفحة لإبراز شريط الأدوات */}
+        <div className="flex flex-col gap-4 mb-6">
+          {/* شريط البحث والأدوات */}
+          <div className="bg-white p-4 rounded-lg shadow-sm border">
+            <ProductsToolbar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filterOptions={filterOptions}
+              setFilterOptions={setFilterOptions}
+              selectedCount={selectedProducts.length}
+              onBulkDelete={() => handleBulkDelete(selectedProducts, bulkDeleteProducts)}
+              onExport={() => setShowExportDialog(true)}
+              onShare={() => setShowShareDialog(true)}
+              onAddProduct={goToAddProduct}
+            />
+          </div>
           
-          <div className="flex gap-2">
+          {/* إدارة الأعمدة */}
+          <div className="flex justify-end">
             <ColumnManager 
               columns={defaultColumns}
               visibleColumns={visibleColumns}

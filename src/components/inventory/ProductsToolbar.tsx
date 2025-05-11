@@ -3,8 +3,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FilterOptions } from "@/types/inventory";
-import { Search, Plus, Trash2, FileText, Share2, Settings } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Search, Plus, Trash2, FileText, Share2 } from "lucide-react";
 
 interface ProductsToolbarProps {
   searchQuery: string;
@@ -15,6 +14,7 @@ interface ProductsToolbarProps {
   onBulkDelete: () => void;
   onExport: () => void;
   onShare: () => void;
+  onAddProduct: () => void;
 }
 
 export const ProductsToolbar = ({
@@ -26,13 +26,8 @@ export const ProductsToolbar = ({
   onBulkDelete,
   onExport,
   onShare,
+  onAddProduct,
 }: ProductsToolbarProps) => {
-  const navigate = useNavigate();
-
-  const handleAddProduct = () => {
-    navigate("/inventory/products/add");
-  };
-
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4">
       <div className="flex flex-1 items-center gap-2">
@@ -46,13 +41,13 @@ export const ProductsToolbar = ({
           />
         </div>
         
-        {/* إضافة منتج جديد */}
+        {/* زر إضافة منتج جديد - معدل ليكون أكثر بروزاً */}
         <Button 
-          onClick={handleAddProduct}
-          className="gap-1 bg-primary"
+          onClick={onAddProduct}
+          className="gap-2 bg-primary hover:bg-primary/80 transition-colors text-white px-4 py-2 min-w-[140px]"
         >
-          <Plus size={16} />
-          <span className="hidden md:inline">إضافة منتج</span>
+          <Plus size={18} />
+          <span className="inline">إضافة منتج</span>
         </Button>
       </div>
 
