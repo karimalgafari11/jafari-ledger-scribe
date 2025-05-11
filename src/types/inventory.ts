@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   code: string;
@@ -26,6 +25,7 @@ export interface Product {
   reorderLevel?: number;
   isActive?: boolean;
   productId?: string; // Used in QuoteToInvoicePage
+  size?: string; // Added size property to fix the errors
 }
 
 // Add missing inventory-related interfaces

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
@@ -35,7 +34,10 @@ const ProductsPage = () => {
       id: "index",
       header: "الرقم التسلسلي",
       accessorKey: "index",
-      cell: (_, __, index) => index + 1,
+      cell: (value: any, row: any) => {
+        const index = row.index || 0;
+        return index + 1;
+      },
       isSortable: false,
       isVisible: true,
     },
