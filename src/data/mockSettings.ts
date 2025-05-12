@@ -71,41 +71,42 @@ export const mockSystemSettings = {
   compactMode: false
 };
 
-// Add backup settings for backupState.ts
+// Update backup settings for backupState.ts
 export const mockBackupSettings = {
   id: '1',
-  frequency: 'daily',
+  frequency: 'daily' as 'daily' | 'weekly' | 'monthly' | 'manual',
   time: '02:00',
   keepBackups: 7,
-  autoBackup: true,
-  backupFrequency: 'daily',
-  backupTime: '02:00',
-  retentionPeriodDays: 30,
-  compressionLevel: 'high' as 'high' | 'medium' | 'low' | 'none',
+  lastBackup: new Date('2023-05-10T02:00:00'),
+  location: '/backups/',
+  destinationType: 'cloud' as 'local' | 'cloud' | 'ftp' | 'email',
+  ftpHost: '',
+  ftpUsername: '',
+  ftpPassword: '',
+  ftpPort: 21,
+  ftpPath: '',
+  emailRecipients: [] as string[],
+  cloudProvider: 'google-drive' as 'google-drive' | 'dropbox' | 'onedrive',
+  cloudAuthToken: '',
+  cloudFolderId: '',
+  cloudPath: '/backups/',
   encryptBackups: true,
   encryptBackup: true,
-  backupLocation: 'cloud',
-  destinationType: 'cloud' as 'local' | 'cloud' | 'ftp' | 'email',
-  cloudProvider: 'aws',
-  lastBackupDate: new Date('2023-05-10T02:00:00'),
-  lastBackup: new Date('2023-05-10T02:00:00'),
-  nextBackupDate: new Date('2023-05-11T02:00:00'),
-  backupNotifications: true,
-  notifyOnSuccess: true,
-  notifyOnFailure: true,
-  notifyEmail: 'admin@example.com',
-  updatedAt: new Date('2023-04-01'),
-  updatedBy: 'admin',
-  location: '/backups/',
+  encryptionPassword: '',
+  compressionLevel: 'high' as 'none' | 'low' | 'medium' | 'high',
   includeAttachments: true,
   includeSettings: true,
+  backupHistory: [],
   autoRestore: false,
+  restorePoint: undefined,
   googleDriveAuth: {
-    isAuthenticated: false
+    isAuthenticated: false,
+    token: '',
+    refreshToken: '',
+    expiresAt: undefined,
+    email: ''
   },
   autoCloudBackup: false,
   cloudBackupFormat: 'compressed' as 'compressed' | 'sql' | 'json',
-  cloudPath: '/backups/',
-  autoDownloadFromCloud: false,
-  backupHistory: []
+  autoDownloadFromCloud: false
 };

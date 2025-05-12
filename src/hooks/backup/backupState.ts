@@ -29,17 +29,13 @@ export const useBackupState = (): [
     settings: {
       ...mockBackupSettings,
       backupHistory: mockBackupSettings.backupHistory || [],
+      frequency: mockBackupSettings.frequency || 'daily',
       encryptBackups: mockBackupSettings.encryptBackups || false,
       compressionLevel: mockBackupSettings.compressionLevel || 'medium',
-      includeAttachments: true,
-      includeSettings: true,
-      autoRestore: false,
-      destinationType: mockBackupSettings.destinationType || 'local',
-      googleDriveAuth: { isAuthenticated: false },
-      autoCloudBackup: mockBackupSettings.autoBackup || false,
-      cloudBackupFormat: 'compressed',
-      cloudPath: '/backups/',
-      autoDownloadFromCloud: false
+      includeAttachments: mockBackupSettings.includeAttachments || true,
+      includeSettings: mockBackupSettings.includeSettings || true,
+      autoRestore: mockBackupSettings.autoRestore || false,
+      destinationType: mockBackupSettings.destinationType || 'local'
     },
     isLoading: false,
     restoreProgress: 0,
