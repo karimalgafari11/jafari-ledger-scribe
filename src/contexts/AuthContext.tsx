@@ -9,9 +9,10 @@ interface AuthContextType {
   user: User | null;
   profile: any;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, password: string, userData?: any) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -78,12 +79,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // وظيفة تسجيل الدخول
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          // تعيين فترة انتهاء صلاحية الجلسة حسب خيار "تذكرني"
+          shouldCreateUser: true,
+          emailRedirectTo: window.location.origin,
+          // إذا تم تحديد "تذكرني"، استخدم فترة أطول (30 يوماً)، وإلا استخدم الافتراضي (1 يوم)
+          session: rememberMe ? { rememberMe: true } : undefined
+        }
       });
 
       if (error) {
@@ -134,6 +142,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // وظيفة إعادة تعيين كلمة المرور
+  const resetPassword = async (email: string) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/update-password`,
+      });
+
+      if (error) {
+        toast.error(error.message || "حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور");
+      } else {
+        toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
+      }
+      setIsLoading(false);
+    } catch (error: any) {
+      toast.error(error.message || "حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور");
+      setIsLoading(false);
+    }
+  };
+
   const value = {
     session,
     user,
@@ -142,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     signOut,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

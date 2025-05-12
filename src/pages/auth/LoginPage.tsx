@@ -7,10 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn, isLoading, user } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +33,12 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    await signIn(email, password);
+    // إرسال معلومات تذكر المستخدم مع بيانات تسجيل الدخول
+    await signIn(email, password, rememberMe);
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -72,15 +81,42 @@ const LoginPage: React.FC = () => {
                 
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium mb-1">كلمة المرور</label>
-                  <Input 
-                    id="password"
-                    type="password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="أدخل كلمة المرور"
-                    className="rtl"
-                    required
-                  />
+                  <div className="relative">
+                    <Input 
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password} 
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="أدخل كلمة المرور"
+                      className="rtl"
+                      required
+                    />
+                    <button 
+                      type="button" 
+                      onClick={toggleShowPassword}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Checkbox 
+                      id="remember-me" 
+                      checked={rememberMe} 
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <label htmlFor="remember-me" className="text-sm font-medium leading-none cursor-pointer mr-2">
+                      تذكرني
+                    </label>
+                  </div>
+                  
+                  <Link to="/auth/reset-password" className="text-sm text-blue-600 hover:underline">
+                    نسيت كلمة المرور؟
+                  </Link>
                 </div>
               </div>
               

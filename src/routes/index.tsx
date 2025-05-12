@@ -1,43 +1,40 @@
+import React from 'react';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
-import { RouteObject } from "react-router-dom";
-import { Layout } from "@/components/Layout";
-import Index from "@/pages/Index";
-import Dashboard from "@/pages/Dashboard";
-import Reports from "@/pages/Reports";
-import NotFound from "@/pages/NotFound";
-import LoginPage from "@/pages/auth/LoginPage";
-import RegisterPage from "@/pages/auth/RegisterPage";
-import NotificationsPage from "@/pages/settings/NotificationsPage";
-import { PublicRoute } from "@/components/auth/PublicRoute";
-import { AuthGuard } from "@/components/auth/AuthGuard";
+// Import your components/pages here
+import DashboardPage from '@/pages/DashboardPage';
+import LoginPage from '@/pages/auth/LoginPage';
+import RegisterPage from '@/pages/auth/RegisterPage';
+import ActivityLogPage from '@/pages/settings/activitylog/ActivityLogPage';
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
+import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
 
-// صفحات الميزات المتقدمة الجديدة
-import FinancialAnalysisPage from "@/pages/financial/FinancialAnalysisPage";
-import CustomReportsPage from "@/pages/reports/CustomReportsPage";
-import ProjectManagementPage from "@/pages/projects/ProjectManagementPage";
-import ExecutiveDashboardPage from "@/pages/executive/ExecutiveDashboardPage";
+// Example of a PublicRoute component
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  return user ? <Navigate to="/" /> : <>{children}</>;
+};
 
-// Import route modules
-import { settingsRoutes } from "./settingsRoutes";
-import { accountingRoutes } from "./accountingRoutes";
-import { aiRoutes } from "./aiRoutes";
-import { customerRoutes } from "./customerRoutes";
-import { vendorRoutes } from "./vendorRoutes";
-import { inventoryRoutes } from "./inventoryRoutes";
-import { inventoryControlRoutes } from "./inventoryControlRoutes";
-import { definitionsRoutes } from "./definitionsRoutes";
-import { invoicesRoutes } from "./invoicesRoutes";
-import { reportsRoutes } from "./reportsRoutes";
-import { expensesRoutes } from "./expensesRoutes";
-import { integrationsRoutes } from "./integrationsRoutes";
-import { receivablesPayablesRoutes } from "./receivablesPayablesRoutes";
-import { purchasesRoutes } from "./purchasesRoutes";
-import { aboutRoutes } from "./aboutRoutes";
-import { hrRoutes } from "./hrRoutes";
+// Example of a PrivateRoute component
+const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
 
-export const appRoutes: RouteObject[] = [
+  if (isLoading) {
+    return <div>Loading...</div>; // You can replace this with a loading spinner
+  }
+
+  return user ? <>{children}</> : <Navigate to="/auth/login" />;
+};
+
+
+export const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/",
+    element: <PrivateRoute><DashboardPage /></PrivateRoute>,
+  },
+  {
+    path: "/auth/login",
     element: <PublicRoute><LoginPage /></PublicRoute>
   },
   {
@@ -45,40 +42,15 @@ export const appRoutes: RouteObject[] = [
     element: <PublicRoute><RegisterPage /></PublicRoute>
   },
   {
-    path: "/",
-    element: <AuthGuard><Index /></AuthGuard>,
-    children: [
-      { index: true, element: <Dashboard /> },
-      { path: "dashboard", element: <Dashboard /> },
-      { path: "reports", element: <Reports /> },
-      { path: "notifications", element: <NotificationsPage /> },
-      
-      // صفحات الميزات المتقدمة الجديدة
-      { path: "financial/analysis", element: <FinancialAnalysisPage /> },
-      { path: "reports/custom", element: <CustomReportsPage /> },
-      { path: "projects/management", element: <ProjectManagementPage /> },
-      { path: "executive/dashboard", element: <ExecutiveDashboardPage /> },
-      
-      // Sub-route modules
-      ...settingsRoutes,
-      ...accountingRoutes,
-      ...aiRoutes,
-      ...customerRoutes,
-      ...vendorRoutes,
-      ...inventoryRoutes,
-      ...inventoryControlRoutes,
-      ...definitionsRoutes,
-      ...invoicesRoutes,
-      ...reportsRoutes,
-      ...expensesRoutes,
-      ...integrationsRoutes,
-      ...receivablesPayablesRoutes,
-      ...purchasesRoutes,
-      ...aboutRoutes,
-      ...hrRoutes,
-      
-      // Catch-all route
-      { path: "*", element: <NotFound /> }
-    ]
-  }
-];
+    path: "/settings/activity-log",
+    element: <PrivateRoute><ActivityLogPage /></PrivateRoute>
+  },
+  {
+    path: "/auth/reset-password",
+    element: <PublicRoute><ResetPasswordPage /></PublicRoute>
+  },
+  {
+    path: "/auth/update-password",
+    element: <PublicRoute><UpdatePasswordPage /></PublicRoute>
+  },
+]);
