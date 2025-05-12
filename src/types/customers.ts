@@ -11,10 +11,11 @@ export interface Customer {
   address?: string;
   contactPerson?: string;
   status: 'active' | 'inactive';
-  taxNumber?: string;
+  taxNumber?: string; // Previous field name used in some files
+  vatNumber?: string; // New field name that's being used in components
   notes?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Transaction {
@@ -26,4 +27,11 @@ export interface Transaction {
   reference: string;
   balance: number;
   description?: string;
+}
+
+export interface CustomerFilters {
+  search: string;
+  status: string;
+  type: string;
+  balanceRange: [number, number] | null;
 }
