@@ -2,24 +2,28 @@
 export interface Customer {
   id: string;
   name: string;
-  email: string;
-  phone: string;
-  address: string;
-  vatNumber?: string;
-  contactPerson?: string;
   type: 'individual' | 'company';
-  creditLimit?: number;
-  balance: number;
-  status: 'active' | 'inactive';
   accountNumber?: string;
+  phone: string;
+  email?: string;
+  balance: number;
+  creditLimit?: number;
+  address?: string;
+  contactPerson?: string;
+  status: 'active' | 'inactive';
+  taxNumber?: string;
   notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface CustomerFilters {
-  search: string;
-  status: string;
-  type: string;
-  balanceRange: [number, number] | null;
+export interface Transaction {
+  id: string;
+  customerId: string;
+  date: Date;
+  amount: number;
+  type: 'invoice' | 'payment' | 'credit' | 'debit';
+  reference: string;
+  balance: number;
+  description?: string;
 }
