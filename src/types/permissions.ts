@@ -158,10 +158,21 @@ export interface SecuritySettings {
   };
   encryptionSettings: {
     encryptionEnabled: boolean;
-    encryptionType: string;
+    encryptionType: 'standard' | 'advanced';  // Modified to enum type
     keyRotationDays: number;
     lastKeyRotation: Date;
   };
   updatedAt: Date;
   updatedBy: string;
+}
+
+// Define the type for ActivityFilter
+export interface FiltersType {
+  startDate?: Date;
+  endDate?: Date;
+  userId: string;
+  action?: string;
+  module?: string;
+  status?: string;
+  searchText?: string;
 }

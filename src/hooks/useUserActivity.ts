@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
-import { UserActivity, ActivityAction } from '@/types/permissions';
+import { UserActivity, ActivityAction, FiltersType } from '@/types/permissions';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockUserActivities } from '@/data/mockPermissions';
@@ -20,7 +20,7 @@ export function useUserActivity() {
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activities, setActivities] = useState<UserActivity[]>(mockUserActivities);
-  const [filters, setFilters] = useState<ActivityFilter>({});
+  const [filters, setFilters] = useState<ActivityFilter>({userId: ''}); // Set default userId to empty string
   const { user } = useAuth();
   
   // تحميل الأنشطة عند بدء التشغيل
@@ -112,11 +112,11 @@ export function useUserActivity() {
 
   // إعادة تعيين المرشحات
   const resetFilters = useCallback(() => {
-    setFilters({});
+    setFilters({userId: ''}); // Reset to default with userId set to empty string
   }, []);
 
   // البحث في الأنشطة باستخدام المرشحات
-  const searchActivities = useCallback(() => {
+  const searchActivities = useCallback(async () => {
     setIsLoading(true);
     
     try {
@@ -151,26 +151,33 @@ export function useUserActivity() {
       
       setActivities(filtered);
       toast.info(`تم العثور على ${filtered.length} سجل`);
+
+      // Return a promise for compatibility with ActivityLogPage
+      return Promise.resolve(); 
     } catch (error) {
       console.error('خطأ أثناء البحث:', error);
       toast.error('حدث خطأ أثناء البحث');
+      return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
   }, [filters]);
 
   // تصدير الأنشطة
-  const exportActivities = useCallback(() => {
+  const exportActivities = useCallback(async (format: 'excel' | 'pdf' | 'csv' = 'excel') => {
     setIsLoading(true);
     
     try {
       // منطق تصدير البيانات
       // يمكن تصديرها إلى ملف CSV أو Excel
+      console.log(`تصدير البيانات بتنسيق ${format}`);
       
       toast.success('تم تصدير سجل الأنشطة بنجاح');
+      return Promise.resolve(true);
     } catch (error) {
       console.error('خطأ أثناء تصدير البيانات:', error);
       toast.error('فشل في تصدير سجل الأنشطة');
+      return Promise.resolve(false);
     } finally {
       setIsLoading(false);
     }

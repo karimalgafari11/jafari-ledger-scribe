@@ -170,6 +170,11 @@ export function usePermissions() {
         ...prev,
         ...settings,
         updatedAt: new Date(),
+        // Preserve the lastKeyRotation field
+        encryptionSettings: {
+          ...settings.encryptionSettings,
+          lastKeyRotation: prev.encryptionSettings.lastKeyRotation
+        }
       }));
       
       toast.success('تم تحديث إعدادات الأمان بنجاح');
