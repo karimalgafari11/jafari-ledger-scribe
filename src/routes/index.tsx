@@ -4,10 +4,11 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Import your components/pages here
+import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard'; 
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
-import ActivityLogPage from '@/pages/settings/ActivityLogPage'; // Fixed import path
+import ActivityLogPage from '@/pages/settings/ActivityLogPage'; 
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
 
@@ -32,7 +33,18 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <PrivateRoute><Dashboard /></PrivateRoute>,
+    element: <PrivateRoute><Index /></PrivateRoute>,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: "settings/activity-log",
+        element: <ActivityLogPage />,
+      },
+      // يمكن إضافة المزيد من المسارات الفرعية هنا
+    ]
   },
   {
     path: "/auth/login",
@@ -41,10 +53,6 @@ export const router = createBrowserRouter([
   {
     path: "/auth/register",
     element: <PublicRoute><RegisterPage /></PublicRoute>
-  },
-  {
-    path: "/settings/activity-log",
-    element: <PrivateRoute><ActivityLogPage /></PrivateRoute>
   },
   {
     path: "/auth/reset-password",
