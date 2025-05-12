@@ -1,30 +1,47 @@
 
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useRoutes } from "react-router-dom";
-import { Toaster } from "sonner";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./App.css";
-import { appRoutes } from "./routes";
-import { AppProvider } from "./contexts/AppContext";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { appRoutes } from './routes';
+import { Toaster } from './components/ui/sonner';
+import { AppWithErrorHandling } from './AppWithErrorHandling';
 
-// Create a client
-const queryClient = new QueryClient();
-
-// Router component using the route configuration
-const AppRoutes = () => {
-  const routes = useRoutes(appRoutes);
-  return routes;
-};
+// تهيئة عميل الاستعلام
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 دقائق
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <Router>
-          <AppRoutes />
-          <Toaster position="top-center" closeButton richColors />
-        </Router>
-      </AppProvider>
+      <ThemeProvider>
+        <AppWithErrorHandling>
+          <Router>
+            <Routes>
+              {appRoutes.map((route, index) => (
+                <Route key={index} path={route.path} element={route.element}>
+                  {route.children?.map((childRoute, childIndex) => (
+                    <Route
+                      key={`${index}-${childIndex}`}
+                      path={childRoute.path}
+                      element={childRoute.element}
+                      index={childRoute.index}
+                    />
+                  ))}
+                </Route>
+              ))}
+              <Route path="*" element={<Navigate to="/not-found" replace />} />
+            </Routes>
+          </Router>
+        </AppWithErrorHandling>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
