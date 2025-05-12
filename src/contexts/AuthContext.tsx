@@ -13,6 +13,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, userData?: any) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -87,7 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           // تعيين فترة انتهاء صلاحية الجلسة حسب خيار "تذكرني"
-          shouldCreateUser: true,
           emailRedirectTo: window.location.origin,
           // إذا تم تحديد "تذكرني"، استخدم فترة أطول (30 يوماً)، وإلا استخدم الافتراضي (1 يوم)
           session: rememberMe ? { rememberMe: true } : undefined
@@ -162,6 +162,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // وظيفة تحديث كلمة المرور
+  const updatePassword = async (password: string) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password
+      });
+
+      if (error) {
+        toast.error(error.message || "حدث خطأ أثناء تحديث كلمة المرور");
+      } else {
+        toast.success("تم تحديث كلمة المرور بنجاح");
+      }
+      setIsLoading(false);
+    } catch (error: any) {
+      toast.error(error.message || "حدث خطأ أثناء تحديث كلمة المرور");
+      setIsLoading(false);
+    }
+  };
+
   const value = {
     session,
     user,
@@ -171,6 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

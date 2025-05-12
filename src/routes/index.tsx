@@ -1,12 +1,13 @@
+
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Import your components/pages here
-import DashboardPage from '@/pages/DashboardPage';
+import Dashboard from '@/pages/Dashboard'; // Fixed import path
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
-import ActivityLogPage from '@/pages/settings/activitylog/ActivityLogPage';
+import ActivityLogPage from '@/pages/settings/ActivityLogPage'; // Fixed import path
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
 
@@ -31,7 +32,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <PrivateRoute><DashboardPage /></PrivateRoute>,
+    element: <PrivateRoute><Dashboard /></PrivateRoute>,
   },
   {
     path: "/auth/login",
