@@ -59,13 +59,14 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
     } as User); // Cast to User type to ensure TypeScript knows we're providing all required fields
   };
 
+  // تعديل هنا: استخدام الهوية بدلاً من الاسم في القيمة
   const roles = mockUserRoles.map(role => ({
     value: role.id,
     label: role.name
   }));
 
   const branches = mockBranches.map(branch => ({
-    value: branch.name,
+    value: branch.id,
     label: branch.name
   }));
 

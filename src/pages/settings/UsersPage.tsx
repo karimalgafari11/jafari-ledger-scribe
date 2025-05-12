@@ -167,6 +167,12 @@ const UsersPage = () => {
     }).format(new Date(date));
   };
 
+  // لعرض اسم الدور بدلًا من الرمز
+  const getRoleName = (roleId: string) => {
+    const role = mockUserRoles.find(r => r.id === roleId);
+    return role ? role.name : roleId;
+  };
+
   return (
     <PageContainer title="المستخدمون">
       <div className="p-6">
@@ -203,11 +209,11 @@ const UsersPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">جميع الأدوار</SelectItem>
-                  <SelectItem value="admin">مدير النظام</SelectItem>
-                  <SelectItem value="manager">مدير</SelectItem>
-                  <SelectItem value="accountant">محاسب</SelectItem>
-                  <SelectItem value="inventory">مخزون</SelectItem>
-                  <SelectItem value="sales">مبيعات</SelectItem>
+                  {mockUserRoles.map(role => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -253,13 +259,7 @@ const UsersPage = () => {
                           </div>
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
-                        <TableCell>
-                          {user.role === "admin" && "مدير النظام"}
-                          {user.role === "manager" && "مدير"}
-                          {user.role === "accountant" && "محاسب"}
-                          {user.role === "inventory" && "مخزون"}
-                          {user.role === "sales" && "مبيعات"}
-                        </TableCell>
+                        <TableCell>{getRoleName(user.role)}</TableCell>
                         <TableCell>{user.branch}</TableCell>
                         <TableCell>
                           <Badge variant={user.isActive ? "default" : "outline"}>
