@@ -43,7 +43,7 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
       username: '',
       fullName: '',
       email: '',
-      role: 'accountant',
+      role: '',
       branch: '',
       phone: '',
       isActive: true
