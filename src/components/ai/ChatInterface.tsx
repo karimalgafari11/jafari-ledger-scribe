@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Message } from "@/types/ai";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
+import { chatItemVariants } from "@/lib/framer-animations";
 
 export const ChatInterface = () => {
   const [message, setMessage] = useState("");
@@ -53,6 +54,13 @@ export const ChatInterface = () => {
     }
   };
 
+  // Handle suggested questions
+  const handleSuggestedQuestion = (question: string) => {
+    if (!isLoading) {
+      sendMessage(question);
+    }
+  };
+
   // Format timestamp
   const formatTime = (date: Date) => {
     return new Date(date).toLocaleTimeString('ar-SA', {
@@ -64,7 +72,7 @@ export const ChatInterface = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Chat messages */}
-      <ScrollArea ref={scrollAreaRef} className="flex-1 p-4 overflow-auto">
+      <ScrollArea ref={scrollAreaRef} className="flex-1 p-4 overflow-auto chat-scrollbar">
         <div className="space-y-4">
           {/* Welcome message if no chat history */}
           {chatHistory.length === 0 && (
@@ -88,7 +96,7 @@ export const ChatInterface = () => {
                       key={idx}
                       variant="outline"
                       className="bg-white border-indigo-200 hover:bg-indigo-50"
-                      onClick={() => sendMessage(text)}
+                      onClick={() => handleSuggestedQuestion(text)}
                     >
                       {text}
                     </Button>
@@ -103,10 +111,10 @@ export const ChatInterface = () => {
             {chatHistory.map((msg, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                variants={chatItemVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
                 className={cn(
                   "flex items-start gap-3 p-3 rounded-lg",
                   msg.role === "user" ? "flex-row-reverse bg-indigo-50/70" : "bg-white border border-gray-100"
@@ -147,7 +155,7 @@ export const ChatInterface = () => {
           </AnimatePresence>
 
           {/* Typing indicator */}
-          {isLoading && showTypingIndicator && (
+          {isLoading && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

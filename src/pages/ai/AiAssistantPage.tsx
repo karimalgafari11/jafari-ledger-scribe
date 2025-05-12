@@ -11,6 +11,7 @@ import { AiAssistantSettings } from "@/components/ai/AiAssistantSettings";
 import { AiChatHistory } from "@/components/ai/AiChatHistory";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
+import { containerVariants, fadeIn, itemVariants } from "@/lib/framer-animations";
 
 const AiAssistantPage = () => {
   const [activeTab, setActiveTab] = useState("chat");
@@ -24,18 +25,29 @@ const AiAssistantPage = () => {
 
   return (
     <PageContainer title="المساعد الذكي">
-      <div className="container max-w-full p-0 lg:p-4 h-full min-h-[calc(100vh-4rem)]">
+      <div className="h-[calc(100vh-4rem)] w-full overflow-hidden">
         <div className="relative h-full bg-gradient-to-b from-indigo-50/30 to-blue-50/30 overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute top-10 right-10 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
           <div className="absolute top-24 left-32 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-24 right-32 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
           
-          <div className="flex flex-col lg:flex-row h-full gap-4 p-4 lg:p-6 relative z-10">
-            <div className="lg:w-3/4 flex flex-col h-full">
+          <motion.div 
+            className="flex flex-col lg:flex-row h-full gap-4 p-4 lg:p-6 relative z-10"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.div 
+              className="lg:w-3/4 flex flex-col h-full"
+              variants={itemVariants}
+            >
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-                  <div className="relative">
+                  <motion.div 
+                    className="relative"
+                    variants={fadeIn}
+                  >
                     <div className="absolute inset-0 blur-xl bg-gradient-to-r from-indigo-200/20 via-purple-200/20 to-blue-200/20 rounded-xl -z-10"></div>
                     <motion.div 
                       className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100/50 backdrop-blur-sm rounded-xl px-4 py-3"
@@ -57,7 +69,7 @@ const AiAssistantPage = () => {
                         <Progress value={progressValue} className="h-1" indicatorClass="bg-indigo-500" />
                       </div>
                     </motion.div>
-                  </div>
+                  </motion.div>
                   
                   <TabsList className="grid grid-cols-3 w-auto bg-indigo-50 border border-indigo-100">
                     <TabsTrigger value="chat" className="flex items-center gap-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
@@ -76,11 +88,14 @@ const AiAssistantPage = () => {
                 </div>
 
                 <TabsContent value="chat" className="space-y-4 flex-grow h-full">
-                  <div className="relative h-full flex-grow rounded-lg overflow-hidden border border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-white/70 to-blue-50/50 backdrop-blur-sm">
+                  <motion.div 
+                    className="relative h-full flex-grow rounded-lg overflow-hidden border border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-white/70 to-blue-50/50 backdrop-blur-sm"
+                    variants={fadeIn}
+                  >
                     <AiSystemContext>
                       <ChatInterface />
                     </AiSystemContext>
-                  </div>
+                  </motion.div>
                 </TabsContent>
 
                 <TabsContent value="history" className="h-full">
@@ -91,12 +106,15 @@ const AiAssistantPage = () => {
                   <AiAssistantSettings />
                 </TabsContent>
               </Tabs>
-            </div>
+            </motion.div>
 
-            <div className="lg:w-1/4 animate-fade-in">
+            <motion.div 
+              className="lg:w-1/4 animate-fade-in"
+              variants={itemVariants}
+            >
               <AiAssistantFeatures />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </PageContainer>

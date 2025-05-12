@@ -80,6 +80,40 @@
   animation-delay: 4s;
 }
 
+/* Typing animation */
+@keyframes blink {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+.animate-bounce {
+  animation: blink 1.4s infinite ease-in-out;
+}
+
+.animate-bounce.delay-100 {
+  animation-delay: 0.2s;
+}
+
+.animate-bounce.delay-200 {
+  animation-delay: 0.4s;
+}
+
+/* AI glow effect */
+.ai-glow {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.ai-card-hover {
+  transition: all 0.3s ease;
+}
+
+.ai-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
+  border-color: rgba(79, 70, 229, 0.3);
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -112,4 +146,20 @@
 
 .chat-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #a5b4fc;
+}
+
+/* Card hover effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

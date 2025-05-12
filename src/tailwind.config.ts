@@ -99,6 +99,33 @@ export default {
 					"100%": {
 						transform: "translate(0px, 0px) scale(1)"
 					}
+				},
+				"float": {
+					"0%": {
+						transform: "translateY(0px)"
+					},
+					"50%": {
+						transform: "translateY(-10px)"
+					},
+					"100%": {
+						transform: "translateY(0px)"
+					}
+				},
+				"glow": {
+					"0%, 100%": { 
+						boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" 
+					},
+					"50%": { 
+						boxShadow: "0 0 25px rgba(99, 102, 241, 0.5)" 
+					}
+				},
+				"typing": {
+					"0%": {
+						width: "0%"
+					},
+					"100%": {
+						width: "100%"
+					}
 				}
 			},
 			animation: {
@@ -106,7 +133,10 @@ export default {
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"fade-in": "fade-in 0.3s ease-out",
 				"pulse-slow": "pulse-slow 3s ease-in-out infinite",
-				"blob": "blob 7s infinite"
+				"blob": "blob 7s infinite",
+				"float": "float 3s ease-in-out infinite",
+				"glow": "glow 2s ease-in-out infinite",
+				"typing": "typing 1.5s steps(30, end)"
 			},
 		},
 	},

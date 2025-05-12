@@ -23,6 +23,7 @@ import {
 import { useAiAssistant } from "@/hooks/useAiAssistant";
 import { QuickActionCard } from "./QuickActionCard";
 import { motion } from "framer-motion";
+import { suggestionsVariants, actionCardVariants } from "@/lib/framer-animations";
 
 export const AiAssistantFeatures = () => {
   const { sendMessage } = useAiAssistant();
@@ -32,25 +33,25 @@ export const AiAssistantFeatures = () => {
       title: "تقرير المبيعات اليوم", 
       description: "إنشاء ملخص لمبيعات اليوم الحالي",
       action: () => sendMessage("قم بإنشاء تقرير مختصر عن مبيعات اليوم"),
-      icon: <FileText className="h-4 w-4" />
+      icon: <FileText className="h-4 w-4 text-indigo-600" />
     },
     { 
       title: "المنتجات منخفضة المخزون", 
       description: "عرض المنتجات التي توشك على النفاذ",
       action: () => sendMessage("ما هي المنتجات التي توشك على النفاذ؟"),
-      icon: <ShoppingCart className="h-4 w-4" />
+      icon: <ShoppingCart className="h-4 w-4 text-purple-600" />
     },
     { 
       title: "الفواتير المستحقة", 
       description: "قائمة الفواتير المستحقة هذا الأسبوع",
       action: () => sendMessage("اعرض قائمة الفواتير المستحقة هذا الأسبوع"),
-      icon: <FileSpreadsheet className="h-4 w-4" />
+      icon: <FileSpreadsheet className="h-4 w-4 text-blue-600" />
     },
     { 
       title: "العملاء النشطين", 
       description: "تقرير بأكثر العملاء نشاطًا هذا الشهر",
       action: () => sendMessage("من هم أكثر العملاء نشاطًا هذا الشهر؟"),
-      icon: <Users className="h-4 w-4" />
+      icon: <Users className="h-4 w-4 text-green-600" />
     },
   ];
 
@@ -91,13 +92,16 @@ export const AiAssistantFeatures = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 pb-4">
-          <div className="grid grid-cols-1 gap-2">
+          <motion.div 
+            className="grid grid-cols-1 gap-2"
+            variants={suggestionsVariants}
+            initial="hidden"
+            animate="show"
+          >
             {quickActions.map((action, index) => (
               <motion.div
                 key={index}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                variants={actionCardVariants}
               >
                 <QuickActionCard
                   title={action.title}
@@ -107,7 +111,7 @@ export const AiAssistantFeatures = () => {
                 />
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
 
@@ -119,64 +123,36 @@ export const AiAssistantFeatures = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex flex-wrap gap-2">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("قم بتحليل أداء المبيعات")}
+          <motion.div 
+            className="flex flex-wrap gap-2"
+            variants={suggestionsVariants}
+            initial="hidden"
+            animate="show"
+          >
+            {[
+              { text: "تحليل المبيعات", query: "قم بتحليل أداء المبيعات" },
+              { text: "إنشاء فاتورة", query: "أنشئ فاتورة جديدة" },
+              { text: "بحث عن منتج", query: "ابحث عن منتج برمز ABC123" },
+              { text: "المصروفات المستحقة", query: "ما هي المصروفات المستحقة؟" },
+              { text: "ملخص الأداء", query: "لخص أداء المبيعات لهذا الشهر" },
+              { text: "حساب الضريبة", query: "حساب الضريبة على مبلغ 1000 ريال" },
+              { text: "مقارنة المبيعات", query: "قارن بين مبيعات الشهر الحالي والشهر السابق" }
+            ].map((suggestion, index) => (
+              <motion.div 
+                key={index} 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                variants={actionCardVariants}
               >
-                تحليل المبيعات
-              </Badge>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("أنشئ فاتورة جديدة")}
-              >
-                إنشاء فاتورة
-              </Badge>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("ابحث عن منتج برمز ABC123")}
-              >
-                بحث عن منتج
-              </Badge>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("ما هي المصروفات المستحقة؟")}
-              >
-                المصروفات المستحقة
-              </Badge>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("لخص أداء المبيعات لهذا الشهر")}
-              >
-                ملخص الأداء
-              </Badge>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("حساب الضريبة على مبلغ 1000 ريال")}
-              >
-                حساب الضريبة
-              </Badge>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Badge
-                className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                onClick={() => handleSuggestedQuestion("قارن بين مبيعات الشهر الحالي والشهر السابق")}
-              >
-                مقارنة المبيعات
-              </Badge>
-            </motion.div>
-          </div>
+                <Badge
+                  className="cursor-pointer bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+                  onClick={() => handleSuggestedQuestion(suggestion.query)}
+                >
+                  {suggestion.text}
+                </Badge>
+              </motion.div>
+            ))}
+          </motion.div>
         </CardContent>
       </Card>
 
@@ -188,12 +164,18 @@ export const AiAssistantFeatures = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 gap-4">
+          <motion.div 
+            className="grid grid-cols-1 gap-4"
+            variants={suggestionsVariants}
+            initial="hidden"
+            animate="show"
+          >
             {capabilities.map((category, idx) => (
               <motion.div 
                 key={idx} 
                 className="bg-white/80 backdrop-blur-sm p-3 rounded-lg border border-purple-100 hover:shadow-sm transition-all"
                 whileHover={{ scale: 1.01, y: -2 }}
+                variants={actionCardVariants}
               >
                 <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
                   {category.icon}
@@ -209,7 +191,7 @@ export const AiAssistantFeatures = () => {
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </CardContent>
         <CardFooter className="pt-0 border-t">
           <Button 
