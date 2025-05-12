@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -34,7 +33,7 @@ import {
   Printer,
   FileJson,
   FileSpreadsheet,
-  FileCsv
+  Files
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { 
@@ -280,7 +279,7 @@ export function DataTable<TData, TValue>({
                   <span>Excel</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExportToCsv}>
-                  <FileCsv className="h-4 w-4 ml-2" />
+                  <Files className="h-4 w-4 ml-2" />
                   <span>CSV</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExportToJson}>

@@ -51,7 +51,7 @@ const VendorReportsPage = () => {
             variant="outline"
             size="sm"
             className="flex items-center gap-1"
-            onClick={() => printReport()}
+            onClick={() => printReport(filteredExpenses, "تقرير الموردين")}
           >
             <Printer size={16} />
             <span>طباعة</span>
