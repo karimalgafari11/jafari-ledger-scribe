@@ -4,7 +4,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Import your components/pages here
-import Dashboard from '@/pages/Dashboard'; // Fixed import path
+import Dashboard from '@/pages/Dashboard'; 
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import ActivityLogPage from '@/pages/settings/ActivityLogPage'; // Fixed import path

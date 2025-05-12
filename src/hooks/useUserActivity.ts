@@ -1,57 +1,54 @@
 
 import { useState, useCallback, useEffect } from 'react';
-import { UserActivity, ActivityAction, FiltersType } from '@/types/permissions';
+import { UserActivity, ActivityAction } from '@/types/permissions';
+import { FiltersType } from '@/types/definitions';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockUserActivities } from '@/data/mockPermissions';
-
-// Align ActivityFilter with FiltersType for type consistency
-interface ActivityFilter extends FiltersType {} // Use the FiltersType interface as a base
 
 export function useUserActivity() {
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activities, setActivities] = useState<UserActivity[]>(mockUserActivities);
-  const [filters, setFilters] = useState<ActivityFilter>({userId: ''}); // Set default userId to empty string
+  const [filters, setFilters] = useState<FiltersType>({userId: ''});
   const { user } = useAuth();
   
-  // تحميل الأنشطة عند بدء التشغيل
+  // load activities at startup
   useEffect(() => {
     loadActivities();
   }, []);
 
-  // تحميل الأنشطة من مصدر البيانات
+  // load activities from data source
   const loadActivities = async () => {
     setIsLoading(true);
     try {
-      // هنا يمكن استبدال الأنشطة الوهمية بطلب API حقيقي
+      // replace mock activities with real API call
       setActivities(mockUserActivities);
     } catch (error) {
-      console.error('فشل في تحميل سجل الأنشطة:', error);
-      toast.error('فشل في تحميل سجل الأنشطة');
+      console.error('Failed to load activity log:', error);
+      toast.error('Failed to load activity log');
     } finally {
       setIsLoading(false);
     }
   };
   
-  // تسجيل نشاط جديد
+  // log new activity
   const logActivity = useCallback(async (
     activityData: Omit<UserActivity, 'id' | 'timestamp' | 'ipAddress'>
   ) => {
     try {
       setLoading(true);
       
-      // هنا يمكننا إضافة منطق لتسجيل النشاط في قاعدة البيانات
-      // مثلاً استدعاء API أو استخدام Supabase
+      // add logic to log activity to database
       
-      console.log('تم تسجيل النشاط:', activityData);
+      console.log('Activity logged:', activityData);
       
-      // إضافة النشاط الجديد للحالة المحلية
+      // add new activity to local state
       const newActivity: UserActivity = {
         ...activityData,
         id: `activity-${Date.now()}`,
         timestamp: new Date(),
-        ipAddress: '192.168.1.1' // يمكن استبداله بالعنوان الحقيقي
+        ipAddress: '192.168.1.1' // replace with real IP
       };
       
       setActivities(prev => [newActivity, ...prev]);
@@ -59,30 +56,28 @@ export function useUserActivity() {
       setLoading(false);
       return true;
     } catch (error) {
-      console.error('فشل في تسجيل النشاط:', error);
-      toast.error('فشل في تسجيل النشاط في السجل');
+      console.error('Failed to log activity:', error);
+      toast.error('Failed to log activity');
       setLoading(false);
       return false;
     }
   }, []);
 
-  // استرجاع سجل أنشطة المستخدم
+  // get user activity log
   const getUserActivities = useCallback(async (userId?: string, limit = 50) => {
     try {
       setLoading(true);
       
-      // هنا يمكننا إضافة منطق لاسترجاع سجل أنشطة المستخدم
-      // الافتراضي هو استرجاع سجل المستخدم الحالي
+      // logic to retrieve user activity log
       const targetUserId = userId || user?.id;
       
       if (!targetUserId) {
-        console.warn('لم يتم تحديد معرف المستخدم لاسترجاع سجل الأنشطة');
+        console.warn('No user ID specified for activity retrieval');
         setLoading(false);
         return [];
       }
       
-      // هنا فقط نرجع الأنشطة من الحالة المحلية
-      // في التطبيق الحقيقي، يمكن استبدالها باستدعاء API
+      // return activities from local state
       const filteredActivities = activities
         .filter(activity => activity.userId === targetUserId)
         .slice(0, limit);
@@ -90,48 +85,47 @@ export function useUserActivity() {
       setLoading(false);
       return filteredActivities;
     } catch (error) {
-      console.error('فشل في استرجاع سجل الأنشطة:', error);
-      toast.error('فشل في استرجاع سجل الأنشطة');
+      console.error('Failed to retrieve activity log:', error);
+      toast.error('Failed to retrieve activity log');
       setLoading(false);
       return [];
     }
   }, [activities, user]);
 
-  // تحديث المرشحات
-  const updateFilter = useCallback((key: keyof ActivityFilter, value: any) => {
+  // update filter
+  const updateFilter = useCallback((key: keyof FiltersType, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  // إعادة تعيين المرشحات
+  // reset filters
   const resetFilters = useCallback(() => {
-    setFilters({userId: ''}); // Reset to default with userId set to empty string
+    setFilters({userId: ''});
   }, []);
 
-  // البحث في الأنشطة باستخدام المرشحات
+  // search activities with filters
   const searchActivities = useCallback(async () => {
     setIsLoading(true);
     
     try {
-      // تطبيق المرشحات على البيانات الوهمية
-      // في التطبيق الحقيقي، يمكن إرسال المرشحات إلى الخادم
+      // apply filters to mock data
       const filtered = mockUserActivities.filter(activity => {
-        // مرشحات التاريخ
+        // date filters
         if (filters.startDate && new Date(activity.timestamp) < filters.startDate) return false;
         if (filters.endDate && new Date(activity.timestamp) > filters.endDate) return false;
         
-        // مرشح المستخدم
+        // user filter
         if (filters.userId && activity.userId !== filters.userId) return false;
         
-        // مرشح الإجراء
+        // action filter
         if (filters.action && activity.action !== filters.action) return false;
         
-        // مرشح الوحدة
+        // module filter
         if (filters.module && activity.module !== filters.module) return false;
         
-        // مرشح الحالة
+        // status filter
         if (filters.status && activity.status !== filters.status) return false;
         
-        // مرشح النص البحثي
+        // search text filter
         if (
           filters.searchText && 
           !activity.details.toLowerCase().includes(filters.searchText.toLowerCase()) &&
@@ -142,33 +136,31 @@ export function useUserActivity() {
       });
       
       setActivities(filtered);
-      toast.info(`تم العثور على ${filtered.length} سجل`);
+      toast.info(`Found ${filtered.length} records`);
 
-      // Return a promise for compatibility with ActivityLogPage
-      return Promise.resolve(); 
+      return Promise.resolve();
     } catch (error) {
-      console.error('خطأ أثناء البحث:', error);
-      toast.error('حدث خطأ أثناء البحث');
+      console.error('Error during search:', error);
+      toast.error('Error during search');
       return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
   }, [filters]);
 
-  // تصدير الأنشطة
+  // export activities
   const exportActivities = useCallback(async (format: 'excel' | 'pdf' | 'csv' = 'excel') => {
     setIsLoading(true);
     
     try {
-      // منطق تصدير البيانات
-      // يمكن تصديرها إلى ملف CSV أو Excel
-      console.log(`تصدير البيانات بتنسيق ${format}`);
+      // export logic
+      console.log(`Exporting data in ${format} format`);
       
-      toast.success('تم تصدير سجل الأنشطة بنجاح');
+      toast.success('Activity log exported successfully');
       return Promise.resolve(true);
     } catch (error) {
-      console.error('خطأ أثناء تصدير البيانات:', error);
-      toast.error('فشل في تصدير سجل الأنشطة');
+      console.error('Error exporting data:', error);
+      toast.error('Failed to export activity log');
       return Promise.resolve(false);
     } finally {
       setIsLoading(false);
