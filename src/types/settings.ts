@@ -1,3 +1,4 @@
+
 export interface SystemSettings {
   id: string;
   companyName: string;
@@ -67,7 +68,8 @@ export interface BackupSettings {
   cloudAuthToken?: string;
   cloudFolderId?: string;
   cloudPath?: string;
-  encryptBackup: boolean;
+  encryptBackups: boolean;
+  encryptBackup?: boolean; // Alias for encryptBackups
   encryptionPassword?: string;
   compressionLevel: 'none' | 'low' | 'medium' | 'high';
   includeAttachments: boolean;

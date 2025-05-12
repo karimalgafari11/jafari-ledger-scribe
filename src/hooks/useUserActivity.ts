@@ -9,7 +9,7 @@ import { mockUserActivities } from '@/data/mockPermissions';
 export function useUserActivity() {
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [activities, setActivities] = useState<UserActivity[]>(mockUserActivities);
+  const [activities, setActivities] = useState<UserActivity[]>(mockUserActivities as UserActivity[]);
   const [filters, setFilters] = useState<FiltersType>({userId: ''});
   const { user } = useAuth();
   
@@ -23,7 +23,7 @@ export function useUserActivity() {
     setIsLoading(true);
     try {
       // replace mock activities with real API call
-      setActivities(mockUserActivities);
+      setActivities(mockUserActivities as UserActivity[]);
     } catch (error) {
       console.error('Failed to load activity log:', error);
       toast.error('Failed to load activity log');
@@ -135,7 +135,7 @@ export function useUserActivity() {
         return true;
       });
       
-      setActivities(filtered);
+      setActivities(filtered as UserActivity[]);
       toast.info(`Found ${filtered.length} records`);
 
       return Promise.resolve();

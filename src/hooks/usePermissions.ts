@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   UserRole,
@@ -66,7 +65,8 @@ export function usePermissions() {
 
   const [roles, setRoles] = useState<UserRole[]>(initialUserRoles);
   const [permissions, setPermissions] = useState<Permission[]>(mockPermissions);
-  const [groups] = useState<PermissionGroup[]>(permissionGroups);
+  // Cast permissionGroups to make it compatible with PermissionGroup[] type
+  const [groups] = useState<PermissionGroup[]>(permissionGroups as unknown as PermissionGroup[]);
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>(mockSecuritySettings);
   const [isLoading, setIsLoading] = useState(false);
   

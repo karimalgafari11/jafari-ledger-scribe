@@ -1,4 +1,3 @@
-
 export const mockBranches = [
   {
     id: '1',
@@ -75,20 +74,38 @@ export const mockSystemSettings = {
 // Add backup settings for backupState.ts
 export const mockBackupSettings = {
   id: '1',
+  frequency: 'daily',
+  time: '02:00',
+  keepBackups: 7,
   autoBackup: true,
   backupFrequency: 'daily',
   backupTime: '02:00',
   retentionPeriodDays: 30,
-  compressionLevel: 'high',
+  compressionLevel: 'high' as 'high' | 'medium' | 'low' | 'none',
   encryptBackups: true,
+  encryptBackup: true,
   backupLocation: 'cloud',
+  destinationType: 'cloud' as 'local' | 'cloud' | 'ftp' | 'email',
   cloudProvider: 'aws',
   lastBackupDate: new Date('2023-05-10T02:00:00'),
+  lastBackup: new Date('2023-05-10T02:00:00'),
   nextBackupDate: new Date('2023-05-11T02:00:00'),
   backupNotifications: true,
   notifyOnSuccess: true,
   notifyOnFailure: true,
   notifyEmail: 'admin@example.com',
   updatedAt: new Date('2023-04-01'),
-  updatedBy: 'admin'
+  updatedBy: 'admin',
+  location: '/backups/',
+  includeAttachments: true,
+  includeSettings: true,
+  autoRestore: false,
+  googleDriveAuth: {
+    isAuthenticated: false
+  },
+  autoCloudBackup: false,
+  cloudBackupFormat: 'compressed' as 'compressed' | 'sql' | 'json',
+  cloudPath: '/backups/',
+  autoDownloadFromCloud: false,
+  backupHistory: []
 };

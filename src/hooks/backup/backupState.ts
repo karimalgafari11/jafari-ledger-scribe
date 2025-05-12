@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { BackupSettings } from '@/types/settings';
 import { mockBackupSettings } from '@/data/mockSettings';
@@ -30,18 +29,17 @@ export const useBackupState = (): [
     settings: {
       ...mockBackupSettings,
       backupHistory: mockBackupSettings.backupHistory || [],
-      encryptBackup: mockBackupSettings.encryptBackup || false,
+      encryptBackups: mockBackupSettings.encryptBackups || false,
       compressionLevel: mockBackupSettings.compressionLevel || 'medium',
-      includeAttachments: mockBackupSettings.includeAttachments || true,
-      includeSettings: mockBackupSettings.includeSettings || true,
-      autoRestore: mockBackupSettings.autoRestore || false,
+      includeAttachments: true,
+      includeSettings: true,
+      autoRestore: false,
       destinationType: mockBackupSettings.destinationType || 'local',
-      googleDriveAuth: mockBackupSettings.googleDriveAuth || { isAuthenticated: false },
-      autoCloudBackup: mockBackupSettings.autoCloudBackup || false,
-      cloudBackupFormat: mockBackupSettings.cloudBackupFormat || 'compressed',
-      cloudPath: mockBackupSettings.cloudPath || '/backups/',
-      // تأكد من وجود القيم الافتراضية لجميع الإعدادات
-      autoDownloadFromCloud: mockBackupSettings.autoDownloadFromCloud || false
+      googleDriveAuth: { isAuthenticated: false },
+      autoCloudBackup: mockBackupSettings.autoBackup || false,
+      cloudBackupFormat: 'compressed',
+      cloudPath: '/backups/',
+      autoDownloadFromCloud: false
     },
     isLoading: false,
     restoreProgress: 0,

@@ -1,4 +1,3 @@
-
 export const mockUserRoles = [
   {
     id: 'admin',
@@ -36,45 +35,49 @@ export const mockPermissionGroups = [
   {
     id: 'system',
     name: 'إدارة النظام',
+    category: 'system',
     permissions: [
-      { id: 'manage_settings', name: 'إدارة إعدادات النظام' },
-      { id: 'manage_users', name: 'إدارة المستخدمين' },
-      { id: 'manage_roles', name: 'إدارة الصلاحيات' },
-      { id: 'view_activity_log', name: 'عرض سجل النشاط' },
-      { id: 'manage_backup', name: 'إدارة النسخ الاحتياطي' }
+      { id: 'manage_settings', name: 'إدارة إعدادات النظام', category: 'system' },
+      { id: 'manage_users', name: 'إدارة المستخدمين', category: 'system' },
+      { id: 'manage_roles', name: 'إدارة الصلاحيات', category: 'system' },
+      { id: 'view_activity_log', name: 'عرض سجل النشاط', category: 'system' },
+      { id: 'manage_backup', name: 'إدارة النسخ الاحتياطي', category: 'system' }
     ]
   },
   {
     id: 'finance',
     name: 'المالية',
+    category: 'finance',
     permissions: [
-      { id: 'view_finance', name: 'عرض البيانات المالية' },
-      { id: 'manage_finance', name: 'إدارة البيانات المالية' },
-      { id: 'create_journal', name: 'إنشاء قيود محاسبية' },
-      { id: 'approve_journal', name: 'اعتماد قيود محاسبية' },
-      { id: 'view_reports', name: 'عرض التقارير المالية' }
+      { id: 'view_finance', name: 'عرض البيانات المالية', category: 'finance' },
+      { id: 'manage_finance', name: 'إدارة البيانات المالية', category: 'finance' },
+      { id: 'create_journal', name: 'إنشاء قيود محاسبية', category: 'finance' },
+      { id: 'approve_journal', name: 'اعتماد قيود محاسبية', category: 'finance' },
+      { id: 'view_reports', name: 'عرض التقارير المالية', category: 'finance' }
     ]
   },
   {
     id: 'inventory',
     name: 'المخزون',
+    category: 'inventory',
     permissions: [
-      { id: 'view_inventory', name: 'عرض المخزون' },
-      { id: 'manage_inventory', name: 'إدارة المخزون' },
-      { id: 'create_purchase', name: 'إنشاء أوامر شراء' },
-      { id: 'approve_purchase', name: 'اعتماد أوامر شراء' },
-      { id: 'view_inventory_reports', name: 'عرض تقارير المخزون' }
+      { id: 'view_inventory', name: 'عرض المخزون', category: 'inventory' },
+      { id: 'manage_inventory', name: 'إدارة المخزون', category: 'inventory' },
+      { id: 'create_purchase', name: 'إنشاء أوامر شراء', category: 'inventory' },
+      { id: 'approve_purchase', name: 'اعتماد أوامر شراء', category: 'inventory' },
+      { id: 'view_inventory_reports', name: 'عرض تقارير المخزون', category: 'inventory' }
     ]
   },
   {
     id: 'sales',
     name: 'المبيعات',
+    category: 'sales',
     permissions: [
-      { id: 'view_sales', name: 'عرض المبيعات' },
-      { id: 'manage_sales', name: 'إدارة المبيعات' },
-      { id: 'view_customers', name: 'عرض العملاء' },
-      { id: 'manage_customers', name: 'إدارة العملاء' },
-      { id: 'view_sales_reports', name: 'عرض تقارير المبيعات' }
+      { id: 'view_sales', name: 'عرض المبيعات', category: 'sales' },
+      { id: 'manage_sales', name: 'إدارة المبيعات', category: 'sales' },
+      { id: 'view_customers', name: 'عرض العملاء', category: 'sales' },
+      { id: 'manage_customers', name: 'إدارة العملاء', category: 'sales' },
+      { id: 'view_sales_reports', name: 'عرض تقارير المبيعات', category: 'sales' }
     ]
   }
 ];
@@ -85,7 +88,7 @@ export const mockPermissionGroups = [
 export const mockPermissions = mockPermissionGroups.flatMap(group => 
   group.permissions.map(permission => ({
     ...permission,
-    category: group.id
+    category: group.category
   }))
 );
 
@@ -205,7 +208,7 @@ export const mockUserActivities = [
     action: 'user_login',
     module: 'auth',
     details: 'تسجيل دخول ناجح',
-    status: 'success',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-12T10:30:00'),
     ipAddress: '192.168.1.105'
   },
@@ -216,7 +219,7 @@ export const mockUserActivities = [
     action: 'setting_update',
     module: 'settings',
     details: 'تحديث إعدادات النظام',
-    status: 'success',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-12T11:45:00'),
     ipAddress: '192.168.1.105'
   },
@@ -227,7 +230,7 @@ export const mockUserActivities = [
     action: 'invoice_create',
     module: 'invoices',
     details: 'إنشاء فاتورة جديدة رقم INV-2023-054',
-    status: 'success',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-12T13:20:00'),
     ipAddress: '192.168.1.110'
   },
@@ -238,7 +241,7 @@ export const mockUserActivities = [
     action: 'product_update',
     module: 'inventory',
     details: 'تحديث بيانات المنتج SKU-8901',
-    status: 'success',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-11T09:15:00'),
     ipAddress: '192.168.1.120'
   },
@@ -249,7 +252,7 @@ export const mockUserActivities = [
     action: 'journal_post',
     module: 'accounting',
     details: 'ترحيل قيد محاسبي رقم JE-2023-105',
-    status: 'failed',
+    status: 'failed' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-11T14:30:00'),
     ipAddress: '192.168.1.110'
   },
@@ -260,7 +263,7 @@ export const mockUserActivities = [
     action: 'report_generate',
     module: 'reports',
     details: 'إنشاء تقرير الميزانية العمومية',
-    status: 'success',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-10T16:45:00'),
     ipAddress: '192.168.1.130'
   },
@@ -271,7 +274,7 @@ export const mockUserActivities = [
     action: 'user_create',
     module: 'users',
     details: 'إنشاء مستخدم جديد: nasser.ali',
-    status: 'success',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-10T11:10:00'),
     ipAddress: '192.168.1.105'
   },
@@ -282,7 +285,7 @@ export const mockUserActivities = [
     action: 'inventory_adjust',
     module: 'inventory',
     details: 'تعديل مخزون المنتج SKU-5432',
-    status: 'warning',
+    status: 'warning' as 'success' | 'failed' | 'warning' | 'info',
     timestamp: new Date('2023-05-09T10:20:00'),
     ipAddress: '192.168.1.115'
   }
