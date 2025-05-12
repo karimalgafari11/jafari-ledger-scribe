@@ -1,21 +1,12 @@
 
-import { useState } from "react";
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableHead, 
-  TableRow, 
-  TableCell 
-} from "@/components/ui/table";
+import React, { useMemo, useState } from "react";
+import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Eye, 
-  Pencil, 
-  Trash2 
-} from "lucide-react";
 import { Product } from "@/types/inventory";
+import { ColumnDef } from "@tanstack/react-table";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface ProductsTableProps {
   products: Product[];
@@ -34,20 +25,136 @@ export function ProductsTable({
   selectedProducts,
   onToggleSelection
 }: ProductsTableProps) {
-  // Stock level indicators
-  const getStockLevelClass = (quantity: number, threshold: number) => {
-    if (quantity <= 0) return "text-red-700 font-bold";
-    if (quantity < threshold) return "text-orange-500 font-bold";
-    return "";
-  };
-
-  // Table configuration options
+  // تخزين إعدادات الجدول
   const [tableConfig, setTableConfig] = useState({
     gridLines: true,
     striped: true,
     dense: false,
     bordered: true
   });
+
+  // تحديد الأعمدة
+  const columns = useMemo<ColumnDef<Product>[]>(() => [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(!!value);
+            // تحديث القائمة الرئيسية للمنتجات المحددة
+            const selectedIds = value 
+              ? products.map(product => product.id)
+              : [];
+            selectedIds.forEach(id => onToggleSelection(id));
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={selectedProducts.includes(row.original.id)}
+          onCheckedChange={(value) => {
+            onToggleSelection(row.original.id);
+            row.toggleSelected(!!value);
+          }}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "code",
+      header: "رقم القطعة",
+    },
+    {
+      accessorKey: "name",
+      header: "اسم القطعة",
+    },
+    {
+      accessorKey: "price",
+      header: "السعر",
+      cell: ({ row }) => {
+        const price = parseFloat(row.getValue("price"));
+        return <div>{price.toFixed(2)}</div>;
+      },
+    },
+    {
+      accessorKey: "category",
+      header: "التصنيف",
+    },
+    {
+      accessorKey: "quantity",
+      header: "الكمية المتاحة",
+      cell: ({ row }) => {
+        const quantity = parseInt(row.getValue("quantity"));
+        const reorderLevel = row.original.reorderLevel;
+        const className = quantity <= 0 
+          ? "text-red-700 font-bold" 
+          : quantity < reorderLevel 
+          ? "text-orange-500 font-bold" 
+          : "";
+        return <div className={className}>{quantity}</div>;
+      },
+    },
+    {
+      accessorKey: "isActive",
+      header: "الحالة",
+      cell: ({ row }) => {
+        const isActive = row.getValue("isActive") as boolean;
+        return (
+          <Badge 
+            className={isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}
+          >
+            {isActive ? 'متوفر' : 'غير متوفر'}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "الإجراءات",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetails(row.original.id);
+              }}
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(row.original.id);
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(row.original.id);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ], [products, selectedProducts, onToggleSelection, onViewDetails, onEdit, onDelete]);
 
   return (
     <div className="space-y-4">
@@ -79,87 +186,19 @@ export function ProductsTable({
       </div>
       
       <div className="bg-white rounded-lg shadow overflow-hidden rtl">
-        <Table 
+        <DataTable 
+          columns={columns}
+          data={products}
           gridLines={tableConfig.gridLines}
           striped={tableConfig.striped}
           dense={tableConfig.dense}
           bordered={tableConfig.bordered}
           stickyHeader={true}
-        >
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">
-                <Checkbox />
-              </TableHead>
-              <TableHead>رقم القطعة</TableHead>
-              <TableHead>اسم القطعة</TableHead>
-              <TableHead>السعر</TableHead>
-              <TableHead>التصنيف</TableHead>
-              <TableHead>الكمية المتاحة</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
-                  لا توجد قطع غيار متاحة
-                </TableCell>
-              </TableRow>
-            ) : (
-              products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
-                    <Checkbox 
-                      checked={selectedProducts.includes(product.id)}
-                      onCheckedChange={() => onToggleSelection(product.id)}
-                    />
-                  </TableCell>
-                  <TableCell>{product.code}</TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.price.toFixed(2)}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell className={getStockLevelClass(product.quantity, product.reorderLevel)}>
-                    {product.quantity}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {product.isActive ? 'متوفر' : 'غير متوفر'}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onViewDetails(product.id)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onEdit(product.id)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onDelete(product.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+          searchable={true}
+          searchKey="name"
+          onRowClick={(product: Product) => onViewDetails(product.id)}
+          emptyMessage="لا توجد قطع غيار متاحة"
+        />
       </div>
     </div>
   );

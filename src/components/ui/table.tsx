@@ -3,16 +3,18 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> { 
+  gridLines?: boolean;
+  striped?: boolean;
+  bordered?: boolean;
+  hoverable?: boolean;
+  dense?: boolean;
+  stickyHeader?: boolean;
+}
+
 const Table = React.forwardRef<
   HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement> & { 
-    gridLines?: boolean;
-    striped?: boolean;
-    bordered?: boolean;
-    hoverable?: boolean;
-    dense?: boolean;
-    stickyHeader?: boolean;
-  }
+  TableProps
 >(({ className, gridLines, striped, bordered, hoverable, dense, stickyHeader, ...props }, ref) => (
   <div className={cn("relative w-full overflow-auto", stickyHeader && "overflow-y-auto")}>
     <table
@@ -65,14 +67,19 @@ const TableFooter = React.forwardRef<
 ))
 TableFooter.displayName = "TableFooter"
 
+interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  isSelected?: boolean;
+}
+
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
+  TableRowProps
+>(({ className, isSelected, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
       "border-b transition-colors data-[state=selected]:bg-muted",
+      isSelected && "bg-muted/80",
       className
     )}
     {...props}
