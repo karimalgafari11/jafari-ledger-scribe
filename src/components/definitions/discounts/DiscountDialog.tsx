@@ -36,11 +36,11 @@ const discountSchema = z.object({
   ),
   startDate: z.string().min(1, "تاريخ البداية مطلوب"),
   endDate: z.string().optional(),
-  minimumAmount: z.preprocess(
+  minAmount: z.preprocess(
     (val) => (val === "" ? undefined : Number(val)),
     z.number().optional()
   ),
-  maximumAmount: z.preprocess(
+  maxAmount: z.preprocess(
     (val) => (val === "" ? undefined : Number(val)),
     z.number().optional()
   ),
@@ -65,8 +65,8 @@ export const DiscountDialog: React.FC<DiscountDialogProps> = ({
     endDate: discount?.endDate 
       ? format(new Date(discount.endDate), "yyyy-MM-dd")
       : "",
-    minimumAmount: discount?.minimumAmount || undefined,
-    maximumAmount: discount?.maximumAmount || undefined,
+    minAmount: discount?.minAmount || discount?.minimumAmount || undefined,
+    maxAmount: discount?.maxAmount || discount?.maximumAmount || undefined,
     isActive: discount?.isActive ?? true,
   };
 
@@ -145,7 +145,7 @@ export const DiscountDialog: React.FC<DiscountDialogProps> = ({
             <div>
               <Label htmlFor="type">نوع الخصم*</Label>
               <Select
-                onValueChange={(value) => setValue("type", value as "percentage" | "fixed")}
+                onValueChange={(value) => setValue("type", value as any)}
                 value={watch("type")}
               >
                 <SelectTrigger id="type">
@@ -205,25 +205,25 @@ export const DiscountDialog: React.FC<DiscountDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="minimumAmount">
+              <Label htmlFor="minAmount">
                 الحد الأدنى للطلب <span className="text-muted-foreground text-xs">(اختياري)</span>
               </Label>
               <Input
-                id="minimumAmount"
+                id="minAmount"
                 type="number"
-                {...register("minimumAmount")}
+                {...register("minAmount")}
                 placeholder="مثال: 100"
               />
             </div>
 
             <div>
-              <Label htmlFor="maximumAmount">
+              <Label htmlFor="maxAmount">
                 الحد الأقصى للخصم <span className="text-muted-foreground text-xs">(اختياري)</span>
               </Label>
               <Input
-                id="maximumAmount"
+                id="maxAmount"
                 type="number"
-                {...register("maximumAmount")}
+                {...register("maxAmount")}
                 placeholder="مثال: 1000"
               />
             </div>

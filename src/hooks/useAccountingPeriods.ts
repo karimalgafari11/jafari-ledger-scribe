@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AccountingPeriod } from "@/types/definitions";
 import { v4 as uuid } from "uuid";
@@ -12,7 +11,7 @@ const initialPeriods: AccountingPeriod[] = [
     startDate: new Date("2023-01-01"),
     endDate: new Date("2023-03-31"),
     isClosed: true,
-    closedDate: new Date("2023-04-10"),
+    closedAt: new Date("2023-04-10"),
     fiscalYearId: "2023",
   },
   {
@@ -21,7 +20,7 @@ const initialPeriods: AccountingPeriod[] = [
     startDate: new Date("2023-04-01"),
     endDate: new Date("2023-06-30"),
     isClosed: true,
-    closedDate: new Date("2023-07-08"),
+    closedAt: new Date("2023-07-08"),
     fiscalYearId: "2023",
   },
   {
@@ -30,7 +29,7 @@ const initialPeriods: AccountingPeriod[] = [
     startDate: new Date("2023-07-01"),
     endDate: new Date("2023-09-30"),
     isClosed: true,
-    closedDate: new Date("2023-10-15"),
+    closedAt: new Date("2023-10-15"),
     fiscalYearId: "2023",
   },
   {
@@ -59,7 +58,7 @@ export const useAccountingPeriods = () => {
     (period) => {
       const matchesSearch = 
         period.name.includes(searchTerm) ||
-        period.fiscalYearId.includes(searchTerm);
+        (period.fiscalYearId && period.fiscalYearId.includes(searchTerm));
       
       const matchesYear = yearFilter === "all" 
         ? true
@@ -169,7 +168,7 @@ export const useAccountingPeriods = () => {
       setPeriods(
         periods.map((period) =>
           period.id === id
-            ? { ...period, isClosed: true, closedDate: new Date() }
+            ? { ...period, isClosed: true, closedAt: new Date() }
             : period
         )
       );
@@ -197,7 +196,7 @@ export const useAccountingPeriods = () => {
         setPeriods(
           periods.map((period) =>
             period.id === id
-              ? { ...period, isClosed: false, closedDate: undefined }
+              ? { ...period, isClosed: false, closedAt: undefined }
               : period
           )
         );
@@ -212,7 +211,7 @@ export const useAccountingPeriods = () => {
   };
 
   // الحصول على قائمة السنوات المالية
-  const fiscalYears = Array.from(new Set(periods.map(p => p.fiscalYearId)));
+  const fiscalYears = Array.from(new Set(periods.map(p => p.fiscalYearId || "")));
 
   return {
     periods,

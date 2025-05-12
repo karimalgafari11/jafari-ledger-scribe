@@ -9,6 +9,143 @@ export interface FiltersType {
   searchText?: string;
 }
 
+// Updated Bank interface with additional fields used in the components
+export interface Bank {
+  id: string;
+  name: string;
+  code: string;
+  branch?: string;
+  branchName?: string;
+  address?: string;
+  swiftCode?: string;
+  iban?: string;
+  accountNumber?: string;
+  accountId?: string;
+  currency?: string;
+  isActive: boolean;
+}
+
+// Updated Branch interface with additional fields used in the components
+export interface Branch {
+  id: string;
+  code: string;
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  manager?: string;
+  isActive: boolean;
+  isMain: boolean;
+  isMainBranch?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Updated CashRegister interface with all fields used in components
+export interface CashRegister {
+  id: string;
+  name: string;
+  code: string;
+  branchId: string;
+  branchName?: string;
+  balance: number;
+  isActive: boolean;
+  userId?: string;
+  currency: string;
+  currencyId?: string;
+  currencyCode?: string;
+  allowNegative?: boolean;
+  notes?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Updated Warehouse interface with additional fields used in components
+export interface Warehouse {
+  id: string;
+  code: string;
+  name: string;
+  branchId: string;
+  address?: string;
+  manager?: string;
+  phone?: string;
+  isActive: boolean;
+  branchName?: string;
+  type?: string;
+  inventoryControl?: boolean;
+}
+
+// Updated Discount interface with additional fields used in components
+export interface Discount {
+  id: string;
+  code: string;
+  name: string;
+  type: 'percentage' | 'fixed' | 'tiered';
+  value: number;
+  isActive: boolean;
+  startDate?: Date;
+  endDate?: Date;
+  minAmount?: number;
+  maxAmount?: number;
+  minimumAmount?: number; // Alias for minAmount
+  maximumAmount?: number; // Alias for maxAmount
+  limitPerCustomer?: number;
+  customerGroups?: string[];
+  productCategories?: string[];
+  excludedProducts?: string[];
+}
+
+// Updated AccountingPeriod interface with additional fields
+export interface AccountingPeriod {
+  id: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  isClosed: boolean;
+  closedBy?: string;
+  closedAt?: Date;
+  closedDate?: Date; // Alias for closedAt
+  fiscalYearId?: string;
+}
+
+// Updated CommercialPaper interface with additional fields
+export interface CommercialPaper {
+  id: string;
+  type: 'check' | 'bond' | 'bill' | 'cheque' | 'promissory_note';
+  number: string;
+  referenceNumber?: string;
+  amount: number;
+  currencyCode: string;
+  currencyId?: string;
+  issueDate: Date;
+  dueDate: Date;
+  status: 'draft' | 'active' | 'collected' | 'bounced' | 'void';
+  bankId?: string;
+  bankName?: string;
+  customerId?: string;
+  customerName?: string;
+  vendorName?: string;
+  notes?: string;
+}
+
+// Updated DueNotification interface with additional fields
+export interface DueNotification {
+  id: string;
+  paperId?: string;
+  entityId?: string;
+  entityType?: string;
+  paperNumber?: string;
+  dueDate: Date;
+  amount: number;
+  currencyId?: string;
+  title?: string;
+  message?: string;
+  priority?: 'high' | 'medium' | 'low';
+  status: 'pending' | 'sent' | 'failed' | 'processed' | 'dismissed';
+  sentAt?: Date;
+  notificationDate?: Date;
+}
+
 // Keep existing interfaces
 export interface Currency {
   id: string;
@@ -29,18 +166,6 @@ export interface ExchangeRate {
   rate: number;
   date: string;
   isManual: boolean;
-}
-
-export interface Branch {
-  id: string;
-  code: string;
-  name: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-  manager?: string;
-  isActive: boolean;
-  isMain: boolean;
 }
 
 export interface VoucherType {
@@ -70,87 +195,4 @@ export interface SalesRepresentative {
   commissionRate: number;
   isActive: boolean;
   branchIds: string[];
-}
-
-// Additional interfaces needed by components
-export interface Bank {
-  id: string;
-  name: string;
-  code: string;
-  branchName?: string;
-  address?: string;
-  swiftCode?: string;
-  isActive: boolean;
-}
-
-export interface CashRegister {
-  id: string;
-  name: string;
-  code: string;
-  branchId: string;
-  branchName?: string;
-  isActive: boolean;
-  balance: number;
-  currency: string;
-  allowNegative: boolean;
-  notes?: string;
-}
-
-export interface Warehouse {
-  id: string;
-  code: string;
-  name: string;
-  branchId: string;
-  address?: string;
-  manager?: string;
-  phone?: string;
-  isActive: boolean;
-}
-
-export interface Discount {
-  id: string;
-  code: string;
-  name: string;
-  type: 'percentage' | 'fixed' | 'tiered';
-  value: number;
-  isActive: boolean;
-  startDate?: Date;
-  endDate?: Date;
-  minAmount?: number;
-  maxAmount?: number;
-  limitPerCustomer?: number;
-  customerGroups?: string[];
-  productCategories?: string[];
-  excludedProducts?: string[];
-}
-
-export interface AccountingPeriod {
-  id: string;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  isClosed: boolean;
-  closedBy?: string;
-  closedAt?: Date;
-}
-
-export interface CommercialPaper {
-  id: string;
-  type: 'check' | 'bond' | 'bill';
-  number: string;
-  amount: number;
-  currencyCode: string;
-  issueDate: Date;
-  dueDate: Date;
-  status: 'draft' | 'active' | 'collected' | 'bounced' | 'void';
-}
-
-export interface DueNotification {
-  id: string;
-  paperId: string;
-  paperNumber: string;
-  dueDate: Date;
-  amount: number;
-  status: 'pending' | 'sent' | 'failed';
-  sentAt?: Date;
 }

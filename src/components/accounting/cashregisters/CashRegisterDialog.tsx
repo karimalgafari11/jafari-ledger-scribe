@@ -72,7 +72,7 @@ export const CashRegisterDialog = ({
       code: register?.code || "",
       name: register?.name || "",
       branchId: register?.branchId || "",
-      currencyId: register?.currencyId || "",
+      currencyId: register?.currencyId || register?.currency || "",
       balance: register?.balance || 0,
       isActive: register?.isActive || true,
     },
@@ -84,7 +84,7 @@ export const CashRegisterDialog = ({
         code: register.code,
         name: register.name,
         branchId: register.branchId,
-        currencyId: register.currencyId,
+        currencyId: register.currencyId || register.currency || "",
         balance: register.balance,
         isActive: register.isActive,
       });
@@ -108,6 +108,7 @@ export const CashRegisterDialog = ({
     onSubmit({
       ...values,
       branchName: selectedBranch?.name || "",
+      currency: values.currencyId,
       currencyCode: selectedCurrency?.code || "",
     });
   };
