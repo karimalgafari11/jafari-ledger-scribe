@@ -41,7 +41,7 @@ export function ProductsTable({
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            (table.getIsSomePageRowsSelected() ? "indeterminate" : false)
           }
           onCheckedChange={(value) => {
             table.toggleAllPageRowsSelected(!!value);

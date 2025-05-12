@@ -2,7 +2,7 @@
 export interface Transaction {
   id: string;
   date: Date;
-  type: 'invoice' | 'payment' | 'return';
+  type: 'invoice' | 'payment' | 'return' | 'opening';
   reference: string;
   description: string;
   debit: number;
