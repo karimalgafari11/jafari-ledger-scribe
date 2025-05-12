@@ -1,105 +1,91 @@
 
 import React, { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
+import { User } from "@/types/settings";
+import UserForm from "@/components/settings/users/UserForm";
+import { mockUserRoles } from "@/data/mockPermissions";
+import { mockBranches } from "@/data/mockSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { UserPlus, Pencil, Trash2, Search, Users, Filter, MoreVertical } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 
 // Mock users data
-const mockUsers = [
+const initialUsers: User[] = [
   {
     id: "1",
-    name: "أحمد محمد",
+    username: "ahmed.mohamed",
+    fullName: "أحمد محمد",
     email: "ahmed@example.com",
-    role: "مدير النظام",
-    department: "الإدارة",
-    status: "active",
-    lastLogin: "2023-05-12T10:30:00",
-    avatar: null
+    role: "admin",
+    branch: "الرياض",
+    phone: "0512345678",
+    isActive: true,
+    lastLogin: new Date("2023-05-12T10:30:00"),
+    createdAt: new Date("2022-01-15")
   },
   {
     id: "2",
-    name: "سارة عبدالله",
+    username: "sara.abdullah",
+    fullName: "سارة عبدالله",
     email: "sara@example.com",
-    role: "محاسب",
-    department: "المالية",
-    status: "active",
-    lastLogin: "2023-05-11T14:25:00",
-    avatar: null
+    role: "accountant",
+    branch: "الرياض",
+    phone: "0523456789",
+    isActive: true,
+    lastLogin: new Date("2023-05-11T14:25:00"),
+    createdAt: new Date("2022-03-20")
   },
   {
     id: "3",
-    name: "خالد العتيبي",
+    username: "khalid.otaibi",
+    fullName: "خالد العتيبي",
     email: "khalid@example.com",
-    role: "موظف مبيعات",
-    department: "المبيعات",
-    status: "active",
-    lastLogin: "2023-05-10T09:15:00",
-    avatar: null
+    role: "sales",
+    branch: "جدة",
+    phone: "0534567890",
+    isActive: true,
+    lastLogin: new Date("2023-05-10T09:15:00"),
+    createdAt: new Date("2022-02-10")
   },
   {
     id: "4",
-    name: "منى الزهراني",
+    username: "mona.zahrani",
+    fullName: "منى الزهراني",
     email: "mona@example.com",
-    role: "موظف مخزون",
-    department: "المستودعات",
-    status: "inactive",
-    lastLogin: "2023-05-01T11:45:00",
-    avatar: null
+    role: "inventory",
+    branch: "الدمام",
+    phone: "0545678901",
+    isActive: false,
+    lastLogin: new Date("2023-05-01T11:45:00"),
+    createdAt: new Date("2022-04-05")
   },
   {
     id: "5",
-    name: "فهد السعيد",
+    username: "fahad.saeed",
+    fullName: "فهد السعيد",
     email: "fahad@example.com",
-    role: "محاسب",
-    department: "المالية",
-    status: "active",
-    lastLogin: "2023-05-12T08:20:00",
-    avatar: null
+    role: "accountant",
+    branch: "الرياض",
+    phone: "0556789012",
+    isActive: true,
+    lastLogin: new Date("2023-05-12T08:20:00"),
+    createdAt: new Date("2022-01-25")
   }
 ];
 
-// Mock roles for dropdown
-const mockRoleOptions = [
-  { value: "مدير النظام", label: "مدير النظام" },
-  { value: "محاسب", label: "محاسب" },
-  { value: "موظف مبيعات", label: "موظف مبيعات" },
-  { value: "موظف مخزون", label: "موظف مخزون" }
-];
-
-// Mock departments for dropdown
-const mockDepartmentOptions = [
-  { value: "الإدارة", label: "الإدارة" },
-  { value: "المالية", label: "المالية" },
-  { value: "المبيعات", label: "المبيعات" },
-  { value: "المستودعات", label: "المستودعات" },
-  { value: "الموارد البشرية", label: "الموارد البشرية" }
-];
-
 const UsersPage = () => {
-  const [users, setUsers] = useState(mockUsers);
-  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [isUserFormOpen, setIsUserFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [newUser, setNewUser] = useState({
-    name: "",
-    email: "",
-    role: "",
-    department: "",
-    status: "active",
-    password: "",
-    confirmPassword: ""
-  });
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -107,92 +93,48 @@ const UsersPage = () => {
   // Filter users based on search and filters
   const filteredUsers = users.filter(user => {
     const matchesSearch = searchQuery === "" || 
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+      user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesRole = roleFilter === "" || user.role === roleFilter;
-    const matchesStatus = statusFilter === "" || user.status === statusFilter;
+    const matchesStatus = statusFilter === "" || 
+      (statusFilter === "active" && user.isActive) || 
+      (statusFilter === "inactive" && !user.isActive);
     
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const handleOpenUserDialog = (user: any = null) => {
-    if (user) {
-      setCurrentUser(user);
-      setNewUser({
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        department: user.department,
-        status: user.status,
-        password: "",
-        confirmPassword: ""
-      });
-    } else {
-      setCurrentUser(null);
-      setNewUser({
-        name: "",
-        email: "",
-        role: "",
-        department: "",
-        status: "active",
-        password: "",
-        confirmPassword: ""
-      });
-    }
-    setIsUserDialogOpen(true);
+  const handleOpenUserForm = (user: User | null = null) => {
+    setCurrentUser(user);
+    setIsUserFormOpen(true);
   };
 
-  const handleSaveUser = () => {
-    // Validate required fields
-    if (!newUser.name || !newUser.email || !newUser.role) {
-      toast.error("يرجى إكمال جميع الحقول المطلوبة");
-      return;
-    }
-
-    // Validate email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email)) {
-      toast.error("يرجى إدخال بريد إلكتروني صحيح");
-      return;
-    }
-
-    // Validate password match if adding new user
-    if (!currentUser && newUser.password !== newUser.confirmPassword) {
-      toast.error("كلمات المرور غير متطابقة");
-      return;
-    }
-
+  const handleSaveUser = (userData: User) => {
     if (currentUser) {
       // Update existing user
       setUsers(prev => prev.map(user => 
-        user.id === currentUser.id 
-        ? { ...user, name: newUser.name, email: newUser.email, role: newUser.role, department: newUser.department, status: newUser.status } 
-        : user
+        user.id === currentUser.id ? userData : user
       ));
-      toast.success(`تم تعديل بيانات المستخدم ${newUser.name} بنجاح`);
+      toast.success(`تم تعديل بيانات المستخدم ${userData.fullName} بنجاح`);
     } else {
-      // Create new user
-      const newId = (users.length + 1).toString();
-      setUsers(prev => [...prev, {
-        id: newId,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        department: newUser.department,
-        status: newUser.status,
-        lastLogin: null,
-        avatar: null
-      }]);
-      toast.success(`تم إضافة المستخدم ${newUser.name} بنجاح`);
+      // Create new user with generated ID
+      const newUser = {
+        ...userData,
+        id: Date.now().toString(),
+        createdAt: new Date()
+      };
+      setUsers(prev => [...prev, newUser]);
+      toast.success(`تم إضافة المستخدم ${userData.fullName} بنجاح`);
     }
     
-    setIsUserDialogOpen(false);
+    setIsUserFormOpen(false);
   };
 
   const handleDeleteUser = () => {
     if (currentUser) {
       setUsers(prev => prev.filter(user => user.id !== currentUser.id));
-      toast.success(`تم حذف المستخدم ${currentUser.name} بنجاح`);
+      toast.success(`تم حذف المستخدم ${currentUser.fullName} بنجاح`);
       setIsDeleteDialogOpen(false);
     }
   };
@@ -200,28 +142,29 @@ const UsersPage = () => {
   const toggleUserStatus = (userId: string) => {
     setUsers(prev => prev.map(user =>
       user.id === userId
-        ? { ...user, status: user.status === 'active' ? 'inactive' : 'active' }
+        ? { ...user, isActive: !user.isActive }
         : user
     ));
     
     const targetUser = users.find(user => user.id === userId);
-    const newStatus = targetUser?.status === 'active' ? 'inactive' : 'active';
-    const statusText = newStatus === 'active' ? 'تفعيل' : 'تعطيل';
-    
-    toast.success(`تم ${statusText} حساب المستخدم ${targetUser?.name} بنجاح`);
+    if (targetUser) {
+      const newStatus = !targetUser.isActive;
+      const statusText = newStatus ? 'تفعيل' : 'تعطيل';
+      
+      toast.success(`تم ${statusText} حساب المستخدم ${targetUser.fullName} بنجاح`);
+    }
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "لم يسجل دخول بعد";
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return "لم يسجل دخول بعد";
     
-    const date = new Date(dateString);
     return new Intl.DateTimeFormat('ar-SA', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
-    }).format(date);
+    }).format(new Date(date));
   };
 
   return (
@@ -229,7 +172,7 @@ const UsersPage = () => {
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">إدارة المستخدمين</h1>
-          <Button onClick={() => handleOpenUserDialog()}>
+          <Button onClick={() => handleOpenUserForm()}>
             <UserPlus className="ml-2 h-4 w-4" /> إضافة مستخدم
           </Button>
         </div>
@@ -260,11 +203,11 @@ const UsersPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">جميع الأدوار</SelectItem>
-                  {mockRoleOptions.map((role) => (
-                    <SelectItem key={role.value} value={role.value}>
-                      {role.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="admin">مدير النظام</SelectItem>
+                  <SelectItem value="manager">مدير</SelectItem>
+                  <SelectItem value="accountant">محاسب</SelectItem>
+                  <SelectItem value="inventory">مخزون</SelectItem>
+                  <SelectItem value="sales">مبيعات</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -289,7 +232,7 @@ const UsersPage = () => {
                     <TableHead>المستخدم</TableHead>
                     <TableHead>البريد الإلكتروني</TableHead>
                     <TableHead>الدور الوظيفي</TableHead>
-                    <TableHead>القسم</TableHead>
+                    <TableHead>الفرع</TableHead>
                     <TableHead>الحالة</TableHead>
                     <TableHead>آخر تسجيل دخول</TableHead>
                     <TableHead className="text-left">الإجراءات</TableHead>
@@ -302,20 +245,25 @@ const UsersPage = () => {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar className="h-8 w-8">
-                              <AvatarImage src={user.avatar || ""} />
                               <AvatarFallback className="bg-primary/10 text-primary">
-                                {user.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
+                                {user.fullName.split(" ").map(n => n[0]).join("").substring(0, 2)}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="font-medium">{user.name}</span>
+                            <span className="font-medium">{user.fullName}</span>
                           </div>
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.role}</TableCell>
-                        <TableCell>{user.department}</TableCell>
                         <TableCell>
-                          <Badge variant={user.status === "active" ? "default" : "outline"}>
-                            {user.status === "active" ? "نشط" : "غير نشط"}
+                          {user.role === "admin" && "مدير النظام"}
+                          {user.role === "manager" && "مدير"}
+                          {user.role === "accountant" && "محاسب"}
+                          {user.role === "inventory" && "مخزون"}
+                          {user.role === "sales" && "مبيعات"}
+                        </TableCell>
+                        <TableCell>{user.branch}</TableCell>
+                        <TableCell>
+                          <Badge variant={user.isActive ? "default" : "outline"}>
+                            {user.isActive ? "نشط" : "غير نشط"}
                           </Badge>
                         </TableCell>
                         <TableCell>{formatDate(user.lastLogin)}</TableCell>
@@ -328,13 +276,13 @@ const UsersPage = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleOpenUserDialog(user)}>
+                                <DropdownMenuItem onClick={() => handleOpenUserForm(user)}>
                                   <Pencil className="ml-2 h-4 w-4" />
                                   تعديل
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => toggleUserStatus(user.id)}>
                                   <Users className="ml-2 h-4 w-4" />
-                                  {user.status === "active" ? "تعطيل الحساب" : "تفعيل الحساب"}
+                                  {user.isActive ? "تعطيل الحساب" : "تفعيل الحساب"}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   className="text-destructive focus:text-destructive"
@@ -365,132 +313,34 @@ const UsersPage = () => {
           </CardContent>
         </Card>
 
-        {/* Dialog for adding or editing a user */}
-        <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                {currentUser ? `تعديل بيانات المستخدم: ${currentUser.name}` : "إضافة مستخدم جديد"}
-              </DialogTitle>
-              <DialogDescription>
-                {currentUser
-                  ? "قم بتعديل بيانات المستخدم"
-                  : "أدخل بيانات المستخدم الجديد"}
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">الاسم الكامل</Label>
-                <Input
-                  id="name"
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                  placeholder="أدخل الاسم الكامل"
-                />
-              </div>
+        {/* User Form Dialog */}
+        {isUserFormOpen && (
+          <Dialog open={isUserFormOpen} onOpenChange={setIsUserFormOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>
+                  {currentUser ? `تعديل بيانات المستخدم: ${currentUser.fullName}` : "إضافة مستخدم جديد"}
+                </DialogTitle>
+                <DialogDescription>
+                  {currentUser ? "قم بتعديل بيانات المستخدم" : "أدخل بيانات المستخدم الجديد"}
+                </DialogDescription>
+              </DialogHeader>
               
-              <div className="space-y-2">
-                <Label htmlFor="email">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  placeholder="example@company.com"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="role">الدور الوظيفي</Label>
-                <Select
-                  value={newUser.role}
-                  onValueChange={(value) => setNewUser({ ...newUser, role: value })}
-                >
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="اختر الدور الوظيفي" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockRoleOptions.map((role) => (
-                      <SelectItem key={role.value} value={role.value}>
-                        {role.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="department">القسم</Label>
-                <Select
-                  value={newUser.department}
-                  onValueChange={(value) => setNewUser({ ...newUser, department: value })}
-                >
-                  <SelectTrigger id="department">
-                    <SelectValue placeholder="اختر القسم" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockDepartmentOptions.map((dept) => (
-                      <SelectItem key={dept.value} value={dept.value}>
-                        {dept.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <UserForm 
+                user={currentUser} 
+                onSave={handleSaveUser} 
+              />
+            </DialogContent>
+          </Dialog>
+        )}
 
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <Label htmlFor="status" className="ml-2">الحساب نشط</Label>
-                <Switch
-                  id="status"
-                  checked={newUser.status === "active"}
-                  onCheckedChange={(checked) => setNewUser({ ...newUser, status: checked ? "active" : "inactive" })}
-                />
-              </div>
-              
-              {!currentUser && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">كلمة المرور</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={newUser.password}
-                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={newUser.confirmPassword}
-                      onChange={(e) => setNewUser({ ...newUser, confirmPassword: e.target.value })}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-            
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
-                إلغاء
-              </Button>
-              <Button onClick={handleSaveUser}>
-                {currentUser ? "تعديل المستخدم" : "إضافة المستخدم"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Dialog for deleting a user */}
+        {/* Delete User Dialog */}
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>تأكيد الحذف</DialogTitle>
               <DialogDescription>
-                هل أنت متأكد من أنك تريد حذف المستخدم "{currentUser?.name}"؟ لا يمكن التراجع عن هذه العملية.
+                هل أنت متأكد من أنك تريد حذف المستخدم "{currentUser?.fullName}"؟ لا يمكن التراجع عن هذه العملية.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
