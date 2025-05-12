@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,7 +83,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: {
-          session: rememberMe ? { rememberMe: true } : undefined
+          // Remove the incorrect property
+          // Using options that are supported by the Supabase auth API
+          captchaToken: undefined // only include if you're using captchas
         }
       });
 

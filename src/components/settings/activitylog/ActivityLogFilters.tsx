@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,14 +22,14 @@ interface ActivityLogFiltersProps {
   isLoading: boolean;
 }
 
-const ActivityLogFilters = ({
+const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
   filters,
   onFilterChange,
   onClear,
   onSearch,
   onExport,
   isLoading
-}: ActivityLogFiltersProps) => {
+}) => {
   const [exportFormat, setExportFormat] = useState<'pdf' | 'excel' | 'csv'>('excel');
   const [showFilters, setShowFilters] = useState(false);
   
