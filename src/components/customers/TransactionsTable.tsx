@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { Transaction } from "@/types/transactions";
 import { formatCurrency, formatDate } from "@/utils/formatters";

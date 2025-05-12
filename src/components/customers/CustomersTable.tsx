@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Customer } from "@/types/customers";
 import { formatCurrency } from "@/utils/formatters";

@@ -1,5 +1,6 @@
 
 import { toast } from 'sonner';
+import { printTableData } from '@/utils/exportUtils';
 
 export const useVendorExport = () => {
   const exportReport = () => {
@@ -9,11 +10,14 @@ export const useVendorExport = () => {
     }, 1500);
   };
 
-  const printReport = () => {
+  const printReport = (data: any[], title: string = 'تقرير الموردين') => {
     toast.success('جاري إعداد التقرير للطباعة...');
-    setTimeout(() => {
-      window.print();
-    }, 500);
+    try {
+      printTableData(data, title);
+    } catch (error) {
+      console.error('خطأ في طباعة التقرير:', error);
+      toast.error('حدث خطأ أثناء طباعة التقرير');
+    }
   };
 
   return {

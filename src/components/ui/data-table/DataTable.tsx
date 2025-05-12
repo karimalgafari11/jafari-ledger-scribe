@@ -29,20 +29,26 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Search, 
-  X,
-  Download,
-  FileDown,
-  FileType2,
-  FileSpreadsheet
+  X, 
+  Download, 
+  Printer,
+  FileJson,
+  FileSpreadsheet,
+  FileCsv
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { exportToExcel, sanitizeDataForExport } from "@/utils/exportUtils";
+import { 
+  exportToExcel, 
+  downloadAsJson, 
+  downloadAsCsv,
+  printTableData
+} from "@/utils/exportUtils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,13 +62,13 @@ interface DataTableProps<TData, TValue> {
   striped?: boolean;
   dense?: boolean;
   bordered?: boolean;
+  hoverable?: boolean;
   stickyHeader?: boolean;
   emptyMessage?: string;
   className?: string;
-  hoverable?: boolean;
-  getRowId?: (row: TData) => string;
   enableExport?: boolean;
   tableName?: string;
+  getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -75,22 +81,22 @@ export function DataTable<TData, TValue>({
   onRowClick,
   gridLines = false,
   striped = false,
+  hoverable = false,
   dense = false,
   bordered = false,
   stickyHeader = false,
   emptyMessage = "لا توجد بيانات",
   className,
-  hoverable = false,
-  getRowId,
   enableExport = false,
-  tableName = "جدول_البيانات",
+  tableName = "data_table",
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [searchValue, setSearchValue] = useState("");
-  const [paginationState, setPaginationState] = useState<PaginationState>({
+  const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: pageSize || 10,
   });
@@ -108,7 +114,7 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPaginationState,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
@@ -116,7 +122,7 @@ export function DataTable<TData, TValue>({
       rowSelection,
       pagination: paginationState,
     },
-    getRowId: getRowId,
+    ...(getRowId ? { getRowId } : {})
   });
 
   // تطبيق البحث عند تغير قيمة البحث
@@ -141,82 +147,55 @@ export function DataTable<TData, TValue>({
     }
   };
 
-  // تصدير البيانات إلى CSV
-  const exportToCSV = () => {
-    // الحصول على بيانات الجدول
-    const filteredData = table.getFilteredRowModel().rows.map((row) => row.original);
-    
-    // تحويل البيانات إلى تنسيق CSV
-    const headers = columns
-      .filter((column) => "accessorKey" in column && typeof column.accessorKey === "string")
-      .map((column) => {
-        if ("accessorKey" in column && typeof column.accessorKey === "string") {
-          return column.accessorKey;
+  // إعداد البيانات للتصدير أو الطباعة
+  const prepareDataForExport = (): Record<string, any>[] => {
+    // استخدام البيانات المصفاة إذا كان هناك بحث نشط
+    const dataToExport = table.getFilteredRowModel().rows.map((row) => {
+      const item: Record<string, any> = {};
+      
+      // استخراج البيانات من الأعمدة المرئية فقط
+      columns.forEach((column: any) => {
+        if (column.accessorKey && typeof column.accessorKey === 'string') {
+          const key = column.accessorKey;
+          const header = column.header || key;
+          item[header] = row.getValue(key);
         }
-        return "";
       });
-    
-    const headerRow = headers.join(",");
-    
-    const dataRows = filteredData.map((item: any) => {
-      return headers
-        .map((header) => {
-          let cell = item[header] || "";
-          
-          // معالجة الخلايا التي تحتوي على فواصل
-          if (cell && typeof cell === 'string' && cell.includes(",")) {
-            cell = `"${cell}"`;
-          }
-          
-          return cell;
-        })
-        .join(",");
+      
+      return item;
     });
     
-    const csvContent = [headerRow, ...dataRows].join("\n");
-    
-    // تنزيل الملف
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", `${tableName}_${new Date().toLocaleDateString()}.csv`);
-    link.style.visibility = "hidden";
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    return dataToExport;
   };
-  
-  // تصدير البيانات إلى JSON
-  const exportToJSON = () => {
-    const filteredData = table.getFilteredRowModel().rows.map((row) => row.original);
-    const jsonContent = JSON.stringify(filteredData, null, 2);
-    
-    const blob = new Blob([jsonContent], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", `${tableName}_${new Date().toLocaleDateString()}.json`);
-    link.style.visibility = "hidden";
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-  
-  // تصدير البيانات إلى Excel
+
+  // وظائف التصدير والطباعة
   const handleExportToExcel = () => {
-    const filteredData = table.getFilteredRowModel().rows.map((row) => row.original);
-    const sanitizedData = sanitizeDataForExport(filteredData as Record<string, any>[]);
+    const dataToExport = prepareDataForExport();
+    exportToExcel(dataToExport, tableName);
+  };
+  
+  const handleExportToJson = () => {
+    const dataToExport = prepareDataForExport();
+    downloadAsJson(dataToExport, tableName);
+  };
+  
+  const handleExportToCsv = () => {
+    const dataToExport = prepareDataForExport();
+    downloadAsCsv(dataToExport, tableName);
+  };
+  
+  const handlePrintTable = () => {
+    const dataToExport = prepareDataForExport();
     
-    exportToExcel(
-      sanitizedData,
-      `${tableName}_${new Date().toLocaleDateString('ar-SA')}`,
-      tableName
-    );
+    // إعداد معلومات الأعمدة للطباعة
+    const columnsForPrint = columns
+      .filter((column: any) => column.accessorKey && typeof column.accessorKey === 'string')
+      .map((column: any) => ({
+        key: column.accessorKey,
+        header: column.header || column.accessorKey
+      }));
+    
+    printTableData(dataToExport, tableName, columnsForPrint);
   };
 
   const tableClasses = cn(
@@ -245,9 +224,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        {searchable && searchKey && (
-          <div className="relative mb-4 w-full md:w-80">
+      <div className="flex items-center justify-between">
+        {searchable && searchKey ? (
+          <div className="relative mb-4 flex-1 max-w-sm">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted-foreground">
               <Search className="h-4 w-4" />
             </div>
@@ -270,29 +249,43 @@ export function DataTable<TData, TValue>({
               </div>
             )}
           </div>
-        )}
+        ) : <div />}
 
         {enableExport && (
-          <div className="flex-shrink-0 ml-2">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrintTable}
+              className="flex items-center gap-1 text-xs"
+            >
+              <Printer className="h-3 w-3 mr-1" />
+              طباعة
+            </Button>
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9">
-                  <Download className="h-4 w-4 ml-2" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <Download className="h-3 w-3 mr-1" />
                   تصدير
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={exportToCSV}>
-                  <FileDown className="mr-2 h-4 w-4" />
-                  تصدير كملف CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportToJSON}>
-                  <FileType2 className="mr-2 h-4 w-4" />
-                  تصدير كملف JSON
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExportToExcel}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  تصدير إلى Excel
+                  <FileSpreadsheet className="h-4 w-4 ml-2" />
+                  <span>Excel</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportToCsv}>
+                  <FileCsv className="h-4 w-4 ml-2" />
+                  <span>CSV</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportToJson}>
+                  <FileJson className="h-4 w-4 ml-2" />
+                  <span>JSON</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
