@@ -64,7 +64,104 @@ export interface UserActivity {
   action: ActivityAction;
   module: string;
   details: string;
-  status: 'success' | 'failed' | 'warning';
+  status: 'success' | 'failed' | 'warning' | 'info';
   timestamp: Date;
   ipAddress?: string;
+  metadata?: Record<string, any>; // إضافة حقل البيانات الوصفية
+}
+
+// تعريف أنواع الصلاحيات
+export type PermissionCategory = 
+  | 'accounting'
+  | 'inventory'
+  | 'sales'
+  | 'customers'
+  | 'expenses'
+  | 'reports'
+  | 'settings'
+  | 'admin'
+  | string;
+
+// تعريف واجهة الصلاحيات
+export interface Permission {
+  id: string;
+  code: string;
+  name: string;
+  category: PermissionCategory;
+  description: string;
+}
+
+// تعريف مجموعة الصلاحيات
+export interface PermissionGroup {
+  category: PermissionCategory;
+  permissions: Permission[];
+}
+
+// تعريف دور المستخدم
+export interface UserRole {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permission[];
+  createdAt: Date;
+  updatedAt: Date;
+  isSystem: boolean;
+}
+
+// تعريف صلاحيات المستخدم
+export interface UserPermissions {
+  canView: boolean;
+  canCreate: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  canApprove: boolean;
+  canExport: boolean;
+  canImport: boolean;
+}
+
+// تعريف مصفوفة الصلاحيات
+export interface PermissionMatrix {
+  [roleId: string]: {
+    [moduleCode: string]: UserPermissions;
+  };
+}
+
+// تعريف إعدادات الأمان
+export interface SecuritySettings {
+  id: string;
+  passwordPolicy: {
+    minimumLength: number;
+    requireUppercase: boolean;
+    requireLowercase: boolean;
+    requireNumbers: boolean;
+    requireSpecialChars: boolean;
+    passwordExpiryDays: number;
+    preventPasswordReuse: number;
+    lockoutThreshold: number;
+    lockoutDurationMinutes: number;
+  };
+  loginSettings: {
+    maxFailedAttempts: number;
+    lockoutDurationMinutes: number;
+    requireTwoFactor: boolean;
+    sessionTimeoutMinutes: number;
+    allowMultipleSessions: boolean;
+    allowRememberMe: boolean;
+  };
+  dataAccessControls: {
+    restrictBranchAccess: boolean;
+    restrictDataByDate: boolean;
+    restrictedDateRangeDays: number;
+    hideFinancialFigures: boolean;
+    restrictExports: boolean;
+    auditAllChanges: boolean;
+  };
+  encryptionSettings: {
+    encryptionEnabled: boolean;
+    encryptionType: string;
+    keyRotationDays: number;
+    lastKeyRotation: Date;
+  };
+  updatedAt: Date;
+  updatedBy: string;
 }
