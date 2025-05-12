@@ -26,6 +26,24 @@ import AiEngineSettingsPage from '@/pages/settings/AiEngineSettingsPage';
 import PageManagementPage from '@/pages/settings/PageManagementPage';
 import ThemeCustomizationPage from '@/pages/settings/ThemeCustomizationPage';
 
+// Import all route modules
+import { accountingRoutes } from './accountingRoutes';
+import { customersRoutes } from './customersRoutes';
+import { vendorRoutes } from './vendorsRoutes';
+import { inventoryRoutes } from './inventoryRoutes';
+import { inventoryControlRoutes } from './inventoryControlRoutes';
+import { purchasesRoutes } from './purchasesRoutes';
+import { invoicesRoutes } from './invoicesRoutes';
+import { receivablesPayablesRoutes } from './receivablesPayablesRoutes';
+import { expensesRoutes } from './expensesRoutes';
+import { reportsRoutes } from './reportsRoutes';
+import { definitionsRoutes } from './definitionsRoutes';
+import { settingsRoutes } from './settingsRoutes';
+import { integrationsRoutes } from './integrationsRoutes';
+import { aboutRoutes } from './aboutRoutes';
+import { aiRoutes } from './aiRoutes';
+import { hrRoutes } from './hrRoutes';
+
 // Example of a PublicRoute component
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
@@ -43,70 +61,88 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return user ? <>{children}</> : <Navigate to="/auth/login" />;
 };
 
+// Combine all route children
+const routeChildren = [
+  {
+    index: true,
+    element: <Dashboard />,
+  },
+  {
+    path: "settings/activity-log",
+    element: <ActivityLogPage />,
+  },
+  // إضافة مسارات الإعدادات
+  {
+    path: "settings/system",
+    element: <SystemSettingsPage />,
+  },
+  {
+    path: "settings/roles",
+    element: <UserRolesPage />,
+  },
+  {
+    path: "settings/users",
+    element: <UsersPage />,
+  },
+  {
+    path: "settings/backup",
+    element: <BackupPage />,
+  },
+  {
+    path: "settings/backup-test",
+    element: <BackupTestPage />,
+  },
+  {
+    path: "settings/branches",
+    element: <BranchesPage />,
+  },
+  {
+    path: "settings/notifications",
+    element: <NotificationsPage />,
+  },
+  {
+    path: "settings/notification-settings",
+    element: <NotificationSettingsPage />,
+  },
+  {
+    path: "settings/send-notification",
+    element: <SendNotificationPage />,
+  },
+  {
+    path: "settings/ai-engine",
+    element: <AiEngineSettingsPage />,
+  },
+  {
+    path: "settings/page-management",
+    element: <PageManagementPage />,
+  },
+  {
+    path: "settings/theme",
+    element: <ThemeCustomizationPage />,
+  },
+  // Spread all other route modules
+  ...accountingRoutes,
+  ...inventoryRoutes,
+  ...inventoryControlRoutes,
+  ...purchasesRoutes,
+  ...invoicesRoutes,
+  ...customersRoutes,
+  ...vendorRoutes,
+  ...receivablesPayablesRoutes,
+  ...expensesRoutes,
+  ...reportsRoutes,
+  ...definitionsRoutes,
+  ...aiRoutes,
+  ...hrRoutes,
+  ...integrationsRoutes,
+  ...aboutRoutes,
+];
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <PrivateRoute><Index /></PrivateRoute>,
-    children: [
-      {
-        index: true,
-        element: <Dashboard />,
-      },
-      {
-        path: "settings/activity-log",
-        element: <ActivityLogPage />,
-      },
-      // إضافة مسارات الإعدادات
-      {
-        path: "settings/system",
-        element: <SystemSettingsPage />,
-      },
-      {
-        path: "settings/roles",
-        element: <UserRolesPage />,
-      },
-      {
-        path: "settings/users",
-        element: <UsersPage />,
-      },
-      {
-        path: "settings/backup",
-        element: <BackupPage />,
-      },
-      {
-        path: "settings/backup-test",
-        element: <BackupTestPage />,
-      },
-      {
-        path: "settings/branches",
-        element: <BranchesPage />,
-      },
-      {
-        path: "settings/notifications",
-        element: <NotificationsPage />,
-      },
-      {
-        path: "settings/notification-settings",
-        element: <NotificationSettingsPage />,
-      },
-      {
-        path: "settings/send-notification",
-        element: <SendNotificationPage />,
-      },
-      {
-        path: "settings/ai-engine",
-        element: <AiEngineSettingsPage />,
-      },
-      {
-        path: "settings/page-management",
-        element: <PageManagementPage />,
-      },
-      {
-        path: "settings/theme",
-        element: <ThemeCustomizationPage />,
-      },
-    ]
+    children: routeChildren,
   },
   {
     path: "/auth/login",
