@@ -52,12 +52,8 @@ export interface CashRegister {
   isActive: boolean;
   userId?: string;
   currency: string;
-  currencyId?: string;
   currencyCode?: string;
-  allowNegative?: boolean;
   notes?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 // Updated Warehouse interface with additional fields used in components
@@ -71,8 +67,10 @@ export interface Warehouse {
   phone?: string;
   isActive: boolean;
   branchName?: string;
-  type?: string;
-  inventoryControl?: boolean;
+  type: 'main' | 'sub' | 'external';
+  inventoryControl: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Updated Discount interface with additional fields used in components
@@ -93,6 +91,7 @@ export interface Discount {
   customerGroups?: string[];
   productCategories?: string[];
   excludedProducts?: string[];
+  applicableCategories?: string[];
 }
 
 // Updated AccountingPeriod interface with additional fields

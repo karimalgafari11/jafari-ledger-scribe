@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Branch } from "@/types/definitions";
 import { v4 as uuid } from "uuid";
@@ -133,7 +134,7 @@ export const useBranches = () => {
 
   return {
     branches,
-    filteredBranches: branches, // Simplified for now
+    filteredBranches,
     isLoading,
     searchTerm,
     setSearchTerm,
@@ -145,10 +146,10 @@ export const useBranches = () => {
     setIsEditDialogOpen,
     isDeleteDialogOpen,
     setIsDeleteDialogOpen,
-    createBranch: () => {}, // Simplified for now
-    updateBranch: () => {}, // Simplified for now
-    deleteBranch: () => {}, // Simplified for now
-    toggleBranchStatus: () => {}, // Simplified for now
+    createBranch,
+    updateBranch,
+    deleteBranch,
+    toggleBranchStatus,
     generateBranchCode,
   };
 };

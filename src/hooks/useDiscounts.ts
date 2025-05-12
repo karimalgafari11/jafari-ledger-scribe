@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Discount } from "@/types/definitions";
 import { v4 as uuidv4 } from "uuid";
@@ -48,6 +47,7 @@ const initialDiscounts: Discount[] = [
     startDate: new Date(2025, 5, 1),
     endDate: new Date(2025, 5, 30),
     isActive: false,
+    productCategories: ["electronics"],
     applicableCategories: ["electronics"],
   },
 ];

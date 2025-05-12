@@ -14,7 +14,7 @@ const initialWarehouses: Warehouse[] = [
     branchName: "المقر الرئيسي",
     type: "main",
     address: "الرياض - طريق الملك فهد",
-    inventoryControl: "automatic",
+    inventoryControl: true,
     isActive: true,
     createdAt: new Date("2023-01-05"),
     updatedAt: new Date("2023-01-05"),
@@ -27,7 +27,7 @@ const initialWarehouses: Warehouse[] = [
     branchName: "فرع جدة",
     type: "sub",
     address: "جدة - طريق الكورنيش",
-    inventoryControl: "automatic",
+    inventoryControl: true,
     isActive: true,
     createdAt: new Date("2023-02-20"),
     updatedAt: new Date("2023-02-20"),
@@ -40,7 +40,7 @@ const initialWarehouses: Warehouse[] = [
     branchName: "المقر الرئيسي",
     type: "external",
     address: "الرياض - المنطقة الصناعية الثانية",
-    inventoryControl: "manual",
+    inventoryControl: false,
     isActive: true,
     createdAt: new Date("2023-04-10"),
     updatedAt: new Date("2023-04-10"),
@@ -63,7 +63,7 @@ export const useWarehouses = () => {
       const matchesSearch = 
         warehouse.name.includes(searchTerm) ||
         warehouse.code.includes(searchTerm) ||
-        warehouse.branchName.includes(searchTerm);
+        warehouse.branchName?.includes(searchTerm);
       
       const matchesBranch = branchFilter 
         ? warehouse.branchId === branchFilter
