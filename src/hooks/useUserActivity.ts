@@ -5,16 +5,8 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockUserActivities } from '@/data/mockPermissions';
 
-// تعريف نوع المرشح للأنشطة
-interface ActivityFilter {
-  startDate?: Date;
-  endDate?: Date;
-  userId?: string;
-  action?: string;
-  module?: string;
-  status?: string;
-  searchText?: string;
-}
+// Align ActivityFilter with FiltersType for type consistency
+interface ActivityFilter extends FiltersType {} // Use the FiltersType interface as a base
 
 export function useUserActivity() {
   const [loading, setLoading] = useState(false);

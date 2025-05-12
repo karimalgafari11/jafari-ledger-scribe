@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,17 +9,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { ActivityAction } from "@/types/permissions";
+import { ActivityAction, FiltersType } from "@/types/permissions";
 import { RefreshCw, Download, Search, Filter, X } from "lucide-react";
-
-interface FiltersType {
-  userId: string;
-  action: ActivityAction | '';
-  module: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  status: 'success' | 'failed' | 'warning' | 'info' | '';
-}
 
 interface ActivityLogFiltersProps {
   filters: FiltersType;
