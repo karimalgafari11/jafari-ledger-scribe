@@ -1,7 +1,7 @@
-
 import { useState, useCallback } from 'react';
 import { useUserActivity } from './useUserActivity';
 import { toast } from 'sonner';
+import { ActivityAction } from '@/types/permissions';
 
 export type LogLevel = 'info' | 'warning' | 'error' | 'success' | 'debug';
 
@@ -83,8 +83,11 @@ export function useActivityLogger(options: ActivityLoggerOptions) {
     // حفظ في قاعدة البيانات إذا كان مطلوباً
     if (options.persistToDatabase) {
       try {
+        // Convertir string a ActivityAction antes de pasar a logActivity
+        const activityAction = action as ActivityAction;
+        
         logActivity({
-          action,
+          action: activityAction,
           module: options.moduleName,
           details: message,
           status: level === 'error' ? 'failed' : level === 'warning' ? 'warning' : 'success'
