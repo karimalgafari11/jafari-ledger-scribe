@@ -71,3 +71,24 @@ export const mockSystemSettings = {
   darkMode: false,
   compactMode: false
 };
+
+// Add backup settings for backupState.ts
+export const mockBackupSettings = {
+  id: '1',
+  autoBackup: true,
+  backupFrequency: 'daily',
+  backupTime: '02:00',
+  retentionPeriodDays: 30,
+  compressionLevel: 'high',
+  encryptBackups: true,
+  backupLocation: 'cloud',
+  cloudProvider: 'aws',
+  lastBackupDate: new Date('2023-05-10T02:00:00'),
+  nextBackupDate: new Date('2023-05-11T02:00:00'),
+  backupNotifications: true,
+  notifyOnSuccess: true,
+  notifyOnFailure: true,
+  notifyEmail: 'admin@example.com',
+  updatedAt: new Date('2023-04-01'),
+  updatedBy: 'admin'
+};

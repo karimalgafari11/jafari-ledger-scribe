@@ -78,3 +78,233 @@ export const mockPermissionGroups = [
     ]
   }
 ];
+
+// Add the missing exports that are referenced in other files
+
+// Mock permissions for usePermissions.ts
+export const mockPermissions = mockPermissionGroups.flatMap(group => 
+  group.permissions.map(permission => ({
+    ...permission,
+    category: group.id
+  }))
+);
+
+// Alias for backward compatibility
+export const permissionGroups = mockPermissionGroups;
+
+// Mock permission matrix for usePermissions.ts
+export const mockPermissionMatrix = {
+  'admin': {
+    'accounting': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: true,
+      canApprove: true,
+      canExport: true,
+      canImport: true,
+    },
+    'inventory': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: true,
+      canApprove: true,
+      canExport: true,
+      canImport: true,
+    }
+  },
+  'manager': {
+    'accounting': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canApprove: true,
+      canExport: true,
+      canImport: false,
+    },
+    'inventory': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canApprove: true,
+      canExport: true,
+      canImport: true,
+    }
+  },
+  'accountant': {
+    'accounting': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canApprove: false,
+      canExport: true,
+      canImport: false,
+    },
+    'inventory': {
+      canView: true,
+      canCreate: false,
+      canEdit: false,
+      canDelete: false,
+      canApprove: false,
+      canExport: true,
+      canImport: false,
+    }
+  }
+};
+
+// Mock security settings for usePermissions.ts
+export const mockSecuritySettings = {
+  id: '1',
+  passwordPolicy: {
+    minimumLength: 8,
+    requireUppercase: true,
+    requireLowercase: true,
+    requireNumbers: true,
+    requireSpecialChars: true,
+    passwordExpiryDays: 90,
+    preventPasswordReuse: 5,
+    lockoutThreshold: 5,
+    lockoutDurationMinutes: 30
+  },
+  loginSettings: {
+    maxFailedAttempts: 5,
+    lockoutDurationMinutes: 30,
+    requireTwoFactor: false,
+    sessionTimeoutMinutes: 60,
+    allowMultipleSessions: true,
+    allowRememberMe: true
+  },
+  dataAccessControls: {
+    restrictBranchAccess: true,
+    restrictDataByDate: true,
+    restrictedDateRangeDays: 90,
+    hideFinancialFigures: false,
+    restrictExports: false,
+    auditAllChanges: true
+  },
+  encryptionSettings: {
+    encryptionEnabled: true,
+    encryptionType: 'standard' as const,
+    keyRotationDays: 180,
+    lastKeyRotation: new Date('2023-01-01')
+  },
+  updatedAt: new Date('2023-06-15'),
+  updatedBy: 'admin'
+};
+
+// Mock user activities for useUserActivity.ts
+export const mockUserActivities = [
+  {
+    id: 'act-001',
+    userId: '1',
+    username: 'ahmed.mohamed',
+    action: 'user_login',
+    module: 'auth',
+    details: 'تسجيل دخول ناجح',
+    status: 'success',
+    timestamp: new Date('2023-05-12T10:30:00'),
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: 'act-002',
+    userId: '1',
+    username: 'ahmed.mohamed',
+    action: 'setting_update',
+    module: 'settings',
+    details: 'تحديث إعدادات النظام',
+    status: 'success',
+    timestamp: new Date('2023-05-12T11:45:00'),
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: 'act-003',
+    userId: '2',
+    username: 'sara.abdullah',
+    action: 'invoice_create',
+    module: 'invoices',
+    details: 'إنشاء فاتورة جديدة رقم INV-2023-054',
+    status: 'success',
+    timestamp: new Date('2023-05-12T13:20:00'),
+    ipAddress: '192.168.1.110'
+  },
+  {
+    id: 'act-004',
+    userId: '3',
+    username: 'khalid.otaibi',
+    action: 'product_update',
+    module: 'inventory',
+    details: 'تحديث بيانات المنتج SKU-8901',
+    status: 'success',
+    timestamp: new Date('2023-05-11T09:15:00'),
+    ipAddress: '192.168.1.120'
+  },
+  {
+    id: 'act-005',
+    userId: '2',
+    username: 'sara.abdullah',
+    action: 'journal_post',
+    module: 'accounting',
+    details: 'ترحيل قيد محاسبي رقم JE-2023-105',
+    status: 'failed',
+    timestamp: new Date('2023-05-11T14:30:00'),
+    ipAddress: '192.168.1.110'
+  },
+  {
+    id: 'act-006',
+    userId: '5',
+    username: 'fahad.saeed',
+    action: 'report_generate',
+    module: 'reports',
+    details: 'إنشاء تقرير الميزانية العمومية',
+    status: 'success',
+    timestamp: new Date('2023-05-10T16:45:00'),
+    ipAddress: '192.168.1.130'
+  },
+  {
+    id: 'act-007',
+    userId: '1',
+    username: 'ahmed.mohamed',
+    action: 'user_create',
+    module: 'users',
+    details: 'إنشاء مستخدم جديد: nasser.ali',
+    status: 'success',
+    timestamp: new Date('2023-05-10T11:10:00'),
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: 'act-008',
+    userId: '4',
+    username: 'mona.zahrani',
+    action: 'inventory_adjust',
+    module: 'inventory',
+    details: 'تعديل مخزون المنتج SKU-5432',
+    status: 'warning',
+    timestamp: new Date('2023-05-09T10:20:00'),
+    ipAddress: '192.168.1.115'
+  }
+];
+
+// Add the mockBackupSettings export for backupState.ts
+export const mockBackupSettings = {
+  id: '1',
+  autoBackup: true,
+  backupFrequency: 'daily',
+  backupTime: '02:00',
+  retentionPeriodDays: 30,
+  compressionLevel: 'high',
+  encryptBackups: true,
+  backupLocation: 'cloud',
+  cloudProvider: 'aws',
+  lastBackupDate: new Date('2023-05-10T02:00:00'),
+  nextBackupDate: new Date('2023-05-11T02:00:00'),
+  backupNotifications: true,
+  notifyOnSuccess: true,
+  notifyOnFailure: true,
+  notifyEmail: 'admin@example.com',
+  updatedAt: new Date('2023-04-01'),
+  updatedBy: 'admin'
+};
