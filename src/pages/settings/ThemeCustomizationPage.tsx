@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import { toast } from "sonner";
 import { Palette, Save, Undo2, LayoutDashboard, Type, ArrowLeftRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Mock theme settings
 const mockThemeSettings = {
@@ -541,9 +541,9 @@ const ThemeCustomizationPage = () => {
                       />
                     </div>
                     <Alert className="bg-amber-50">
-                      <p className="text-sm text-amber-700">
+                      <AlertDescription>
                         <strong>ملاحظة:</strong> استخدم رموز CSS المخصصة بحذر. قد تؤثر التغييرات المخصصة على تجربة المستخدم وتوافق التطبيق.
-                      </p>
+                      </AlertDescription>
                     </Alert>
                   </CardContent>
                 </Card>
