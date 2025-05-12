@@ -60,17 +60,6 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
     } as User); // Cast to User type to ensure TypeScript knows we're providing all required fields
   };
 
-  // استخدام الهوية بدلاً من الاسم في القيمة
-  const roles = mockUserRoles.map(role => ({
-    value: role.id,
-    label: role.name
-  }));
-
-  const branches = mockBranches.map(branch => ({
-    value: branch.id,
-    label: branch.name
-  }));
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -146,9 +135,9 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {roles.map((role) => (
-                      <SelectItem key={role.value} value={role.value}>
-                        {role.label}
+                    {mockUserRoles.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        {role.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -171,9 +160,9 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {branches.map((branch) => (
-                      <SelectItem key={branch.value} value={branch.value}>
-                        {branch.label}
+                    {mockBranches.map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

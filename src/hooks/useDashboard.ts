@@ -2,13 +2,10 @@
 import { useState } from "react";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import {
-  transformSalesData,
-  transformProfitData,
-  transformCategoryData,
-  transformDailySalesData
-} from "@/utils/chartDataTransformers";
-import { FileText, BarChart, Receipt, Database, CreditCard, Users } from "lucide-react";
-import { SystemAlert } from "@/types/ai";
+  FileText, BarChart, Receipt, Database, CreditCard, Users 
+} from "lucide-react";
+import { mockBranches } from "@/data/mockSettings";
+import { mockUserRoles } from "@/data/mockPermissions";
 
 export const useDashboard = () => {
   const [displayOptions, setDisplayOptions] = useState<DisplayOptions>({
@@ -114,7 +111,8 @@ export const useDashboard = () => {
     { day: "الخميس", sales: 27000 },
   ];
 
-  const alerts: SystemAlert[] = [
+  // Alerts data
+  const alerts = [
     {
       id: "1",
       title: "تنبيه المخزون",
@@ -139,19 +137,80 @@ export const useDashboard = () => {
     },
   ];
 
-  // Transform raw data to ChartData format
-  const transformedSalesData = transformSalesData(salesData);
-  const transformedProfitData = transformProfitData(profitData);
-  const transformedCustomerDebtData = transformCategoryData(customerDebtData);
-  const transformedSupplierCreditData = transformCategoryData(supplierCreditData);
-  const transformedCostCenterData = transformCategoryData(costCenterData);
-  const transformedDailySalesData = transformDailySalesData(dailySalesData);
+  // Transformed data for charts
+  const transformedSalesData = {
+    labels: salesData.map(item => item.name),
+    datasets: [
+      {
+        name: "المبيعات",
+        data: salesData.map(item => item.sales),
+      },
+      {
+        name: "المستهدف",
+        data: salesData.map(item => item.target),
+      },
+      {
+        name: "المصروفات",
+        data: salesData.map(item => item.expenses),
+      },
+    ]
+  };
+
+  const transformedProfitData = {
+    labels: profitData.map(item => item.name),
+    datasets: [
+      {
+        name: "الأرباح",
+        data: profitData.map(item => item.profit),
+      }
+    ]
+  };
+
+  const transformedCustomerDebtData = {
+    labels: customerDebtData.map(item => item.name),
+    datasets: [
+      {
+        name: "القيمة",
+        data: customerDebtData.map(item => item.value),
+      }
+    ]
+  };
+
+  const transformedSupplierCreditData = {
+    labels: supplierCreditData.map(item => item.name),
+    datasets: [
+      {
+        name: "القيمة",
+        data: supplierCreditData.map(item => item.value),
+      }
+    ]
+  };
+
+  const transformedCostCenterData = {
+    labels: costCenterData.map(item => item.name),
+    datasets: [
+      {
+        name: "القيمة",
+        data: costCenterData.map(item => item.value),
+      }
+    ]
+  };
+
+  const transformedDailySalesData = {
+    labels: dailySalesData.map(item => item.day),
+    datasets: [
+      {
+        name: "المبيعات اليومية",
+        data: dailySalesData.map(item => item.sales),
+      }
+    ]
+  };
 
   // Calculate summary data
   const totalSales = salesData.reduce((sum, item) => sum + item.sales, 0);
   const totalExpenses = salesData.reduce((sum, item) => sum + item.expenses, 0);
   const netProfit = totalSales - totalExpenses;
-  const profitMargin = "50.03%";
+  const profitMargin = ((netProfit / totalSales) * 100).toFixed(2) + "%";
   const overdueInvoices = 12;
   const overdueTotalAmount = 18500.75;
 
@@ -164,7 +223,7 @@ export const useDashboard = () => {
       description: "مقارنة بالفترة السابقة"
     }, {
       title: "نسبة الربح الإجمالي",
-      value: "50.03%",
+      value: profitMargin,
       status: "up" as const,
       description: "من إجمالي المبيعات"
     }, {
