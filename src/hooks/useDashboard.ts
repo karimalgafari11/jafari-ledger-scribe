@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { mockBranches } from "@/data/mockSettings";
 import { mockUserRoles } from "@/data/mockPermissions";
+import { SystemAlert } from "@/types/ai"; 
 
 export const useDashboard = () => {
   const [displayOptions, setDisplayOptions] = useState<DisplayOptions>({
@@ -111,13 +112,13 @@ export const useDashboard = () => {
     { day: "الخميس", sales: 27000 },
   ];
 
-  // Alerts data
-  const alerts = [
+  // Alerts data - Fix type to match SystemAlert
+  const alerts: SystemAlert[] = [
     {
       id: "1",
       title: "تنبيه المخزون",
       message: "المنتج 'أ' وصل إلى الحد الأدنى للمخزون",
-      type: "inventory",
+      type: "inventory", // Using valid type from the union type
       priority: "high",
       severity: "high",
       timestamp: new Date(),
@@ -128,7 +129,7 @@ export const useDashboard = () => {
       id: "2",
       title: "تنبيه الفواتير",
       message: "تأخر سداد الفاتورة رقم 123",
-      type: "invoices",
+      type: "invoices", // Using valid type from the union type
       priority: "medium",
       severity: "medium",
       timestamp: new Date(),
@@ -137,21 +138,24 @@ export const useDashboard = () => {
     },
   ];
 
-  // Transformed data for charts
+  // Transformed data for charts - Fix property name from 'name' to 'label'
   const transformedSalesData = {
     labels: salesData.map(item => item.name),
     datasets: [
       {
-        name: "المبيعات",
+        label: "المبيعات", // Changed from 'name' to 'label'
         data: salesData.map(item => item.sales),
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
       },
       {
-        name: "المستهدف",
+        label: "المستهدف", // Changed from 'name' to 'label'
         data: salesData.map(item => item.target),
+        backgroundColor: 'rgba(153, 102, 255, 0.7)'
       },
       {
-        name: "المصروفات",
+        label: "المصروفات", // Changed from 'name' to 'label'
         data: salesData.map(item => item.expenses),
+        backgroundColor: 'rgba(255, 99, 132, 0.7)'
       },
     ]
   };
@@ -160,8 +164,9 @@ export const useDashboard = () => {
     labels: profitData.map(item => item.name),
     datasets: [
       {
-        name: "الأرباح",
+        label: "الأرباح", // Changed from 'name' to 'label'
         data: profitData.map(item => item.profit),
+        backgroundColor: 'rgba(75, 192, 192, 0.7)'
       }
     ]
   };
@@ -170,8 +175,13 @@ export const useDashboard = () => {
     labels: customerDebtData.map(item => item.name),
     datasets: [
       {
-        name: "القيمة",
+        label: "القيمة", // Changed from 'name' to 'label'
         data: customerDebtData.map(item => item.value),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)'
+        ]
       }
     ]
   };
@@ -180,8 +190,13 @@ export const useDashboard = () => {
     labels: supplierCreditData.map(item => item.name),
     datasets: [
       {
-        name: "القيمة",
+        label: "القيمة", // Changed from 'name' to 'label'
         data: supplierCreditData.map(item => item.value),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)'
+        ]
       }
     ]
   };
@@ -190,8 +205,14 @@ export const useDashboard = () => {
     labels: costCenterData.map(item => item.name),
     datasets: [
       {
-        name: "القيمة",
+        label: "القيمة", // Changed from 'name' to 'label'
         data: costCenterData.map(item => item.value),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)'
+        ]
       }
     ]
   };
@@ -200,8 +221,9 @@ export const useDashboard = () => {
     labels: dailySalesData.map(item => item.day),
     datasets: [
       {
-        name: "المبيعات اليومية",
+        label: "المبيعات اليومية", // Changed from 'name' to 'label'
         data: dailySalesData.map(item => item.sales),
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
       }
     ]
   };

@@ -10,7 +10,6 @@ import { SystemAlert } from "@/types/ai";
 
 interface ChartsGridProps {
   salesData?: ChartData;
-  customerData?: ChartData;
   profitData?: ChartData;
   customerDebtData?: ChartData;
   supplierCreditData?: ChartData;
@@ -24,15 +23,19 @@ interface ChartsGridProps {
 
 const ChartsGrid: React.FC<ChartsGridProps> = ({ 
   salesData, 
-  customerData, 
+  profitData,
+  customerDebtData,
+  supplierCreditData,
+  costCenterData,
+  dailySalesData,
   systemAlerts = [], 
-  onViewAllAlerts = () => {} 
+  onViewAllAlerts = () => {}
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Sales Performance</CardTitle>
+          <CardTitle>أداء المبيعات</CardTitle>
         </CardHeader>
         <CardContent>
           <LineChart data={salesData} />
@@ -41,18 +44,54 @@ const ChartsGrid: React.FC<ChartsGridProps> = ({
 
       <Card>
         <CardHeader>
-          <CardTitle>Customer Demographics</CardTitle>
+          <CardTitle>الربحية</CardTitle>
         </CardHeader>
         <CardContent>
-          <PieChart data={customerData} />
+          <LineChart data={profitData} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>ديون العملاء</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PieChart data={customerDebtData} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>الائتمان من الموردين</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PieChart data={supplierCreditData} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>مراكز التكلفة</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PieChart data={costCenterData} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>المبيعات اليومية</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BarChart data={dailySalesData} />
         </CardContent>
       </Card>
 
       <Card className="md:col-span-2">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Recent Alerts</CardTitle>
-            <Button variant="link" onClick={onViewAllAlerts}>View All</Button>
+            <CardTitle>التنبيهات الحديثة</CardTitle>
+            <Button variant="link" onClick={onViewAllAlerts}>عرض الكل</Button>
           </div>
         </CardHeader>
         <CardContent>
