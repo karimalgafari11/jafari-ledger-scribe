@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { CashRegister } from "@/types/definitions";
 import { v4 as uuidv4 } from "uuid";
@@ -11,8 +10,7 @@ const initialCashRegisters: CashRegister[] = [
     name: "صندوق المبيعات الرئيسي",
     branchId: "1",
     branchName: "الفرع الرئيسي",
-    currency: "ريال",
-    currencyId: "1",
+    currency: "1", // Changed from currencyId to currency
     currencyCode: "ريال",
     balance: 5000,
     isActive: true,
@@ -24,8 +22,7 @@ const initialCashRegisters: CashRegister[] = [
     name: "صندوق المشتريات",
     branchId: "1",
     branchName: "الفرع الرئيسي",
-    currency: "ريال",
-    currencyId: "1",
+    currency: "1", // Changed from currencyId to currency
     currencyCode: "ريال",
     balance: 2500,
     isActive: true,
@@ -37,8 +34,7 @@ const initialCashRegisters: CashRegister[] = [
     name: "صندوق فرع الشمال",
     branchId: "2",
     branchName: "فرع الشمال",
-    currency: "ريال",
-    currencyId: "1",
+    currency: "1", // Changed from currencyId to currency
     currencyCode: "ريال",
     balance: 3000,
     isActive: false,

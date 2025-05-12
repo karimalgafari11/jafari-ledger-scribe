@@ -52,6 +52,7 @@ export interface CashRegister {
   isActive: boolean;
   userId?: string;
   currency: string;
+  currencyId?: string;  // Add this to support both currency and currencyId
   currencyCode?: string;
   notes?: string;
 }

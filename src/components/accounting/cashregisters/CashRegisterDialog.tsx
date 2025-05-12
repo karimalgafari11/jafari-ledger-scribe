@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +34,7 @@ const formSchema = z.object({
   code: z.string().min(1, "رمز الصندوق مطلوب").max(10, "الرمز طويل جدًا"),
   name: z.string().min(1, "اسم الصندوق مطلوب").max(100, "الاسم طويل جدًا"),
   branchId: z.string().min(1, "الفرع مطلوب"),
-  currencyId: z.string().min(1, "العملة مطلوبة"),
+  currency: z.string().min(1, "العملة مطلوبة"), // Changed from currencyId to currency
   balance: z.coerce.number().min(0, "الرصيد يجب أن لا يقل عن صفر"),
   isActive: z.boolean().default(true),
 });
@@ -72,7 +71,7 @@ export const CashRegisterDialog = ({
       code: register?.code || "",
       name: register?.name || "",
       branchId: register?.branchId || "",
-      currencyId: register?.currencyId || register?.currency || "",
+      currency: register?.currency || "", // Changed from currencyId to currency
       balance: register?.balance || 0,
       isActive: register?.isActive || true,
     },
@@ -84,7 +83,7 @@ export const CashRegisterDialog = ({
         code: register.code,
         name: register.name,
         branchId: register.branchId,
-        currencyId: register.currencyId || register.currency || "",
+        currency: register.currency || "", // Changed from currencyId to currency
         balance: register.balance,
         isActive: register.isActive,
       });
@@ -93,7 +92,7 @@ export const CashRegisterDialog = ({
         code: "",
         name: "",
         branchId: branches[0]?.id || "",
-        currencyId: currencies.length > 0 ? currencies[0].id : "",
+        currency: currencies.length > 0 ? currencies[0].id : "", // Changed from currencyId to currency
         balance: 0,
         isActive: true,
       });
@@ -103,13 +102,13 @@ export const CashRegisterDialog = ({
   const handleSubmit = (values: FormValues) => {
     // إضافة اسم الفرع والعملة
     const selectedBranch = branches.find(b => b.id === values.branchId);
-    const selectedCurrency = currencies.find(c => c.id === values.currencyId);
+    const selectedCurrency = currencies.find(c => c.id === values.currency);
     
     onSubmit({
       ...values,
       branchName: selectedBranch?.name || "",
-      currency: values.currencyId,
       currencyCode: selectedCurrency?.code || "",
+      currencyId: values.currency, // Add this to ensure backward compatibility
     });
   };
 
@@ -179,7 +178,7 @@ export const CashRegisterDialog = ({
             />
             <FormField
               control={form.control}
-              name="currencyId"
+              name="currency"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>العملة</FormLabel>
@@ -210,7 +209,7 @@ export const CashRegisterDialog = ({
               name="balance"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>الرصيد الافتتاحي</FormLabel>
+                  <FormLabel>الرصيد ��لافتتاحي</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="0.00" {...field} />
                   </FormControl>
