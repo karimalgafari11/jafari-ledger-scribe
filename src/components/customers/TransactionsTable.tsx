@@ -149,6 +149,8 @@ export const TransactionsTable = ({ transactions, totalBalance }: TransactionsTa
           enablePagination={true}
           emptyMessage="لا توجد معاملات للعرض"
           getRowId={(row) => row.id}
+          enableExport={true}
+          tableName="سجل_المعاملات"
         />
       </CardContent>
     </Card>

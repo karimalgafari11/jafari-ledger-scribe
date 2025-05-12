@@ -103,6 +103,8 @@ export const CustomersTable = ({
         striped={true}
         hoverable={true}
         bordered={true}
+        enableExport={true}
+        tableName="قائمة_العملاء"
       />
     </div>
   );

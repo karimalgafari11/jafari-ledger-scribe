@@ -198,6 +198,8 @@ export function ProductsTable({
           searchKey="name"
           onRowClick={(product: Product) => onViewDetails(product.id)}
           emptyMessage="لا توجد قطع غيار متاحة"
+          enableExport={true}
+          tableName="قائمة_المنتجات"
         />
       </div>
     </div>
