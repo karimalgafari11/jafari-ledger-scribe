@@ -12,11 +12,12 @@ import { Switch } from '@/components/ui/switch';
 import { mockBranches } from '@/data/mockSettings';
 import { mockUserRoles } from '@/data/mockPermissions';
 
+// تحديث مخطط النموذج للتأكد من تطابق الأنواع مع بيانات الـ User
 const formSchema = z.object({
   username: z.string().min(3, { message: 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل' }),
   fullName: z.string().min(2, { message: 'الاسم الكامل مطلوب' }),
   email: z.string().email({ message: 'البريد الإلكتروني غير صالح' }),
-  role: z.enum(['admin', 'manager', 'accountant', 'inventory', 'sales']),
+  role: z.string().min(1, { message: 'الدور الوظيفي مطلوب' }),
   branch: z.string().min(1, { message: 'الفرع مطلوب' }),
   phone: z.string().min(10, { message: 'رقم الهاتف غير صحيح' }),
   isActive: z.boolean().default(true)
@@ -59,7 +60,7 @@ const UserForm = ({ user, onSave }: UserFormProps) => {
     } as User); // Cast to User type to ensure TypeScript knows we're providing all required fields
   };
 
-  // تعديل هنا: استخدام الهوية بدلاً من الاسم في القيمة
+  // استخدام الهوية بدلاً من الاسم في القيمة
   const roles = mockUserRoles.map(role => ({
     value: role.id,
     label: role.name

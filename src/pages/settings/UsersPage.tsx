@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { UserPlus, Pencil, Trash2, Search, Users, Filter, MoreVertical } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-// Mock users data
+// تحديث بيانات المستخدمين المبدئية لاستخدام معرفات (IDs) بدلاً من الأسماء لكل من الدور والفرع
 const initialUsers: User[] = [
   {
     id: "1",
@@ -25,7 +25,7 @@ const initialUsers: User[] = [
     fullName: "أحمد محمد",
     email: "ahmed@example.com",
     role: "admin",
-    branch: "الرياض",
+    branch: "1",
     phone: "0512345678",
     isActive: true,
     lastLogin: new Date("2023-05-12T10:30:00"),
@@ -37,7 +37,7 @@ const initialUsers: User[] = [
     fullName: "سارة عبدالله",
     email: "sara@example.com",
     role: "accountant",
-    branch: "الرياض",
+    branch: "1",
     phone: "0523456789",
     isActive: true,
     lastLogin: new Date("2023-05-11T14:25:00"),
@@ -49,7 +49,7 @@ const initialUsers: User[] = [
     fullName: "خالد العتيبي",
     email: "khalid@example.com",
     role: "sales",
-    branch: "جدة",
+    branch: "2",
     phone: "0534567890",
     isActive: true,
     lastLogin: new Date("2023-05-10T09:15:00"),
@@ -61,7 +61,7 @@ const initialUsers: User[] = [
     fullName: "منى الزهراني",
     email: "mona@example.com",
     role: "inventory",
-    branch: "الدمام",
+    branch: "3",
     phone: "0545678901",
     isActive: false,
     lastLogin: new Date("2023-05-01T11:45:00"),
@@ -73,7 +73,7 @@ const initialUsers: User[] = [
     fullName: "فهد السعيد",
     email: "fahad@example.com",
     role: "accountant",
-    branch: "الرياض",
+    branch: "1",
     phone: "0556789012",
     isActive: true,
     lastLogin: new Date("2023-05-12T08:20:00"),
@@ -167,10 +167,16 @@ const UsersPage = () => {
     }).format(new Date(date));
   };
 
-  // لعرض اسم الدور بدلًا من الرمز
+  // لعرض اسم الدور بدلاً من الرمز
   const getRoleName = (roleId: string) => {
     const role = mockUserRoles.find(r => r.id === roleId);
     return role ? role.name : roleId;
+  };
+
+  // لعرض اسم الفرع بدلاً من الرمز
+  const getBranchName = (branchId: string) => {
+    const branch = mockBranches.find(b => b.id === branchId);
+    return branch ? branch.name : branchId;
   };
 
   return (
@@ -260,7 +266,7 @@ const UsersPage = () => {
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{getRoleName(user.role)}</TableCell>
-                        <TableCell>{user.branch}</TableCell>
+                        <TableCell>{getBranchName(user.branch)}</TableCell>
                         <TableCell>
                           <Badge variant={user.isActive ? "default" : "outline"}>
                             {user.isActive ? "نشط" : "غير نشط"}

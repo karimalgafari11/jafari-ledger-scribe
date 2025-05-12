@@ -1,4 +1,3 @@
-
 export interface SystemSettings {
   id: string;
   companyName: string;
@@ -42,8 +41,8 @@ export interface User {
   username: string;
   fullName: string;
   email: string;
-  role: 'admin' | 'manager' | 'accountant' | 'inventory' | 'sales';
-  branch: string;
+  role: string; // تغيير النوع ليتوافق مع معرفات (IDs) الأدوار
+  branch: string; // تغيير النوع ليتوافق مع معرفات (IDs) الفروع
   phone: string;
   isActive: boolean;
   lastLogin?: Date;
