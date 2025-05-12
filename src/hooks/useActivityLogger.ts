@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { useUserActivity } from './useUserActivity';
 import { toast } from 'sonner';
@@ -83,14 +84,17 @@ export function useActivityLogger(options: ActivityLoggerOptions) {
     // حفظ في قاعدة البيانات إذا كان مطلوباً
     if (options.persistToDatabase) {
       try {
-        // Convertir string a ActivityAction antes de pasar a logActivity
+        // تحويل النص إلى ActivityAction قبل تمريره إلى logActivity
         const activityAction = action as ActivityAction;
         
+        // إضافة معرف المستخدم واسم المستخدم المطلوبين
         logActivity({
           action: activityAction,
           module: options.moduleName,
           details: message,
-          status: level === 'error' ? 'failed' : level === 'warning' ? 'warning' : 'success'
+          status: level === 'error' ? 'failed' : level === 'warning' ? 'warning' : 'success',
+          userId: options.userId || 'unknown-user', // إضافة معرف المستخدم
+          username: options.userId || 'unknown-user' // إضافة اسم المستخدم
         });
       } catch (error) {
         console.error('فشل تسجيل النشاط في قاعدة البيانات:', error);
