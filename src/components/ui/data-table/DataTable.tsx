@@ -33,7 +33,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   searchable?: boolean;
   searchKey?: string;
-  pagination?: boolean;
+  enablePagination?: boolean;
   pageSize?: number;
   onRowClick?: (row: TData) => void;
   gridLines?: boolean;
@@ -43,6 +43,8 @@ interface DataTableProps<TData, TValue> {
   stickyHeader?: boolean;
   emptyMessage?: string;
   className?: string;
+  hoverable?: boolean;
+  getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,7 +52,7 @@ export function DataTable<TData, TValue>({
   data,
   searchable = false,
   searchKey,
-  pagination = true,
+  enablePagination = true,
   pageSize = 10,
   onRowClick,
   gridLines = false,
@@ -60,13 +62,15 @@ export function DataTable<TData, TValue>({
   stickyHeader = false,
   emptyMessage = "لا توجد بيانات",
   className,
+  hoverable = false,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [searchValue, setSearchValue] = useState("");
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: pageSize || 10,
   });
@@ -84,14 +88,15 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
+    onPaginationChange: setPaginationState,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
+      pagination: paginationState,
     },
+    getRowId: getRowId,
   });
 
   // تطبيق البحث عند تغير قيمة البحث
@@ -106,7 +111,7 @@ export function DataTable<TData, TValue>({
     if (tableContainerRef.current) {
       tableContainerRef.current.scrollTop = 0;
     }
-  }, [pagination.pageIndex]);
+  }, [paginationState.pageIndex]);
 
   // مسح البحث
   const clearSearch = () => {
@@ -129,6 +134,7 @@ export function DataTable<TData, TValue>({
   
   const rowClasses = (index: number) => cn(
     onRowClick && "cursor-pointer hover:bg-muted/50 transition-colors",
+    hoverable && "hover:bg-muted/50 transition-colors",
     striped && index % 2 === 1 && "bg-muted/20",
     gridLines && "border-b border-border",
     dense ? "h-8" : "h-10"
@@ -223,7 +229,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {pagination && (
+      {enablePagination && (
         <div className="flex items-center justify-between py-2">
           <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length > 0 && (

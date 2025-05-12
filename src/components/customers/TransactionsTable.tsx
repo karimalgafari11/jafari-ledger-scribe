@@ -146,7 +146,7 @@ export const TransactionsTable = ({ transactions, totalBalance }: TransactionsTa
           striped={true}
           bordered={true}
           searchable={false}
-          pagination={true}
+          enablePagination={true}
           emptyMessage="لا توجد معاملات للعرض"
           getRowId={(row) => row.id}
         />
