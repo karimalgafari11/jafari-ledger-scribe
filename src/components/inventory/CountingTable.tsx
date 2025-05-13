@@ -26,7 +26,8 @@ export function CountingTable({
   onExport,
   onComplete
 }: CountingTableProps) {
-  const formatDate = (date: Date) => {
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
     return new Intl.DateTimeFormat('ar-SA', { 
       year: 'numeric', 
       month: 'short', 

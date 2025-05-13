@@ -19,20 +19,26 @@ const VendorStatementPage = () => {
     return <VendorNotFound />;
   }
 
+  // Ensure vendor has balance property (default to 0 if not present)
+  const vendorWithBalance = {
+    ...vendor,
+    balance: vendor.balance || 0
+  };
+
   const {
     dateRange,
     setDateRange,
     vendorAsCustomer,
     filteredTransactions,
     handleResetDateRange
-  } = useVendorStatement(vendor);
+  } = useVendorStatement(vendorWithBalance);
 
   return (
     <div className="container p-6 mx-auto">
-      <VendorStatementHeader vendorName={vendor.name} />
+      <VendorStatementHeader vendorName={vendorWithBalance.name} />
 
       <VendorStatementSummary 
-        balance={vendor.balance}
+        balance={vendorWithBalance.balance}
         transactions={filteredTransactions}
       />
 
@@ -44,7 +50,7 @@ const VendorStatementPage = () => {
         onResetDateRange={handleResetDateRange}
       />
 
-      <VendorInfoCard vendor={vendor} />
+      <VendorInfoCard vendor={vendorWithBalance} />
     </div>
   );
 };

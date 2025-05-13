@@ -19,6 +19,7 @@ export interface Vendor {
   creditLimit?: number;
   dueDate?: string | null;
   lastTransaction?: string;
+  accountNumber?: string;  // Added property
 }
 
 export const useVendorStatementList = () => {
@@ -31,6 +32,9 @@ export const useVendorStatementList = () => {
   const vendors: Vendor[] = useMemo(() => {
     return mockVendors.map(vendor => ({
       ...vendor,
+      balance: vendor.balance || 0,  // Ensure balance exists
+      currency: vendor.currency || "SAR",  // Ensure currency exists
+      createdAt: vendor.createdAt || new Date().toISOString(),  // Ensure createdAt exists
       lastTransaction: getRandomDate(),
       status: vendor.dueDate && new Date(vendor.dueDate) < new Date() ? "overdue" : "active"
     }));

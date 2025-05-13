@@ -7,19 +7,22 @@ export interface Product {
   category?: string;
   price: number;
   purchasePrice?: number;
-  costPrice?: number;  // Added for compatibility with existing code
+  costPrice?: number;
   unit?: string;
   quantity: number;
   reorderLevel?: number;
   manufacturer?: string;
   barcode?: string;
-  brand?: string;     // Added for compatibility with existing code
-  size?: string;      // Added for compatibility with existing code
-  sku?: string;       // Added for compatibility with existing components
+  brand?: string;
+  size?: string;
+  sku?: string;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
   images?: string[];
+  cost?: number; // Added for EditProductPage
+  taxRate?: number; // Added for EditProductPage
+  subcategory?: string; // Added for EditProductPage
 }
 
 export interface ProductCategory {
@@ -62,44 +65,52 @@ export interface InventoryCount {
   name: string;
   date: string;
   warehouseId: string;
-  warehouseName: string;  // Added for compatibility with existing code
+  warehouseName: string;
   status: 'draft' | 'in_progress' | 'completed';
   notes?: string;
   createdBy: string;
   createdAt: string;
   completedAt?: string;
-  items?: InventoryCountItem[];  // Added for compatibility with existing code
+  items: InventoryCountItem[];
 }
 
 export interface InventoryCountItem {
   id: string;
   countId: string;
   productId: string;
-  itemId?: string;      // Added for compatibility with existing code
+  itemId: string;
   expectedQuantity: number;
   actualQuantity: number;
   difference: number;
-  itemName?: string;    // Added for compatibility with existing code
+  itemName: string;
   notes?: string;
 }
 
-// Add missing types referenced in error messages
 export interface StockMovement {
   id: string;
-  date: string;
+  date: string; // Changed from Date to string for consistency
   productId: string;
   productName: string;
-  productCode: string;
+  productCode?: string;
   fromWarehouseId?: string;
   fromWarehouseName?: string;
   toWarehouseId?: string;
   toWarehouseName?: string;
   quantity: number;
   movementType: 'purchase' | 'sale' | 'transfer' | 'adjustment' | 'return';
-  referenceNumber: string;
+  referenceNumber?: string;
   notes?: string;
   createdBy?: string;
   createdAt: string;
+  // Additional fields for compatibility
+  type: 'purchase' | 'sale' | 'transfer' | 'adjustment' | 'return' | 'inbound' | 'outbound' | 'damaged';
+  sourceWarehouse?: string;
+  sourceWarehouseName?: string;
+  destinationWarehouse?: string;
+  destinationWarehouseName?: string;
+  itemName?: string;
+  userId?: string;
+  userName?: string;
 }
 
 export interface ReorderItem {

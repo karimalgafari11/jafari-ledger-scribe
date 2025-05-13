@@ -19,7 +19,8 @@ export function TransferHistory() {
   const { transfers } = useInventoryTransfer();
 
   // Helper function to format the date
-  const formatDate = (date: Date) => {
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
     return new Intl.DateTimeFormat("ar-SA", {
       year: "numeric",
       month: "short",
@@ -68,10 +69,10 @@ export function TransferHistory() {
                 transfers.map((transfer) => (
                   <TableRow key={transfer.id}>
                     <TableCell>{formatDate(transfer.date)}</TableCell>
-                    <TableCell>{transfer.itemName}</TableCell>
+                    <TableCell>{transfer.productName}</TableCell>
                     <TableCell>{transfer.quantity}</TableCell>
-                    <TableCell>{transfer.sourceWarehouse}</TableCell>
-                    <TableCell>{transfer.destinationWarehouse}</TableCell>
+                    <TableCell>{transfer.sourceWarehouseName}</TableCell>
+                    <TableCell>{transfer.destinationWarehouseName}</TableCell>
                     <TableCell>
                       {transfer.notes || (
                         <span className="text-muted-foreground text-sm">

@@ -69,11 +69,17 @@ export const useStockMovements = () => {
     
     // تطبيق تصفية نطاق التاريخ
     if (filterOptions.startDate) {
-      result = result.filter(item => item.date >= filterOptions.startDate!);
+      result = result.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= filterOptions.startDate!;
+      });
     }
     
     if (filterOptions.endDate) {
-      result = result.filter(item => item.date <= filterOptions.endDate!);
+      result = result.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate <= filterOptions.endDate!;
+      });
     }
     
     setFilteredMovements(result);
