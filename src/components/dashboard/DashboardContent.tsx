@@ -8,13 +8,36 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { Skeleton } from '@/components/ui/skeleton';
 import UpdatesNotifier from './UpdatesNotifier';
+import { useDashboard } from '@/hooks/useDashboard';
+import DashboardShortcuts from './DashboardShortcuts';
+import KpiMetricsGrid from './KpiMetricsGrid';
+import ChartsGrid from './ChartsGrid';
 
 const DashboardContent = () => {
   const { totalRevenue, newCustomers, totalOrders, averageOrderValue, recentInvoices, tasks, isLoading, error } = useDashboardData();
   
+  // Use the dashboard hook to get shortcuts, KPIs and chart data
+  const {
+    displayOptions,
+    shortcuts,
+    dashboardKpis,
+    salesData,
+    profitData,
+    customerDebtData,
+    supplierCreditData,
+    costCenterData,
+    dailySalesData,
+    alerts
+  } = useDashboard();
+  
   // Dashboard Welcome state
   const [date, setDate] = useState<Date>(new Date());
   const [period, setPeriod] = useState<string>("monthly");
+  
+  const handleViewAllAlerts = () => {
+    console.log("View all alerts clicked");
+    // Navigate to alerts page or open alerts dialog in a real implementation
+  };
   
   if (isLoading) {
     return (
@@ -96,7 +119,18 @@ const DashboardContent = () => {
         companyName="نظام المحاسبة"
       />
       <UpdatesNotifier />
+      
+      {/* Render the shortcuts section if enabled in displayOptions */}
+      {displayOptions.showStats && (
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-3">الاختصارات السريعة</h2>
+          <DashboardShortcuts shortcuts={shortcuts} />
+        </div>
+      )}
+
       <DashboardHeader />
+      
+      {/* Render the statistics cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader>
@@ -133,6 +167,26 @@ const DashboardContent = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Render KPI metrics if enabled in displayOptions */}
+      {displayOptions.showKpis && (
+        <KpiMetricsGrid metrics={dashboardKpis} />
+      )}
+      
+      {/* Render charts if enabled in displayOptions */}
+      {displayOptions.showCharts && (
+        <ChartsGrid 
+          salesData={salesData}
+          profitData={profitData}
+          customerDebtData={customerDebtData}
+          supplierCreditData={supplierCreditData}
+          costCenterData={costCenterData}
+          dailySalesData={dailySalesData}
+          systemAlerts={alerts}
+          onViewAllAlerts={handleViewAllAlerts}
+        />
+      )}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="lg:col-span-1">
           <CardHeader>
