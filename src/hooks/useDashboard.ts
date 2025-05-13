@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import {
-  FileText, BarChart, Receipt, Database, CreditCard, Users 
+  FileText, BarChart, Receipt, Database, CreditCard, Users, 
+  FileUp, FileDown, Bot, Zap
 } from "lucide-react";
 import { mockBranches } from "@/data/mockSettings";
 import { mockUserRoles } from "@/data/mockPermissions";
@@ -28,35 +28,39 @@ export const useDashboard = () => {
     },
     {
       id: "2",
-      name: "إضافة مصروف جديد",
-      icon: FileText,
-      route: "/expenses/new",
+      name: "سند قبض",
+      icon: FileUp,
+      route: "/receivables/receipt-module",
       enabled: true,
-      description: "تسجيل مصروف جديد"
+      description: "إنشاء وإدارة سندات القبض من العملاء"
     },
     {
       id: "3",
-      name: "عرض التقارير",
-      icon: BarChart,
-      route: "/reports",
+      name: "سند دفع",
+      icon: FileDown,
+      route: "/payables/payment-module",
       enabled: true,
-      description: "عرض تقارير النظام"
+      description: "إنشاء وإدارة سندات الدفع للموردين"
     },
     {
       id: "4",
-      name: "دفتر الأستاذ",
-      icon: Database,
-      route: "/accounting/ledger-module",
+      name: "فاتورة مشتريات",
+      icon: FileText,
+      route: "/purchases/new",
       enabled: true,
-      description: "عرض وتحليل كافة الحركات المالية"
+      description: "إنشاء فاتورة مشتريات جديدة"
     },
     {
       id: "5",
-      name: "إدارة العملاء",
-      icon: Users,
-      route: "/customers/module",
+      name: "مساعد الذكاء الاصطناعي",
+      icon: Bot,
+      route: "/ai/assistant-module",
       enabled: true,
-      description: "إدارة قاعدة بيانات العملاء"
+      badge: {
+        text: "جديد",
+        variant: "secondary"
+      },
+      description: "استخدم مساعد الذكاء الاصطناعي لتحليل البيانات واتخاذ القرارات"
     },
     {
       id: "6",
@@ -250,7 +254,7 @@ export const useDashboard = () => {
       description: "من إجمالي المبيعات"
     }, {
       title: "متوسط قيمة الفاتورة",
-      value: "645 ريال",
+      value: "645 ري��ل",
       status: "down" as const,
       description: "انخفاض 3.2% عن الشهر السابق"
     }, {
