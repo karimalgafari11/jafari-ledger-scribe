@@ -1,42 +1,17 @@
 
-import React, { useState } from "react";
+import React from 'react';
 import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AccountingRulesModule } from "@/components/accounting/rules/AccountingRulesModule";
-import { AutomaticEntriesModule } from "@/components/accounting/rules/AutomaticEntriesModule";
-import { ValidationRulesModule } from "@/components/accounting/rules/ValidationRulesModule";
+import { PageContainer } from "@/components/PageContainer";
 
-const AccountingRulesPage = () => {
-  const [activeTab, setActiveTab] = useState("basic-rules");
-
+const AccountingRulesPage: React.FC = () => {
   return (
-    <Layout className="h-screen overflow-hidden">
-      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
-        <Header title="قوانين وأوامر المحاسبة" showBack={true} />
-        
-        <div className="flex-1 overflow-auto p-4 pb-16">
-          <Tabs defaultValue="basic-rules" value={activeTab} onValueChange={setActiveTab} className="mt-4">
-            <TabsList className="mb-4">
-              <TabsTrigger value="basic-rules">القواعد الأساسية</TabsTrigger>
-              <TabsTrigger value="automatic-entries">القيود التلقائية</TabsTrigger>
-              <TabsTrigger value="validation-rules">قواعد التحقق</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="basic-rules">
-              <AccountingRulesModule />
-            </TabsContent>
-            
-            <TabsContent value="automatic-entries">
-              <AutomaticEntriesModule />
-            </TabsContent>
-            
-            <TabsContent value="validation-rules">
-              <ValidationRulesModule />
-            </TabsContent>
-          </Tabs>
+    <Layout>
+      <PageContainer title="القواعد المحاسبية" description="إدارة القواعد المحاسبية والسياسات المالية">
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+          <h3 className="text-lg font-semibold mb-4">القواعد المحاسبية</h3>
+          <p className="text-muted-foreground">هنا ستظهر القواعد المحاسبية المعرفة في النظام</p>
         </div>
-      </div>
+      </PageContainer>
     </Layout>
   );
 };

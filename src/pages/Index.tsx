@@ -27,7 +27,7 @@ const Index = () => {
   return (
     <SidebarProvider defaultOpen={!isMobile}>
       <div className={`app-container h-screen w-full flex ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
-        <AccountingSidebar autoClose={isMobile} />
+        <AccountingSidebar />
         <div className="app-content flex-1 h-screen overflow-auto">
           <Layout>
             <Outlet />

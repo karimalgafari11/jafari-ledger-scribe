@@ -1,21 +1,17 @@
 
-import React from "react";
+import React from 'react';
 import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
-import { CommercialPapersModule } from "@/components/accounting/commercialpapers/CommercialPapersModule";
-import { DueNotificationsModule } from "@/components/accounting/commercialpapers/DueNotificationsModule";
+import { PageContainer } from "@/components/PageContainer";
 
-const CommercialPapersPage = () => {
+const CommercialPapersPage: React.FC = () => {
   return (
-    <Layout className="h-screen overflow-hidden p-0">
-      <div className="flex flex-col h-full w-full overflow-hidden rtl">
-        <Header title="إدارة الأوراق التجارية" showBack={true} />
-        
-        <div className="flex-1 overflow-auto p-4 pb-16">
-          <CommercialPapersModule />
-          <DueNotificationsModule />
+    <Layout>
+      <PageContainer title="الأوراق التجارية" description="إدارة الشيكات والكمبيالات والأوراق التجارية">
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+          <h3 className="text-lg font-semibold mb-4">الأوراق التجارية</h3>
+          <p className="text-muted-foreground">هنا سيظهر جدول الأوراق التجارية</p>
         </div>
-      </div>
+      </PageContainer>
     </Layout>
   );
 };

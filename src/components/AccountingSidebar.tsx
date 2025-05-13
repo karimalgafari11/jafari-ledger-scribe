@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Home,
@@ -25,7 +26,7 @@ interface MenuItem {
   tag?: string;
 }
 
-export const AccountingSidebar = () => {
+const AccountingSidebar = () => {
   const menuItems = [
     {
       label: "الرئيسية",
@@ -129,3 +130,5 @@ export const AccountingSidebar = () => {
     </div>
   );
 };
+
+export default AccountingSidebar;

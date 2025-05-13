@@ -1,69 +1,22 @@
 
-import React, { useState } from "react";
+import React from 'react';
 import { Layout } from "@/components/Layout";
 import { PageContainer } from "@/components/PageContainer";
-import { PDFInvoiceAnalyzer } from "@/components/ai/PDFInvoiceAnalyzer";
-import { InvoiceAnalysisReview } from "@/components/ai/InvoiceAnalysisReview";
-import { InvoiceAnalysisResult } from "@/hooks/ai/usePDFInvoiceAnalysis";
-import { useToast } from "@/hooks/use-toast";
 
 const PDFInvoiceProcessorPage: React.FC = () => {
-  const [analysisResult, setAnalysisResult] = useState<InvoiceAnalysisResult | null>(null);
-  const { toast } = useToast();
-
-  const handleAnalysisComplete = (result: InvoiceAnalysisResult) => {
-    setAnalysisResult(result);
-  };
-
-  const handleSaveData = async (data: InvoiceAnalysisResult): Promise<boolean> => {
-    // In a real implementation, this would call API endpoints to save the journal entry
-    try {
-      // Simulate API call with delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "تم حفظ البيانات بنجاح",
-        description: "تم حفظ الفاتورة وإنشاء القيد المحاسبي المرتبط بها"
-      });
-      
-      // Reset state to allow new upload
-      setTimeout(() => {
-        setAnalysisResult(null);
-      }, 2000);
-      
-      return true;
-    } catch (error) {
-      console.error("Error saving data:", error);
-      return false;
-    }
-  };
-
-  const handleEdit = (data: InvoiceAnalysisResult) => {
-    // In a real implementation, this would open a form to edit the data
-    toast({
-      title: "تحرير البيانات",
-      description: "سيتم فتح نموذج لتعديل البيانات (غير مطبق في هذا العرض التوضيحي)"
-    });
-  };
-
-  const handleReset = () => {
-    setAnalysisResult(null);
-  };
-
   return (
     <Layout>
       <PageContainer title="معالجة فواتير PDF" description="تحليل الفواتير والسندات الورقية وتحويلها إلى قيود محاسبية">
-        <div className="max-w-4xl mx-auto">
-          {!analysisResult ? (
-            <PDFInvoiceAnalyzer onAnalysisComplete={handleAnalysisComplete} />
-          ) : (
-            <InvoiceAnalysisReview 
-              analysisResult={analysisResult}
-              onSave={handleSaveData}
-              onEdit={handleEdit}
-              onReset={handleReset}
-            />
-          )}
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+          <h3 className="text-lg font-semibold mb-4">تحليل الفواتير</h3>
+          <p className="text-muted-foreground">قم برفع فواتير أو سندات بصيغة PDF لتحليلها وإنشاء القيود المحاسبية المناسبة لها.</p>
+          
+          <div className="mt-6 p-8 border-2 border-dashed border-gray-300 rounded-lg text-center">
+            <p className="text-muted-foreground mb-4">اسحب وأفلت ملف PDF هنا أو انقر للاختيار</p>
+            <button className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90">
+              اختيار ملف
+            </button>
+          </div>
         </div>
       </PageContainer>
     </Layout>
