@@ -1,31 +1,11 @@
 
-import React, { useState } from "react";
-import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogHeader,
-  DialogFooter
-} from "@/components/ui/dialog";
+import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { 
-  Building, 
-  User, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  CreditCard, 
-  FileText, 
-  Tag,
-  ArrowLeftRight,
-  Edit,
-  FileSpreadsheet
-} from "lucide-react";
-import { formatCurrency } from "@/utils/formatters";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Phone, Mail, MapPin, CreditCard, File, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface VendorDetailsDialogProps {
   open: boolean;
@@ -38,249 +18,137 @@ export const VendorDetailsDialog: React.FC<VendorDetailsDialogProps> = ({
   onClose,
   vendor
 }) => {
-  const [activeTab, setActiveTab] = useState("info");
-  
+  const navigate = useNavigate();
+
   if (!vendor) return null;
-  
-  const handleViewTransactions = () => {
-    toast.info(`عرض معاملات المورد: ${vendor.name}`);
+
+  const handleViewStatement = () => {
+    navigate(`/vendors/statement/${vendor.id}`);
     onClose();
   };
-  
-  const handlePrintStatement = () => {
-    toast.info(`طباعة كشف حساب المورد: ${vendor.name}`);
-  };
-  
+
   const handleEditVendor = () => {
-    toast.info(`تعديل بيانات المورد: ${vendor.name}`);
+    // سيفتح نافذة التعديل في التطبيق الحقيقي
     onClose();
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Building className="w-5 h-5 text-blue-500 ml-2" />
-            <span>تفاصيل المورد</span>
-          </DialogTitle>
+          <DialogTitle className="text-xl">{vendor.name}</DialogTitle>
         </DialogHeader>
         
-        <div className="flex items-center space-x-4 rtl:space-x-reverse mb-6">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-xl">
-            {vendor.name.substring(0, 2)}
-          </div>
-          <div>
-            <h2 className="text-xl font-bold">{vendor.name}</h2>
-            <div className="flex items-center mt-1">
-              <Badge className={vendor.status === 'نشط' ? 'bg-green-100 text-green-800 border-green-300' : 'bg-gray-100 text-gray-800 border-gray-300'}>
-                {vendor.status}
-              </Badge>
-              <span className="text-sm text-gray-500 mr-3">
-                رقم المورد: {vendor.id}
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full mb-4">
-            <TabsTrigger value="info" className="flex-1">المعلومات الأساسية</TabsTrigger>
-            <TabsTrigger value="financial" className="flex-1">البيانات المالية</TabsTrigger>
-            <TabsTrigger value="transactions" className="flex-1">المعاملات</TabsTrigger>
+        <Tabs defaultValue="info">
+          <TabsList className="mb-4">
+            <TabsTrigger value="info">معلومات المورد</TabsTrigger>
+            <TabsTrigger value="transactions">المعاملات</TabsTrigger>
+            <TabsTrigger value="stats">إحصائيات</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="info" className="mt-4 space-y-4">
+          <TabsContent value="info">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <User className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">الشخص المسؤول</span>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">معلومات الاتصال</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-gray-500" />
+                    <span dir="ltr" className="text-sm">{vendor.phone || "غير محدد"}</span>
                   </div>
-                  <p>{vendor.contactPerson}</p>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-gray-500" />
+                    <span dir="ltr" className="text-sm">{vendor.email || "غير محدد"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm">{vendor.address || "غير محدد"}</span>
+                  </div>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <Phone className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">رقم الهاتف</span>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">المعلومات المالية</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">الرصيد الحالي</span>
+                    <span className={`font-bold ${vendor.balance > 0 ? "text-red-600" : "text-green-600"}`}>
+                      {vendor.balance.toLocaleString('ar-SA')} {vendor.currency}
+                    </span>
                   </div>
-                  <p dir="ltr" className="text-right">{vendor.phone}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">الحساب مفتوح منذ</span>
+                    <span className="text-sm">
+                      {new Date(vendor.createdAt).toLocaleDateString('ar-SA')}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">حالة الحساب</span>
+                    <span className={`px-2 py-1 rounded-md text-xs ${
+                        vendor.status === "نشط" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+                      }`}>
+                      {vendor.status}
+                    </span>
+                  </div>
+                  {vendor.dueDate && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-500">تاريخ الاستحقاق</span>
+                      <span className="text-sm text-red-600">{vendor.dueDate}</span>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <Mail className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">البريد الإلكتروني</span>
-                  </div>
-                  <p dir="ltr" className="text-right">{vendor.email}</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <Tag className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">التصنيف</span>
-                  </div>
-                  <p>{vendor.category}</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="md:col-span-2">
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <MapPin className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">العنوان</span>
-                  </div>
-                  <p>{vendor.address}</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <FileText className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">الرقم الضريبي</span>
-                  </div>
-                  <p dir="ltr" className="text-right">{vendor.taxNumber || "غير محدد"}</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <FileText className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">تاريخ التسجيل</span>
-                  </div>
-                  <p>{vendor.createdAt}</p>
-                </CardContent>
-              </Card>
+
+              {vendor.taxNumber && (
+                <Card className="md:col-span-2">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">المعلومات القانونية</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <File className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">الرقم الضريبي:</span>
+                      <span dir="ltr" className="text-sm">{vendor.taxNumber}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
           
-          <TabsContent value="financial" className="mt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <CreditCard className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">الرصيد الحالي</span>
-                  </div>
-                  <p className={`text-lg font-bold ${vendor.balance > 0 ? 'text-blue-600' : 'text-gray-600'}`}>
-                    {vendor.balance.toLocaleString('ar-SA')} {vendor.currency}
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <CreditCard className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">حد الائتمان</span>
-                  </div>
-                  <p className="text-lg font-medium">
-                    {(vendor.creditLimit || 0).toLocaleString('ar-SA')} {vendor.currency}
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <ArrowLeftRight className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">إجمالي المشتريات</span>
-                  </div>
-                  <p className="text-lg font-medium">
-                    {(45500).toLocaleString('ar-SA')} {vendor.currency}
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-3 text-gray-700">
-                    <ArrowLeftRight className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">عدد المعاملات</span>
-                  </div>
-                  <p className="text-lg font-medium">12 معاملة</p>
-                </CardContent>
-              </Card>
-            </div>
-            
+          <TabsContent value="transactions">
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center text-gray-700">
-                    <FileText className="w-4 h-4 ml-2 text-blue-500" />
-                    <span className="text-sm font-medium">ملخص الحساب</span>
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={handlePrintStatement}>
-                    <FileSpreadsheet className="w-4 h-4 ml-2" />
-                    طباعة كشف الحساب
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">الفواتير المفتوحة</p>
-                    <p className="text-lg font-medium text-blue-700 mt-1">3 فواتير</p>
-                  </div>
-                  
-                  <div className="bg-amber-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">المستحقات</p>
-                    <p className="text-lg font-medium text-amber-700 mt-1">
-                      {(vendor.balance || 0).toLocaleString('ar-SA')} {vendor.currency}
-                    </p>
-                  </div>
-                  
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">مدفوعات هذا الشهر</p>
-                    <p className="text-lg font-medium text-green-700 mt-1">
-                      {(12500).toLocaleString('ar-SA')} {vendor.currency}
-                    </p>
-                  </div>
-                  
-                  <div className="bg-purple-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">متوسط فترة السداد</p>
-                    <p className="text-lg font-medium text-purple-700 mt-1">15 يوم</p>
-                  </div>
+              <CardContent className="p-6">
+                <div className="text-center text-muted-foreground py-8">
+                  لا توجد معاملات سابقة مع هذا المورد
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="transactions" className="mt-4">
-            <div className="text-center py-8">
-              <ArrowLeftRight className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-700 mb-2">معاملات المورد</h3>
-              <p className="text-gray-500 mb-4">اضغط على الزر أدناه لعرض معاملات المورد بالتفصيل</p>
-              <Button onClick={handleViewTransactions}>
-                عرض المعاملات
-              </Button>
-            </div>
+          <TabsContent value="stats">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-muted-foreground py-8">
+                  لا تتوفر إحصائيات لهذا المورد
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
         
-        <DialogFooter className="mt-6 gap-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-          >
-            إغلاق
-          </Button>
-          <Button
-            onClick={handleEditVendor}
-            className="flex items-center gap-2"
-          >
-            <Edit className="w-4 h-4" />
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={handleEditVendor}>
             تعديل البيانات
           </Button>
+          <Button variant="outline" onClick={handleViewStatement}>
+            <FileText className="ml-1 h-4 w-4" />
+            عرض كشف الحساب
+          </Button>
+          <Button onClick={onClose}>إغلاق</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

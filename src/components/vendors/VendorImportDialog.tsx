@@ -1,14 +1,10 @@
 
-import React, { useState } from "react";
-import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogHeader, 
-  DialogFooter 
-} from "@/components/ui/dialog";
+import React from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, Check, AlertCircle } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface VendorImportDialogProps {
@@ -20,186 +16,70 @@ export const VendorImportDialog: React.FC<VendorImportDialogProps> = ({
   open,
   onClose
 }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [importStatus, setImportStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-  
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-  
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-  
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleFileSelection(files[0]);
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      toast.info(`تم اختيار الملف: ${files[0].name}`);
+      // في التطبيق الحقيقي، هنا ستقوم بمعالجة ملف الاستيراد
     }
   };
-  
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      handleFileSelection(e.target.files[0]);
-    }
-  };
-  
-  const handleFileSelection = (selectedFile: File) => {
-    // Check if file is Excel or CSV
-    const validTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
-    if (!validTypes.includes(selectedFile.type)) {
-      toast.error("يرجى اختيار ملف Excel أو CSV");
-      return;
-    }
-    
-    setFile(selectedFile);
-  };
-  
+
   const handleImport = () => {
-    if (!file) {
-      toast.error("يرجى اختيار ملف أولاً");
-      return;
-    }
-    
-    setImportStatus('uploading');
-    
-    // Simulate file upload and processing
-    setTimeout(() => {
-      // Simulate success
-      setImportStatus('success');
-      toast.success("تم استيراد البيانات بنجاح");
-      
-      // Close dialog after delay
-      setTimeout(() => {
-        onClose();
-        setFile(null);
-        setImportStatus('idle');
-      }, 1500);
-    }, 2000);
-  };
-  
-  const handleDownloadTemplate = () => {
-    toast.info("جاري تنزيل نموذج ملف الاستيراد");
-    // Simulate download
-    setTimeout(() => {
-      toast.success("تم تنزيل نموذج الاستيراد بنجاح");
-    }, 1000);
+    toast.success("تم استيراد بيانات الموردين بنجاح");
+    onClose();
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>استيراد بيانات الموردين</DialogTitle>
+          <DialogDescription>
+            قم بتحميل ملف بصيغة CSV أو Excel لاستيراد بيانات الموردين
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-              isDragging ? 'border-primary bg-primary/5' : 'border-gray-300'
-            } ${importStatus === 'success' ? 'border-green-500 bg-green-50' : ''} ${
-              importStatus === 'error' ? 'border-red-500 bg-red-50' : ''
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            {importStatus === 'uploading' ? (
-              <div className="flex flex-col items-center justify-center py-4">
-                <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
-                <p className="text-gray-600">جاري معالجة الملف...</p>
-              </div>
-            ) : importStatus === 'success' ? (
-              <div className="flex flex-col items-center justify-center py-4">
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
-                  <Check className="text-green-600 w-6 h-6" />
-                </div>
-                <p className="text-green-600 font-medium">تم استيراد البيانات بنجاح</p>
-                <p className="text-sm text-gray-500 mt-1">تم استيراد {Math.floor(Math.random() * 50) + 5} مورد</p>
-              </div>
-            ) : importStatus === 'error' ? (
-              <div className="flex flex-col items-center justify-center py-4">
-                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3">
-                  <AlertCircle className="text-red-600 w-6 h-6" />
-                </div>
-                <p className="text-red-600 font-medium">فشلت عملية الاستيراد</p>
-                <p className="text-sm text-gray-500 mt-1">يرجى التحقق من تنسيق الملف</p>
-              </div>
-            ) : (
-              <>
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="mt-4">
-                  <p className="text-sm font-medium">
-                    {file ? file.name : "اسحب الملف هنا أو اضغط للاختيار"}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {file ? `${(file.size / 1024).toFixed(2)} كيلوبايت` : "Excel أو CSV فقط"}
-                  </p>
-                </div>
-                <input
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="file-upload" className="col-span-4">
+              اختر الملف
+            </Label>
+            <div className="col-span-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <Upload className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600 mb-2">
+                  اسحب الملف هنا أو انقر للتصفح
+                </p>
+                <Input
+                  id="file-upload"
                   type="file"
                   className="hidden"
-                  id="file-upload"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleFileInputChange}
+                  accept=".csv,.xlsx,.xls"
+                  onChange={handleFileUpload}
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => document.getElementById("file-upload")?.click()}
-                >
-                  اختيار ملف
+                <Button variant="outline" onClick={() => document.getElementById('file-upload')?.click()}>
+                  تصفح الملفات
                 </Button>
-              </>
-            )}
+              </div>
+            </div>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <FileText className="text-blue-500 w-5 h-5 ml-2" />
-              <h3 className="text-sm font-medium">نموذج الاستيراد</h3>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">
-              يمكنك تنزيل نموذج ملف الاستيراد لتعبئته بالبيانات المطلوبة
-            </p>
-            <Button
-              type="button"
-              variant="link"
-              size="sm"
-              className="text-blue-500 p-0 h-auto"
-              onClick={handleDownloadTemplate}
-            >
-              تنزيل النموذج
-            </Button>
+          <div className="text-sm text-muted-foreground">
+            <p className="font-semibold">تنسيق الملف المطلوب:</p>
+            <ul className="list-disc list-inside mt-1">
+              <li>اسم المورد (إجباري)</li>
+              <li>الشخص المسؤول</li>
+              <li>رقم الهاتف</li>
+              <li>البريد الإلكتروني</li>
+              <li>العنوان</li>
+              <li>الرقم الضريبي</li>
+            </ul>
           </div>
         </div>
         
         <DialogFooter>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onClose}
-            disabled={importStatus === 'uploading'}
-          >
-            إلغاء
-          </Button>
-          <Button 
-            type="button" 
-            onClick={handleImport}
-            disabled={!file || importStatus !== 'idle'}
-          >
-            استيراد
-          </Button>
+          <Button variant="outline" onClick={onClose}>إلغاء</Button>
+          <Button onClick={handleImport}>استيراد</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
