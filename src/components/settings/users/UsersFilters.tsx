@@ -41,7 +41,7 @@ const UsersFilters: React.FC<UsersFiltersProps> = ({
           <SelectValue placeholder="الدور الوظيفي" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">جميع الأدوار</SelectItem>
+          <SelectItem value="all">جميع الأدوار</SelectItem>
           {mockUserRoles.map(role => (
             <SelectItem key={role.id} value={role.id}>
               {role.name}
@@ -54,7 +54,7 @@ const UsersFilters: React.FC<UsersFiltersProps> = ({
           <SelectValue placeholder="الحالة" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">جميع الحالات</SelectItem>
+          <SelectItem value="all">جميع الحالات</SelectItem>
           <SelectItem value="active">نشط</SelectItem>
           <SelectItem value="inactive">غير نشط</SelectItem>
         </SelectContent>

@@ -82,8 +82,8 @@ const UsersPage: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Filter users based on search and filters
   const filteredUsers = users.filter(user => {
@@ -92,8 +92,8 @@ const UsersPage: React.FC = () => {
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.username.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesRole = roleFilter === "" || user.role === roleFilter;
-    const matchesStatus = statusFilter === "" || 
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus = statusFilter === "all" || 
       (statusFilter === "active" && user.isActive) || 
       (statusFilter === "inactive" && !user.isActive);
     
@@ -152,8 +152,8 @@ const UsersPage: React.FC = () => {
 
   const resetFilters = () => {
     setSearchQuery("");
-    setRoleFilter("");
-    setStatusFilter("");
+    setRoleFilter("all");
+    setStatusFilter("all");
   };
 
   return (
