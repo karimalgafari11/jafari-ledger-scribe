@@ -40,3 +40,71 @@ export const getPriorityTranslation = (priority: string): string => {
       return priority;
   }
 };
+
+// Add the missing functions
+export const formatDateForDisplay = (date: Date): string => {
+  // Check if less than a minute ago
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) {
+    return "الآن";
+  }
+  
+  // Check if less than an hour ago
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `منذ ${diffInMinutes} دقيقة`;
+  }
+  
+  // Check if less than a day ago
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `منذ ${diffInHours} ساعة`;
+  }
+  
+  // Check if less than a week ago
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) {
+    return `منذ ${diffInDays} يوم`;
+  }
+  
+  // Format the date
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+};
+
+export const getCategoryName = (eventType: string): string => {
+  if (eventType.startsWith('inventory')) {
+    return 'المخزون';
+  } else if (eventType.startsWith('expenses')) {
+    return 'المصروفات';
+  } else if (eventType.startsWith('invoices')) {
+    return 'الفواتير';
+  } else if (eventType.startsWith('customer')) {
+    return 'العملاء';
+  } else if (eventType.startsWith('system')) {
+    return 'النظام';
+  } else {
+    return 'أخرى';
+  }
+};
+
+export const getNotificationIcon = (eventType: string): string => {
+  if (eventType.startsWith('inventory')) {
+    return 'package';
+  } else if (eventType.startsWith('expenses')) {
+    return 'credit-card';
+  } else if (eventType.startsWith('invoices')) {
+    return 'file-text';
+  } else if (eventType.startsWith('customer')) {
+    return 'users';
+  } else if (eventType.startsWith('system')) {
+    return 'settings';
+  } else {
+    return 'bell';
+  }
+};

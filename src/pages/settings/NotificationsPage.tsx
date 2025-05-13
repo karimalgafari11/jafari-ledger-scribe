@@ -129,6 +129,7 @@ const NotificationsPage = () => {
               settings={notificationSettings}
               channelIcons={channelIcons}
               handleChannelToggle={handleChannelToggle}
+              handleThresholdChange={handleThresholdChange}
               handleSaveSettings={handleSaveSettings}
             />
           </TabsContent>
