@@ -3,3 +3,6 @@ project_id = "nfkmlwqljkrmottcseyp"
 
 [functions.optimize-image]
 verify_jwt = true
+
+[functions.ocr-invoice]
+verify_jwt = true

@@ -8,3 +8,4 @@ export * from './usePDFProcessing';
 export * from './usePDFInvoiceUploader';
 export * from './usePDFInvoiceParser';
 export * from './usePDFAnalysis';
+export * from './useOCRAnalysis';

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { PDFInvoiceAnalyzer } from './PDFInvoiceAnalyzer';
+import { InvoiceAnalyzerTabs } from './InvoiceAnalyzerTabs';
 import { usePDFAnalysis } from '@/hooks/purchases/usePDFAnalysis';
 import { FileText } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export const PurchaseInvoiceAnalyzer: React.FC<PurchaseInvoiceAnalyzerProps> = (
         onClick={showAnalyzer}
       >
         <FileText className="w-4 h-4" />
-        تحليل فاتورة PDF
+        تحليل فاتورة
       </Button>
       
       <Dialog open={isShowingAnalyzer} onOpenChange={hideAnalyzer}>
@@ -37,16 +37,16 @@ export const PurchaseInvoiceAnalyzer: React.FC<PurchaseInvoiceAnalyzerProps> = (
           <DialogHeader>
             <DialogTitle>تحليل فاتورة المشتريات</DialogTitle>
             <DialogDescription>
-              قم بتحميل فاتورة PDF وسيتم تحليلها واستخراج البيانات منها تلقائياً
+              قم بتحميل فاتورة PDF أو صورة وسيتم تحليلها واستخراج البيانات منها تلقائياً
             </DialogDescription>
           </DialogHeader>
           
           <div className="flex-1 overflow-y-auto">
-            <PDFInvoiceAnalyzer 
+            <InvoiceAnalyzerTabs 
               onDataExtracted={(data) => {
                 handleAnalysisComplete(data);
                 applyAnalysisResults(onDataExtracted);
-              }} 
+              }}
             />
           </div>
         </DialogContent>
