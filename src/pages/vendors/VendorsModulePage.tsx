@@ -88,7 +88,9 @@ const VendorsModulePage: React.FC = () => {
   return (
     <Layout className="h-screen overflow-hidden bg-gray-50">
       <div className="flex flex-col h-full">
-        <Header title="وحدة الموردين" icon={<Network className="ml-2 h-6 w-6" />} />
+        <Header title="وحدة الموردين">
+          <Network className="ml-2 h-6 w-6" />
+        </Header>
         
         <div className="flex-1 overflow-auto p-6">
           <VendorStatsGrid />
