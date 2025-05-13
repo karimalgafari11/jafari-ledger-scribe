@@ -16,6 +16,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed, toggleCollapse
         size="icon"
         onClick={toggleCollapsed} 
         className="text-sidebar-foreground hover:bg-sidebar-primary"
+        aria-label={collapsed ? "توسيع القائمة" : "طي القائمة"}
       >
         <Menu size={24} />
       </Button>
