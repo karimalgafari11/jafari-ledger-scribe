@@ -52,7 +52,7 @@ const NotificationItem = ({ notification, showActions = false }: NotificationIte
           </div>
           
           <div className="flex items-center">
-            <NotificationTimestamp createdAt={notification.createdAt} />
+            <NotificationTimestamp date={notification.createdAt} />
             
             {showActions && (
               <NotificationItemActions 
