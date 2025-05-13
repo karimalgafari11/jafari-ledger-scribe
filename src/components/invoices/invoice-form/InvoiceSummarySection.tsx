@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Invoice } from "@/types/invoices";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/utils/formatters";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { InvoiceDiscountForm } from "./InvoiceDiscountForm";
 

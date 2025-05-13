@@ -1,18 +1,13 @@
 
-import React, { ReactNode } from "react";
-import { Header } from "@/components/Header";
-import DashboardFilters from "@/components/dashboard/DashboardFilters";
-import { DateRange } from "react-day-picker";
-import { useIsMobile } from "@/hooks/use-mobile";
+import React from 'react';
 
-interface DashboardWelcomeProps {
-  date: DateRange;
-  onDateChange: (date: DateRange) => void;
-  period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
-  onPeriodChange: (value: any) => void;
-  branch: string;
-  onBranchChange: (value: string) => void;
-  children?: ReactNode;
+export interface DashboardWelcomeProps {
+  date: Date;
+  onDateChange: (date: Date) => void;
+  period: string;
+  onPeriodChange: (period: string) => void;
+  userName?: string;
+  companyName?: string;
 }
 
 const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
@@ -20,26 +15,34 @@ const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
   onDateChange,
   period,
   onPeriodChange,
-  branch,
-  onBranchChange,
-  children
+  userName = "المستخدم",
+  companyName = "نظام المحاسبة"
 }) => {
-  const isMobile = useIsMobile();
-
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between bg-blue-500 w-full">
-      <Header title="لوحة التحكم الرئيسية">
-        {children}
-      </Header>
-      <div className={`w-full ${isMobile ? 'px-2 py-2' : ''}`}>
-        <DashboardFilters 
-          date={date} 
-          onDateChange={onDateChange} 
-          period={period} 
-          onPeriodChange={value => onPeriodChange(value)} 
-          branch={branch} 
-          onBranchChange={onBranchChange} 
-        />
+    <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">مرحباً بك، {userName}</h1>
+          <p className="opacity-90">إليك آخر البيانات والتقارير الخاصة بشركة {companyName}</p>
+        </div>
+        <div className="mt-4 md:mt-0 flex gap-2">
+          <select 
+            value={period} 
+            onChange={(e) => onPeriodChange(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded px-3 py-1 text-sm"
+          >
+            <option value="daily">يومي</option>
+            <option value="weekly">أسبوعي</option>
+            <option value="monthly">شهري</option>
+            <option value="yearly">سنوي</option>
+          </select>
+          <input
+            type="date"
+            className="bg-white/10 border border-white/20 rounded px-3 py-1 text-sm"
+            value={date.toISOString().split('T')[0]}
+            onChange={(e) => onDateChange(new Date(e.target.value))}
+          />
+        </div>
       </div>
     </div>
   );

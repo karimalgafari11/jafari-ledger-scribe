@@ -1,28 +1,21 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import DashboardWelcome from './DashboardWelcome';
 import { DashboardHeader } from './DashboardHeader';
 import { RecentInvoices } from './RecentInvoices';
 import { Tasks } from './Tasks';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
-import { calculatePercentageChange } from '@/lib/utils';
-import { ArrowDown, ArrowUp, Users } from 'lucide-react';
 import UpdatesNotifier from './UpdatesNotifier';
 
 const DashboardContent = () => {
-  const {
-    totalRevenue,
-    newCustomers,
-    totalOrders,
-    averageOrderValue,
-    recentInvoices,
-    tasks,
-    isLoading,
-    error,
-  } = useDashboardData();
-
+  const { totalRevenue, newCustomers, totalOrders, averageOrderValue, recentInvoices, tasks, isLoading, error } = useDashboardData();
+  
+  // Dashboard Welcome state
+  const [date, setDate] = useState<Date>(new Date());
+  const [period, setPeriod] = useState<string>("monthly");
+  
   if (isLoading) {
     return (
       <div className="px-4 py-6 space-y-6">
@@ -94,7 +87,14 @@ const DashboardContent = () => {
 
   return (
     <div className="px-4 py-6 space-y-6">
-      <DashboardWelcome />
+      <DashboardWelcome 
+        date={date}
+        onDateChange={setDate}
+        period={period}
+        onPeriodChange={setPeriod}
+        userName="المستخدم"
+        companyName="نظام المحاسبة"
+      />
       <UpdatesNotifier />
       <DashboardHeader />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

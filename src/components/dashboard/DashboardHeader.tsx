@@ -1,23 +1,18 @@
 
-import React from 'react';
+import React from "react";
 
 export const DashboardHeader: React.FC = () => {
   return (
-    <div className="flex justify-between items-center mb-6">
-      <h2 className="text-2xl font-bold">لوحة التحكم</h2>
-      <div className="flex gap-2">
-        <select
-          className="px-3 py-1 border rounded-md text-sm"
-          defaultValue="this-week"
-        >
-          <option value="today">اليوم</option>
-          <option value="yesterday">أمس</option>
-          <option value="this-week">هذا الأسبوع</option>
-          <option value="this-month">هذا الشهر</option>
-          <option value="last-month">الشهر الماضي</option>
-          <option value="this-year">هذا العام</option>
+    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4">
+      <h2 className="text-2xl font-bold mb-2 lg:mb-0">لوحة التحكم</h2>
+      <div className="flex flex-wrap gap-2">
+        <select className="border rounded p-1 px-2 text-sm">
+          <option>آخر 7 أيام</option>
+          <option>آخر 30 يوم</option>
+          <option>آخر 90 يوم</option>
+          <option>هذا العام</option>
         </select>
-        <button className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded-md">
+        <button className="bg-primary text-white rounded p-1 px-3 text-sm">
           تحديث
         </button>
       </div>

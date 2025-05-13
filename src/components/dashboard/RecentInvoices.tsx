@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 interface Invoice {
   id: string;
@@ -11,41 +12,60 @@ interface Invoice {
 }
 
 interface RecentInvoicesProps {
-  invoices?: Invoice[];
+  invoices: Invoice[];
 }
 
-export const RecentInvoices: React.FC<RecentInvoicesProps> = ({ invoices = [] }) => {
-  if (invoices.length === 0) {
-    return <div className="text-center py-4 text-gray-500">لا توجد فواتير حديثة</div>;
-  }
-  
+export const RecentInvoices: React.FC<RecentInvoicesProps> = ({ invoices }) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'bg-green-500';
+      case 'pending':
+        return 'bg-amber-500';
+      case 'overdue':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'مدفوعة';
+      case 'pending':
+        return 'معلقة';
+      case 'overdue':
+        return 'متأخرة';
+      default:
+        return status;
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      {invoices.map((invoice) => (
-        <div key={invoice.id} className="flex items-center justify-between gap-2">
-          <div>
-            <p className="font-medium">{invoice.customer}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{invoice.date}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span 
-              className={`px-2 py-1 text-xs rounded-full ${
-                invoice.status === 'paid' 
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' 
-                  : invoice.status === 'pending' 
-                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100' 
-                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
-              }`}
-            >
-              {invoice.status === 'paid' ? 'مدفوعة' : invoice.status === 'pending' ? 'معلقة' : 'متأخرة'}
-            </span>
-            <span className="font-medium">{invoice.amount}</span>
-            <button className="rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-800">
-              <ArrowUpRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>العميل</TableHead>
+          <TableHead>المبلغ</TableHead>
+          <TableHead>الحالة</TableHead>
+          <TableHead>التاريخ</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {invoices && invoices.map((invoice) => (
+          <TableRow key={invoice.id}>
+            <TableCell>{invoice.customer}</TableCell>
+            <TableCell>{invoice.amount}</TableCell>
+            <TableCell>
+              <Badge className={getStatusColor(invoice.status)}>
+                {getStatusText(invoice.status)}
+              </Badge>
+            </TableCell>
+            <TableCell>{invoice.date}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
