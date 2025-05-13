@@ -1,8 +1,8 @@
+
 import { useState, useMemo } from "react";
 import { mockVendors } from "@/data/mockVendors";
 import { Vendor } from "@/types/vendor";
 
-// Using the Vendor type imported from types/vendor.ts
 export const useVendorStatementList = () => {
   // حالة البحث والفلترة
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,7 +14,6 @@ export const useVendorStatementList = () => {
     return mockVendors.map(vendor => ({
       ...vendor,
       lastTransaction: getRandomDate(),
-      // No need to set default values as they're now in mockVendors
     }));
   }, []);
 

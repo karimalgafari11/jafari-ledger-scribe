@@ -8,6 +8,7 @@ import { VendorTransactionsTable } from "@/components/vendors/statement/VendorTr
 import { VendorInfoCard } from "@/components/vendors/statement/VendorInfoCard";
 import { VendorNotFound } from "@/components/vendors/statement/VendorNotFound";
 import { useVendorStatement } from "@/hooks/vendors/useVendorStatement";
+import { Vendor } from "@/types/vendor";
 
 const VendorStatementPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,25 +20,20 @@ const VendorStatementPage = () => {
     return <VendorNotFound />;
   }
 
-  // Ensure vendor has balance property (already exists in the updated mockVendors)
-  const vendorWithBalance = {
-    ...vendor
-  };
-
   const {
     dateRange,
     setDateRange,
     vendorAsCustomer,
     filteredTransactions,
     handleResetDateRange
-  } = useVendorStatement(vendorWithBalance);
+  } = useVendorStatement(vendor);
 
   return (
     <div className="container p-6 mx-auto">
-      <VendorStatementHeader vendorName={vendorWithBalance.name} />
+      <VendorStatementHeader vendorName={vendor.name} />
 
       <VendorStatementSummary 
-        balance={vendorWithBalance.balance}
+        balance={vendor.balance}
         transactions={filteredTransactions}
       />
 
@@ -49,7 +45,7 @@ const VendorStatementPage = () => {
         onResetDateRange={handleResetDateRange}
       />
 
-      <VendorInfoCard vendor={vendorWithBalance} />
+      <VendorInfoCard vendor={vendor} />
     </div>
   );
 };
