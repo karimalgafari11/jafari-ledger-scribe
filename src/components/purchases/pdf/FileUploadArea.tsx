@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { FileUploadWithCompression } from "@/components/ui/file-upload/FileUploadWithCompression";
 
 interface FileUploadAreaProps {
   selectedFile: File | null;
@@ -21,91 +22,28 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
   onProcessFile,
   onSwitchToManual,
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-
-  // Handles drag enter event
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-  
-  // Handles drag leave event
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-  
-  // Handles drag over event
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-  
-  // Handles file drop
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    const files = e.dataTransfer.files;
-    if (files.length) {
-      handleFileSelection(files[0]);
+  const handleFileChange = (files: File[]) => {
+    if (files.length > 0) {
+      onFileSelect(files[0]);
     }
-  };
-  
-  // Handles file input change
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      handleFileSelection(files[0]);
-    }
-  };
-  
-  // Process selected file
-  const handleFileSelection = (file: File) => {
-    if (file.type !== 'application/pdf') {
-      alert("يرجى تحميل ملف PDF فقط");
-      return;
-    }
-    onFileSelect(file);
   };
 
   return (
     <>
-      <div
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
-          isDragging ? 'border-primary bg-primary/5' : 'border-gray-300'
-        }`}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        onClick={() => document.getElementById("pdf-upload")?.click()}
-      >
-        <input
-          type="file"
-          id="pdf-upload"
-          accept="application/pdf"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-        
-        <div className="flex flex-col items-center justify-center gap-2">
-          <Upload className="h-12 w-12 text-gray-400" />
-          <p className="text-sm text-gray-600">
-            {selectedFile 
-              ? `تم اختيار: ${selectedFile.name}` 
-              : 'اسحب وأفلت ملف PDF هنا، أو اضغط للتصفح'}
-          </p>
-          {selectedFile && (
-            <p className="text-xs text-gray-500">
-              {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
-            </p>
-          )}
-        </div>
-      </div>
+      <FileUploadWithCompression
+        onChange={handleFileChange}
+        value={selectedFile ? [selectedFile] : []}
+        multiple={false}
+        accept="application/pdf"
+        allowedExtensions={["pdf"]}
+        maxSize={10}
+        autoCompress={true}
+        compressionOptions={{
+          maxSizeMB: 5,
+          quality: 0.8
+        }}
+        showPreview={true}
+      />
       
       {isProcessing && (
         <div className="mt-4">
