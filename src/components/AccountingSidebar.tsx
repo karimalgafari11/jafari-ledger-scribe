@@ -119,7 +119,7 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="w-full mt-3 text-red-100 hover:bg-sidebar-primary hover:text-white font-medium"
+                        className="w-full mt-3 bg-red-600/90 hover:bg-red-700 text-white hover:text-white font-medium transition-colors"
                         onClick={handleSignOut}
                       >
                         <LogOut className="h-5 w-5 ml-2" />
@@ -184,3 +184,4 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
 };
 
 export default AccountingSidebar;
+
