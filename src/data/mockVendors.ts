@@ -6,7 +6,12 @@ export const mockVendors = [
     phone: "0512345678",
     email: "alsaeed@example.com",
     address: "الرياض، حي العليا، شارع الملك فهد",
-    accountNumber: "SA5980000123456789012345"
+    accountNumber: "SA5980000123456789012345",
+    balance: 12500,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-01-15",
+    dueDate: "2024-05-15"
   },
   {
     id: "v2",
@@ -14,7 +19,12 @@ export const mockVendors = [
     phone: "0556789012",
     email: "alnoor@example.com",
     address: "جدة، حي السلامة، طريق المدينة",
-    accountNumber: "SA5980000987654321012345"
+    accountNumber: "SA5980000987654321012345",
+    balance: 8750,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-02-10",
+    dueDate: "2024-05-20"
   },
   {
     id: "v3",
@@ -22,7 +32,12 @@ export const mockVendors = [
     phone: "0590123456",
     email: "alamana@example.com",
     address: "الدمام، حي الفيصلية، شارع الأمير محمد",
-    accountNumber: "SA5980000123459876501234"
+    accountNumber: "SA5980000123459876501234",
+    balance: 5200,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-01-25",
+    dueDate: "2024-06-01"
   },
   {
     id: "v4",
@@ -30,7 +45,12 @@ export const mockVendors = [
     phone: "0501234567",
     email: "future-tech@example.com",
     address: "الرياض، حي المربع، شارع الملك عبدالعزيز",
-    accountNumber: "SA5980000765432109871234"
+    accountNumber: "SA5980000765432109871234",
+    balance: 15800,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2023-11-30",
+    dueDate: "2024-05-10"
   },
   {
     id: "v5",
@@ -38,7 +58,12 @@ export const mockVendors = [
     phone: "0566543210",
     email: "quality-paper@example.com",
     address: "جدة، المنطقة الصناعية، طريق المدينة",
-    accountNumber: "SA5980000123456543211234"
+    accountNumber: "SA5980000123456543211234",
+    balance: 0,
+    currency: "SAR",
+    status: "غير نشط",
+    createdAt: "2024-03-05",
+    dueDate: null
   },
   {
     id: "v6",
@@ -46,7 +71,12 @@ export const mockVendors = [
     phone: "0533221100",
     email: "industrial-tools@example.com",
     address: "الرياض، المنطقة الصناعية الثانية",
-    accountNumber: "SA5980000112233445566778"
+    accountNumber: "SA5980000112233445566778",
+    balance: 9650,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-02-15",
+    dueDate: "2024-06-15"
   },
   {
     id: "v7",
@@ -54,7 +84,12 @@ export const mockVendors = [
     phone: "0544332211",
     email: "alfajr-office@example.com",
     address: "جدة، حي الروضة، شارع فلسطين",
-    accountNumber: "SA5980000998877665544332"
+    accountNumber: "SA5980000998877665544332",
+    balance: 3400,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-01-20",
+    dueDate: "2024-05-25"
   },
   {
     id: "v8",
@@ -62,7 +97,12 @@ export const mockVendors = [
     phone: "0567891234",
     email: "alraed-electronics@example.com",
     address: "الرياض، حي النخيل، طريق الملك سلمان",
-    accountNumber: "SA5980000123454321567890"
+    accountNumber: "SA5980000123454321567890",
+    balance: 7200,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-02-28",
+    dueDate: "2024-06-10"
   },
   {
     id: "v9",
@@ -70,7 +110,12 @@ export const mockVendors = [
     phone: "0522334455",
     email: "modern-building@example.com",
     address: "الدمام، المنطقة الصناعية الأولى",
-    accountNumber: "SA5980000112233445566123"
+    accountNumber: "SA5980000112233445566123",
+    balance: 0,
+    currency: "SAR",
+    status: "غير نشط",
+    createdAt: "2024-03-10",
+    dueDate: null
   },
   {
     id: "v10",
@@ -78,6 +123,11 @@ export const mockVendors = [
     phone: "0599887766",
     email: "horizon-supply@example.com",
     address: "الرياض، حي الملز، شارع الستين",
-    accountNumber: "SA5980000665544332211001"
+    accountNumber: "SA5980000665544332211001",
+    balance: 6500,
+    currency: "SAR",
+    status: "نشط",
+    createdAt: "2024-01-05",
+    dueDate: "2024-05-05"
   }
 ];

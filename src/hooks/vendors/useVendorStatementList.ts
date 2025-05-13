@@ -1,27 +1,8 @@
-
 import { useState, useMemo } from "react";
 import { mockVendors } from "@/data/mockVendors";
+import { Vendor } from "@/types/vendor";
 
-// تحديد نوع البيانات لمورد
-export interface Vendor {
-  id: string;
-  name: string;
-  contactPerson?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  balance: number;
-  currency: string;
-  status: string;
-  taxNumber?: string;
-  createdAt: string;
-  category?: string;
-  creditLimit?: number;
-  dueDate?: string | null;
-  lastTransaction?: string;
-  accountNumber?: string;  // Added property
-}
-
+// Using the Vendor type imported from types/vendor.ts
 export const useVendorStatementList = () => {
   // حالة البحث والفلترة
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,11 +13,8 @@ export const useVendorStatementList = () => {
   const vendors: Vendor[] = useMemo(() => {
     return mockVendors.map(vendor => ({
       ...vendor,
-      balance: vendor.balance || 0,  // Ensure balance exists
-      currency: vendor.currency || "SAR",  // Ensure currency exists
-      createdAt: vendor.createdAt || new Date().toISOString(),  // Ensure createdAt exists
       lastTransaction: getRandomDate(),
-      status: vendor.dueDate && new Date(vendor.dueDate) < new Date() ? "overdue" : "active"
+      // No need to set default values as they're now in mockVendors
     }));
   }, []);
 

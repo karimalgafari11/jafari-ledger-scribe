@@ -19,10 +19,9 @@ const VendorStatementPage = () => {
     return <VendorNotFound />;
   }
 
-  // Ensure vendor has balance property (default to 0 if not present)
+  // Ensure vendor has balance property (already exists in the updated mockVendors)
   const vendorWithBalance = {
-    ...vendor,
-    balance: vendor.balance || 0
+    ...vendor
   };
 
   const {

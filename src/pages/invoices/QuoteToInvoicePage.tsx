@@ -112,26 +112,28 @@ const QuoteToInvoicePage: React.FC = () => {
           updateInvoiceField("notes", `تم إنشاؤها من عرض السعر رقم ${quote.quoteNumber}. ${quote.notes || ''}`);
           
           // Add items from quote to invoice
-          quote.items.forEach((item: any) => {
+          quote.items.forEach((quoteItem: any) => {
             const mappedProduct: Product = {
-              id: item.productId,
-              name: item.name,
-              code: item.code,
-              price: item.price
+              id: quoteItem.id, 
+              name: quoteItem.name, 
+              code: quoteItem.code, 
+              price: quoteItem.price,
+              quantity: quoteItem.quantity || 0,
+              isActive: true
             };
             
             addInvoiceItem({
               id: uuidv4(), // Generate a new unique ID for each item
-              productId: item.productId,
-              code: item.code,
-              name: item.name,
-              description: item.description,
-              quantity: item.quantity,
-              price: item.price,
+              productId: quoteItem.productId,
+              code: quoteItem.code,
+              name: quoteItem.name,
+              description: quoteItem.description,
+              quantity: quoteItem.quantity,
+              price: quoteItem.price,
               // Including other required fields with default values if needed
-              discount: item.discount || 0,
-              discountType: item.discountType || 'percentage',
-              tax: item.tax || 15
+              discount: quoteItem.discount || 0,
+              discountType: quoteItem.discountType || 'percentage',
+              tax: quoteItem.tax || 15
             });
           });
           
