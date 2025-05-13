@@ -1,129 +1,172 @@
+import React from 'react';
+import DashboardWelcome from './DashboardWelcome';
+import { DashboardHeader } from './DashboardHeader';
+import { RecentInvoices } from './RecentInvoices';
+import { Tasks } from './Tasks';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
+import { calculatePercentageChange } from '@/lib/utils';
+import { ArrowDown, ArrowUp, Users } from 'lucide-react';
+import UpdatesNotifier from './UpdatesNotifier';
 
-import React from "react";
-import { SystemAlert } from "@/types/ai";
-import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
-import StatsCards from "@/components/dashboard/StatsCards";
-import KpiMetricsGrid from "@/components/dashboard/KpiMetricsGrid";
-import ChartsGrid from "@/components/dashboard/ChartsGrid";
-import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
-import { useIsMobile } from "@/hooks/use-mobile";
-import InteractiveLayout from "@/components/interactive/InteractiveLayout";
-import { useAiAssistant } from "@/hooks/useAiAssistant";
-import { ChartData } from "@/types/custom-reports";
-import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
+const DashboardContent = () => {
+  const {
+    totalRevenue,
+    newCustomers,
+    totalOrders,
+    averageOrderValue,
+    recentInvoices,
+    tasks,
+    isLoading,
+    error,
+  } = useDashboardData();
 
-interface DashboardContentProps {
-  totalSales: number;
-  totalExpenses: number;
-  netProfit: number;
-  profitMargin: string;
-  overdueInvoices: number;
-  overdueTotalAmount: number;
-  kpis: Array<{
-    title: string;
-    value: string;
-    status: "up" | "down" | "neutral";
-    description: string;
-  }>;
-  salesData: ChartData;
-  profitData: ChartData;
-  customerDebtData: ChartData;
-  supplierCreditData: ChartData;
-  costCenterData: ChartData;
-  dailySalesData: ChartData;
-  systemAlerts: SystemAlert[];
-  interactiveMode?: boolean;
-  displayOptions: DisplayOptions;
-  shortcuts: ShortcutItem[];
-}
-
-const DashboardContent: React.FC<DashboardContentProps> = ({
-  totalSales,
-  totalExpenses,
-  netProfit,
-  profitMargin,
-  overdueInvoices,
-  overdueTotalAmount,
-  kpis,
-  salesData,
-  profitData,
-  customerDebtData,
-  supplierCreditData,
-  costCenterData,
-  dailySalesData,
-  systemAlerts,
-  interactiveMode = false,
-  displayOptions,
-  shortcuts
-}) => {
-  const isMobile = useIsMobile();
-  const { analyzePerformance } = useAiAssistant();
-  const performance = analyzePerformance ? analyzePerformance() : null;
-
-  const dashboardContent = (
-    <div className="w-full max-w-full">
-      {/* عرض الاختصارات إذا كان هناك اختصارات مفعلة */}
-      {shortcuts && shortcuts.length > 0 && (
-        <div className="mb-6">
-          <DashboardShortcuts shortcuts={shortcuts.filter(s => s.enabled)} />
+  if (isLoading) {
+    return (
+      <div className="px-4 py-6 space-y-6">
+        <DashboardHeader />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>إجمالي الإيرادات</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-32" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>عملاء جدد</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-32" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>إجمالي الطلبات</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-32" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>متوسط قيمة الطلب</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-32" />
+            </CardContent>
+          </Card>
         </div>
-      )}
-
-      {/* بطاقات الإحصائيات الرئيسية */}
-      {displayOptions.showStats && (
-        <StatsCards 
-          totalSales={totalSales} 
-          totalExpenses={totalExpenses} 
-          netProfit={netProfit} 
-          profitMargin={profitMargin} 
-          overdueInvoices={overdueInvoices} 
-          overdueTotalAmount={overdueTotalAmount} 
-        />
-      )}
-
-      {/* مؤشرات الأداء الرئيسية */}
-      {displayOptions.showKpis && (
-        <KpiMetricsGrid metrics={kpis} />
-      )}
-
-      {/* المخططات والرسوم البيانية */}
-      {displayOptions.showCharts && (
-        <ChartsGrid 
-          salesData={salesData} 
-          profitData={profitData} 
-          customerDebtData={customerDebtData} 
-          supplierCreditData={supplierCreditData} 
-          costCenterData={costCenterData} 
-          dailySalesData={dailySalesData} 
-          profitMargin={profitMargin} 
-          systemAlerts={systemAlerts} 
-          interactiveMode={interactiveMode}
-        />
-      )}
-      
-      {/* FinancialDecisionsWidget من النظام الذكي */}
-      {displayOptions.showAiWidget && performance && (
-        <div className="mt-6 mb-6">
-          <FinancialDecisionsWidget performance={performance} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle>أحدث الفواتير</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-48" />
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle>المهام</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-48" />
+            </CardContent>
+          </Card>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-4 py-6 space-y-6">
+        <DashboardHeader />
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full flex-1 overflow-auto">
-      {interactiveMode ? (
-        <InteractiveLayout 
-          enableDrag={true} 
-          enableZoom={true}
-          showControls={false}
-          className="h-full w-full"
-        >
-          {dashboardContent}
-        </InteractiveLayout>
-      ) : (
-        dashboardContent
-      )}
+    <div className="px-4 py-6 space-y-6">
+      <DashboardWelcome />
+      <UpdatesNotifier />
+      <DashboardHeader />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>إجمالي الإيرادات</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalRevenue}</div>
+            {/* <div className="text-sm text-gray-500">
+              {calculatePercentageChange(totalRevenue, 10)}% مقارنة بالشهر الماضي
+            </div> */}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>عملاء جدد</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold flex items-center gap-2">
+              {newCustomers}
+              {/* <ArrowUp className="h-4 w-4 text-green-500" />
+              <span className="text-sm text-green-500">
+                {calculatePercentageChange(newCustomers, 5)}%
+              </span> */}
+            </div>
+            {/* <div className="text-sm text-gray-500">
+              {calculatePercentageChange(newCustomers, 5)}% مقارنة بالشهر الماضي
+            </div> */}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>إجمالي الطلبات</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalOrders}</div>
+            {/* <div className="text-sm text-gray-500">
+              {calculatePercentageChange(totalOrders, 8)}% مقارنة بالشهر الماضي
+            </div> */}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>متوسط قيمة الطلب</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{averageOrderValue}</div>
+            {/* <div className="text-sm text-gray-500">
+              {calculatePercentageChange(averageOrderValue, 3)}% مقارنة بالشهر الماضي
+            </div> */}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>أحدث الفواتير</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RecentInvoices invoices={recentInvoices} />
+          </CardContent>
+        </Card>
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>المهام</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tasks tasks={tasks} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
