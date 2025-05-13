@@ -1,6 +1,7 @@
 
 import React, { forwardRef, KeyboardEvent, useRef } from "react";
 import { EditableTableCell } from "./TableCell";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface NameCellProps {
   name: string;
@@ -15,6 +16,7 @@ interface NameCellProps {
 export const NameCell = forwardRef<HTMLTableCellElement, NameCellProps>(
   ({ name, index, isEditing, isActive, handleCellClick, handleDirectEdit, onKeyDown }, ref) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const { language } = useTranslation();
     
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       // السماح للأحداث الخاصة بالتنقل بالمرور إلى الأعلى
@@ -23,6 +25,8 @@ export const NameCell = forwardRef<HTMLTableCellElement, NameCellProps>(
         onKeyDown(e as unknown as KeyboardEvent<HTMLTableCellElement>);
       }
     };
+    
+    const placeholderText = language === 'ar' ? "انقر لإضافة اسم" : "Click to add name";
     
     return (
       <EditableTableCell
@@ -45,7 +49,7 @@ export const NameCell = forwardRef<HTMLTableCellElement, NameCellProps>(
           />
         ) : (
           <span className="cursor-text block w-full h-full py-1 font-medium">
-            {name || "انقر لإضافة اسم"}
+            {name || placeholderText}
           </span>
         )}
       </EditableTableCell>

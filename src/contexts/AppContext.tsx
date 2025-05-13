@@ -40,10 +40,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
     // محاولة استرداد اللغة المخزنة محليًا
     const savedLanguage = localStorage.getItem("language") as Language;
-    return savedLanguage || "ar";
+    // التحقق من صلاحية القيمة
+    if (savedLanguage && (savedLanguage === "ar" || savedLanguage === "en")) {
+      return savedLanguage;
+    }
+    return "ar"; // القيمة الافتراضية
   });
 
-  // Apply theme immediately on startup
+  // تطبيق السمة مباشرة عند بدء التشغيل
   useEffect(() => {
     const defaultTheme = themeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
     const savedTheme = loadSavedTheme(defaultTheme);
@@ -55,12 +59,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // تحديث سمة الصفحة
     if (themeMode === "dark") {
       document.documentElement.classList.add("dark");
-      // Apply dark theme
+      // تطبيق السمة الداكنة
       const savedTheme = loadSavedTheme(defaultDarkTheme);
       applyThemeToDOM(savedTheme);
     } else {
       document.documentElement.classList.remove("dark");
-      // Apply light theme
+      // تطبيق السمة الفاتحة
       const savedTheme = loadSavedTheme(defaultLightTheme);
       applyThemeToDOM(savedTheme);
     }
@@ -74,6 +78,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     // تحديث لغة الصفحة
     document.documentElement.lang = language;
+    // تحديث الفئات لدعم الاتجاه
+    if (language === "ar") {
+      document.documentElement.classList.add("rtl");
+      document.documentElement.classList.remove("ltr");
+    } else {
+      document.documentElement.classList.add("ltr");
+      document.documentElement.classList.remove("rtl");
+    }
     // حفظ اللغة في التخزين المحلي
     localStorage.setItem("language", language);
   }, [language]);

@@ -1,6 +1,7 @@
 
 import React, { forwardRef, KeyboardEvent, useRef } from "react";
 import { EditableTableCell } from "./TableCell";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface NotesCellProps {
   notes?: string;

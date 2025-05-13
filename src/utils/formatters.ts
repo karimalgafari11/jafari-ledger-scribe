@@ -31,7 +31,11 @@ export const formatCurrency = (amount: number, currency = 'SAR', language: Langu
  */
 export const formatDate = (date: Date | string, language: Language = 'ar'): string => {
   try {
-    const dateObj = new Date(date);
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) {
+      throw new Error('Invalid date');
+    }
+    
     const locale = language === 'ar' ? 'ar-SA' : 'en-US';
     
     return new Intl.DateTimeFormat(locale, {
@@ -70,35 +74,44 @@ export const truncateText = (text: string, maxLength: number): string => {
  * Format time ago from a date
  */
 export const timeAgo = (date: Date | string, language: Language = 'ar'): string => {
-  const dateObj = new Date(date);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-  
-  const minutes = Math.floor(diffInSeconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  
-  if (language === 'ar') {
-    if (days > 0) {
-      return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) {
+      throw new Error('Invalid date');
     }
-    if (hours > 0) {
-      return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+    
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
+    
+    const minutes = Math.floor(diffInSeconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (language === 'ar') {
+      if (days > 0) {
+        return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+      }
+      if (hours > 0) {
+        return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+      }
+      if (minutes > 0) {
+        return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
+      }
+      return 'منذ لحظات';
+    } else {
+      if (days > 0) {
+        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+      }
+      if (hours > 0) {
+        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+      }
+      if (minutes > 0) {
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+      }
+      return 'just now';
     }
-    if (minutes > 0) {
-      return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
-    }
-    return 'منذ لحظات';
-  } else {
-    if (days > 0) {
-      return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-    }
-    if (hours > 0) {
-      return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-    }
-    if (minutes > 0) {
-      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-    }
-    return 'just now';
+  } catch (error) {
+    console.error('Error calculating time ago:', error);
+    return String(date);
   }
 };

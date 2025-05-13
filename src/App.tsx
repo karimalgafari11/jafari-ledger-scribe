@@ -20,14 +20,20 @@ const queryClient = new QueryClient({
 });
 
 // Loading component with better visual feedback
-const LoadingFallback = () => (
-  <div className="h-screen w-full flex items-center justify-center bg-background">
-    <div className="flex flex-col items-center gap-4">
-      <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
-      <div className="animate-pulse text-xl font-medium">جاري التحميل...</div>
+const LoadingFallback = () => {
+  // Get current language from localStorage to show appropriate loading message
+  const language = localStorage.getItem('language') || 'ar';
+  const loadingText = language === 'ar' ? 'جاري التحميل...' : 'Loading...';
+  
+  return (
+    <div className="h-screen w-full flex items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        <div className="animate-pulse text-xl font-medium">{loadingText}</div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 function App() {
   return (
