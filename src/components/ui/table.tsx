@@ -9,12 +9,22 @@ const Table = React.forwardRef<
     stickyHeader?: boolean;
     hoverable?: boolean;
     striped?: boolean;
+    gridLines?: boolean;
+    bordered?: boolean;
   }
->(({ className, stickyHeader, hoverable, striped, ...props }, ref) => (
+>(({ className, stickyHeader, hoverable, striped, gridLines, bordered, ...props }, ref) => (
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
+      className={cn(
+        "w-full caption-bottom text-sm", 
+        stickyHeader && "table-pin-header",
+        hoverable && "table-hoverable",
+        striped && "table-striped",
+        gridLines && "table-gridlines",
+        bordered && "table-bordered",
+        className
+      )}
       {...props}
     />
   </div>
@@ -35,7 +45,7 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
+    className={cn("", className)}
     {...props}
   />
 ))
@@ -60,7 +70,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      "border-b transition-colors data-[state=selected]:bg-muted",
       className
     )}
     {...props}

@@ -28,6 +28,31 @@ export function formatCurrency(amount: number | string, currency: string = "ر.�
 }
 
 /**
+ * تنسيق الرقم بتنسيق مناسب
+ * @param value القيمة الرقمية المراد تنسيقها
+ * @returns القيمة منسقة كرقم
+ */
+export function formatNumber(value: number | string): string {
+  let numericValue: number;
+  
+  if (typeof value === 'string') {
+    // إزالة أي رموز غير رقمية
+    const cleanedValue = value.replace(/[^\d.]/g, '');
+    numericValue = parseFloat(cleanedValue);
+  } else {
+    numericValue = value;
+  }
+  
+  // التحقق من أن القيمة صالحة
+  if (isNaN(numericValue)) {
+    return '0';
+  }
+  
+  // تنسيق الرقم
+  return numericValue.toLocaleString('ar-SA');
+}
+
+/**
  * تنسيق التاريخ بالتنسيق المطلوب
  * @param date التاريخ المراد تنسيقه
  * @returns التاريخ منسقًا

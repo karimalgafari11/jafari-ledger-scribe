@@ -3,107 +3,103 @@
 @tailwind components;
 @tailwind utilities;
 
-/* مؤشرات تحميل الصفحة والتصميم العام */
-body {
-  @apply bg-background text-foreground overflow-x-hidden;
-  transition: opacity 0.5s ease-in-out;
-  opacity: 1;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --success: 142 71% 45%;
+    --success-foreground: 210 40% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --success: 142 71% 45%;
+    --success-foreground: 210 40% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+  }
 }
 
-.app-loaded {
-  animation: fadeIn 0.5s ease-in-out;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-.app-container {
-  transition: opacity 0.5s ease-in-out;
+@layer components {
+  .table-striped tr:nth-of-type(odd) {
+    @apply bg-muted/50;
+  }
+  
+  .table-hoverable tbody tr:hover {
+    @apply bg-muted/70;
+  }
+  
+  .table-gridlines td, .table-gridlines th {
+    @apply border border-border;
+  }
+  
+  .table-bordered {
+    @apply border border-border rounded-lg;
+  }
+
+  .table-pin-header thead {
+    @apply sticky top-0 z-10 bg-background;
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Right to left (RTL) support */
+html[dir="rtl"] {
+  .text-left {
+    text-align: right;
+  }
+  .text-right {
+    text-align: left;
+  }
 }
 
-/* تحسينات للطبقات على المستوى الكلي */
-.z-page-content {
-  @apply z-10;
-}
-
-.z-watermark {
-  @apply z-0;
-}
-
-/* تحسينات للعناصر الثابتة */
-.fixed-content {
-  will-change: transform;
-}
-
-/* الشفافية الانتقالية */
-.transition-fade {
-  @apply transition-opacity duration-300;
-}
-
-/* إصلاح مشكلات الفلاش البصري */
-.no-flash {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* تحسينات الأداء */
-.content-container {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* تحسينات ظهور العناصر */
-@keyframes appearIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.appear-in {
-  animation: appearIn 0.3s ease-out forwards;
-}
-
-/* تحسين الاستقرار المرئي */
-.stable-element {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-/* أنميشن للتبديلات الناعمة */
-.slide-in-right {
-  animation: slideInRight 0.3s forwards;
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-.slide-out-right {
-  animation: slideOutRight 0.3s forwards;
-}
-
-@keyframes slideOutRight {
-  from { transform: translateX(0); }
-  to { transform: translateX(100%); }
-}
-
-/* Fix for transparent dialogs and dropdowns */
-.radix-dropdown-content,
-.radix-dialog-content,
-.radix-popover-content,
-.radix-select-content {
-  background-color: #ffffff !important; 
-  border: 1px solid #e2e8f0 !important;
-}
-
-/* Dark mode fixes */
-.dark .radix-dropdown-content,
-.dark .radix-dialog-content,
-.dark .radix-popover-content,
-.dark .radix-select-content {
-  background-color: #1f2937 !important;
-  border-color: #374151 !important;
+/* Arabic font optimization */
+html[lang="ar"] {
+  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", "Segoe UI", sans-serif;
 }
