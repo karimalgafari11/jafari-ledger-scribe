@@ -11,6 +11,7 @@ import RegisterPage from '@/pages/auth/RegisterPage';
 import ActivityLogPage from '@/pages/settings/ActivityLogPage'; 
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
+import NotFound from '@/pages/NotFound'; // Import the NotFound page for 404 handling
 
 // Import settings pages
 import SystemSettingsPage from '@/pages/settings/SystemSettingsPage';
@@ -64,7 +65,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 // Combine all route children
 const routeChildren = [
   {
-    index: true,
+    path: "/dashboard",
     element: <Dashboard />,
   },
   {
@@ -142,7 +143,14 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <PrivateRoute><Index /></PrivateRoute>,
-    children: routeChildren,
+    errorElement: <NotFound />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" />,
+      },
+      ...routeChildren,
+    ]
   },
   {
     path: "/auth/login",
