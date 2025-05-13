@@ -2,8 +2,14 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAppContext } from "@/contexts/AppContext";
-import { Globe } from "lucide-react";
+import { Globe, ChevronDown } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 interface LanguageSwitcherProps {
   className?: string;
@@ -13,21 +19,41 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
   const { language, setLanguage } = useAppContext();
   const { t } = useTranslation();
   
-  const toggleLanguage = () => {
-    setLanguage(language === 'ar' ? 'en' : 'ar');
+  const languages = {
+    ar: "العربية",
+    en: "English"
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleLanguage}
-      title={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
-      aria-label={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
-      className={className}
-    >
-      <Globe className="h-5 w-5" />
-      <span className="sr-only">{language === 'ar' ? 'English' : 'العربية'}</span>
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`gap-2 ${className}`}
+          title={t("language")}
+        >
+          <Globe className="h-4 w-4" />
+          <span className="hidden md:inline-block">
+            {languages[language]}
+          </span>
+          <ChevronDown className="h-3 w-3 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={() => setLanguage("ar")}
+          className={language === "ar" ? "bg-accent" : ""}
+        >
+          العربية
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setLanguage("en")}
+          className={language === "en" ? "bg-accent" : ""}
+        >
+          English
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
