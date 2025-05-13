@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { mockNotifications } from '@/data/mockNotifications';
-import { Notification, NotificationSettings, NotificationTemplate } from '@/types/notifications';
+import { Notification, NotificationSettings, NotificationTemplate, ChannelConfig } from '@/types/notifications';
 import { toast } from 'sonner';
 
 export const useNotifications = () => {
@@ -16,8 +16,8 @@ export const useNotifications = () => {
       userId: 'current-user',
       eventType: 'inventory.low_stock',
       channels: {
-        'email': { enabled: true, threshold: 'medium' },
-        'in-app': { enabled: true, threshold: 'low' },
+        'email': { enabled: true, threshold: 'medium' as const },
+        'in-app': { enabled: true, threshold: 'low' as const },
         'push': { enabled: false },
         'sms': { enabled: false },
         'slack': { enabled: false },
@@ -31,9 +31,9 @@ export const useNotifications = () => {
       userId: 'current-user',
       eventType: 'invoices.overdue',
       channels: {
-        'email': { enabled: true, threshold: 'high' },
-        'in-app': { enabled: true, threshold: 'medium' },
-        'push': { enabled: true, threshold: 'high' },
+        'email': { enabled: true, threshold: 'high' as const },
+        'in-app': { enabled: true, threshold: 'medium' as const },
+        'push': { enabled: true, threshold: 'high' as const },
         'sms': { enabled: false },
         'slack': { enabled: false },
         'webhook': { enabled: false }
@@ -46,17 +46,17 @@ export const useNotifications = () => {
       userId: 'current-user',
       eventType: 'system.backup_failed',
       channels: {
-        'email': { enabled: true, threshold: 'critical' },
-        'in-app': { enabled: true, threshold: 'critical' },
-        'push': { enabled: true, threshold: 'critical' },
-        'sms': { enabled: true, threshold: 'critical' },
+        'email': { enabled: true, threshold: 'critical' as const },
+        'in-app': { enabled: true, threshold: 'critical' as const },
+        'push': { enabled: true, threshold: 'critical' as const },
+        'sms': { enabled: true, threshold: 'critical' as const },
         'slack': { enabled: false },
         'webhook': { enabled: false }
       },
       scheduleQuiet: {
         enabled: true,
-        start: '22:00',
-        end: '08:00',
+        startTime: '22:00',
+        endTime: '08:00',
         timezone: 'Asia/Riyadh'
       },
       muted: false,
@@ -75,7 +75,6 @@ export const useNotifications = () => {
       content: 'عزيزي {{user_name}},\n\nالمنتج {{product_name}} وصل إلى مستوى مخزون منخفض ({{current_stock}} متبقي). الرجاء إعادة الطلب قريبًا.\n\nشكراً لك',
       channels: ['email', 'in-app'],
       variables: ['user_name', 'product_name', 'current_stock'],
-      createdAt: new Date(),
       updatedAt: new Date()
     },
     {
@@ -85,12 +84,14 @@ export const useNotifications = () => {
       content: 'عزيزي {{customer_name}},\n\nالفاتورة رقم {{invoice_number}} بقيمة {{amount}} ريال مستحقة الدفع منذ {{due_date}}.\n\nالرجاء سداد المبلغ في أقرب وقت ممكن.',
       channels: ['email', 'sms', 'in-app'],
       variables: ['customer_name', 'invoice_number', 'amount', 'due_date'],
-      createdAt: new Date(),
       updatedAt: new Date()
     }
   ];
 
   const [templates, setTemplates] = useState<NotificationTemplate[]>(defaultTemplates);
+
+  // Calculate unread count
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   // Fetch notification data
   useEffect(() => {
@@ -112,66 +113,103 @@ export const useNotifications = () => {
   }, []);
 
   // Mark notification as read
-  const markAsRead = (id: string) => {
-    setNotifications(prevNotifications => 
-      prevNotifications.map(notification => 
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
-    toast.success('تم تحديد الإشعار كمقروء');
+  const markAsRead = async (id: string): Promise<boolean> => {
+    try {
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => 
+          notification.id === id ? { ...notification, read: true } : notification
+        )
+      );
+      toast.success('تم تحديد الإشعار كمقروء');
+      return true;
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      return false;
+    }
   };
 
   // Mark all notifications as read
-  const markAllAsRead = () => {
-    setNotifications(prevNotifications => 
-      prevNotifications.map(notification => ({ ...notification, read: true }))
-    );
-    toast.success('تم تحديد جميع الإشعارات كمقروءة');
+  const markAllAsRead = async (): Promise<boolean> => {
+    try {
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => ({ ...notification, read: true }))
+      );
+      toast.success('تم تحديد جميع الإشعارات كمقروءة');
+      return true;
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      return false;
+    }
   };
 
   // Delete notification
-  const deleteNotification = (id: string) => {
-    setNotifications(prevNotifications => 
-      prevNotifications.filter(notification => notification.id !== id)
-    );
-    toast.success('تم حذف الإشعار');
+  const deleteNotification = async (id: string): Promise<boolean> => {
+    try {
+      setNotifications(prevNotifications => 
+        prevNotifications.filter(notification => notification.id !== id)
+      );
+      toast.success('تم حذف الإشعار');
+      return true;
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      return false;
+    }
   };
 
   // Delete multiple notifications
-  const deleteNotifications = (ids: string[]) => {
-    setNotifications(prevNotifications => 
-      prevNotifications.filter(notification => !ids.includes(notification.id))
-    );
-    toast.success(`تم حذف ${ids.length} إشعارات`);
+  const deleteNotifications = async (ids: string[]): Promise<boolean> => {
+    try {
+      setNotifications(prevNotifications => 
+        prevNotifications.filter(notification => !ids.includes(notification.id))
+      );
+      toast.success(`تم حذف ${ids.length} إشعارات`);
+      return true;
+    } catch (error) {
+      console.error("Error deleting multiple notifications:", error);
+      return false;
+    }
   };
 
   // Update notification settings
-  const updateNotificationSettings = (updatedSetting: NotificationSettings) => {
-    setNotificationSettings(prevSettings => 
-      prevSettings.map(setting => 
-        setting.id === updatedSetting.id ? updatedSetting : setting
-      )
-    );
+  const updateNotificationSettings = async (updatedSetting: NotificationSettings): Promise<boolean> => {
+    try {
+      setNotificationSettings(prevSettings => 
+        prevSettings.map(setting => 
+          setting.id === updatedSetting.id ? updatedSetting : setting
+        )
+      );
+      return true;
+    } catch (error) {
+      console.error("Error updating notification settings:", error);
+      return false;
+    }
   };
 
   // Update notification template
-  const updateTemplate = (updatedTemplate: NotificationTemplate) => {
-    setTemplates(prevTemplates => 
-      prevTemplates.map(template => 
-        template.id === updatedTemplate.id ? updatedTemplate : template
-      )
-    );
-    toast.success('تم تحديث قالب الإشعار');
+  const updateTemplate = async (updatedTemplate: NotificationTemplate): Promise<boolean> => {
+    try {
+      setTemplates(prevTemplates => 
+        prevTemplates.map(template => 
+          template.id === updatedTemplate.id ? updatedTemplate : template
+        )
+      );
+      toast.success('تم تحديث قالب الإشعار');
+      return true;
+    } catch (error) {
+      console.error("Error updating notification template:", error);
+      return false;
+    }
   };
 
   // Send notification (mock implementation)
-  const sendNotification = (title: string, message: string, recipients: string[], priority: any) => {
+  const sendNotification = (title: string, message: string, recipients: string[], priority: any): boolean => {
     toast.success('تم إرسال الإشعار بنجاح');
     return true;
   };
 
   return {
     notifications,
+    unreadCount,
     isLoading,
     error,
     notificationSettings,

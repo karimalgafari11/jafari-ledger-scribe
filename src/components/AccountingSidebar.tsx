@@ -1,8 +1,9 @@
 
-import React from "react";
-import {
-  Home,
-  BookOpen,
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { 
+  Home, 
+  BookOpen, 
   BookText,
   AlignJustify,
   Target,
@@ -14,19 +15,12 @@ import {
   Zap,
   Shield,
   Settings,
-  FileText,
-} from "lucide-react";
-import { NavLink } from "react-router-dom";
-import { cn } from "@/lib/utils";
+  FileText
+} from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { cn } from '@/lib/utils';
 
-interface MenuItem {
-  label: string;
-  icon: React.ComponentType<any>;
-  path: string;
-  tag?: string;
-}
-
-const AccountingSidebar = () => {
+export const AccountingSidebar = () => {
   const menuItems = [
     {
       label: "الرئيسية",
@@ -102,30 +96,31 @@ const AccountingSidebar = () => {
   ];
 
   return (
-    <div className="w-64 flex-shrink-0 border-r bg-secondary py-4">
+    <div className="h-full py-4 overflow-auto">
       <div className="space-y-1">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.label}
-            to={item.path}
-            className={({ isActive }) =>
-              cn(
-                "group flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground"
-              )
-            }
-          >
-            <item.icon className="h-4 w-4" />
-            <span>{item.label}</span>
-            {item.tag && (
-              <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                {item.tag}
-              </span>
-            )}
-          </NavLink>
-        ))}
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
+                  isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                )
+              }
+            >
+              <Icon className="h-4 w-4" />
+              <span>{item.label}</span>
+              {item.tag && (
+                <Badge variant="secondary" className="mr-auto text-xs">
+                  {item.tag}
+                </Badge>
+              )}
+            </NavLink>
+          );
+        })}
       </div>
     </div>
   );

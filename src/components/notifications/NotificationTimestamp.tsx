@@ -1,32 +1,19 @@
 
 import React from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { formatDateForDisplay } from '@/hooks/notifications/notificationUtils';
+import { formatDistanceToNow } from 'date-fns';
+import { ar } from 'date-fns/locale';
 
 interface NotificationTimestampProps {
   date: Date;
 }
 
-const NotificationTimestamp: React.FC<NotificationTimestampProps> = ({ date }) => {
-  const formattedDate = formatDateForDisplay(date);
-  const fullDate = date.toLocaleString('ar-SA', {
-    dateStyle: 'full',
-    timeStyle: 'medium'
-  });
+const NotificationTimestamp = ({ date }: NotificationTimestampProps) => {
+  const formattedDate = formatDistanceToNow(new Date(date), { addSuffix: true, locale: ar });
   
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <time dateTime={date.toISOString()} className="text-xs text-muted-foreground">
-            {formattedDate}
-          </time>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="text-xs">{fullDate}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <span className="text-xs text-muted-foreground ml-2">
+      {formattedDate}
+    </span>
   );
 };
 

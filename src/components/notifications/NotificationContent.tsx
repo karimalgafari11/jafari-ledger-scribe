@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
 
 interface NotificationContentProps {
   title: string;
@@ -18,40 +17,15 @@ const NotificationContent = ({
   relatedEntityId,
   relatedEntityType
 }: NotificationContentProps) => {
-  const getEntityUrl = () => {
-    if (!relatedEntityId || !relatedEntityType) return null;
-    
-    switch (relatedEntityType) {
-      case 'invoice':
-        return `/invoices/${relatedEntityId}`;
-      case 'product':
-        return `/inventory/products/${relatedEntityId}`;
-      case 'expense':
-        return `/expenses/${relatedEntityId}`;
-      default:
-        return null;
-    }
-  };
-  
-  const entityUrl = getEntityUrl();
-  
   return (
-    <div>
-      <p className={cn(
-        "text-sm",
-        read ? "text-muted-foreground" : "text-foreground"
-      )}>
+    <div className="space-y-1">
+      <p className={cn("text-sm", !read ? "font-medium" : "text-muted-foreground")}>
         {message}
       </p>
       
-      {entityUrl && (
-        <div className="mt-1">
-          <Link 
-            to={entityUrl}
-            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-          >
-            عرض التفاصيل
-          </Link>
+      {relatedEntityId && relatedEntityType && (
+        <div className="text-xs text-blue-600">
+          عرض التفاصيل
         </div>
       )}
     </div>

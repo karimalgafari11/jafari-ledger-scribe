@@ -1,6 +1,5 @@
 
 import { AlertOctagon, AlertTriangle, Bell, Box, CreditCard, Database, DollarSign, FileText, Settings, ShoppingCart, User, UserCheck } from "lucide-react";
-import { NotificationEvent } from "@/types/notifications";
 
 export const notificationEvents = [
   {

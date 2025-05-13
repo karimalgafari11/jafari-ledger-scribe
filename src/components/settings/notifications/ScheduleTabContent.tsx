@@ -18,7 +18,7 @@ interface ScheduleTabContentProps {
   }[];
   settings: NotificationSettings[];
   handleQuietHoursToggle: (eventType: string) => void;
-  handleQuietHoursChange: (eventType: string, field: "start" | "end", value: string) => void;
+  handleQuietHoursChange: (eventType: string, field: "startTime" | "endTime", value: string) => void;
   handleSaveSettings: () => void;
 }
 
@@ -66,8 +66,8 @@ const ScheduleTabContent = ({
                     <Input
                       id={`start-${event.id}`}
                       type="time"
-                      value={quietHours.start}
-                      onChange={(e) => handleQuietHoursChange(event.id, "start", e.target.value)}
+                      value={quietHours.startTime}
+                      onChange={(e) => handleQuietHoursChange(event.id, "startTime", e.target.value)}
                     />
                   </div>
                   <div>
@@ -75,8 +75,8 @@ const ScheduleTabContent = ({
                     <Input
                       id={`end-${event.id}`}
                       type="time"
-                      value={quietHours.end}
-                      onChange={(e) => handleQuietHoursChange(event.id, "end", e.target.value)}
+                      value={quietHours.endTime}
+                      onChange={(e) => handleQuietHoursChange(event.id, "endTime", e.target.value)}
                     />
                   </div>
                 </div>

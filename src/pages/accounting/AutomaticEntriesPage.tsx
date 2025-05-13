@@ -1,15 +1,15 @@
 
 import React from 'react';
-import { Layout } from "@/components/Layout";
-import { PageContainer } from "@/components/PageContainer";
+import { Layout } from '@/components/Layout';
+import { PageContainer } from '@/components/PageContainer';
 
 const AutomaticEntriesPage: React.FC = () => {
   return (
     <Layout>
-      <PageContainer title="القيود التلقائية" description="إعداد وإدارة القيود المحاسبية التلقائية">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <h3 className="text-lg font-semibold mb-4">القيود التلقائية</h3>
-          <p className="text-muted-foreground">هنا سيظهر جدول القيود التلقائية وإعداداتها</p>
+      <PageContainer title="القيود التلقائية">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold mb-4">القيود التلقائية</h1>
+          <p>عرض وإدارة القيود التلقائية.</p>
         </div>
       </PageContainer>
     </Layout>

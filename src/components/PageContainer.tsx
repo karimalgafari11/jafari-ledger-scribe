@@ -1,33 +1,52 @@
 
-import React, { ReactNode } from "react";
-import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
+import { Button } from './ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface PageContainerProps {
   title: string;
-  children: ReactNode;
+  description?: string;
+  children: React.ReactNode;
   showBack?: boolean;
-  headerContent?: ReactNode;
-  className?: string;
+  actions?: React.ReactNode;
 }
 
-export const PageContainer: React.FC<PageContainerProps> = ({
+export const PageContainer = ({
   title,
+  description,
   children,
-  showBack = true,
-  headerContent,
-  className = "",
-}) => {
+  showBack = false,
+  actions
+}: PageContainerProps) => {
+  const navigate = useNavigate();
+
   return (
-    <Layout className="h-screen overflow-hidden p-0">
-      <div className="flex flex-col h-full w-full">
-        <Header title={title} showBack={showBack}>
-          {headerContent}
-        </Header>
-        <div className={`flex-1 overflow-auto ${className}`}>
-          {children}
+    <div className="h-full flex flex-col">
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          {showBack && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="ml-2"
+            >
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+          )}
+          <div className="flex flex-1 items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">{title}</h2>
+              {description && <p className="text-sm text-muted-foreground">{description}</p>}
+            </div>
+            {actions && <div className="flex items-center gap-2">{actions}</div>}
+          </div>
         </div>
       </div>
-    </Layout>
+      <div className="flex-1 overflow-auto">
+        {children}
+      </div>
+    </div>
   );
 };

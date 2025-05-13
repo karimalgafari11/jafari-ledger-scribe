@@ -1,22 +1,18 @@
 
-import React from "react";
+import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getTranslatedChannelName, getPriorityTranslation } from "@/hooks/notifications/notificationUtils";
-import { NotificationPriority } from "@/types/notifications";
 
 interface ChannelCardProps {
   channelId: string;
   channelName: string;
   icon: React.ReactNode;
   isEnabled: boolean;
-  onToggle: () => void;
   threshold?: string;
-  onThresholdChange?: (value: string) => void;
-  description?: string;
+  onToggle: () => void;
+  onThresholdChange: (threshold: string) => void;
   deliveryStats?: {
     sent: number;
     delivered: number;
@@ -24,84 +20,76 @@ interface ChannelCardProps {
   };
 }
 
-const ChannelCard: React.FC<ChannelCardProps> = ({
+const ChannelCard = ({
   channelId,
   channelName,
   icon,
   isEnabled,
-  onToggle,
   threshold,
+  onToggle,
   onThresholdChange,
-  description,
-  deliveryStats,
-}) => {
+  deliveryStats
+}: ChannelCardProps) => {
+  const getChannelLabel = (channel: string) => {
+    switch (channel) {
+      case "email": return "البريد الإلكتروني";
+      case "sms": return "الرسائل النصية";
+      case "in-app": return "داخل التطبيق";
+      case "push": return "إشعارات الجوال";
+      case "slack": return "سلاك";
+      case "webhook": return "Webhook";
+      default: return channel;
+    }
+  };
+
   return (
-    <Card className={`transition-all duration-200 ${isEnabled ? 'border-primary/30 bg-primary/5' : 'opacity-80'}`}>
-      <CardContent className="p-5">
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <div className={`p-2 rounded-lg ${isEnabled ? 'bg-primary/10 text-primary' : 'bg-muted'}`}>
-                {icon}
-              </div>
-              <div>
-                <h3 className="text-lg font-medium">{getTranslatedChannelName(channelName)}</h3>
-                {description && <p className="text-sm text-muted-foreground">{description}</p>}
-              </div>
-            </div>
-            <Switch checked={isEnabled} onCheckedChange={onToggle} />
+    <Card className="overflow-hidden">
+      <CardContent className="p-3">
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex items-center gap-2">
+            {icon}
+            <Label htmlFor={channelId} className="font-medium">
+              {getChannelLabel(channelName)}
+            </Label>
           </div>
-
-          {isEnabled && (
-            <>
-              {onThresholdChange && (
-                <div className="pt-2">
-                  <Label htmlFor={`threshold-${channelId}`} className="text-sm mb-1 block">
-                    أولوية الإشعارات
-                  </Label>
-                  <Select 
-                    value={threshold} 
-                    onValueChange={onThresholdChange}
-                  >
-                    <SelectTrigger id={`threshold-${channelId}`}>
-                      <SelectValue placeholder="حدد أولوية الإشعار" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">{getPriorityTranslation("low")}</SelectItem>
-                      <SelectItem value="medium">{getPriorityTranslation("medium")}</SelectItem>
-                      <SelectItem value="high">{getPriorityTranslation("high")}</SelectItem>
-                      <SelectItem value="critical">{getPriorityTranslation("critical")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    إظهار الإشعارات بأولوية {getPriorityTranslation(threshold || "low")} أو أعلى فقط
-                  </p>
-                </div>
-              )}
-
-              {deliveryStats && (
-                <div className="flex justify-between mt-3 pt-3 border-t border-border">
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">تم الإرسال</p>
-                    <Badge variant="outline" className="mt-1">{deliveryStats.sent}</Badge>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">تم التسليم</p>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 mt-1">
-                      {deliveryStats.delivered}
-                    </Badge>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground">فشل</p>
-                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 mt-1">
-                      {deliveryStats.failed}
-                    </Badge>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+          <Switch
+            id={channelId}
+            checked={isEnabled}
+            onCheckedChange={onToggle}
+          />
         </div>
+        
+        {isEnabled && (
+          <div className="mt-3">
+            <Label htmlFor={`${channelId}-threshold`} className="text-xs mb-1 block">
+              مستوى الأولوية
+            </Label>
+            <Select
+              value={threshold || "low"}
+              onValueChange={onThresholdChange}
+              disabled={!isEnabled}
+            >
+              <SelectTrigger id={`${channelId}-threshold`} className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">منخفض</SelectItem>
+                <SelectItem value="medium">متوسط</SelectItem>
+                <SelectItem value="high">عالي</SelectItem>
+                <SelectItem value="critical">حرج</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        
+        {isEnabled && deliveryStats && (
+          <div className="mt-3 text-xs text-muted-foreground">
+            <div className="flex justify-between">
+              <span>تم الإرسال: {deliveryStats.sent}</span>
+              <span>فشل: {deliveryStats.failed}</span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

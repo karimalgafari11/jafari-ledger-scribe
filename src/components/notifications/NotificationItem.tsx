@@ -19,7 +19,11 @@ const NotificationItem = ({ notification, showActions = false }: NotificationIte
   
   const handleClick = async () => {
     if (!notification.read) {
-      await markAsRead(notification.id);
+      try {
+        await markAsRead(notification.id);
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+      }
     }
     
     // Handle click based on notification type/entity

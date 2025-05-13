@@ -24,7 +24,11 @@ export const NotificationsDropdown = () => {
   
   const handleMarkAllAsRead = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await markAllAsRead();
+    try {
+      await markAllAsRead();
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    }
   };
   
   return (

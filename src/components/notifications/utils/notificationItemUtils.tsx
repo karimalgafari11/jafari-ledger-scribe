@@ -1,48 +1,19 @@
 
 import React from 'react';
+import { BellRing, AlertCircle, AlertTriangle, AlertOctagon } from 'lucide-react';
 import { NotificationPriority } from '@/types/notifications';
-import { AlertOctagon, AlertTriangle, Bell, Info } from 'lucide-react';
 
-export const getPriorityIcon = (priority: NotificationPriority) => {
+export const getPriorityIcon = (priority: NotificationPriority): React.ReactNode => {
   switch (priority) {
-    case 'critical':
-      return (
-        <div className="p-1 rounded-full bg-red-100">
-          <AlertOctagon className="h-4 w-4 text-red-600" />
-        </div>
-      );
-    case 'high':
-      return (
-        <div className="p-1 rounded-full bg-amber-100">
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-        </div>
-      );
-    case 'medium':
-      return (
-        <div className="p-1 rounded-full bg-blue-100">
-          <Info className="h-4 w-4 text-blue-600" />
-        </div>
-      );
     case 'low':
-    default:
-      return (
-        <div className="p-1 rounded-full bg-green-100">
-          <Bell className="h-4 w-4 text-green-600" />
-        </div>
-      );
-  }
-};
-
-export const getPriorityText = (priority: NotificationPriority): string => {
-  switch (priority) {
-    case 'critical':
-      return 'حرجة';
-    case 'high':
-      return 'عالية';
+      return <BellRing className="h-5 w-5 text-gray-400" />;
     case 'medium':
-      return 'متوسطة';
-    case 'low':
+      return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+    case 'high':
+      return <AlertTriangle className="h-5 w-5 text-orange-600" />;
+    case 'critical':
+      return <AlertOctagon className="h-5 w-5 text-red-600" />;
     default:
-      return 'منخفضة';
+      return <BellRing className="h-5 w-5 text-gray-400" />;
   }
 };

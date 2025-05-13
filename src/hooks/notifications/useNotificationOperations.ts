@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Notification, NotificationChannel, NotificationEvent, NotificationPriority } from '@/types/notifications';
+import { Notification, NotificationChannel, NotificationPriority } from '@/types/notifications';
 import { supabase } from '@/integrations/supabase/client';
 
 export function useNotificationOperations(
@@ -94,7 +94,7 @@ export function useNotificationOperations(
   // Send a new notification
   const sendNotification = async (
     userId: string,
-    eventType: NotificationEvent,
+    eventType: string,
     priority: NotificationPriority,
     data: Record<string, any>,
     channels?: NotificationChannel[]
@@ -126,7 +126,7 @@ export function useNotificationOperations(
         ?.filter((n: any) => n && n.channel === 'in-app')
         ?.map((n: any) => ({
           ...n,
-          created_at: new Date(n.created_at),
+          createdAt: new Date(n.created_at),
         })) || [];
       
       if (newInAppNotifications.length > 0) {

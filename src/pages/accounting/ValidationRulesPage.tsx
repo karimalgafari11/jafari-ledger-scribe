@@ -1,15 +1,15 @@
 
 import React from 'react';
-import { Layout } from "@/components/Layout";
-import { PageContainer } from "@/components/PageContainer";
+import { Layout } from '@/components/Layout';
+import { PageContainer } from '@/components/PageContainer';
 
 const ValidationRulesPage: React.FC = () => {
   return (
     <Layout>
-      <PageContainer title="قواعد التحقق" description="إعداد وإدارة قواعد التحقق من القيود المحاسبية">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <h3 className="text-lg font-semibold mb-4">قواعد التحقق</h3>
-          <p className="text-muted-foreground">هنا ستظهر قواعد التحقق من القيود المحاسبية</p>
+      <PageContainer title="قواعد التحقق">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold mb-4">قواعد التحقق</h1>
+          <p>عرض وإدارة قواعد التحقق.</p>
         </div>
       </PageContainer>
     </Layout>

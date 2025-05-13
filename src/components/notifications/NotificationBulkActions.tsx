@@ -31,8 +31,11 @@ const NotificationBulkActions = ({
     let success = true;
     
     for (const id of selectedIds) {
-      const result = await markAsRead(id);
-      if (!result) success = false;
+      try {
+        await markAsRead(id);
+      } catch (error) {
+        success = false;
+      }
     }
     
     if (success) {
@@ -47,8 +50,11 @@ const NotificationBulkActions = ({
     let success = true;
     
     for (const id of selectedIds) {
-      const result = await deleteNotification(id);
-      if (!result) success = false;
+      try {
+        await deleteNotification(id);
+      } catch (error) {
+        success = false;
+      }
     }
     
     if (success) {

@@ -14,26 +14,30 @@ import { Notification } from '@/types/notifications';
 
 interface NotificationItemActionsProps {
   notification: Notification;
-  markAsRead: (id: string) => Promise<boolean>;
-  deleteNotification: (id: string) => Promise<boolean>;
+  markAsRead: (id: string) => Promise<any>;
+  deleteNotification: (id: string) => Promise<any>;
 }
 
 const NotificationItemActions = ({ notification, markAsRead, deleteNotification }: NotificationItemActionsProps) => {
   const handleMarkAsRead = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!notification.read) {
-      const success = await markAsRead(notification.id);
-      if (success) {
+      try {
+        await markAsRead(notification.id);
         toast.success('تم تعيين الإشعار كمقروء');
+      } catch (error) {
+        toast.error('حدث خطأ أثناء تعيين الإشعار كمقروء');
       }
     }
   };
   
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const success = await deleteNotification(notification.id);
-    if (success) {
+    try {
+      await deleteNotification(notification.id);
       toast.success('تم حذف الإشعار');
+    } catch (error) {
+      toast.error('حدث خطأ أثناء حذف الإشعار');
     }
   };
 

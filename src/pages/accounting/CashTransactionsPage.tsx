@@ -1,15 +1,15 @@
 
 import React from 'react';
-import { Layout } from "@/components/Layout";
-import { PageContainer } from "@/components/PageContainer";
+import { Layout } from '@/components/Layout';
+import { PageContainer } from '@/components/PageContainer';
 
 const CashTransactionsPage: React.FC = () => {
   return (
     <Layout>
-      <PageContainer title="حركات النقدية" description="عرض وإدارة حركات القبض والصرف">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <h3 className="text-lg font-semibold mb-4">حركات النقدية</h3>
-          <p className="text-muted-foreground">هنا سيظهر جدول حركات النقدية</p>
+      <PageContainer title="حركات النقدية">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold mb-4">حركات النقدية</h1>
+          <p>عرض وإدارة حركات النقدية.</p>
         </div>
       </PageContainer>
     </Layout>

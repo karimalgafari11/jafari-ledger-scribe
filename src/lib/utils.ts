@@ -1,65 +1,7 @@
 
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
- 
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-/**
- * تنسيق المبلغ كعملة
- * @param amount المبلغ المراد تنسيقه
- * @param currency رمز العملة (الافتراضي: ر.س)
- * @returns المبلغ منسقًا مع رمز العملة
- */
-export function formatCurrency(amount: number | string, currency: string = "ر.س"): string {
-  let numericAmount: number;
-  
-  if (typeof amount === 'string') {
-    // إزالة أي رموز غير رقمية
-    const cleanedAmount = amount.replace(/[^\d.]/g, '');
-    numericAmount = parseFloat(cleanedAmount);
-  } else {
-    numericAmount = amount;
-  }
-  
-  // التحقق من أن المبلغ صالح
-  if (isNaN(numericAmount)) {
-    return `0 ${currency}`;
-  }
-  
-  // تنسيق المبلغ
-  const formattedAmount = numericAmount.toLocaleString('ar-SA');
-  
-  return `${formattedAmount} ${currency}`;
-}
-
-/**
- * تنسيق التاريخ بالتنسيق المطلوب
- * @param date التاريخ المراد تنسيقه
- * @returns التاريخ منسقًا
- */
-export function formatDate(date: Date | string): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-}
-
-/**
- * حساب النسبة المئوية للتغيير
- * @param current القيمة الحالية
- * @param previous القيمة السابقة
- * @returns النسبة المئوية للتغيير
- */
-export function calculatePercentageChange(current: number | string, previous: number | string): number {
-  const currentValue = typeof current === 'string' ? parseFloat(current) : current;
-  const previousValue = typeof previous === 'string' ? parseFloat(previous) : previous;
-  
-  if (previousValue === 0) return 0;
-  
-  const change = ((currentValue - previousValue) / previousValue) * 100;
-  return Math.round(change * 10) / 10; // تقريب إلى رقم عشري واحد
+  return twMerge(clsx(inputs));
 }

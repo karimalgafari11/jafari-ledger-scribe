@@ -1,8 +1,8 @@
 
-import { NotificationEvent, Notification, NotificationSettings, NotificationTemplate, NotificationChannel } from '@/types/notifications';
+import { Notification, NotificationSettings, NotificationTemplate, ChannelConfig } from '@/types/notifications';
 
 // Sample notification events
-export const notificationEvents: { id: NotificationEvent, name: string, description: string }[] = [
+export const notificationEvents: { id: string, name: string, description: string }[] = [
   { id: 'inventory.low_stock', name: 'مخزون منخفض', description: 'عند وصول مخزون منتج إلى مستوى منخفض' },
   { id: 'inventory.out_of_stock', name: 'نفاد المخزون', description: 'عند نفاد مخزون منتج' },
   { id: 'expenses.pending_approval', name: 'مصروف ينتظر الموافقة', description: 'عند إنشاء مصروف جديد يحتاج موافقة' },
@@ -92,19 +92,19 @@ export const mockNotificationSettings: NotificationSettings[] = notificationEven
   const smsEnabled = ['inventory.out_of_stock', 'system.suspicious_activity'].includes(event.id);
   const pushEnabled = ['inventory.low_stock', 'inventory.out_of_stock', 'invoices.overdue'].includes(event.id);
   
-  const channels: Record<NotificationChannel, { enabled: boolean, threshold?: 'low' | 'medium' | 'high' | 'critical' }> = {
-    'email': { enabled: emailEnabled, threshold: emailEnabled ? 'high' : undefined },
-    'sms': { enabled: smsEnabled, threshold: smsEnabled ? 'critical' : undefined },
-    'in-app': { enabled: true, threshold: 'low' },
-    'push': { enabled: pushEnabled, threshold: pushEnabled ? 'medium' : undefined },
+  const channels: Record<string, ChannelConfig> = {
+    'email': { enabled: emailEnabled, threshold: emailEnabled ? ('high' as const) : undefined },
+    'sms': { enabled: smsEnabled, threshold: smsEnabled ? ('critical' as const) : undefined },
+    'in-app': { enabled: true, threshold: 'low' as const },
+    'push': { enabled: pushEnabled, threshold: pushEnabled ? ('medium' as const) : undefined },
     'slack': { enabled: false },
     'webhook': { enabled: false },
   };
   
   const scheduleQuiet = index % 3 === 0 ? {
     enabled: true,
-    start: '22:00',
-    end: '07:00',
+    startTime: '22:00',
+    endTime: '07:00',
     timezone: 'Asia/Riyadh'
   } : undefined;
   
@@ -112,7 +112,7 @@ export const mockNotificationSettings: NotificationSettings[] = notificationEven
     id: `setting${index + 1}`,
     userId: 'user1',
     eventType: event.id,
-    channels,
+    channels: channels as Record<string, ChannelConfig>,
     scheduleQuiet,
     muted: index === notificationEvents.length - 1, // Mute the last one
     updatedAt: new Date(),
@@ -140,8 +140,7 @@ export const mockNotificationTemplates: NotificationTemplate[] = [
     `,
     channels: ['email', 'in-app'],
     variables: ['productName', 'userName', 'currentStock', 'minStock', 'productLink'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: 'template2',
@@ -168,8 +167,7 @@ export const mockNotificationTemplates: NotificationTemplate[] = [
     `,
     channels: ['email', 'sms', 'in-app'],
     variables: ['invoiceNumber', 'userName', 'dueDate', 'issueDate', 'amount', 'currency', 'daysOverdue', 'invoiceLink'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: 'template3',
@@ -197,7 +195,6 @@ export const mockNotificationTemplates: NotificationTemplate[] = [
     `,
     channels: ['email', 'in-app'],
     variables: ['approverName', 'amount', 'currency', 'description', 'date', 'requesterName', 'department', 'approvalLink', 'rejectLink'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    updatedAt: new Date()
   },
 ];

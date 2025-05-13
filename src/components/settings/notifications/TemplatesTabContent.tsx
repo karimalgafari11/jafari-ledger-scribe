@@ -1,10 +1,12 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { NotificationTemplate } from "@/types/notifications";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { PlusCircle, Edit, Eye } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface TemplatesTabContentProps {
   templates: NotificationTemplate[];
@@ -17,66 +19,64 @@ const TemplatesTabContent = ({
 }: TemplatesTabContentProps) => {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>قوالب الإشعارات</CardTitle>
+        <Button size="sm">
+          <PlusCircle className="h-4 w-4 ml-2" />
+          إضافة قالب جديد
+        </Button>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-500 mb-6">تخصيص محتوى الإشعارات لكل نوع من الأحداث</p>
-        
-        {templates.map(template => (
-          <div key={template.id} className="mb-6 p-4 border rounded-md">
-            <h3 className="text-lg font-medium mb-2">{template.name}</h3>
-            
-            <div className="mb-4">
-              <Label htmlFor={`subject-${template.id}`} className="mb-1 block">عنوان الإشعار</Label>
-              <Input id={`subject-${template.id}`} defaultValue={template.subject} />
-            </div>
-            
-            <div className="mb-4">
-              <Label htmlFor={`content-${template.id}`} className="mb-1 block">محتوى الإشعار</Label>
-              <textarea
-                id={`content-${template.id}`}
-                className="w-full min-h-[150px] p-2 border rounded-md"
-                defaultValue={template.content}
-              />
-            </div>
-            
-            <div className="mb-4">
-              <Label className="mb-1 block">المتغيرات المتاحة</Label>
-              <div className="flex flex-wrap gap-2">
-                {template.variables.map(variable => (
-                  <span key={variable} className="px-2 py-1 bg-gray-100 rounded-md text-sm">
-                    {`{{${variable}}}`}
-                  </span>
-                ))}
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <Label className="mb-1 block">قنوات الإرسال</Label>
-              <div className="flex flex-wrap gap-2">
-                {template.channels.map(channel => (
-                  <div key={channel} className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md">
-                    {channelIcons[channel]}
-                    <span className="text-sm">
-                      {channel === "email" && "البريد الإلكتروني"}
-                      {channel === "sms" && "الرسائل النصية"}
-                      {channel === "in-app" && "داخل التطبيق"}
-                      {channel === "push" && "إشعارات الجوال"}
-                      {channel === "slack" && "سلاك"}
-                      {channel === "webhook" && "ويب هوك"}
-                    </span>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>اسم القالب</TableHead>
+              <TableHead>القنوات</TableHead>
+              <TableHead>المتغيرات</TableHead>
+              <TableHead className="text-left">الإجراءات</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {templates.map(template => (
+              <TableRow key={template.id}>
+                <TableCell>
+                  <div>
+                    <p className="font-medium">{template.name}</p>
+                    <p className="text-xs text-muted-foreground">{template.subject}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <Button variant="outline" className="mr-2">إعادة تعيين</Button>
-              <Button>حفظ القالب</Button>
-            </div>
-          </div>
-        ))}
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    {template.channels.map(channel => (
+                      <div key={channel} className="h-6 w-6 flex items-center justify-center bg-muted rounded-md">
+                        {channelIcons[channel]}
+                      </div>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {template.variables.map(variable => (
+                      <Badge key={variable} variant="outline" className="font-mono text-xs py-0">
+                        {variable}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

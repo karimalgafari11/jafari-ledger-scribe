@@ -1,15 +1,15 @@
 
 import React from 'react';
-import { Layout } from "@/components/Layout";
-import { PageContainer } from "@/components/PageContainer";
+import { Layout } from '@/components/Layout';
+import { PageContainer } from '@/components/PageContainer';
 
 const LedgerPage: React.FC = () => {
   return (
     <Layout>
-      <PageContainer title="دفتر الأستاذ" description="عرض وتحليل حركات الحسابات">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <h3 className="text-lg font-semibold mb-4">دفتر الأستاذ</h3>
-          <p className="text-muted-foreground">هنا سيظهر جدول دفتر الأستاذ والحركات المحاسبية</p>
+      <PageContainer title="دفتر الأستاذ">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold mb-4">دفتر الأستاذ</h1>
+          <p>عرض وإدارة دفتر الأستاذ.</p>
         </div>
       </PageContainer>
     </Layout>
