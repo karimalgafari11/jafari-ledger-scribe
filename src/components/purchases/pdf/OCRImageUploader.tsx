@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileUploadWithCompression } from "@/components/ui/file-upload/FileUploadWithCompression";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OCRImageUploaderProps {
   onDataExtracted: (data: any) => void;
@@ -83,7 +83,8 @@ export const OCRImageUploader: React.FC<OCRImageUploaderProps> = ({
     
     // Handle file selection
     input.onchange = (e) => {
-      const files = e.target?.files;
+      const target = e.target as HTMLInputElement;
+      const files = target.files;
       if (files && files.length > 0) {
         handleImageSelect([files[0]]);
       }
