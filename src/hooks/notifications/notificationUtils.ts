@@ -1,110 +1,94 @@
 
-export const calculateDiscount = (amount: number, type: 'percentage' | 'fixed', value: number): number => {
-  if (type === 'percentage') {
-    return amount * (value / 100);
+import { Bell, FileWarning, DollarSign, Package, ShoppingCart, Info, AlertTriangle, CheckCircle, Mail, MessageSquare, BellRing, MessageCircle, Webhook } from "lucide-react";
+import { NotificationPriority, NotificationChannel } from "@/types/notifications";
+
+export const getNotificationIcon = (eventType: string) => {
+  if (eventType.startsWith("inventory")) return <Package size={18} />;
+  if (eventType.startsWith("expenses")) return <DollarSign size={18} />;
+  if (eventType.startsWith("invoices")) return <FileWarning size={18} />;
+  if (eventType.startsWith("customer")) return <ShoppingCart size={18} />;
+  if (eventType.startsWith("system")) return <Info size={18} />;
+  return <Bell size={18} />;
+};
+
+export const getCategoryName = (eventType: string) => {
+  if (eventType.startsWith("inventory")) return "المخزون";
+  if (eventType.startsWith("expenses")) return "المصروفات";
+  if (eventType.startsWith("invoices")) return "الفواتير";
+  if (eventType.startsWith("customer")) return "العملاء";
+  if (eventType.startsWith("system")) return "النظام";
+  return "عام";
+};
+
+export const formatDateForDisplay = (date: Date) => {
+  // Format date for Arabic locale and handle time difference
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const diffMinutes = Math.floor(diff / (1000 * 60));
+  const diffHours = Math.floor(diff / (1000 * 60 * 60));
+  const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (diffMinutes < 60) {
+    return `منذ ${diffMinutes} دقيقة`;
+  } else if (diffHours < 24) {
+    return `منذ ${diffHours} ساعة`;
+  } else if (diffDays < 7) {
+    return `منذ ${diffDays} يوم`;
   } else {
-    return Math.min(value, amount);
+    return date.toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 };
 
-export const getTranslatedChannelName = (channel: string): string => {
-  switch (channel) {
-    case "email":
-      return "البريد الإلكتروني";
-    case "sms":
-      return "الرسائل النصية";
-    case "in-app":
-      return "داخل التطبيق";
-    case "push":
-      return "إشعارات الجوال";
-    case "slack":
-      return "سلاك";
-    case "webhook":
-      return "ويب هوك";
-    default:
-      return channel;
-  }
+export const getTranslatedChannelName = (channelName: string): string => {
+  const channelTranslations: Record<string, string> = {
+    'email': 'البريد الإلكتروني',
+    'sms': 'رسائل SMS',
+    'in-app': 'داخل التطبيق',
+    'push': 'إشعارات الجوال',
+    'slack': 'سلاك',
+    'webhook': 'ويب هوك'
+  };
+
+  return channelTranslations[channelName] || channelName;
 };
 
 export const getPriorityTranslation = (priority: string): string => {
-  switch (priority) {
-    case "low":
-      return "منخفضة";
-    case "medium":
-      return "متوسطة";
-    case "high":
-      return "عالية";
-    case "critical":
-      return "حرجة";
-    default:
-      return priority;
-  }
+  const priorityTranslations: Record<string, string> = {
+    'low': 'منخفضة',
+    'medium': 'متوسطة',
+    'high': 'عالية',
+    'critical': 'حرجة'
+  };
+
+  return priorityTranslations[priority] || priority;
 };
 
-// Add the missing functions
-export const formatDateForDisplay = (date: Date): string => {
-  // Check if less than a minute ago
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
-  if (diffInSeconds < 60) {
-    return "الآن";
-  }
-  
-  // Check if less than an hour ago
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `منذ ${diffInMinutes} دقيقة`;
-  }
-  
-  // Check if less than a day ago
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `منذ ${diffInHours} ساعة`;
-  }
-  
-  // Check if less than a week ago
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) {
-    return `منذ ${diffInDays} يوم`;
-  }
-  
-  // Format the date
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  
-  return `${day}/${month}/${year}`;
+export const getPriorityColor = (priority: NotificationPriority): string => {
+  const priorityColors: Record<NotificationPriority, string> = {
+    'low': 'bg-blue-100 text-blue-800 border-blue-200',
+    'medium': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'high': 'bg-orange-100 text-orange-800 border-orange-200',
+    'critical': 'bg-red-100 text-red-800 border-red-200'
+  };
+
+  return priorityColors[priority] || 'bg-gray-100 text-gray-800';
 };
 
-export const getCategoryName = (eventType: string): string => {
-  if (eventType.startsWith('inventory')) {
-    return 'المخزون';
-  } else if (eventType.startsWith('expenses')) {
-    return 'المصروفات';
-  } else if (eventType.startsWith('invoices')) {
-    return 'الفواتير';
-  } else if (eventType.startsWith('customer')) {
-    return 'العملاء';
-  } else if (eventType.startsWith('system')) {
-    return 'النظام';
-  } else {
-    return 'أخرى';
-  }
-};
+export const getChannelIcon = (channel: NotificationChannel) => {
+  const channelIcons: Record<string, JSX.Element> = {
+    'email': <Mail size={16} />,
+    'sms': <MessageSquare size={16} />,
+    'in-app': <Bell size={16} />,
+    'push': <BellRing size={16} />,
+    'slack': <MessageCircle size={16} />,
+    'webhook': <Webhook size={16} />
+  };
 
-export const getNotificationIcon = (eventType: string): string => {
-  if (eventType.startsWith('inventory')) {
-    return 'package';
-  } else if (eventType.startsWith('expenses')) {
-    return 'credit-card';
-  } else if (eventType.startsWith('invoices')) {
-    return 'file-text';
-  } else if (eventType.startsWith('customer')) {
-    return 'users';
-  } else if (eventType.startsWith('system')) {
-    return 'settings';
-  } else {
-    return 'bell';
-  }
+  return channelIcons[channel] || <Bell size={16} />;
 };

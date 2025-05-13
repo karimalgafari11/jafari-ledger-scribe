@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { mockNotifications } from '@/data/mockNotifications';
 import { Notification, NotificationSettings, NotificationTemplate } from '@/types/notifications';

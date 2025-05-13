@@ -1,32 +1,31 @@
 
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getNotificationIcon, getCategoryName } from '@/hooks/notifications/notificationUtils';
-import { AlertTriangle, Bell, CreditCard, FileText, Package, Settings, Users } from 'lucide-react';
 
 interface NotificationCategoryProps {
   eventType: string;
 }
 
-const NotificationCategory = ({ eventType }: NotificationCategoryProps) => {
-  const categoryName = getCategoryName(eventType);
-  
-  const iconMap = {
-    'package': <Package className="h-3 w-3" />,
-    'file-text': <FileText className="h-3 w-3" />,
-    'credit-card': <CreditCard className="h-3 w-3" />,
-    'users': <Users className="h-3 w-3" />,
-    'settings': <Settings className="h-3 w-3" />,
-    'bell': <Bell className="h-3 w-3" />
-  };
-  
-  const icon = iconMap[getNotificationIcon(eventType) as keyof typeof iconMap] || <AlertTriangle className="h-3 w-3" />;
+const NotificationCategory: React.FC<NotificationCategoryProps> = ({ eventType }) => {
+  const icon = getNotificationIcon(eventType);
+  const name = getCategoryName(eventType);
   
   return (
-    <Badge variant="outline" className="text-xs px-1 border-muted-foreground/30 text-muted-foreground flex items-center gap-1">
-      {icon}
-      <span>{categoryName}</span>
-    </Badge>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className="flex items-center gap-1 py-1">
+            <span className="text-sm">{icon}</span>
+            <span className="text-xs font-medium">{name}</span>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-xs">{`تصنيف: ${name}`}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
