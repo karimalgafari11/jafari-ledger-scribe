@@ -1,18 +1,17 @@
 
 import React, { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
-import { User } from "@/types/settings";
-import UserForm from "@/components/settings/users/UserForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { UserPlus } from "lucide-react";
-import UserTable from "@/components/settings/users/UserTable";
-import UserFilters from "@/components/settings/users/UserFilters";
-import UserStats from "@/components/settings/users/UserStats";
+import { User } from "@/types/settings";
+import UsersHeader from "@/components/settings/users/UsersHeader";
+import UsersStats from "@/components/settings/users/UsersStats";
+import UsersFilters from "@/components/settings/users/UsersFilters";
+import UsersTable from "@/components/settings/users/UsersTable";
+import { UserDialog } from "@/components/settings/users/UserDialog";
+import { DeleteUserDialog } from "@/components/settings/users/DeleteUserDialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// تحديث بيانات المستخدمين المبدئية لاستخدام معرفات (IDs) بدلاً من الأسماء لكل من الدور والفرع
+// بيانات المستخدمين المبدئية مع استخدام معرفات للأدوار والفروع
 const initialUsers: User[] = [
   {
     id: "1",
@@ -24,7 +23,8 @@ const initialUsers: User[] = [
     phone: "0512345678",
     isActive: true,
     lastLogin: new Date("2023-05-12T10:30:00"),
-    createdAt: new Date("2022-01-15")
+    createdAt: new Date("2022-01-15"),
+    avatar: "/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png"
   },
   {
     id: "2",
@@ -76,9 +76,9 @@ const initialUsers: User[] = [
   }
 ];
 
-const UsersPage = () => {
+const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>(initialUsers);
-  const [isUserFormOpen, setIsUserFormOpen] = useState(false);
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,9 +100,9 @@ const UsersPage = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const handleOpenUserForm = (user: User | null = null) => {
+  const handleOpenUserDialog = (user: User | null = null) => {
     setCurrentUser(user);
-    setIsUserFormOpen(true);
+    setIsUserDialogOpen(true);
   };
 
   const handleSaveUser = (userData: User) => {
@@ -123,7 +123,7 @@ const UsersPage = () => {
       toast.success(`تم إضافة المستخدم ${userData.fullName} بنجاح`);
     }
     
-    setIsUserFormOpen(false);
+    setIsUserDialogOpen(false);
   };
 
   const handleDeleteUser = () => {
@@ -134,7 +134,7 @@ const UsersPage = () => {
     }
   };
 
-  const toggleUserStatus = (userId: string) => {
+  const handleToggleUserStatus = (userId: string) => {
     setUsers(prev => prev.map(user =>
       user.id === userId
         ? { ...user, isActive: !user.isActive }
@@ -159,18 +159,13 @@ const UsersPage = () => {
   return (
     <PageContainer title="المستخدمون">
       <div className="p-4 md:p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h1 className="text-2xl font-bold">إدارة المستخدمين</h1>
-          <Button onClick={() => handleOpenUserForm()} className="w-full md:w-auto">
-            <UserPlus className="ml-2 h-4 w-4" /> إضافة مستخدم
-          </Button>
-        </div>
+        <UsersHeader onCreateUser={() => handleOpenUserDialog()} />
         
         {/* إحصائيات المستخدمين */}
-        <UserStats users={users} />
+        <UsersStats users={users} />
         
-        <Card>
-          <CardHeader>
+        <Card className="mt-6">
+          <CardHeader className="pb-3">
             <CardTitle className="flex justify-between items-center">
               <span>قائمة المستخدمين</span>
               <span className="text-sm font-normal text-muted-foreground">
@@ -180,69 +175,44 @@ const UsersPage = () => {
           </CardHeader>
           <CardContent>
             {/* فلاتر البحث */}
-            <UserFilters 
+            <UsersFilters 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               roleFilter={roleFilter}
               setRoleFilter={setRoleFilter}
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
-              resetFilters={resetFilters}
+              onResetFilters={resetFilters}
             />
 
             {/* جدول المستخدمين */}
-            <UserTable 
+            <UsersTable 
               users={filteredUsers} 
-              onEditUser={handleOpenUserForm}
+              onEditUser={handleOpenUserDialog}
               onDeleteUser={(user) => {
                 setCurrentUser(user);
                 setIsDeleteDialogOpen(true);
               }}
-              onToggleUserStatus={toggleUserStatus}
+              onToggleUserStatus={handleToggleUserStatus}
             />
           </CardContent>
         </Card>
 
         {/* حوار إضافة/تعديل المستخدم */}
-        {isUserFormOpen && (
-          <Dialog open={isUserFormOpen} onOpenChange={setIsUserFormOpen}>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>
-                  {currentUser ? `تعديل بيانات المستخدم: ${currentUser.fullName}` : "إضافة مستخدم جديد"}
-                </DialogTitle>
-                <DialogDescription>
-                  {currentUser ? "قم بتعديل بيانات المستخدم" : "أدخل بيانات المستخدم الجديد"}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <UserForm 
-                user={currentUser} 
-                onSave={handleSaveUser} 
-              />
-            </DialogContent>
-          </Dialog>
-        )}
+        <UserDialog
+          open={isUserDialogOpen}
+          onOpenChange={setIsUserDialogOpen}
+          user={currentUser}
+          onSave={handleSaveUser}
+        />
 
         {/* حوار تأكيد حذف المستخدم */}
-        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>تأكيد الحذف</DialogTitle>
-              <DialogDescription>
-                هل أنت متأكد من أنك تريد حذف المستخدم "{currentUser?.fullName}"؟ لا يمكن التراجع عن هذه العملية.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-                إلغاء
-              </Button>
-              <Button variant="destructive" onClick={handleDeleteUser}>
-                حذف
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <DeleteUserDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          user={currentUser}
+          onDelete={handleDeleteUser}
+        />
       </div>
     </PageContainer>
   );
