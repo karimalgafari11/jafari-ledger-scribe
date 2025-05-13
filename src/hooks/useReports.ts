@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Report } from "@/types/custom-reports"; // Import from custom-reports instead of declaring a duplicate type
+import { Report } from "@/types/custom-reports"; 
 
 export const useReports = (initialReports: Report[]) => {
   const [reports, setReports] = useState<Report[]>(initialReports);

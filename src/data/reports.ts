@@ -1,4 +1,5 @@
-import { Report } from "@/hooks/useReports";
+
+import { Report } from "@/types/custom-reports";
 
 export const allReports: Report[] = [
   {
