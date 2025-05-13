@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -111,23 +110,17 @@ const handler = async (req: Request): Promise<Response> => {
           .single();
 
         if (user?.email) {
-          // Call the send-email function
-          const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${supabaseKey}`,
-            },
+          // Call the send-email function using functions.invoke
+          const { data: emailResult, error: emailError } = await supabase.functions.invoke("send-email", {
             body: JSON.stringify({
               to: user.email,
               subject: body.title,
               html: `<div dir="rtl">${body.message}</div>`,
-            }),
+            })
           });
 
-          const emailResult = await emailResponse.json();
-          if (!emailResult.success) {
-            console.error("Error sending email:", emailResult.error);
+          if (emailError) {
+            console.error("Error sending email:", emailError);
             
             // Update notification status to failed
             await supabase
@@ -151,22 +144,16 @@ const handler = async (req: Request): Promise<Response> => {
           .single();
 
         if (user?.phone) {
-          // Call the send-sms function
-          const smsResponse = await fetch(`${supabaseUrl}/functions/v1/send-sms`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${supabaseKey}`,
-            },
+          // Call the send-sms function using functions.invoke
+          const { data: smsResult, error: smsError } = await supabase.functions.invoke("send-sms", {
             body: JSON.stringify({
               to: user.phone,
               message: `${body.title}: ${body.message}`,
-            }),
+            })
           });
 
-          const smsResult = await smsResponse.json();
-          if (!smsResult.success) {
-            console.error("Error sending SMS:", smsResult.error);
+          if (smsError) {
+            console.error("Error sending SMS:", smsError);
             
             // Update notification status to failed
             await supabase

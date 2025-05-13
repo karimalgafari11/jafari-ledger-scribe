@@ -102,13 +102,10 @@ export function useNotificationOperations(
     setIsLoading(true);
     
     try {
-      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/send-notification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`,
-        },
-        body: JSON.stringify({
+      // Instead of using protected supabaseUrl and supabaseKey properties, 
+      // we'll use the supabase functions.invoke method
+      const { data: result, error } = await supabase.functions.invoke('send-notification', {
+        body: {
           userId,
           eventType,
           title: data.title,
@@ -117,17 +114,15 @@ export function useNotificationOperations(
           channels,
           relatedEntityId: data.entityId,
           relatedEntityType: data.entityType,
-        }),
+        }
       });
       
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to send notification');
+      if (error) {
+        throw new Error(error.message || 'Failed to send notification');
       }
       
       // If this is an in-app notification, add it to the state
-      const newInAppNotifications = result.data.notifications
+      const newInAppNotifications = result?.notifications
         ?.filter((n: any) => n && n.channel === 'in-app')
         ?.map((n: any) => ({
           ...n,

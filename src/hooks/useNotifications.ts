@@ -41,15 +41,47 @@ export function useNotifications(): NotificationHookReturn {
       
       if (templatesError) throw templatesError;
       
-      // Transform dates from strings to Date objects
-      const processedNotifications = notifData.map((n: any) => ({
-        ...n,
-        createdAt: new Date(n.created_at)
+      // Transform Supabase data to match our TypeScript interfaces
+      const processedNotifications: Notification[] = notifData.map((n: any) => ({
+        id: n.id,
+        userId: n.user_id,
+        title: n.title,
+        message: n.message,
+        priority: n.priority,
+        channel: n.channel,
+        eventType: n.event_type,
+        relatedEntityId: n.related_entity_id,
+        relatedEntityType: n.related_entity_type,
+        read: n.read,
+        createdAt: new Date(n.created_at),
+        deliveryStatus: n.delivery_status,
+        retryCount: n.retry_count
+      }));
+      
+      const processedSettings: NotificationSettings[] = settingsData.map((s: any) => ({
+        id: s.id,
+        userId: s.user_id,
+        eventType: s.event_type,
+        channels: s.channels,
+        scheduleQuiet: s.schedule_quiet,
+        muted: s.muted,
+        updatedAt: new Date(s.updated_at)
+      }));
+      
+      const processedTemplates: NotificationTemplate[] = templatesData.map((t: any) => ({
+        id: t.id,
+        name: t.name,
+        subject: t.subject,
+        content: t.content,
+        channels: t.channels,
+        variables: t.variables || [],
+        createdAt: new Date(t.created_at),
+        updatedAt: new Date(t.updated_at)
       }));
       
       setNotifications(processedNotifications);
-      setSettings(settingsData);
-      setTemplates(templatesData);
+      setSettings(processedSettings);
+      setTemplates(processedTemplates);
     } catch (error) {
       console.error('Error fetching notification data:', error);
       
@@ -80,10 +112,23 @@ export function useNotifications(): NotificationHookReturn {
           table: 'notifications' 
         },
         (payload) => {
-          const newNotification = {
-            ...payload.new,
-            createdAt: new Date(payload.new.created_at)
+          // Transform the incoming payload to match our Notification type
+          const newNotification: Notification = {
+            id: payload.new.id,
+            userId: payload.new.user_id,
+            title: payload.new.title,
+            message: payload.new.message,
+            priority: payload.new.priority as NotificationPriority,
+            channel: payload.new.channel as NotificationChannel,
+            eventType: payload.new.event_type,
+            relatedEntityId: payload.new.related_entity_id,
+            relatedEntityType: payload.new.related_entity_type,
+            read: payload.new.read,
+            createdAt: new Date(payload.new.created_at),
+            deliveryStatus: payload.new.delivery_status,
+            retryCount: payload.new.retry_count
           };
+          
           setNotifications(prev => [newNotification, ...prev]);
         }
       )
@@ -96,7 +141,12 @@ export function useNotifications(): NotificationHookReturn {
         (payload) => {
           setNotifications(prev => 
             prev.map(n => n.id === payload.new.id 
-              ? { ...n, ...payload.new, createdAt: n.createdAt } 
+              ? { 
+                  ...n, 
+                  read: payload.new.read,
+                  deliveryStatus: payload.new.delivery_status,
+                  retryCount: payload.new.retry_count
+                }
               : n
             )
           );
