@@ -1,21 +1,21 @@
 
-project_id = "nfkmlwqljkrmottcseyp"
+project_id = "your-project-id"
 
-[functions.optimize-image]
+[api]
+# Port to use for the API URL.
+port = 54321
+# Enable GraphQL debugging.
+graphql_debug = false
+
+[db]
+# Port to use for the local database URL.
+port = 54322
+
+[studio]
+# Port to use for Supabase Studio.
+port = 54323
+# API URL used by Studio.
+api_url = "http://localhost"
+
+[functions.analyze-invoice]
 verify_jwt = true
-
-[functions.ocr-invoice]
-verify_jwt = true
-
-[functions.send-email]
-verify_jwt = true
-
-[functions.send-sms]
-verify_jwt = true
-
-[functions.send-notification]
-verify_jwt = true
-
-[functions.check-updates]
-verify_jwt = true
-
