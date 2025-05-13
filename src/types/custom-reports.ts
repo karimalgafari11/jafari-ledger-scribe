@@ -28,6 +28,7 @@ export interface Report {
   date?: string;
   type?: string;
   lastRun?: Date;
+  createdAt?: Date; // Add the missing property
 }
 
 export interface ReportFilter {
