@@ -184,4 +184,3 @@ const AccountingSidebar = ({ autoClose = false }: { autoClose?: boolean }) => {
 };
 
 export default AccountingSidebar;
-

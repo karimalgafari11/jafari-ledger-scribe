@@ -67,7 +67,7 @@ const Header = ({
         )}
         <div>
           <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>
-            {title || (language === 'ar' ? "نظام إدارة الأعمال" : "Business Management System")}
+            {title || "نظام إدارة الأعمال"}
           </h1>
           {description && (
             <p className="text-sm opacity-80">{description}</p>

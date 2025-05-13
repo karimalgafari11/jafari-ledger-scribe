@@ -12,12 +12,14 @@ export type ThemeMode = "light" | "dark";
 interface AppContextType {
   themeMode: ThemeMode;
   toggleTheme: () => void;
+  language: string; // Add language property to type
 }
 
 // إنشاء سياق التطبيق مع قيم افتراضية
 export const AppContext = createContext<AppContextType>({
   themeMode: "light",
   toggleTheme: () => {},
+  language: 'ar', // Default to Arabic
 });
 
 // مزود سياق التطبيق
@@ -74,6 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = {
     themeMode,
     toggleTheme,
+    language: 'ar', // Always Arabic now
   };
 
   return (
