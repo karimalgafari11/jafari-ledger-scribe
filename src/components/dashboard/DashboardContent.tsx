@@ -104,9 +104,6 @@ const DashboardContent = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalRevenue}</div>
-            {/* <div className="text-sm text-gray-500">
-              {calculatePercentageChange(totalRevenue, 10)}% مقارنة بالشهر الماضي
-            </div> */}
           </CardContent>
         </Card>
         <Card>
@@ -116,14 +113,7 @@ const DashboardContent = () => {
           <CardContent>
             <div className="text-2xl font-bold flex items-center gap-2">
               {newCustomers}
-              {/* <ArrowUp className="h-4 w-4 text-green-500" />
-              <span className="text-sm text-green-500">
-                {calculatePercentageChange(newCustomers, 5)}%
-              </span> */}
             </div>
-            {/* <div className="text-sm text-gray-500">
-              {calculatePercentageChange(newCustomers, 5)}% مقارنة بالشهر الماضي
-            </div> */}
           </CardContent>
         </Card>
         <Card>
@@ -132,9 +122,6 @@ const DashboardContent = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalOrders}</div>
-            {/* <div className="text-sm text-gray-500">
-              {calculatePercentageChange(totalOrders, 8)}% مقارنة بالشهر الماضي
-            </div> */}
           </CardContent>
         </Card>
         <Card>
@@ -143,9 +130,6 @@ const DashboardContent = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{averageOrderValue}</div>
-            {/* <div className="text-sm text-gray-500">
-              {calculatePercentageChange(averageOrderValue, 3)}% مقارنة بالشهر الماضي
-            </div> */}
           </CardContent>
         </Card>
       </div>

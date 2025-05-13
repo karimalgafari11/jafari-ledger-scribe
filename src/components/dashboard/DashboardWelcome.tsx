@@ -1,50 +1,51 @@
 
 import React from 'react';
+import { CalendarIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-export interface DashboardWelcomeProps {
-  date: Date;
-  onDateChange: (date: Date) => void;
-  period: string;
-  onPeriodChange: (period: string) => void;
+interface DashboardWelcomeProps {
+  date?: Date;
+  onDateChange?: (date: Date) => void;
+  period?: string;
+  onPeriodChange?: (period: string) => void;
   userName?: string;
   companyName?: string;
 }
 
 const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
-  date,
+  date = new Date(),
   onDateChange,
-  period,
+  period = 'monthly',
   onPeriodChange,
-  userName = "المستخدم",
-  companyName = "نظام المحاسبة"
+  userName = 'المستخدم',
+  companyName = 'شركتي'
 }) => {
+  const formattedDate = new Intl.DateTimeFormat('ar-SA', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white mb-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">مرحباً بك، {userName}</h1>
-          <p className="opacity-90">إليك آخر البيانات والتقارير الخاصة بشركة {companyName}</p>
+    <Card className="mb-6 border-none bg-gradient-to-r from-blue-50 to-indigo-50">
+      <CardContent className="pt-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-blue-900 mb-1">مرحبًا {userName}!</h1>
+            <p className="text-blue-700 flex items-center">
+              <CalendarIcon className="ml-2 h-4 w-4 text-blue-500" />
+              {formattedDate}
+            </p>
+          </div>
+          <div className="mt-3 md:mt-0">
+            <p className="text-sm text-blue-700">
+              نظام {companyName} المحاسبي
+            </p>
+          </div>
         </div>
-        <div className="mt-4 md:mt-0 flex gap-2">
-          <select 
-            value={period} 
-            onChange={(e) => onPeriodChange(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded px-3 py-1 text-sm"
-          >
-            <option value="daily">يومي</option>
-            <option value="weekly">أسبوعي</option>
-            <option value="monthly">شهري</option>
-            <option value="yearly">سنوي</option>
-          </select>
-          <input
-            type="date"
-            className="bg-white/10 border border-white/20 rounded px-3 py-1 text-sm"
-            value={date.toISOString().split('T')[0]}
-            onChange={(e) => onDateChange(new Date(e.target.value))}
-          />
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -3,32 +3,18 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-interface TableProps extends React.HTMLAttributes<HTMLTableElement> { 
-  gridLines?: boolean;
-  striped?: boolean;
-  bordered?: boolean;
-  hoverable?: boolean;
-  dense?: boolean;
-  stickyHeader?: boolean;
-}
-
 const Table = React.forwardRef<
   HTMLTableElement,
-  TableProps
->(({ className, gridLines, striped, bordered, hoverable, dense, stickyHeader, ...props }, ref) => (
-  <div className={cn("relative w-full overflow-auto", stickyHeader && "overflow-y-auto")}>
+  React.HTMLAttributes<HTMLTableElement> & {
+    stickyHeader?: boolean;
+    hoverable?: boolean;
+    striped?: boolean;
+  }
+>(({ className, stickyHeader, hoverable, striped, ...props }, ref) => (
+  <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn(
-        "w-full caption-bottom text-sm",
-        gridLines && "border-collapse",
-        bordered && "border border-border [&_th]:border [&_td]:border [&_th]:border-gray-200 [&_td]:border-gray-100",
-        dense && "text-xs [&_th]:py-1 [&_td]:py-1",
-        striped && "[&_tbody_tr:nth-child(even)]:bg-muted/50",
-        hoverable && "[&_tbody_tr:hover]:bg-muted/60",
-        stickyHeader && "[&_thead_tr_th]:sticky [&_thead_tr_th]:top-0 [&_thead_tr_th]:bg-background [&_thead_tr_th]:z-10",
-        className
-      )}
+      className={cn("w-full caption-bottom text-sm", className)}
       {...props}
     />
   </div>
@@ -67,19 +53,14 @@ const TableFooter = React.forwardRef<
 ))
 TableFooter.displayName = "TableFooter"
 
-interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  isSelected?: boolean;
-}
-
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
-  TableRowProps
->(({ className, isSelected, ...props }, ref) => (
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-muted",
-      isSelected && "bg-muted/80",
+      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
       className
     )}
     {...props}
