@@ -1,224 +1,356 @@
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { ThemeSettings } from "@/types/theme";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Moon, Sun, ChevronRight, Home, User, Settings, Search, Menu } from "lucide-react";
 
 interface ThemePreviewProps {
   theme: ThemeSettings;
+  mode: 'light' | 'dark';
+  onTogglePreviewMode: () => void;
 }
 
-export const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
-  const applyThemeStyles = (element: string) => {
-    const styles: React.CSSProperties = {};
-    
-    // استخدام نوع الخط وحجمه
-    if (element === 'container' || element === 'text') {
-      styles.fontFamily = `'${theme.fonts.family}', sans-serif`;
-    }
-    
-    // تطبيق الألوان المناسبة حسب العنصر
-    switch (element) {
-      case 'container':
-        styles.backgroundColor = theme.colors.background;
-        styles.color = theme.colors.textPrimary;
-        styles.borderRadius = getRoundnessValue(theme.roundness.size);
-        styles.boxShadow = getShadowValue(theme.effects.shadows);
-        styles.padding = getSpacingValue(theme.spacing.size);
-        break;
-      case 'header':
-        styles.backgroundColor = theme.colors.header;
-        styles.color = '#ffffff';
-        styles.padding = `${getSpacingValue(theme.spacing.size, 0.7)} ${getSpacingValue(theme.spacing.size)}`;
-        styles.borderRadius = getRoundnessValue(theme.roundness.size, 0.75);
-        styles.marginBottom = getSpacingValue(theme.spacing.size);
-        break;
-      case 'heading':
-        styles.fontFamily = `'${theme.fonts.headings.family}', sans-serif`;
-        styles.fontWeight = getFontWeightValue(theme.fonts.headings.weight);
-        styles.marginBottom = getSpacingValue(theme.spacing.size, 0.5);
-        break;
-      case 'text':
-        styles.color = theme.colors.textPrimary;
-        styles.marginBottom = getSpacingValue(theme.spacing.size, 0.5);
-        break;
-      case 'secondaryText':
-        styles.color = theme.colors.textSecondary;
-        styles.fontSize = '0.9em';
-        styles.marginBottom = getSpacingValue(theme.spacing.size, 0.5);
-        break;
-      case 'link':
-        styles.color = theme.colors.link;
-        break;
-      case 'button':
-        styles.backgroundColor = theme.colors.button;
-        styles.color = "#ffffff";
-        styles.borderRadius = getRoundnessValue(theme.roundness.size, 0.75);
-        break;
-      case 'secondaryContainer':
-        styles.backgroundColor = theme.colors.secondary;
-        styles.borderRadius = getRoundnessValue(theme.roundness.size, 0.75);
-        styles.padding = getSpacingValue(theme.spacing.size, 0.7);
-        styles.marginTop = getSpacingValue(theme.spacing.size, 0.7);
-        break;
-      case 'sidebar':
-        styles.backgroundColor = theme.colors.sidebar.background;
-        styles.color = theme.colors.sidebar.foreground;
-        styles.borderRadius = getRoundnessValue(theme.roundness.size, 0.75);
-        styles.padding = getSpacingValue(theme.spacing.size, 0.5);
-        break;
-      case 'sidebarItem':
-        styles.padding = getSpacingValue(theme.spacing.size, 0.5);
-        styles.color = theme.colors.sidebar.item.text;
-        styles.display = 'flex';
-        styles.alignItems = 'center';
-        styles.borderRadius = getRoundnessValue(theme.roundness.size, 0.75);
-        break;
-      case 'sidebarItemActive':
-        styles.padding = getSpacingValue(theme.spacing.size, 0.5);
-        styles.backgroundColor = theme.colors.sidebar.item.active;
-        styles.color = theme.colors.sidebar.item.activeText;
-        styles.display = 'flex';
-        styles.alignItems = 'center';
-        styles.borderRadius = getRoundnessValue(theme.roundness.size, 0.75);
-        break;
-    }
-    
-    return styles;
+export const ThemePreview: React.FC<ThemePreviewProps> = ({ theme, mode, onTogglePreviewMode }) => {
+  // Convert color to HSL for CSS variables
+  const colorToHsl = (hex: string) => {
+    // Simple conversion from hex to HSL string (this is simplified)
+    return hex;
   };
 
-  // Helper functions for converting theme values to CSS values
-  const getFontWeightValue = (weight: string): number => {
-    switch(weight) {
-      case 'normal': return 400;
-      case 'medium': return 500;
-      case 'semibold': return 600;
-      case 'bold': return 700;
-      default: return 400;
-    }
+  // Apply font size based on theme setting
+  const getFontSize = (baseSize: number) => {
+    const scale = theme.fonts.size === 'small' ? 0.85 : 
+                  theme.fonts.size === 'large' ? 1.15 : 
+                  theme.fonts.size === 'xlarge' ? 1.35 : 1;
+    return `${baseSize * scale}px`;
   };
 
-  const getRoundnessValue = (size: string, multiplier = 1): string => {
-    const baseRadius = 8; // القيمة الأساسية بالبكسل
-    switch(size) {
-      case 'none': return '0px';
-      case 'small': return `${baseRadius * 0.5 * multiplier}px`;
-      case 'medium': return `${baseRadius * multiplier}px`;
-      case 'large': return `${baseRadius * 1.5 * multiplier}px`;
-      case 'full': return '9999px';
-      default: return `${baseRadius * multiplier}px`;
-    }
+  // Get shadow based on theme setting
+  const getShadow = () => {
+    return theme.effects.shadows === 'light' ? '0 2px 4px rgba(0,0,0,0.1)' : 
+           theme.effects.shadows === 'medium' ? '0 4px 8px rgba(0,0,0,0.15)' : 
+           theme.effects.shadows === 'heavy' ? '0 8px 16px rgba(0,0,0,0.2)' : 'none';
   };
 
-  const getShadowValue = (size: string): string => {
-    switch(size) {
-      case 'none': return 'none';
-      case 'light': return '0 2px 4px rgba(0, 0, 0, 0.1)';
-      case 'medium': return '0 4px 8px rgba(0, 0, 0, 0.15)';
-      case 'heavy': return '0 8px 16px rgba(0, 0, 0, 0.2)';
-      default: return '0 4px 8px rgba(0, 0, 0, 0.15)';
-    }
+  // Get border radius based on theme setting
+  const getBorderRadius = () => {
+    return theme.roundness.size === 'small' ? '0.25rem' : 
+           theme.roundness.size === 'medium' ? '0.5rem' : 
+           theme.roundness.size === 'large' ? '1rem' : 
+           theme.roundness.size === 'full' ? '9999px' : '0';
   };
 
-  const getSpacingValue = (size: string, multiplier = 1): string => {
-    const baseSpacing = 16; // القيمة الأساسية بالبكسل
-    switch(size) {
-      case 'compact': return `${baseSpacing * 0.75 * multiplier}px`;
-      case 'medium': return `${baseSpacing * multiplier}px`;
-      case 'large': return `${baseSpacing * 1.25 * multiplier}px`;
-      default: return `${baseSpacing * multiplier}px`;
-    }
+  // Base styles for the preview container
+  const previewContainerStyle: React.CSSProperties = {
+    backgroundColor: mode === 'light' ? theme.colors.background : '#1a1f2c',
+    color: mode === 'light' ? theme.colors.textPrimary : '#ffffff',
+    fontFamily: theme.fonts.family,
+    padding: '1rem',
+    borderRadius: getBorderRadius(),
+    overflow: 'hidden',
+    height: '700px',
+    fontSize: getFontSize(14),
+    position: 'relative',
+    border: '1px solid ' + (mode === 'light' ? '#e2e8f0' : '#2d3748')
+  };
+
+  // Sidebar styles
+  const sidebarStyle: React.CSSProperties = {
+    backgroundColor: theme.colors.sidebar.background,
+    color: theme.colors.sidebar.foreground,
+    width: '200px',
+    height: '100%',
+    padding: '1rem 0',
+    position: 'absolute',
+    right: '0',
+    top: '0',
+    boxShadow: getShadow()
+  };
+
+  // Content area styles
+  const contentStyle: React.CSSProperties = {
+    marginRight: '200px',
+    padding: '1rem'
+  };
+
+  // Card styles
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: mode === 'light' ? '#ffffff' : '#2d3748',
+    borderRadius: getBorderRadius(),
+    boxShadow: getShadow(),
+    overflow: 'hidden',
+    marginBottom: '1rem'
+  };
+
+  // Header styles
+  const headerStyle: React.CSSProperties = {
+    backgroundColor: theme.colors.header,
+    color: '#ffffff',
+    padding: '0.75rem 1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '1rem',
+    boxShadow: getShadow()
+  };
+
+  // Button styles
+  const buttonStyle: React.CSSProperties = {
+    backgroundColor: theme.colors.button,
+    color: '#ffffff',
+    border: 'none',
+    padding: '0.5rem 1rem',
+    borderRadius: getBorderRadius(),
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    fontSize: getFontSize(14)
+  };
+
+  // Secondary button styles
+  const secondaryButtonStyle: React.CSSProperties = {
+    backgroundColor: 'transparent',
+    color: theme.colors.textPrimary,
+    border: '1px solid ' + (mode === 'light' ? '#e2e8f0' : '#2d3748'),
+    padding: '0.5rem 1rem',
+    borderRadius: getBorderRadius(),
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    fontSize: getFontSize(14)
+  };
+
+  // Sidebar item styles
+  const sidebarItemStyle: React.CSSProperties = {
+    padding: '0.75rem 1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    color: theme.colors.sidebar.item.text,
+    cursor: 'pointer'
+  };
+
+  // Active sidebar item styles
+  const activeSidebarItemStyle: React.CSSProperties = {
+    ...sidebarItemStyle,
+    backgroundColor: theme.colors.sidebar.item.active,
+    color: theme.colors.sidebar.item.activeText
   };
 
   return (
-    <Card className="sticky top-4 shadow-md">
-      <CardHeader>
-        <CardTitle>معاينة مباشرة</CardTitle>
-        <CardDescription>معاينة التغييرات قبل الحفظ</CardDescription>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-normal">معاينة المظهر</CardTitle>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onTogglePreviewMode}
+          className="h-8 w-8 p-0"
+        >
+          {mode === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+        </Button>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="mainView" className="mb-4">
-          <TabsList className="w-full mb-2">
-            <TabsTrigger value="mainView" className="flex-1">الواجهة الرئيسية</TabsTrigger>
-            <TabsTrigger value="sidebar" className="flex-1">القائمة الجانبية</TabsTrigger>
-          </TabsList>
+      <CardContent className="p-0">
+        <div style={previewContainerStyle}>
+          {/* Header */}
+          <div style={headerStyle}>
+            <div className="flex items-center gap-2">
+              <Menu className="h-5 w-5" />
+              <span style={{ fontFamily: theme.fonts.family, fontWeight: 'bold' }}>
+                نظام المحاسبة
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              <User className="h-4 w-4" />
+              {mode === 'light' ? 
+                <Moon className="h-4 w-4" /> : 
+                <Sun className="h-4 w-4" />
+              }
+            </div>
+          </div>
           
-          <TabsContent value="mainView">
-            <div className="border rounded-md overflow-hidden" style={applyThemeStyles('container')}>
-              <div style={applyThemeStyles('header')}>
-                <h3 className="text-sm font-medium">ترويسة التطبيق</h3>
+          {/* Main container with sidebar */}
+          <div style={{ display: 'flex', height: 'calc(100% - 60px)' }}>
+            {/* Sidebar */}
+            <div style={sidebarStyle}>
+              <div className="px-4 py-2 mb-4 font-bold" style={{ 
+                fontFamily: theme.fonts.headings.family,
+                fontWeight: theme.fonts.headings.weight === 'normal' ? 400 : 
+                           theme.fonts.headings.weight === 'medium' ? 500 : 
+                           theme.fonts.headings.weight === 'semibold' ? 600 : 700  
+              }}>
+                القائمة الرئيسية
+              </div>
+              <div style={activeSidebarItemStyle}>
+                <Home className="h-4 w-4" />
+                <span>الرئيسية</span>
+              </div>
+              <div style={sidebarItemStyle}>
+                <User className="h-4 w-4" />
+                <span>الحسابات</span>
+              </div>
+              <div style={sidebarItemStyle}>
+                <Settings className="h-4 w-4" />
+                <span>الإعدادات</span>
+              </div>
+            </div>
+            
+            {/* Content area */}
+            <div style={contentStyle}>
+              <h1 style={{ 
+                color: theme.colors.textPrimary,
+                fontFamily: theme.fonts.headings.family,
+                fontSize: getFontSize(24),
+                marginBottom: '1rem',
+                fontWeight: theme.fonts.headings.weight === 'normal' ? 400 : 
+                           theme.fonts.headings.weight === 'medium' ? 500 : 
+                           theme.fonts.headings.weight === 'semibold' ? 600 : 700 
+              }}>
+                لوحة التحكم
+              </h1>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                {/* Card 1 */}
+                <div style={cardStyle}>
+                  <div style={{ padding: '1rem' }}>
+                    <h3 style={{ 
+                      color: mode === 'light' ? theme.colors.textPrimary : '#ffffff',
+                      fontFamily: theme.fonts.headings.family,
+                      fontSize: getFontSize(18),
+                      marginBottom: '0.5rem',
+                      fontWeight: theme.fonts.headings.weight === 'normal' ? 400 : 
+                              theme.fonts.headings.weight === 'medium' ? 500 : 
+                              theme.fonts.headings.weight === 'semibold' ? 600 : 700 
+                    }}>
+                      البيانات الأخيرة
+                    </h3>
+                    <p style={{ 
+                      color: mode === 'light' ? theme.colors.textSecondary : '#a0aec0',
+                      marginBottom: '1rem',
+                      fontSize: getFontSize(14)
+                    }}>
+                      آخر تحديث: اليوم
+                    </p>
+                    <div style={{ 
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      marginTop: '1rem'
+                    }}>
+                      <button style={buttonStyle}>
+                        عرض التفاصيل
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Card 2 */}
+                <div style={cardStyle}>
+                  <div style={{ padding: '1rem' }}>
+                    <h3 style={{ 
+                      color: mode === 'light' ? theme.colors.textPrimary : '#ffffff',
+                      fontFamily: theme.fonts.headings.family,
+                      fontSize: getFontSize(18),
+                      marginBottom: '0.5rem',
+                      fontWeight: theme.fonts.headings.weight === 'normal' ? 400 : 
+                              theme.fonts.headings.weight === 'medium' ? 500 : 
+                              theme.fonts.headings.weight === 'semibold' ? 600 : 700 
+                    }}>
+                      الإحصائيات
+                    </h3>
+                    <p style={{ 
+                      color: mode === 'light' ? theme.colors.textSecondary : '#a0aec0',
+                      marginBottom: '1rem',
+                      fontSize: getFontSize(14)
+                    }}>
+                      ملخص البيانات الشهرية
+                    </p>
+                    <div style={{ 
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      marginTop: '1rem'
+                    }}>
+                      <button style={secondaryButtonStyle}>
+                        تصدير
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
               
-              <div className="p-4">
-                <h4 className="text-lg" style={applyThemeStyles('heading')}>عنوان القسم</h4>
-                <p className="text-sm" style={applyThemeStyles('text')}>
-                  هذا نص تجريبي لمعاينة كيفية ظهور النصوص في التطبيق. يمكنك رؤية تأثير اختياراتك هنا.
-                </p>
-                <p className="text-xs" style={applyThemeStyles('secondaryText')}>
-                  نص ثانوي أصغر حجمًا لمعاينة لون النص الثانوي.
-                </p>
-                
-                <div className="my-3">
-                  <a href="#" style={applyThemeStyles('link')}>رابط تجريبي</a>
-                </div>
-                
-                <div className="flex space-x-2 space-x-reverse mb-3">
-                  <Button style={applyThemeStyles('button')}>
-                    زر رئيسي
-                  </Button>
-                  <Button variant="outline">زر ثانوي</Button>
-                </div>
-                
-                <div style={applyThemeStyles('secondaryContainer')}>
-                  <p className="text-xs">
-                    هذا مثال على القسم ذو الخلفية الثانوية
-                  </p>
+              {/* Form elements */}
+              <div style={cardStyle}>
+                <div style={{ padding: '1rem' }}>
+                  <h3 style={{ 
+                    color: mode === 'light' ? theme.colors.textPrimary : '#ffffff',
+                    fontFamily: theme.fonts.headings.family,
+                    fontSize: getFontSize(18),
+                    marginBottom: '1rem',
+                    fontWeight: theme.fonts.headings.weight === 'normal' ? 400 : 
+                            theme.fonts.headings.weight === 'medium' ? 500 : 
+                            theme.fonts.headings.weight === 'semibold' ? 600 : 700 
+                  }}>
+                    نموذج إدخال
+                  </h3>
+                  
+                  <div style={{ marginBottom: '1rem' }}>
+                    <Label htmlFor="name" style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem',
+                      fontSize: getFontSize(14)
+                    }}>
+                      الاسم
+                    </Label>
+                    <Input 
+                      id="name" 
+                      placeholder="أدخل الاسم" 
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        borderRadius: getBorderRadius(),
+                        border: '1px solid ' + (mode === 'light' ? '#e2e8f0' : '#2d3748'),
+                        backgroundColor: mode === 'light' ? '#ffffff' : '#1a202c',
+                        color: mode === 'light' ? theme.colors.textPrimary : '#ffffff',
+                        fontSize: getFontSize(14)
+                      }}
+                    />
+                  </div>
+                  
+                  <div style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '1rem'
+                  }}>
+                    <Label htmlFor="active" style={{ fontSize: getFontSize(14) }}>
+                      نشط
+                    </Label>
+                    <Switch id="active" />
+                  </div>
+                  
+                  <div style={{ 
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    gap: '0.5rem'
+                  }}>
+                    <button style={secondaryButtonStyle}>
+                      إلغاء
+                    </button>
+                    <button style={buttonStyle}>
+                      حفظ
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="sidebar">
-            <div className="border rounded-md overflow-hidden" style={applyThemeStyles('container')}>
-              <div className="h-64" style={applyThemeStyles('sidebar')}>
-                <div className="px-2 py-4 mb-4 text-center">
-                  <div className="font-bold mb-1">اسم النظام</div>
-                  <div className="text-xs opacity-75">لوحة التحكم</div>
-                </div>
-                
-                <div style={applyThemeStyles('sidebarItemActive')} className="mb-1">
-                  <span className="mr-2 text-lg">⬚</span>
-                  <span>لوحة التحكم</span>
-                </div>
-                
-                <div style={applyThemeStyles('sidebarItem')} className="mb-1">
-                  <span className="mr-2 text-lg">⬚</span>
-                  <span>المبيعات</span>
-                </div>
-                
-                <div style={applyThemeStyles('sidebarItem')} className="mb-1">
-                  <span className="mr-2 text-lg">⬚</span>
-                  <span>المشتريات</span>
-                </div>
-                
-                <div style={applyThemeStyles('sidebarItem')}>
-                  <span className="mr-2 text-lg">⬚</span>
-                  <span>الإعدادات</span>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-        
-        {/* نصائح للمستخدم */}
-        <div className="text-xs text-muted-foreground p-3 bg-muted rounded-md mt-4">
-          <p className="font-semibold mb-1">❓ نصائح للتخصيص:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>تأكد من وجود تباين كافٍ بين ألوان النصوص والخلفيات</li>
-            <li>اختر ألوانًا متناسقة تعكس هوية مؤسستك</li>
-            <li>يمكنك تبديل الوضع بين الفاتح والداكن لمعاينة كلا المظهرين</li>
-          </ul>
+          </div>
         </div>
       </CardContent>
     </Card>
