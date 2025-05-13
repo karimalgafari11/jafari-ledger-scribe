@@ -3,50 +3,50 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useAuth } from "@/contexts/AuthContext";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // تعريف مخطط التحقق باستخدام Zod
-const updatePasswordSchema = z.object({
-  password: z.string()
-    .min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" }),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "كلمتا المرور غير متطابقتين",
-  path: ["confirmPassword"],
+const forgotPasswordSchema = z.object({
+  email: z.string()
+    .email({ message: "البريد الإلكتروني غير صالح" }),
 });
 
-type UpdatePasswordFormValues = z.infer<typeof updatePasswordSchema>;
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
-const UpdatePasswordPage: React.FC = () => {
-  const { updatePassword, isLoading } = useAuth();
+const ForgotPasswordPage: React.FC = () => {
+  const { resetPassword, isLoading } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
 
-  const form = useForm<UpdatePasswordFormValues>({
-    resolver: zodResolver(updatePasswordSchema),
+  const form = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      password: "",
-      confirmPassword: "",
+      email: "",
     },
   });
 
-  const onSubmit = async (values: UpdatePasswordFormValues) => {
+  const onSubmit = async (values: ForgotPasswordFormValues) => {
     setError(null);
+    setSuccess(false);
     
     try {
-      await updatePassword(values.password);
-      navigate("/auth/login");
+      await resetPassword(values.email);
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/auth/login");
+      }, 5000);
     } catch (err: any) {
-      console.error("Error updating password:", err);
-      setError(err.message || "حدث خطأ أثناء تحديث كلمة المرور");
+      console.error("Error during password reset:", err);
+      setError(err.message || "حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور");
     }
   };
 
@@ -70,7 +70,7 @@ const UpdatePasswordPage: React.FC = () => {
         
         <Card>
           <CardHeader className="text-center">
-            <h2 className="text-xl font-medium">تحديث كلمة المرور</h2>
+            <h2 className="text-xl font-medium">استعادة كلمة المرور</h2>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -82,36 +82,26 @@ const UpdatePasswordPage: React.FC = () => {
                   </Alert>
                 )}
 
+                {success && (
+                  <Alert className="mb-4 bg-green-50 border-green-200 text-green-800">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription>
+                      تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. 
+                      يرجى التحقق من بريدك الإلكتروني واتباع التعليمات.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>كلمة المرور الجديدة</FormLabel>
+                      <FormLabel>البريد الإلكتروني</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
-                          type="password"
-                          placeholder="أدخل كلمة المرور الجديدة"
-                          className="rtl"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>تأكيد كلمة المرور</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field}
-                          type="password"
-                          placeholder="أعد إدخال كلمة المرور الجديدة"
+                          placeholder="أدخل البريد الإلكتروني المسجل"
                           className="rtl"
                         />
                       </FormControl>
@@ -123,17 +113,24 @@ const UpdatePasswordPage: React.FC = () => {
                 <Button 
                   type="submit" 
                   className="w-full mt-4"
-                  disabled={isLoading}
+                  disabled={isLoading || success}
                 >
-                  {isLoading ? "جاري التحديث..." : "تحديث كلمة المرور"}
+                  {isLoading ? "جاري الإرسال..." : "إرسال رابط التعيين"}
                 </Button>
               </form>
             </Form>
           </CardContent>
+          <CardFooter className="flex justify-center">
+            <div className="text-sm text-center">
+              <Link to="/auth/login" className="text-blue-600 hover:underline">
+                العودة إلى تسجيل الدخول
+              </Link>
+            </div>
+          </CardFooter>
         </Card>
       </div>
     </div>
   );
 };
 
-export default UpdatePasswordPage;
+export default ForgotPasswordPage;
