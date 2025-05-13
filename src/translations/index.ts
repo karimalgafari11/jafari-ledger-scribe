@@ -96,7 +96,19 @@ type TranslationKey =
   | 'purchases'
   | 'expenses'
   | 'payables'
-  | 'receivables';
+  | 'receivables'
+  // New HR related translations
+  | 'hr'
+  | 'employees'
+  | 'positions'
+  | 'attendance'
+  | 'salaries'
+  | 'vacations'
+  | 'employeeRecord'
+  | 'department'
+  | 'active'
+  | 'inactive'
+  | 'actions';
 
 type Translations = {
   [key in Language]: {
@@ -133,7 +145,7 @@ export const translations: Translations = {
     netProfit: 'صافي الأرباح',
     exportPdf: 'تصدير PDF',
     exportExcel: 'تصدير Excel',
-    exportCsv: 'تصدير CSV',
+    exportCsv: 'تصدير البيانات',
     period: 'الفترة',
     branch: 'الفرع',
     salesPerformance: 'أداء المبيعات والإيرادات',
@@ -164,7 +176,7 @@ export const translations: Translations = {
     delete: 'حذف',
     edit: 'تعديل',
     search: 'بحث',
-    filter: 'تصفية',
+    filter: 'تصنيف',
     add: 'إضافة',
     remove: 'إزالة',
     confirm: 'تأكيد',
@@ -198,7 +210,19 @@ export const translations: Translations = {
     purchases: 'المشتريات',
     expenses: 'المصروفات',
     payables: 'الذمم الدائنة',
-    receivables: 'الذمم المدينة'
+    receivables: 'الذمم المدينة',
+    // HR related translations
+    hr: 'الموارد البشرية',
+    employees: 'الموظفين',
+    positions: 'الوظائف',
+    attendance: 'الحضور والانصراف',
+    salaries: 'الرواتب',
+    vacations: 'الإجازات',
+    employeeRecord: 'سجل الموظف',
+    department: 'القسم',
+    active: 'نشط',
+    inactive: 'غير نشط',
+    actions: 'الإجراءات'
   },
   en: {
     dashboard: 'Dashboard',
@@ -228,7 +252,7 @@ export const translations: Translations = {
     netProfit: 'Net Profit',
     exportPdf: 'Export PDF',
     exportExcel: 'Export Excel',
-    exportCsv: 'Export CSV',
+    exportCsv: 'Export Data',
     period: 'Period',
     branch: 'Branch',
     salesPerformance: 'Sales & Revenue Performance',
@@ -259,7 +283,7 @@ export const translations: Translations = {
     delete: 'Delete',
     edit: 'Edit',
     search: 'Search',
-    filter: 'Filter',
+    filter: 'Category',
     add: 'Add',
     remove: 'Remove',
     confirm: 'Confirm',
@@ -293,7 +317,19 @@ export const translations: Translations = {
     purchases: 'Purchases',
     expenses: 'Expenses',
     payables: 'Payables',
-    receivables: 'Receivables'
+    receivables: 'Receivables',
+    // HR related translations
+    hr: 'HR',
+    employees: 'Employees',
+    positions: 'Positions',
+    attendance: 'Attendance',
+    salaries: 'Salaries',
+    vacations: 'Vacations',
+    employeeRecord: 'Employee Record',
+    department: 'Department',
+    active: 'Active',
+    inactive: 'Inactive',
+    actions: 'Actions'
   }
 };
 

@@ -82,8 +82,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // نستثني التحميل الأولي من إعادة التحميل
     const isInitialLoad = sessionStorage.getItem("initialLanguageLoad") !== "true";
     if (!isInitialLoad) {
-      // اختياري: إعادة تحميل الصفحة لتطبيق الترجمات الجديدة
-      // window.location.reload();
+      // نقوم بإعادة تحميل الصفحة لتطبيق الترجمات الجديدة
+      window.location.reload();
     } else {
       sessionStorage.setItem("initialLanguageLoad", "true");
     }
