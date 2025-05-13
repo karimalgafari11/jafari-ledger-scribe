@@ -33,7 +33,8 @@ export const SystemAlertCard: React.FC<SystemAlertCardProps> = ({
   onDismiss 
 }) => {
   // Use alert properties if provided, otherwise use individual props
-  const alertTitle = alert?.message || title || "";
+  const alertTitle = alert?.title || title || "";
+  const alertMessage = alert?.message || description || "";
   const alertPriority = alert?.priority || priority || "medium";
   const alertTime = alert?.timestamp || timestamp || new Date();
   
@@ -54,10 +55,7 @@ export const SystemAlertCard: React.FC<SystemAlertCardProps> = ({
           }`} />
           <div className="flex-1">
             <div className="font-medium text-gray-900">{alertTitle}</div>
-            {/* The SystemAlert type doesn't have a description property, so we need to use the description prop directly */}
-            {description && (
-              <div className="text-sm text-gray-600 mt-1">{description}</div>
-            )}
+            <div className="text-sm text-gray-600 mt-1">{alertMessage}</div>
             <div className="text-xs text-gray-500 mt-1 flex items-center">
               <Clock className="h-3 w-3 mr-1" />
               {formatDistanceToNow(alertTime, { addSuffix: true, locale: ar })}
