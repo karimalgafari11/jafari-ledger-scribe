@@ -5,17 +5,17 @@ import { Search } from "lucide-react";
 import { Product } from "@/types/inventory";
 
 // Mock products data for testing
-const mockProducts = [
-  { id: "p1", code: "PR001", name: "شاشة كمبيوتر 24 بوصة", price: 850, quantity: 30, unit: "قطعة" },
-  { id: "p2", code: "PR002", name: "لوحة مفاتيح لاسلكية", price: 120, quantity: 45, unit: "قطعة" },
-  { id: "p3", code: "PR003", name: "ماوس لاسلكي", price: 80, quantity: 50, unit: "قطعة" },
-  { id: "p4", code: "PR004", name: "سماعات رأس مع ميكروفون", price: 200, quantity: 25, unit: "قطعة" },
-  { id: "p5", code: "PR005", name: "كامرة ويب HD", price: 150, quantity: 20, unit: "قطعة" },
-  { id: "p6", code: "PR006", name: "كيبل HDMI 2م", price: 25, quantity: 100, unit: "قطعة" },
-  { id: "p7", code: "PR007", name: "وحدة تخزين خارجية 1TB", price: 300, quantity: 15, unit: "قطعة" },
-  { id: "p8", code: "PR008", name: "حامل شاشة كمبيوتر", price: 120, quantity: 10, unit: "قطعة" },
-  { id: "p9", code: "PR009", name: "حقيبة لابتوب", price: 90, quantity: 30, unit: "قطعة" },
-  { id: "p10", code: "PR010", name: "فلاش درايف 64GB", price: 60, quantity: 40, unit: "قطعة" }
+const mockProducts: Product[] = [
+  { id: "p1", code: "PR001", name: "شاشة كمبيوتر 24 بوصة", price: 850, quantity: 30, unit: "قطعة", isActive: true },
+  { id: "p2", code: "PR002", name: "لوحة مفاتيح لاسلكية", price: 120, quantity: 45, unit: "قطعة", isActive: true },
+  { id: "p3", code: "PR003", name: "ماوس لاسلكي", price: 80, quantity: 50, unit: "قطعة", isActive: true },
+  { id: "p4", code: "PR004", name: "سماعات رأس مع ميكروفون", price: 200, quantity: 25, unit: "قطعة", isActive: true },
+  { id: "p5", code: "PR005", name: "كامرة ويب HD", price: 150, quantity: 20, unit: "قطعة", isActive: true },
+  { id: "p6", code: "PR006", name: "كيبل HDMI 2م", price: 25, quantity: 100, unit: "قطعة", isActive: true },
+  { id: "p7", code: "PR007", name: "وحدة تخزين خارجية 1TB", price: 300, quantity: 15, unit: "قطعة", isActive: true },
+  { id: "p8", code: "PR008", name: "حامل شاشة كمبيوتر", price: 120, quantity: 10, unit: "قطعة", isActive: true },
+  { id: "p9", code: "PR009", name: "حقيبة لابتوب", price: 90, quantity: 30, unit: "قطعة", isActive: true },
+  { id: "p10", code: "PR010", name: "فلاش درايف 64GB", price: 60, quantity: 40, unit: "قطعة", isActive: true }
 ];
 
 interface ProductSearchProps {
