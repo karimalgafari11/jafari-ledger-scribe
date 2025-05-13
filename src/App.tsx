@@ -2,11 +2,11 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { AuthProvider } from './contexts/AuthContext';
 import { RouterProvider } from 'react-router-dom';
-import { router } from './routes'; // Fixed import
+import { router } from './routes';
 import { Toaster } from './components/ui/sonner';
 import { AppWithErrorHandling } from './AppWithErrorHandling';
+import { AppProvider } from './contexts/AppContext';
 
 // تهيئة عميل الاستعلام
 const queryClient = new QueryClient({
@@ -23,12 +23,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
+        <AppProvider>
           <AppWithErrorHandling>
             <RouterProvider router={router} />
             <Toaster />
           </AppWithErrorHandling>
-        </AuthProvider>
+        </AppProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -77,6 +77,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = language;
     // حفظ اللغة في التخزين المحلي
     localStorage.setItem("language", language);
+    
+    // إعادة تحميل الصفحة عند تغيير اللغة لضمان تطبيق جميع الترجمات
+    // نستثني التحميل الأولي من إعادة التحميل
+    const isInitialLoad = sessionStorage.getItem("initialLanguageLoad") !== "true";
+    if (!isInitialLoad) {
+      // اختياري: إعادة تحميل الصفحة لتطبيق الترجمات الجديدة
+      // window.location.reload();
+    } else {
+      sessionStorage.setItem("initialLanguageLoad", "true");
+    }
   }, [language]);
 
   // وظيفة لتبديل السمة

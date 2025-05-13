@@ -24,6 +24,7 @@ export function Layout({
     <div 
       className={`page-container h-screen w-full flex flex-col ${isRtl ? 'rtl' : 'ltr'} ${className}`}
       dir={isRtl ? 'rtl' : 'ltr'}
+      lang={language}
     >
       {showWatermark && !isMobile && (
         <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
