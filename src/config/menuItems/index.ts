@@ -15,6 +15,7 @@ import { definitionItems } from "./definitionItems";
 import { settingsItems } from "./settingsItems";
 import { aboutItems } from "./aboutItems";
 import { hrItems } from "./hrItems";
+import { notificationItems } from "./notificationItems"; // Add this import
 
 export const menuItems: MenuItem[] = [
   ...dashboardItems,
@@ -29,6 +30,7 @@ export const menuItems: MenuItem[] = [
   ...inventoryItems,
   ...aiItems,
   ...hrItems,
+  ...notificationItems, // Add this line
   ...definitionItems,
   ...settingsItems,
   ...aboutItems

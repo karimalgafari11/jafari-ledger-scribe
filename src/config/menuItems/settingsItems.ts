@@ -38,7 +38,7 @@ export const settingsItems: MenuItem[] = [
         icon: Building,
       },
       {
-        label: "الإشعارات",
+        label: "إعدادات الإشعارات",
         path: "/settings/notifications",
         icon: Bell,
       },

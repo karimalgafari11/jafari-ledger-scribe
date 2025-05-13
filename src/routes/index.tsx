@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +12,9 @@ import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
 import NotFound from '@/pages/NotFound'; // Import the NotFound page for 404 handling
 
+// Import the notifications page
+import NotificationsPage from '@/pages/notifications/NotificationsPage';
+
 // Import settings pages
 import SystemSettingsPage from '@/pages/settings/SystemSettingsPage';
 import UserRolesPage from '@/pages/settings/UserRolesPage';
@@ -20,7 +22,7 @@ import UsersPage from '@/pages/settings/UsersPage';
 import BackupPage from '@/pages/settings/BackupPage';
 import BackupTestPage from '@/pages/settings/BackupTestPage';
 import BranchesPage from '@/pages/settings/BranchesPage';
-import NotificationsPage from '@/pages/settings/NotificationsPage';
+import NotificationsSettingsPage from '@/pages/settings/NotificationsPage';
 import NotificationSettingsPage from '@/pages/settings/NotificationSettingsPage';
 import SendNotificationPage from '@/pages/settings/SendNotificationPage';
 import AiEngineSettingsPage from '@/pages/settings/AiEngineSettingsPage';
@@ -69,6 +71,10 @@ const routeChildren = [
     element: <Dashboard />,
   },
   {
+    path: "/notifications",
+    element: <NotificationsPage />,
+  },
+  {
     path: "settings/activity-log",
     element: <ActivityLogPage />,
   },
@@ -99,7 +105,7 @@ const routeChildren = [
   },
   {
     path: "settings/notifications",
-    element: <NotificationsPage />,
+    element: <NotificationsSettingsPage />,
   },
   {
     path: "settings/notification-settings",
