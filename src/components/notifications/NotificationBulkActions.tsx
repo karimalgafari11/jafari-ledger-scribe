@@ -1,123 +1,105 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { CheckCheck, Archive, Trash, Eye, Filter } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from '@/components/ui/tooltip';
+import { Button } from "@/components/ui/button";
+import { Check, Trash } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useNotifications } from '@/hooks/useNotifications';
+import { toast } from 'sonner';
 
 interface NotificationBulkActionsProps {
-  selectedCount: number;
-  onDeselectAll: () => void;
-  onMarkAsRead: () => void;
-  onDelete: () => void;
-  isLoading: boolean;
+  selectedIds: string[];
+  onSelectionClear: () => void;
 }
 
-const NotificationBulkActions = ({ 
-  selectedCount, 
-  onDeselectAll, 
-  onMarkAsRead, 
-  onDelete, 
-  isLoading 
+const NotificationBulkActions = ({
+  selectedIds,
+  onSelectionClear,
 }: NotificationBulkActionsProps) => {
-  if (selectedCount === 0) return null;
+  const { markAsRead, deleteNotification } = useNotifications();
+  
+  const handleMarkAsRead = async () => {
+    let success = true;
+    
+    for (const id of selectedIds) {
+      const result = await markAsRead(id);
+      if (!result) success = false;
+    }
+    
+    if (success) {
+      toast.success(`تم تعيين ${selectedIds.length} إشعارات كمقروءة`);
+      onSelectionClear();
+    } else {
+      toast.error('حدث خطأ أثناء تعيين بعض الإشعارات كمقروءة');
+    }
+  };
+  
+  const handleDeleteSelected = async () => {
+    let success = true;
+    
+    for (const id of selectedIds) {
+      const result = await deleteNotification(id);
+      if (!result) success = false;
+    }
+    
+    if (success) {
+      toast.success(`تم حذف ${selectedIds.length} إشعارات بنجاح`);
+      onSelectionClear();
+    } else {
+      toast.error('حدث خطأ أثناء حذف بعض الإشعارات');
+    }
+  };
+  
+  if (selectedIds.length === 0) {
+    return null;
+  }
   
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between bg-muted/30 p-3 border-b rounded-t-md shadow-sm animate-fade-in">
-      <div className="flex items-center mb-2 md:mb-0">
-        <CheckCheck className="h-4 w-4 ml-2 text-primary" />
-        <Badge variant="outline" className="bg-primary/10 text-primary font-medium">
-          {selectedCount}
-        </Badge>
-        <span className="mr-2">إشعارات محددة</span>
-      </div>
+    <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md">
+      <span className="text-sm ml-3">
+        تم تحديد {selectedIds.length} {selectedIds.length === 1 ? 'إشعار' : 'إشعارات'}
+      </span>
       
-      <div className="flex items-center gap-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onDeselectAll}
-                className="text-xs"
-              >
-                <Filter className="h-3.5 w-3.5 ml-1.5" />
-                إلغاء التحديد
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>إلغاء تحديد جميع الإشعارات</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onMarkAsRead}
-                disabled={isLoading}
-                className="text-xs"
-              >
-                <Eye className="h-3.5 w-3.5 ml-1.5" />
-                تعيين كمقروءة
-                {isLoading && <span className="loading loading-spinner loading-xs mr-2"></span>}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>تعيين الإشعارات المحددة كمقروءة</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline"
-                size="sm"
-                className="text-xs border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700"
-                disabled={isLoading}
-              >
-                <Archive className="h-3.5 w-3.5 ml-1.5" />
-                أرشفة
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>أرشفة الإشعارات المحددة</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                onClick={onDelete}
-                disabled={isLoading}
-                className="text-xs"
-              >
-                <Trash className="h-3.5 w-3.5 ml-1.5" />
-                حذف
-                {isLoading && <span className="loading loading-spinner loading-xs mr-2"></span>}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>حذف الإشعارات المحددة</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <Button variant="ghost" size="sm" onClick={handleMarkAsRead}>
+        <Check className="h-4 w-4 ml-1" />
+        تعيين كمقروء
+      </Button>
+      
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+            <Trash className="h-4 w-4 ml-1" />
+            حذف
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل أنت متأكد من حذف الإشعارات المحددة؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم حذف {selectedIds.length} {selectedIds.length === 1 ? 'إشعار' : 'إشعارات'} بشكل نهائي.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteSelected} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      <Button variant="ghost" size="sm" className="ml-auto" onClick={onSelectionClear}>
+        إلغاء التحديد
+      </Button>
     </div>
   );
 };

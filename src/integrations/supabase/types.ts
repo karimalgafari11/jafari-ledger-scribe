@@ -457,6 +457,117 @@ export type Database = {
           },
         ]
       }
+      notification_settings: {
+        Row: {
+          channels: Json
+          event_type: string
+          id: string
+          muted: boolean
+          schedule_quiet: Json | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          channels?: Json
+          event_type: string
+          id?: string
+          muted?: boolean
+          schedule_quiet?: Json | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          channels?: Json
+          event_type?: string
+          id?: string
+          muted?: boolean
+          schedule_quiet?: Json | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      notification_templates: {
+        Row: {
+          channels: string[]
+          content: string
+          created_at: string
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+          variables: string[] | null
+        }
+        Insert: {
+          channels: string[]
+          content: string
+          created_at?: string
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string
+          variables?: string[] | null
+        }
+        Update: {
+          channels?: string[]
+          content?: string
+          created_at?: string
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+          variables?: string[] | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          channel: string
+          created_at: string
+          delivery_status: string | null
+          event_type: string
+          id: string
+          message: string
+          priority: string
+          read: boolean
+          related_entity_id: string | null
+          related_entity_type: string | null
+          retry_count: number | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          delivery_status?: string | null
+          event_type: string
+          id?: string
+          message: string
+          priority: string
+          read?: boolean
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          retry_count?: number | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          delivery_status?: string | null
+          event_type?: string
+          id?: string
+          message?: string
+          priority?: string
+          read?: boolean
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          retry_count?: number | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number | null

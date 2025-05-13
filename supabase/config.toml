@@ -6,3 +6,12 @@ verify_jwt = true
 
 [functions.ocr-invoice]
 verify_jwt = true
+
+[functions.send-email]
+verify_jwt = true
+
+[functions.send-sms]
+verify_jwt = true
+
+[functions.send-notification]
+verify_jwt = true
