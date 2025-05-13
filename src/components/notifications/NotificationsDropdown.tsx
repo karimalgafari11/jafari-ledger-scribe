@@ -1,105 +1,74 @@
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuGroup, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { Bell, Check, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { useNotifications } from "@/hooks/useNotifications";
+import { Bell } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import NotificationItem from './NotificationItem';
+import { useNotifications } from '@/hooks/useNotifications';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { useNavigate } from 'react-router-dom';
 
-export const NotificationsDropdown = () => {
-  const { notifications, unreadCount, markAllAsRead } = useNotifications();
+const NotificationsDropdown: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const { notifications, unreadCount, markAsRead, deleteNotification } = useNotifications();
+  const navigate = useNavigate();
   
-  const handleMarkAllAsRead = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      await markAllAsRead();
-    } catch (error) {
-      console.error("Error marking all notifications as read:", error);
-    }
+  const handleViewAll = () => {
+    setOpen(false);
+    navigate('/notifications');
   };
   
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-[1.2rem] w-[1.2rem]" />
+          <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-            >
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
               {unreadCount > 9 ? '9+' : unreadCount}
-            </Badge>
+            </span>
           )}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[380px]">
-        <div className="flex items-center justify-between px-4 py-2">
-          <DropdownMenuLabel className="py-1">الإشعارات</DropdownMenuLabel>
-          
-          <div className="flex items-center gap-2">
-            <DropdownMenuItem 
-              onClick={handleMarkAllAsRead}
-              className="py-1 px-2 h-8 text-sm"
-              disabled={unreadCount === 0}
-            >
-              <Check className="h-4 w-4 ml-2" />
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 p-0">
+        <div className="flex items-center justify-between py-2 px-4 bg-muted/50">
+          <h5 className="font-medium">الإشعارات</h5>
+          {unreadCount > 0 && (
+            <Button variant="ghost" size="sm" onClick={() => markAllAsRead()}>
               تعيين الكل كمقروء
-            </DropdownMenuItem>
-            <Separator orientation="vertical" className="h-6" />
-            <DropdownMenuItem asChild className="py-1 px-2 h-8">
-              <Link to="/settings/notifications">
-                <Settings className="h-4 w-4 ml-2" />
-                الإعدادات
-              </Link>
-            </DropdownMenuItem>
-          </div>
+            </Button>
+          )}
         </div>
         
-        <DropdownMenuSeparator />
+        <ScrollArea className="h-[min(calc(80vh-100px),400px)]">
+          <div className="py-2">
+            {notifications.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                لا توجد إشعارات
+              </div>
+            ) : (
+              notifications.slice(0, 5).map((notification) => (
+                <NotificationItem 
+                  key={notification.id} 
+                  notification={notification} 
+                  onMarkRead={markAsRead}
+                  onDelete={deleteNotification}
+                />
+              ))
+            )}
+          </div>
+        </ScrollArea>
         
-        <DropdownMenuGroup>
-          {notifications.length > 0 ? (
-            <ScrollArea className="h-80">
-              {notifications.map(notification => (
-                <div key={notification.id} onClick={() => setOpen(false)}>
-                  <NotificationItem 
-                    notification={notification}
-                    showActions={false}
-                  />
-                  <DropdownMenuSeparator />
-                </div>
-              ))}
-            </ScrollArea>
-          ) : (
-            <div className="py-6 text-center text-muted-foreground">
-              لا توجد إشعارات
-            </div>
-          )}
-        </DropdownMenuGroup>
+        <Separator />
         
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem asChild className="justify-center py-2">
-          <Link to="/notifications" className="w-full text-center">
+        <div className="p-2">
+          <Button variant="outline" size="sm" className="w-full" onClick={handleViewAll}>
             عرض كل الإشعارات
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 

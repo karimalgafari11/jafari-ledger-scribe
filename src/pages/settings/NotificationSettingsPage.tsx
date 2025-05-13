@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockNotificationSettings, mockNotificationTemplates } from "@/data/mockNotifications";
-import { NotificationChannel, NotificationEvent, NotificationPriority } from "@/types/notifications";
+import { NotificationChannel, NotificationPriority } from "@/types/notifications";
 import { notificationEvents } from "@/components/settings/notifications/NotificationEventsData";
 import { channelIcons } from "@/components/settings/notifications/ChannelIcons";
 import { toast } from "sonner";
@@ -75,7 +75,7 @@ const NotificationSettingsPage = () => {
           ? {
               ...setting,
               scheduleQuiet: {
-                ...setting.scheduleQuiet || { start: "22:00", end: "08:00", timezone: "Asia/Riyadh" },
+                ...setting.scheduleQuiet || { startTime: "22:00", endTime: "08:00", timezone: "Asia/Riyadh" },
                 enabled: !setting.scheduleQuiet?.enabled
               }
             }
@@ -84,14 +84,14 @@ const NotificationSettingsPage = () => {
     );
   };
 
-  const handleQuietHoursChange = (eventType: string, field: "start" | "end", value: string) => {
+  const handleQuietHoursChange = (eventType: string, field: "startTime" | "endTime", value: string) => {
     setSettings(prev => 
       prev.map(setting => 
         setting.eventType === eventType 
           ? {
               ...setting,
               scheduleQuiet: {
-                ...setting.scheduleQuiet || { start: "22:00", end: "08:00", timezone: "Asia/Riyadh", enabled: false },
+                ...setting.scheduleQuiet || { startTime: "22:00", endTime: "08:00", timezone: "Asia/Riyadh", enabled: false },
                 [field]: value
               }
             }

@@ -1,31 +1,22 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import React from 'react';
+import { PageContainer } from '@/components/PageContainer';
+import { Layout } from '@/components/Layout';
 
 const BudgetsPage = () => {
   return (
-    <Layout className="p-0">
-      <div className="w-full h-full flex flex-col">
-        <Header title="الموازنات التقديرية" showBack={true} />
-        
-        <div className="flex-1 p-6 overflow-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>إدارة الموازنات التقديرية</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-500 mb-4">إعداد وتحليل ومتابعة الموازنات التقديرية</p>
-              
-              {/* محتوى الصفحة سيتم تطويره لاحقاً */}
-              <div className="bg-gray-100 p-6 rounded-md text-center">
-                <p className="text-xl text-gray-600">سيتم تطوير هذه الصفحة قريباً</p>
-              </div>
-            </CardContent>
-          </Card>
+    <Layout>
+      <PageContainer title="الموازنات والميزانيات">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold mb-4">إدارة الموازنات والميزانيات</h1>
+          <p className="text-gray-500 mb-4">
+            صفحة إدارة الموازنات والميزانيات التقديرية ومراقبة الأداء المالي
+          </p>
+          <div className="p-8 text-center border rounded-lg">
+            <p className="text-gray-500">محتوى صفحة الموازنات قيد الإنشاء</p>
+          </div>
         </div>
-      </div>
+      </PageContainer>
     </Layout>
   );
 };

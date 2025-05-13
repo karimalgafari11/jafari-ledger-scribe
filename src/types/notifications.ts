@@ -45,6 +45,5 @@ export interface NotificationTemplate {
   content: string;
   variables: string[];
   channels: NotificationChannel[];
-  createdAt?: Date;
   updatedAt?: Date;
 }

@@ -1,80 +1,119 @@
 
 import React from 'react';
+import { format } from 'date-fns';
+import { CheckIcon, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Notification } from '@/types/notifications';
-import { cn } from '@/lib/utils';
-import { useNotifications } from '@/hooks/useNotifications';
-import NotificationItemActions from './NotificationItemActions';
-import NotificationTimestamp from './NotificationTimestamp';
-import NotificationCategory from './NotificationCategory';
+import { getPriorityColor, getIconForNotification } from './utils/notificationItemUtils';
 import NotificationContent from './NotificationContent';
-import { getPriorityIcon } from './utils/notificationItemUtils';
 
 interface NotificationItemProps {
   notification: Notification;
+  onMarkRead: (id: string) => Promise<boolean>;
+  onDelete: (id: string) => Promise<boolean>;
   showActions?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
-const NotificationItem = ({ notification, showActions = false }: NotificationItemProps) => {
-  const { markAsRead, deleteNotification } = useNotifications();
-  
-  const handleClick = async () => {
-    if (!notification.read) {
-      try {
-        await markAsRead(notification.id);
-      } catch (error) {
-        console.error("Error marking notification as read:", error);
-      }
-    }
-    
-    // Handle click based on notification type/entity
-    if (notification.relatedEntityId && notification.relatedEntityType) {
-      console.log(`Navigate to: ${notification.relatedEntityType}/${notification.relatedEntityId}`);
-      // Navigation logic would go here based on entity type and ID
-    }
+const NotificationItem: React.FC<NotificationItemProps> = ({
+  notification,
+  onMarkRead,
+  onDelete,
+  showActions = true,
+  isSelected = false,
+  onToggleSelect
+}) => {
+  const {
+    id,
+    title,
+    message,
+    priority,
+    eventType,
+    read,
+    createdAt,
+  } = notification;
+
+  const priorityColor = getPriorityColor(priority);
+  const NotificationIcon = getIconForNotification(eventType);
+
+  const handleMarkAsRead = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await onMarkRead(id);
   };
-  
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await onDelete(id);
+  };
+
+  const formattedDate = createdAt ? format(new Date(createdAt), 'yyyy-MM-dd HH:mm') : '';
+
   return (
-    <div
-      className={cn(
-        "flex items-start gap-3 p-4 cursor-pointer hover:bg-muted/20 transition-colors",
-        !notification.read && "bg-muted/30"
-      )}
-      onClick={handleClick}
+    <div 
+      className={`
+        p-3 border-b last:border-b-0 transition-colors
+        ${read ? 'bg-background hover:bg-muted/20' : 'bg-muted/30 hover:bg-muted/40'} 
+        ${isSelected ? 'bg-primary/10' : ''}
+      `}
+      onClick={() => onToggleSelect && onToggleSelect(id)}
     >
-      <div className="mt-0.5 flex-shrink-0">
-        {getPriorityIcon(notification.priority)}
-      </div>
-      
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <p className={cn("text-sm font-medium", !notification.read && "font-semibold")}>
-              {notification.title}
-            </p>
-            
-            <NotificationCategory eventType={notification.eventType} />
+      <div className="flex items-start gap-3">
+        {onToggleSelect && (
+          <div className="pt-1">
+            <input 
+              type="checkbox" 
+              checked={isSelected}
+              onChange={() => onToggleSelect(id)}
+              className="h-4 w-4"
+            />
           </div>
-          
-          <div className="flex items-center">
-            <NotificationTimestamp date={notification.createdAt} />
-            
-            {showActions && (
-              <NotificationItemActions 
-                notification={notification}
-                markAsRead={markAsRead}
-                deleteNotification={deleteNotification}
-              />
-            )}
-          </div>
+        )}
+        
+        <div 
+          className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${priorityColor}`}
+          title={`أولوية ${priority}`}
+        />
+        
+        <div className="flex-shrink-0 mt-1">
+          <NotificationIcon className="h-5 w-5 text-muted-foreground" />
         </div>
         
-        <NotificationContent 
-          title={notification.title}
-          message={notification.message}
-          read={notification.read}
-          relatedEntityId={notification.relatedEntityId}
-          relatedEntityType={notification.relatedEntityType}
-        />
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start gap-1">
+            <h4 className={`text-sm font-medium ${!read ? 'font-semibold' : ''}`}>
+              {title}
+            </h4>
+            {showActions && !read && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={handleMarkAsRead}
+                title="تعيين كمقروء"
+              >
+                <CheckIcon className="h-3.5 w-3.5" />
+              </Button>
+            )}
+            {showActions && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-muted-foreground"
+                onClick={handleDelete}
+                title="حذف"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+          
+          <NotificationContent message={message} />
+          
+          <div className="text-[11px] text-muted-foreground mt-1">
+            {formattedDate}
+          </div>
+        </div>
       </div>
     </div>
   );

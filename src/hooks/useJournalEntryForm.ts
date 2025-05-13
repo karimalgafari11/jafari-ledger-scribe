@@ -1,146 +1,208 @@
 
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { useToast } from "@/hooks/use-toast";
 
-export interface JournalEntryFormData {
-  entryNumber: string;
-  date: Date;
+export interface JournalEntry {
+  id?: string;
+  reference: string;
+  date: string;
   description: string;
-  lines: {
-    account: string;
-    debit: number;
-    credit: number;
-    description?: string;
-  }[];
-  status: 'draft' | 'posted' | 'approved' | 'voided';
+  status: 'draft' | 'posted' | 'approved' | 'rejected';
+  type: 'manual' | 'system' | 'recurring';
+  lines: JournalEntryLine[];
+  attachments?: string[];
+  createdBy?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  metadata?: Record<string, any>;
+}
+
+export interface JournalEntryLine {
+  id?: string;
+  accountId: string;
+  accountName?: string;
+  description?: string;
+  debit?: number;
+  credit?: number;
+  costCenterId?: string;
+  costCenterName?: string;
 }
 
 export const useJournalEntryForm = () => {
-  const [formData, setFormData] = useState<JournalEntryFormData>({
-    entryNumber: '',
-    date: new Date(),
+  const { toast } = useToast();
+  
+  const [journalEntry, setJournalEntry] = useState<JournalEntry>({
+    reference: '',
+    date: new Date().toISOString().split('T')[0],
     description: '',
-    lines: [
-      { account: '', debit: 0, credit: 0 }
-    ],
-    status: 'draft'
+    status: 'draft',
+    type: 'manual',
+    lines: []
   });
-
+  
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.entryNumber) {
-      newErrors.entryNumber = 'رقم القيد مطلوب';
-    }
-    
-    if (!formData.description) {
-      newErrors.description = 'وصف القيد مطلوب';
-    }
-    
-    if (formData.lines.length === 0) {
-      newErrors.lines = 'يجب إضافة سطر واحد على الأقل';
-    } else {
-      let totalDebit = 0;
-      let totalCredit = 0;
-      let hasInvalidLine = false;
-      
-      for (let i = 0; i < formData.lines.length; i++) {
-        const line = formData.lines[i];
-        totalDebit += line.debit;
-        totalCredit += line.credit;
-        
-        if (!line.account) {
-          newErrors[`lines[${i}].account`] = 'الحساب مطلوب';
-          hasInvalidLine = true;
-        }
-        
-        if (line.debit === 0 && line.credit === 0) {
-          newErrors[`lines[${i}].amount`] = 'يجب إدخال مبلغ مدين أو دائن';
-          hasInvalidLine = true;
-        }
-        
-        if (line.debit > 0 && line.credit > 0) {
-          newErrors[`lines[${i}].amount`] = 'لا يمكن إدخال مبلغ مدين ودائن في نفس السطر';
-          hasInvalidLine = true;
-        }
-      }
-      
-      if (!hasInvalidLine && Math.abs(totalDebit - totalCredit) > 0.01) {
-        newErrors.balance = 'القيد غير متوازن';
-      }
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (onSubmit: (data: JournalEntryFormData) => Promise<boolean>) => {
-    if (!validateForm()) {
-      toast.error('يرجى تصحيح الأخطاء قبل الحفظ');
-      return false;
-    }
-    
-    setIsSubmitting(true);
-    try {
-      const success = await onSubmit(formData);
-      if (success) {
-        toast.success('تم حفظ القيد بنجاح');
-        return true;
-      } else {
-        toast.error('حدث خطأ أثناء حفظ القيد');
-        return false;
-      }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'حدث خطأ غير معروف');
-      return false;
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const updateFormData = (data: Partial<JournalEntryFormData>) => {
-    setFormData(prev => ({ ...prev, ...data }));
-  };
-
+  
   const addLine = () => {
-    setFormData(prev => ({
+    setJournalEntry(prev => ({
       ...prev,
-      lines: [...prev.lines, { account: '', debit: 0, credit: 0 }]
+      lines: [...prev.lines, { 
+        accountId: '', 
+        debit: 0, 
+        credit: 0 
+      }]
     }));
   };
-
-  const updateLine = (index: number, data: Partial<JournalEntryFormData['lines'][0]>) => {
-    setFormData(prev => {
+  
+  const updateLine = (index: number, field: keyof JournalEntryLine, value: any) => {
+    setJournalEntry(prev => {
       const newLines = [...prev.lines];
-      newLines[index] = { ...newLines[index], ...data };
+      newLines[index] = { ...newLines[index], [field]: value };
       return { ...prev, lines: newLines };
     });
   };
-
+  
   const removeLine = (index: number) => {
-    if (formData.lines.length <= 1) {
-      toast.error('يجب أن يحتوي القيد على سطر واحد على الأقل');
-      return;
-    }
-    
-    setFormData(prev => {
+    setJournalEntry(prev => {
       const newLines = [...prev.lines];
       newLines.splice(index, 1);
       return { ...prev, lines: newLines };
     });
   };
-
+  
+  const updateField = (field: keyof JournalEntry, value: any) => {
+    setJournalEntry(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const validateEntry = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!journalEntry.reference) {
+      newErrors.reference = 'الرجاء إدخال رقم مرجعي';
+    }
+    
+    if (!journalEntry.date) {
+      newErrors.date = 'الرجاء إدخال تاريخ';
+    }
+    
+    if (!journalEntry.description) {
+      newErrors.description = 'الرجاء إدخال وصف';
+    }
+    
+    if (journalEntry.lines.length === 0) {
+      newErrors.lines = 'الرجاء إضافة سطر واحد على الأقل';
+    }
+    
+    // Check if entry is balanced
+    const totalDebit = journalEntry.lines.reduce((sum, line) => sum + (line.debit || 0), 0);
+    const totalCredit = journalEntry.lines.reduce((sum, line) => sum + (line.credit || 0), 0);
+    
+    if (Math.abs(totalDebit - totalCredit) > 0.01) {
+      newErrors.balance = 'القيد غير متوازن';
+    }
+    
+    // Check each line
+    journalEntry.lines.forEach((line, index) => {
+      if (!line.accountId) {
+        newErrors[`line_${index}_account`] = 'الرجاء اختيار حساب';
+      }
+      
+      if ((line.debit || 0) === 0 && (line.credit || 0) === 0) {
+        newErrors[`line_${index}_amount`] = 'الرجاء إدخال مبلغ';
+      }
+    });
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const saveEntry = async (): Promise<boolean> => {
+    if (!validateEntry()) {
+      toast({
+        title: "لا يمكن حفظ القيد",
+        description: "الرجاء تصحيح الأخطاء المشار إليها",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      // In a real app, this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "تم حفظ القيد بنجاح",
+        description: "تم حفظ القيد برقم " + journalEntry.reference
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Error saving journal entry:", error);
+      toast({
+        title: "فشل حفظ القيد",
+        description: "حدث خطأ أثناء حفظ القيد",
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const postEntry = async (): Promise<boolean> => {
+    if (!validateEntry()) {
+      toast({
+        title: "لا يمكن ترحيل القيد",
+        description: "الرجاء تصحيح الأخطاء المشار إليها",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      // In a real app, this would be an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setJournalEntry(prev => ({ ...prev, status: 'posted' }));
+      
+      toast({
+        title: "تم ترحيل القيد بنجاح",
+        description: "تم ترحيل القيد برقم " + journalEntry.reference
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Error posting journal entry:", error);
+      toast({
+        title: "فشل ترحيل القيد",
+        description: "حدث خطأ أثناء ترحيل القيد",
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const loadEntry = (entry: JournalEntry) => {
+    setJournalEntry(entry);
+    setErrors({});
+  };
+  
   return {
-    formData,
+    journalEntry,
+    isLoading,
     errors,
-    isSubmitting,
-    updateFormData,
     addLine,
     updateLine,
     removeLine,
-    handleSubmit
+    updateField,
+    saveEntry,
+    postEntry,
+    loadEntry
   };
 };
