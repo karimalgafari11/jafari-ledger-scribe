@@ -62,8 +62,6 @@ export const useInvoiceItems = (
         )
       };
     });
-    
-    toast.success(`تمت إضافة ${newItem.name} للفاتورة`);
   };
 
   const updateInvoiceItem = (itemId: string, updates: Partial<InvoiceItem>): void => {

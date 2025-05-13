@@ -10,7 +10,7 @@ interface InvoiceItemSectionProps {
   editingItemIndex: number | null;
   editingItem?: InvoiceItem;
   handleAddItem: (item: Partial<InvoiceItem>) => void;
-  handleUpdateItem: (item: Partial<InvoiceItem>) => void;
+  handleUpdateItem: (index: number, item: Partial<InvoiceItem>) => void;
   handleCancelEdit: () => void;
   handleCancelAdd: () => void;
   settings?: InvoiceSettingsType;
@@ -30,16 +30,23 @@ export const InvoiceItemSection: React.FC<InvoiceItemSectionProps> = ({
     return null;
   }
 
+  const onSubmit = (item: Partial<InvoiceItem>) => {
+    if (editingItemIndex !== null && editingItem) {
+      handleUpdateItem(editingItemIndex, item);
+    } else {
+      handleAddItem(item);
+    }
+  };
+
+  const onCancel = editingItemIndex !== null ? handleCancelEdit : handleCancelAdd;
+
   return (
     <Card className="mb-2 shadow-sm">
-      <CardContent className="p-1.5">
-        <h3 className="text-xs font-semibold mb-1">
-          {editingItemIndex !== null ? "تعديل صنف" : "إضافة صنف جديد"}
-        </h3>
+      <CardContent className="p-4">
         <InvoiceItemForm
           item={editingItem}
-          onSubmit={editingItemIndex !== null ? handleUpdateItem : handleAddItem}
-          onCancel={editingItemIndex !== null ? handleCancelEdit : handleCancelAdd}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
           includeNotes={settings?.showItemNotes !== false}
         />
       </CardContent>
