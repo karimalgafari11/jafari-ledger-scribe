@@ -6,7 +6,8 @@
 /* مؤشرات تحميل الصفحة والتصميم العام */
 body {
   @apply bg-background text-foreground overflow-x-hidden;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
 }
 
 .app-loaded {
@@ -14,7 +15,7 @@ body {
 }
 
 .app-container {
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -46,4 +47,45 @@ body {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+
+/* تحسينات الأداء */
+.content-container {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* تحسينات ظهور العناصر */
+@keyframes appearIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.appear-in {
+  animation: appearIn 0.3s ease-out forwards;
+}
+
+/* تحسين الاستقرار المرئي */
+.stable-element {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* أنميشن للتبديلات الناعمة */
+.slide-in-right {
+  animation: slideInRight 0.3s forwards;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.slide-out-right {
+  animation: slideOutRight 0.3s forwards;
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
 }

@@ -1,5 +1,5 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { RouterProvider } from 'react-router-dom';
@@ -8,21 +8,24 @@ import { Toaster } from './components/ui/sonner';
 import { AppWithErrorHandling } from './AppWithErrorHandling';
 import { AppProvider } from './contexts/AppContext';
 
-// تهيئة عميل الاستعلام
+// Initialize query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 دقائق
+      staleTime: 1000 * 60 * 5, // 5 minutes
     },
   },
 });
 
-// مكون المؤقت للتحميل
+// Loading component with better visual feedback
 const LoadingFallback = () => (
-  <div className="h-screen w-full flex items-center justify-center">
-    <div className="animate-pulse text-xl">جاري التحميل...</div>
+  <div className="h-screen w-full flex items-center justify-center bg-background">
+    <div className="flex flex-col items-center gap-4">
+      <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
+      <div className="animate-pulse text-xl font-medium">جاري التحميل...</div>
+    </div>
   </div>
 );
 
@@ -33,8 +36,10 @@ function App() {
         <AppProvider>
           <AppWithErrorHandling>
             <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
-              <Toaster />
+              <div className="app-wrapper animate-in fade-in-50 duration-300">
+                <RouterProvider router={router} />
+                <Toaster />
+              </div>
             </Suspense>
           </AppWithErrorHandling>
         </AppProvider>

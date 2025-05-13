@@ -22,7 +22,7 @@ export function Layout({
   
   return (
     <div 
-      className={`page-container h-screen w-full flex flex-col ${isRtl ? 'rtl' : 'ltr'} ${className}`}
+      className={`page-container min-h-screen w-full flex flex-col ${isRtl ? 'rtl' : 'ltr'} ${className} transition-opacity duration-300`}
       dir={isRtl ? 'rtl' : 'ltr'}
       lang={language}
     >
@@ -48,8 +48,8 @@ export function Layout({
       )}
       
       <TooltipProvider>
-        <div className="w-full h-full flex flex-col">
-          <div className="flex-1 flex flex-col w-full h-full overflow-auto relative z-10">
+        <div className="w-full h-full flex flex-col flex-1">
+          <div className="flex-1 flex flex-col w-full h-full overflow-auto relative z-10 animate-in fade-in-50 duration-300">
             {children || <Outlet />}
           </div>
         </div>

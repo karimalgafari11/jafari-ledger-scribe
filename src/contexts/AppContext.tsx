@@ -3,7 +3,6 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { AuthProvider } from "./AuthContext";
 import { defaultDarkTheme, defaultLightTheme } from "@/hooks/theme/themeDefaults";
 import { applyThemeToDOM } from "@/hooks/theme/themeUtils";
-import { ThemeSettings } from "@/types/theme";
 import { loadSavedTheme } from "@/hooks/theme/themeUtils";
 
 // تعريف نوع اللغة
@@ -44,9 +43,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return savedLanguage || "ar";
   });
 
-  // حالة للتحكم في إعادة التحميل
-  const [shouldReload, setShouldReload] = useState(false);
-
   // Apply theme immediately on startup
   useEffect(() => {
     const defaultTheme = themeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
@@ -80,28 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = language;
     // حفظ اللغة في التخزين المحلي
     localStorage.setItem("language", language);
-    
-    // منع إعادة التحميل عند التحميل الأولي للتطبيق
-    const isFirstLoad = sessionStorage.getItem("initialLanguageLoad") !== "true";
-    if (isFirstLoad) {
-      sessionStorage.setItem("initialLanguageLoad", "true");
-    } else if (!shouldReload && language) {
-      // نعلم النظام أننا نريد إعادة تحميل الصفحة مرة واحدة فقط
-      setShouldReload(true);
-    }
-  }, [language, shouldReload]);
-
-  // إعادة تحميل الصفحة مرة واحدة فقط عندما نكون جاهزين
-  useEffect(() => {
-    if (shouldReload) {
-      const timer = setTimeout(() => {
-        // نستخدم setTimeout لضمان اكتمال تطبيق التغييرات قبل إعادة التحميل
-        window.location.reload();
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [shouldReload]);
+  }, [language]);
 
   // وظيفة لتبديل السمة
   const toggleTheme = () => {
@@ -116,8 +91,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLanguage: (lang: Language) => {
       if (lang !== language) {
         setLanguage(lang);
-        // عند تغيير اللغة، نضبط حالة إعادة التحميل
-        setShouldReload(false);
       }
     },
   };
