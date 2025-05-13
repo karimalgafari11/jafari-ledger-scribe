@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNotificationSettings } from './notifications/useNotificationSettings';
@@ -6,7 +5,14 @@ import { useNotificationTemplates } from './notifications/useNotificationTemplat
 import { useNotificationOperations } from './notifications/useNotificationOperations';
 import { calculateDiscount } from './notifications/notificationUtils';
 import { NotificationHookReturn } from './notifications/notificationTypes';
-import { Notification, NotificationSettings, NotificationTemplate } from '@/types/notifications';
+import { 
+  Notification, 
+  NotificationSettings, 
+  NotificationTemplate, 
+  NotificationPriority, 
+  NotificationChannel, 
+  NotificationEvent 
+} from '@/types/notifications';
 
 export function useNotifications(): NotificationHookReturn {
   const [notifications, setNotifications] = useState<Notification[]>([]);
