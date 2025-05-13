@@ -54,7 +54,6 @@ const SalesInvoicePage = () => {
   const handleAddInvoiceItem = (item: Partial<InvoiceItem>) => {
     addInvoiceItem(item);
     calculateTotals(); // إعادة حساب المجاميع
-    toast.success(`تم إضافة ${item.name} إلى الفاتورة`);
   };
   
   const handleSaveInvoice = async () => {
