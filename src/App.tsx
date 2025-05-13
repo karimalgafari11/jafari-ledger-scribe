@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { RouterProvider } from 'react-router-dom';
@@ -19,14 +19,23 @@ const queryClient = new QueryClient({
   },
 });
 
+// مكون المؤقت للتحميل
+const LoadingFallback = () => (
+  <div className="h-screen w-full flex items-center justify-center">
+    <div className="animate-pulse text-xl">جاري التحميل...</div>
+  </div>
+);
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AppProvider>
           <AppWithErrorHandling>
-            <RouterProvider router={router} />
-            <Toaster />
+            <Suspense fallback={<LoadingFallback />}>
+              <RouterProvider router={router} />
+              <Toaster />
+            </Suspense>
           </AppWithErrorHandling>
         </AppProvider>
       </ThemeProvider>

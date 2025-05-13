@@ -27,7 +27,7 @@ export function Layout({
       lang={language}
     >
       {showWatermark && !isMobile && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0">
           <img 
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
             alt={isRtl ? "الجعفري للمحاسبة" : "Al-Jaafari Accounting"} 
@@ -38,7 +38,7 @@ export function Layout({
       
       {/* Mobile watermark (smaller size) */}
       {showWatermark && isMobile && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0">
           <img 
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
             alt={isRtl ? "الجعفري للمحاسبة" : "Al-Jaafari Accounting"} 
@@ -49,7 +49,7 @@ export function Layout({
       
       <TooltipProvider>
         <div className="w-full h-full flex flex-col">
-          <div className="flex-1 flex flex-col w-full h-full overflow-auto">
+          <div className="flex-1 flex flex-col w-full h-full overflow-auto relative z-10">
             {children || <Outlet />}
           </div>
         </div>

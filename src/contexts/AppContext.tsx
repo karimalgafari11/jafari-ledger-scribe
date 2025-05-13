@@ -44,6 +44,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return savedLanguage || "ar";
   });
 
+  // حالة للتحكم في إعادة التحميل
+  const [shouldReload, setShouldReload] = useState(false);
+
   // Apply theme immediately on startup
   useEffect(() => {
     const defaultTheme = themeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
@@ -78,16 +81,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // حفظ اللغة في التخزين المحلي
     localStorage.setItem("language", language);
     
-    // إعادة تحميل الصفحة عند تغيير اللغة لضمان تطبيق جميع الترجمات
-    // نستثني التحميل الأولي من إعادة التحميل
-    const isInitialLoad = sessionStorage.getItem("initialLanguageLoad") !== "true";
-    if (!isInitialLoad) {
-      // نقوم بإعادة تحميل الصفحة لتطبيق الترجمات الجديدة
-      window.location.reload();
-    } else {
+    // منع إعادة التحميل عند التحميل الأولي للتطبيق
+    const isFirstLoad = sessionStorage.getItem("initialLanguageLoad") !== "true";
+    if (isFirstLoad) {
       sessionStorage.setItem("initialLanguageLoad", "true");
+    } else if (!shouldReload && language) {
+      // نعلم النظام أننا نريد إعادة تحميل الصفحة مرة واحدة فقط
+      setShouldReload(true);
     }
-  }, [language]);
+  }, [language, shouldReload]);
+
+  // إعادة تحميل الصفحة مرة واحدة فقط عندما نكون جاهزين
+  useEffect(() => {
+    if (shouldReload) {
+      const timer = setTimeout(() => {
+        // نستخدم setTimeout لضمان اكتمال تطبيق التغييرات قبل إعادة التحميل
+        window.location.reload();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [shouldReload]);
 
   // وظيفة لتبديل السمة
   const toggleTheme = () => {
@@ -99,7 +113,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     themeMode,
     language,
     toggleTheme,
-    setLanguage,
+    setLanguage: (lang: Language) => {
+      if (lang !== language) {
+        setLanguage(lang);
+        // عند تغيير اللغة، نضبط حالة إعادة التحميل
+        setShouldReload(false);
+      }
+    },
   };
 
   return (
