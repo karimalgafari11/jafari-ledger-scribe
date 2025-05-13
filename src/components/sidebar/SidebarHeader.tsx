@@ -11,16 +11,6 @@ interface SidebarHeaderProps {
 const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed, toggleCollapsed }) => {
   return (
     <div className="p-4 flex justify-between items-center border-b border-sidebar-border">
-      <div className="flex items-center">
-        <img 
-          src="/lovable-uploads/3d743b81-5ccb-4ce5-9824-2af91771013d.png" 
-          alt="AICore" 
-          className={`${collapsed ? 'h-8 w-8' : 'h-10 w-10'} object-contain mr-2`} 
-        />
-        {!collapsed && (
-          <div className="text-sidebar-foreground font-bold text-xl">AICore</div>
-        )}
-      </div>
       <Button 
         variant="ghost" 
         size="icon"
@@ -29,6 +19,16 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ collapsed, toggleCollapse
       >
         <Menu size={24} />
       </Button>
+      <div className="flex items-center">
+        {!collapsed && (
+          <div className="text-sidebar-foreground font-bold text-xl ml-2">AICore</div>
+        )}
+        <img 
+          src="/lovable-uploads/3d743b81-5ccb-4ce5-9824-2af91771013d.png" 
+          alt="AICore" 
+          className={`${collapsed ? 'h-8 w-8' : 'h-10 w-10'} object-contain`} 
+        />
+      </div>
     </div>
   );
 };
