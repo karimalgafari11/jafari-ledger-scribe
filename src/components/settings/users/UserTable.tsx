@@ -41,6 +41,15 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEditUser, onDeleteUser, 
     }).format(new Date(date));
   };
 
+  const getInitials = (name: string): string => {
+    return name
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+  };
+
   return (
     <div className="rounded-md border overflow-x-auto">
       <Table striped hoverable bordered>
@@ -62,10 +71,13 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEditUser, onDeleteUser, 
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {user.fullName.split(" ").map(n => n[0]).join("").substring(0, 2)}
-                      </AvatarFallback>
+                      {user.avatar ? (
+                        <AvatarImage src={user.avatar} alt={user.fullName} />
+                      ) : (
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {getInitials(user.fullName)}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                     <div>
                       <span className="font-medium block">{user.fullName}</span>
