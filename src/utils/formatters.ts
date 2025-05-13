@@ -1,16 +1,25 @@
 
+import { Language } from "@/contexts/AppContext";
+
 /**
- * تنسيق المبالغ المالية بالعملة
+ * Format currency amounts
  */
-export const formatCurrency = (amount: number, currency = 'ريال'): string => {
+export const formatCurrency = (amount: number, currency = 'SAR', language: Language = 'ar'): string => {
   try {
-    const formatter = new Intl.NumberFormat('ar-SA', {
+    const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+    const currencyText = language === 'ar' ? 'ريال' : 'SAR';
+    
+    const formatter = new Intl.NumberFormat(locale, {
       style: 'decimal',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
     
-    return `${formatter.format(amount)} ${currency}`;
+    if (language === 'ar') {
+      return `${formatter.format(amount)} ${currencyText}`;
+    } else {
+      return `${currencyText} ${formatter.format(amount)}`;
+    }
   } catch (error) {
     console.error('Error formatting currency:', error);
     return `${amount.toFixed(2)} ${currency}`;
@@ -18,12 +27,14 @@ export const formatCurrency = (amount: number, currency = 'ريال'): string =>
 };
 
 /**
- * تنسيق التواريخ
+ * Format dates
  */
-export const formatDate = (date: Date | string): string => {
+export const formatDate = (date: Date | string, language: Language = 'ar'): string => {
   try {
     const dateObj = new Date(date);
-    return new Intl.DateTimeFormat('ar-SA', {
+    const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+    
+    return new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -35,11 +46,12 @@ export const formatDate = (date: Date | string): string => {
 };
 
 /**
- * تنسيق الأرقام
+ * Format numbers
  */
-export const formatNumber = (num: number): string => {
+export const formatNumber = (num: number, language: Language = 'ar'): string => {
   try {
-    return new Intl.NumberFormat('ar-SA').format(num);
+    const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+    return new Intl.NumberFormat(locale).format(num);
   } catch (error) {
     console.error('Error formatting number:', error);
     return String(num);
@@ -47,7 +59,7 @@ export const formatNumber = (num: number): string => {
 };
 
 /**
- * اختصار النص إذا كان طويلاً
+ * Truncate text if it's too long
  */
 export const truncateText = (text: string, maxLength: number): string => {
   if (!text) return '';
@@ -55,9 +67,9 @@ export const truncateText = (text: string, maxLength: number): string => {
 };
 
 /**
- * تنسيق وقت مضى منذ تاريخ معين
+ * Format time ago from a date
  */
-export const timeAgo = (date: Date | string): string => {
+export const timeAgo = (date: Date | string, language: Language = 'ar'): string => {
   const dateObj = new Date(date);
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
@@ -66,14 +78,27 @@ export const timeAgo = (date: Date | string): string => {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
   
-  if (days > 0) {
-    return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+  if (language === 'ar') {
+    if (days > 0) {
+      return `منذ ${days} ${days === 1 ? 'يوم' : 'أيام'}`;
+    }
+    if (hours > 0) {
+      return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
+    }
+    if (minutes > 0) {
+      return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
+    }
+    return 'منذ لحظات';
+  } else {
+    if (days > 0) {
+      return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    }
+    if (hours > 0) {
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    }
+    if (minutes > 0) {
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    }
+    return 'just now';
   }
-  if (hours > 0) {
-    return `منذ ${hours} ${hours === 1 ? 'ساعة' : 'ساعات'}`;
-  }
-  if (minutes > 0) {
-    return `منذ ${minutes} ${minutes === 1 ? 'دقيقة' : 'دقائق'}`;
-  }
-  return 'منذ لحظات';
 };

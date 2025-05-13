@@ -13,13 +13,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useAuth } from "@/contexts/AuthContext";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslation } from "@/hooks/useTranslation";
 
-// تعريف مخطط التحقق باستخدام Zod
+// Define validation schema using Zod
 const loginSchema = z.object({
   email: z.string()
-    .email({ message: "البريد الإلكتروني غير صالح" }),
+    .email({ message: "Invalid email address" }),
   password: z.string()
-    .min(1, { message: "كلمة المرور مطلوبة" }),
+    .min(1, { message: "Password is required" }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -29,6 +30,7 @@ const LoginPage: React.FC = () => {
   const { signIn, isLoading } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const { t, language } = useTranslation();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -44,25 +46,25 @@ const LoginPage: React.FC = () => {
     
     try {
       await signIn(values.email, values.password, values.rememberMe || false);
-      // ستتم إعادة التوجيه تلقائيًا بواسطة AuthGuard
+      // User will be redirected automatically by AuthGuard
     } catch (err: any) {
       console.error("Error during login:", err);
       
       if (err.message.includes("invalid credentials") || err.message.includes("Invalid login")) {
-        setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+        setError(t('invalidCredentials'));
       } else {
-        setError(err.message || "حدث خطأ أثناء تسجيل الدخول");
+        setError(err.message || t('errorOccurred'));
       }
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 relative">
-      {/* العلامة المائية */}
+      {/* Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <img 
           src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
-          alt="الجعفري للمحاسبة" 
+          alt="Al-Jaafari Accounting" 
           className="w-96 h-96 opacity-[0.07]" 
         />
       </div>
@@ -72,11 +74,13 @@ const LoginPage: React.FC = () => {
           <Logo size="large" />
         </div>
         
-        <h1 className="text-2xl font-bold text-center text-teal-700 mb-6">الجعفري للمحاسبة</h1>
+        <h1 className="text-2xl font-bold text-center text-teal-700 mb-6">
+          {language === 'ar' ? 'الجعفري للمحاسبة' : 'Al-Jaafari Accounting'}
+        </h1>
         
         <Card>
           <CardHeader className="text-center">
-            <h2 className="text-xl font-medium">تسجيل الدخول</h2>
+            <h2 className="text-xl font-medium">{t('login')}</h2>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -93,12 +97,12 @@ const LoginPage: React.FC = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>البريد الإلكتروني</FormLabel>
+                      <FormLabel>{t('email')}</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
-                          placeholder="أدخل البريد الإلكتروني"
-                          className="rtl"
+                          placeholder={language === 'ar' ? "أدخل البريد الإلكتروني" : "Enter your email"}
+                          className={language === 'ar' ? "rtl" : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -111,13 +115,13 @@ const LoginPage: React.FC = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>كلمة المرور</FormLabel>
+                      <FormLabel>{t('password')}</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           type="password"
-                          placeholder="أدخل كلمة المرور"
-                          className="rtl"
+                          placeholder={language === 'ar' ? "أدخل كلمة المرور" : "Enter your password"}
+                          className={language === 'ar' ? "rtl" : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -130,14 +134,16 @@ const LoginPage: React.FC = () => {
                     control={form.control}
                     name="rememberMe"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-3 space-x-reverse rtl">
+                      <FormItem className={`flex flex-row items-center space-x-3 ${language === 'ar' ? 'space-x-reverse rtl' : ''}`}>
                         <FormControl>
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormLabel className="mr-2">تذكرني</FormLabel>
+                        <FormLabel className={language === 'ar' ? "mr-2" : "ml-2"}>
+                          {t('rememberMe')}
+                        </FormLabel>
                       </FormItem>
                     )}
                   />
@@ -146,7 +152,7 @@ const LoginPage: React.FC = () => {
                     to="/auth/forgot-password" 
                     className="text-sm text-teal-600 hover:underline"
                   >
-                    نسيت كلمة المرور؟
+                    {t('forgotPassword')}
                   </Link>
                 </div>
                 
@@ -155,20 +161,22 @@ const LoginPage: React.FC = () => {
                   className="w-full mt-4"
                   disabled={isLoading}
                 >
-                  {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+                  {isLoading ? 
+                    (language === 'ar' ? "جاري تسجيل الدخول..." : "Logging in...") : 
+                    t('loginButton')}
                 </Button>
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex justify-center space-y-2 flex-col">
             <div className="text-sm text-center">
-              ليس لديك حساب؟{" "}
+              {t('dontHaveAccount')}{" "}
               <Link to="/auth/register" className="text-blue-600 hover:underline">
-                إنشاء حساب جديد
+                {t('createAccount')}
               </Link>
             </div>
             <div className="text-sm text-muted-foreground text-center">
-              نظام إدارة الحسابات المتكامل
+              {t('accountSystem')}
             </div>
           </CardFooter>
         </Card>

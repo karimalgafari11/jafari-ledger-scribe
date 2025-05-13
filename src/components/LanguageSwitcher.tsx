@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAppContext } from "@/contexts/AppContext";
 import { Globe } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface LanguageSwitcherProps {
   className?: string;
@@ -10,6 +11,7 @@ interface LanguageSwitcherProps {
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = "" }) => {
   const { language, setLanguage } = useAppContext();
+  const { t } = useTranslation();
   
   const toggleLanguage = () => {
     setLanguage(language === 'ar' ? 'en' : 'ar');
