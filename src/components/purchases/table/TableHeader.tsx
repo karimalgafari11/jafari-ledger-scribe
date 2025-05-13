@@ -1,6 +1,6 @@
 
 import React from "react";
-import { TableHeader as UITableHeader, TableRow, TableHead } from "@/components/ui/table";
+import { TableHead, TableHeader as UITableHeader, TableRow } from "@/components/ui/table";
 
 interface TableHeaderProps {
   showItemCodes?: boolean;
@@ -12,25 +12,17 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   showItemNotes = true
 }) => {
   return (
-    <UITableHeader className="bg-primary-50" dir="rtl">
+    <UITableHeader>
       <TableRow>
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">#</TableHead>
-        
-        {showItemCodes && (
-          <TableHead className="text-center border border-gray-300 p-2 font-bold">رمز الصنف</TableHead>
-        )}
-        
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">اسم الصنف</TableHead>
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">الوحدة</TableHead>
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">الكمية</TableHead>
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">السعر</TableHead>
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">الإجمالي</TableHead>
-        
-        {showItemNotes && (
-          <TableHead className="text-center border border-gray-300 p-2 font-bold">ملاحظات</TableHead>
-        )}
-        
-        <TableHead className="text-center border border-gray-300 p-2 font-bold">إجراءات</TableHead>
+        <TableHead className="w-12 text-center">#</TableHead>
+        {showItemCodes && <TableHead className="w-24 text-center">الكود</TableHead>}
+        <TableHead>الصنف</TableHead>
+        <TableHead className="w-16 text-center">الوحدة</TableHead>
+        <TableHead className="w-20 text-center">الكمية</TableHead>
+        <TableHead className="w-24 text-left">السعر</TableHead>
+        <TableHead className="w-24 text-left">الإجمالي</TableHead>
+        {showItemNotes && <TableHead className="w-32 text-center">ملاحظات</TableHead>}
+        <TableHead className="w-20 text-center">الإجراءات</TableHead>
       </TableRow>
     </UITableHeader>
   );

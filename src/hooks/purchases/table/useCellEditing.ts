@@ -1,5 +1,7 @@
 
+import { useCallback } from "react";
 import { PurchaseItem } from "@/types/purchases";
+import { Product } from "@/types/inventory";
 
 interface UseCellEditingProps {
   items: PurchaseItem[];
@@ -21,55 +23,63 @@ export function useCellEditing({
   setLastSelectedRowIndex
 }: UseCellEditingProps) {
   
-  const handleCellClick = (rowIndex: number, cellName: string) => {
-    if (isAddingItem || editingItemIndex !== null) return;
+  // Handle cell click for editing
+  const handleCellClick = useCallback((rowIndex: number, cellName: string) => {
+    if (isAddingItem || editingItemIndex !== null) {
+      return; // Don't allow cell editing when adding or editing a row
+    }
     
     setActiveSearchCell({ rowIndex, cellName });
-    setLastSelectedRowIndex(rowIndex);
     setIsEditingCell(true);
-  };
-  
-  const handleDirectEdit = (index: number, field: string, value: any) => {
+    setLastSelectedRowIndex(rowIndex);
+  }, [isAddingItem, editingItemIndex, setActiveSearchCell, setIsEditingCell, setLastSelectedRowIndex]);
+
+  // Handle direct cell editing
+  const handleDirectEdit = useCallback((index: number, field: string, value: any) => {
+    // For quantity and price, update the total as well
     if (field === 'quantity' || field === 'price') {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue)) return;
+      const item = items[index];
+      const newQuantity = field === 'quantity' ? value : item.quantity;
+      const newPrice = field === 'price' ? value : item.price;
+      const newTotal = newQuantity * newPrice;
       
-      const updates: Partial<PurchaseItem> = {
-        [field]: numValue
-      };
-      
-      // إذا تم تغيير الكمية أو السعر، أعد حساب المجموع
-      updates.total = field === 'quantity' 
-        ? numValue * items[index].price 
-        : items[index].quantity * numValue;
-        
-      onUpdateItem(index, updates);
+      onUpdateItem(index, {
+        [field]: value,
+        total: newTotal
+      });
     } else {
       onUpdateItem(index, { [field]: value });
     }
-  };
-  
-  const handleProductSelect = (product: any, index?: number) => {
+    
+    // Close the active cell after editing
+    setActiveSearchCell(null);
+    setIsEditingCell(false);
+  }, [items, onUpdateItem, setActiveSearchCell, setIsEditingCell]);
+
+  // Handle product selection from search
+  const handleProductSelect = useCallback((product: Product, index?: number) => {
     if (typeof index === 'number') {
+      const item = items[index];
+      
       onUpdateItem(index, {
         productId: product.id,
         code: product.code,
         name: product.name,
-        price: product.price,
-        total: items[index].quantity * product.price
+        price: product.price || item.price,
+        total: (product.price || item.price) * item.quantity
       });
+      
+      setActiveSearchCell(null);
+      setIsEditingCell(false);
     }
-    
+  }, [items, onUpdateItem, setActiveSearchCell, setIsEditingCell]);
+
+  // Finish editing the current cell
+  const finishEditing = useCallback(() => {
     setActiveSearchCell(null);
     setIsEditingCell(false);
-  };
-  
-  const finishEditing = () => {
-    setActiveSearchCell(null);
-    setIsEditingCell(false);
-    setLastSelectedRowIndex(null);
-  };
-  
+  }, [setActiveSearchCell, setIsEditingCell]);
+
   return {
     handleCellClick,
     handleDirectEdit,

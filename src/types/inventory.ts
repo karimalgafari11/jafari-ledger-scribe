@@ -1,90 +1,76 @@
+
 export interface Product {
   id: string;
   code: string;
   name: string;
   description?: string;
-  price: number;
-  cost?: number;
-  quantity?: number;
-  unit?: string;
   category?: string;
-  categoryId?: string;
-  subcategory?: string;
-  subcategoryId?: string;
-  brand?: string;
-  brandId?: string;
+  price: number;
+  purchasePrice?: number;
+  unit?: string;
+  quantity: number;
+  reorderLevel?: number;
+  manufacturer?: string;
   barcode?: string;
-  sku?: string;
-  image?: string;
-  taxRate?: number;
+  isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
-  
-  // Add missing properties that are being used in the codebase
-  costPrice?: number;
-  reorderLevel?: number;
-  isActive?: boolean;
-  productId?: string; // Used in QuoteToInvoicePage
-  size?: string; // Added size property to fix the errors
+  images?: string[];
 }
 
-// Add missing inventory-related interfaces
-export interface StockMovement {
+export interface ProductCategory {
   id: string;
-  date: Date;
+  name: string;
+  description?: string;
+  parentId?: string;
+}
+
+export interface Warehouse {
+  id: string;
+  name: string;
+  location: string;
+  isMain: boolean;
+  isActive: boolean;
+}
+
+export interface InventoryMovement {
+  id: string;
   productId: string;
-  productName: string;
-  itemName: string;
+  warehouseId: string;
   quantity: number;
-  type: "inbound" | "outbound" | "transfer" | "purchase" | "sale" | "return" | "adjustment" | "damaged";
-  sourceWarehouse: string;
-  sourceWarehouseName: string;
-  destinationWarehouse?: string;
-  destinationWarehouseName?: string;
-  userId: string;
-  userName: string;
+  direction: 'in' | 'out';
+  referenceType: 'purchase' | 'sale' | 'return' | 'transfer' | 'adjustment';
+  referenceId: string;
+  date: string;
+  cost: number;
   notes?: string;
 }
 
-export interface ReorderItem {
-  itemId: string;
-  itemName: string;
-  availableQuantity: number;
-  reorderThreshold: number;
-  suggestedOrderQuantity: number;
+export interface StockBalance {
+  productId: string;
   warehouseId: string;
-  warehouseName: string;
-}
-
-export interface FilterOptions {
-  category: string;
-  subcategory: string;
-  brand: string;
-  priceRange: { min: number; max: number };
-  inStock: boolean | null;
-  
-  // Add the missing properties that are being used in the codebase
-  status?: string;
-  warehouse?: string;
-  minPrice?: number;
-  maxPrice?: number;
-}
-
-export interface InventoryCountItem {
-  itemId: string;
-  itemName: string;
-  expectedQuantity: number;
-  actualQuantity: number;
-  difference: number;
-  notes: string;
+  quantity: number;
+  lastUpdated: string;
 }
 
 export interface InventoryCount {
   id: string;
-  date: Date;
+  name: string;
+  date: string;
   warehouseId: string;
-  warehouseName: string;
-  status: 'draft' | 'in_progress' | 'completed';
-  items: InventoryCountItem[];
-  notes: string;
+  status: 'draft' | 'in-progress' | 'completed';
+  notes?: string;
+  createdBy: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface InventoryCountItem {
+  id: string;
+  countId: string;
+  productId: string;
+  expectedQuantity: number;
+  actualQuantity: number;
+  difference: number;
+  notes?: string;
 }

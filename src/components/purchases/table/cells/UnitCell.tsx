@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
+import React, { forwardRef } from "react";
 import { TableCell } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { EditableCell } from "../EditableCell";
 
 interface UnitCellProps {
   unit?: string;
@@ -9,12 +9,12 @@ interface UnitCellProps {
   isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
-  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTableCellElement>) => void;
   tabIndex?: number;
 }
 
 export const UnitCell = forwardRef<HTMLTableCellElement, UnitCellProps>(({
-  unit = "قطعة",
+  unit,
   index,
   isEditing,
   handleCellClick,
@@ -22,53 +22,20 @@ export const UnitCell = forwardRef<HTMLTableCellElement, UnitCellProps>(({
   onKeyDown,
   tabIndex
 }, ref) => {
-  const [inputValue, setInputValue] = useState(unit);
-  
-  useEffect(() => {
-    if (isEditing) {
-      setInputValue(unit);
-    }
-  }, [isEditing, unit]);
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-  
-  const handleBlur = () => {
-    if (inputValue !== unit) {
-      handleDirectEdit(index, 'unit', inputValue);
-    }
-  };
-  
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleDirectEdit(index, 'unit', inputValue);
-    }
-  };
-  
   return (
     <TableCell 
-      className="text-center border border-gray-300 p-2"
-      onClick={() => handleCellClick(index, 'unit')}
-      onKeyDown={onKeyDown}
-      data-row-index={index}
-      data-cell-name="unit"
-      ref={ref}
+      className="px-3 py-2 text-center" 
+      ref={ref} 
       tabIndex={tabIndex}
+      onKeyDown={onKeyDown}
     >
-      {isEditing ? (
-        <Input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          className="h-8 text-center"
-          autoFocus
-        />
-      ) : (
-        <span className="cursor-text">{unit}</span>
-      )}
+      <EditableCell
+        value={unit || "قطعة"}
+        active={isEditing}
+        onActivate={() => handleCellClick(index, "unit")}
+        onChange={(value) => handleDirectEdit(index, "unit", value)}
+        className="text-center"
+      />
     </TableCell>
   );
 });

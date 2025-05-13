@@ -1,115 +1,83 @@
 
 export const mockVendors = [
-  { 
-    id: "1", 
-    name: "شركة المستلزمات المكتبية", 
-    contactPerson: "أحمد محمد",
-    email: "ahmed@supplies.com",
+  {
+    id: "v1",
+    name: "شركة السعيد للتجارة",
     phone: "0512345678",
-    address: "الرياض - حي السلام",
-    balance: 12500.00,
-    currency: "ريال",
-    status: "نشط",
-    taxNumber: "300198765",
-    createdAt: "2023-05-15",
-    category: "مستلزمات مكتبية",
-    creditLimit: 20000,
-    dueDate: "2023-08-30"
+    email: "alsaeed@example.com",
+    address: "الرياض، حي العليا، شارع الملك فهد",
+    accountNumber: "SA5980000123456789012345"
   },
-  { 
-    id: "2", 
-    name: "مؤسسة الإمداد التجارية", 
-    contactPerson: "سلطان العتيبي",
-    email: "sultan@emdad.com",
+  {
+    id: "v2",
+    name: "مؤسسة النور للمقاولات",
     phone: "0556789012",
-    address: "جدة - حي الصفا",
-    balance: 8750.50,
-    currency: "ريال",
-    status: "نشط",
-    taxNumber: "300765432",
-    createdAt: "2023-06-22",
-    category: "معدات إلكترونية",
-    creditLimit: 15000,
-    dueDate: "2023-09-15"
+    email: "alnoor@example.com",
+    address: "جدة، حي السلامة، طريق المدينة",
+    accountNumber: "SA5980000987654321012345"
   },
-  { 
-    id: "3", 
-    name: "مؤسسة نور للتجهيزات", 
-    contactPerson: "خالد الشمري",
-    email: "khaled@noor.com",
+  {
+    id: "v3",
+    name: "مؤسسة الأمانة للتوريدات",
     phone: "0590123456",
-    address: "الدمام - حي الفيصلية",
-    balance: 0.00,
-    currency: "ريال",
-    status: "غير نشط",
-    taxNumber: "300345678",
-    createdAt: "2022-11-10",
-    category: "أثاث مكتبي",
-    creditLimit: 10000,
-    dueDate: null
+    email: "alamana@example.com",
+    address: "الدمام، حي الفيصلية، شارع الأمير محمد",
+    accountNumber: "SA5980000123459876501234"
   },
-  { 
-    id: "4", 
-    name: "شركة تقنيات المستقبل", 
-    contactPerson: "سارة الغامدي",
-    email: "sarah@futuretech.com",
+  {
+    id: "v4",
+    name: "شركة تقنيات المستقبل",
     phone: "0501234567",
-    address: "الخبر - حي الراكة",
-    balance: 25000.00,
-    currency: "ريال",
-    status: "نشط",
-    taxNumber: "300987123",
-    createdAt: "2023-01-15",
-    category: "أجهزة وتقنية",
-    creditLimit: 30000,
-    dueDate: "2023-07-30"
+    email: "future-tech@example.com",
+    address: "الرياض، حي المربع، شارع الملك عبدالعزيز",
+    accountNumber: "SA5980000765432109871234"
   },
-  { 
-    id: "5", 
-    name: "مصنع الجودة للمنتجات الورقية", 
-    contactPerson: "فهد العنزي",
-    email: "fahad@quality.com",
+  {
+    id: "v5",
+    name: "مصنع الجودة للمنتجات الورقية",
     phone: "0566543210",
-    address: "مكة - الحمراء",
-    balance: 5750.25,
-    currency: "ريال",
-    status: "نشط",
-    taxNumber: "300555666",
-    createdAt: "2023-03-20",
-    category: "منتجات ورقية",
-    creditLimit: 12000,
-    dueDate: "2023-10-05"
+    email: "quality-paper@example.com",
+    address: "جدة، المنطقة الصناعية، طريق المدينة",
+    accountNumber: "SA5980000123456543211234"
   },
-  { 
-    id: "6", 
-    name: "شركة الأدوات الصناعية", 
-    contactPerson: "عبدالله القحطاني",
-    email: "abdullah@industrial.com",
+  {
+    id: "v6",
+    name: "شركة الأدوات الصناعية",
     phone: "0533221100",
-    address: "الرياض - المنطقة الصناعية",
-    balance: 18200.75,
-    currency: "ريال",
-    status: "نشط",
-    taxNumber: "300112233",
-    createdAt: "2023-02-10",
-    category: "أدوات صناعية",
-    creditLimit: 25000,
-    dueDate: "2023-08-15"
+    email: "industrial-tools@example.com",
+    address: "الرياض، المنطقة الصناعية الثانية",
+    accountNumber: "SA5980000112233445566778"
   },
-  { 
-    id: "7", 
-    name: "مؤسسة التوريدات الغذائية", 
-    contactPerson: "محمد العمري",
-    email: "mohammed@foodsupply.com",
+  {
+    id: "v7",
+    name: "مؤسسة الفجر للتجهيزات المكتبية",
     phone: "0544332211",
-    address: "جدة - طريق المدينة",
-    balance: 3200.00,
-    currency: "ريال",
-    status: "نشط",
-    taxNumber: "300998877",
-    createdAt: "2023-04-25",
-    category: "مواد غذائية",
-    creditLimit: 8000,
-    dueDate: "2023-09-20"
+    email: "alfajr-office@example.com",
+    address: "جدة، حي الروضة، شارع فلسطين",
+    accountNumber: "SA5980000998877665544332"
+  },
+  {
+    id: "v8",
+    name: "شركة الرائد للإلكترونيات",
+    phone: "0567891234",
+    email: "alraed-electronics@example.com",
+    address: "الرياض، حي النخيل، طريق الملك سلمان",
+    accountNumber: "SA5980000123454321567890"
+  },
+  {
+    id: "v9",
+    name: "مصنع البناء الحديث",
+    phone: "0522334455",
+    email: "modern-building@example.com",
+    address: "الدمام، المنطقة الصناعية الأولى",
+    accountNumber: "SA5980000112233445566123"
+  },
+  {
+    id: "v10",
+    name: "شركة الأفق للتوريدات",
+    phone: "0599887766",
+    email: "horizon-supply@example.com",
+    address: "الرياض، حي الملز، شارع الستين",
+    accountNumber: "SA5980000665544332211001"
   }
 ];
