@@ -50,25 +50,7 @@ const Dashboard = () => {
       <div className="page-content">
         <DashboardWelcomeBanner />
 
-        <DashboardContent
-          totalSales={totalSales}
-          totalExpenses={totalExpenses}
-          netProfit={netProfit}
-          profitMargin={profitMargin}
-          overdueInvoices={overdueInvoices}
-          overdueTotalAmount={overdueTotalAmount}
-          kpis={dashboardKpis}
-          salesData={salesData}
-          profitData={profitData}
-          customerDebtData={customerDebtData}
-          supplierCreditData={supplierCreditData}
-          costCenterData={costCenterData}
-          dailySalesData={dailySalesData}
-          systemAlerts={alerts}
-          interactiveMode={false}
-          displayOptions={displayOptions}
-          shortcuts={shortcuts}
-        />
+        <DashboardContent />
 
         <DisplayOptionsForm 
           displayOptions={displayOptions} 

@@ -69,12 +69,12 @@ export function useSystemUpdates() {
         ? mapVersionFromDb(userUpdatesData[0].version)
         : undefined;
         
-      const recentUpdates = userUpdatesData.map(update => ({
+      const recentUpdates: UserUpdate[] = userUpdatesData.map(update => ({
         id: update.id,
         userId: update.user_id,
         versionId: update.version_id,
         installedAt: new Date(update.installed_at),
-        status: update.status,
+        status: update.status as 'pending' | 'in_progress' | 'completed' | 'failed',
         notes: update.notes,
         version: update.version ? mapVersionFromDb(update.version) : undefined
       }));
@@ -121,10 +121,15 @@ export function useSystemUpdates() {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
       
+      // Get the user ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+      
       // تسجيل عملية التثبيت
       const { error } = await supabase
         .from('user_updates')
         .insert({
+          user_id: user.id,
           version_id: versionId,
           status: 'completed',
           notes: 'تم تثبيت التحديث بنجاح'
