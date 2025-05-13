@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Filter, Plus, Search } from "lucide-react";
-import { Report } from "@/hooks/useReports";
+import { Report } from "@/types/custom-reports";
 import { useReports } from "@/hooks/useReports";
 import CustomReportBuilder from "@/components/reports/CustomReportBuilder";
 

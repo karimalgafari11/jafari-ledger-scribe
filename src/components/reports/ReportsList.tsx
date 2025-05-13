@@ -3,10 +3,10 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Report } from "@/types/custom-reports";
+import { Report, CustomReport } from "@/types/custom-reports";
 
 interface ReportsListProps {
-  reports: Report[];
+  reports: Report[] | CustomReport[];
   onSelectReport?: (reportId: string) => void;
   onToggleFavorite?: (reportId: string) => void;
   onDeleteReport?: (reportId: string) => void;

@@ -12,12 +12,37 @@ export interface ChartData {
   datasets: ChartDataset[];
 }
 
-export interface ReportFilter {
+export interface Report {
   id: string;
   name: string;
-  type: 'date' | 'select' | 'text' | 'number' | 'boolean';
-  value: any;
+  title?: string;
+  description: string;
+  dateCreated?: Date;
+  lastModified?: Date;
+  createdBy?: string;
+  favorite: boolean;
+  category: string | string[];
+  tags?: string[];
+  viewCount?: number;
+  author?: string;
+  date?: string;
+  type?: string;
+  lastRun?: Date;
+}
+
+export interface ReportFilter {
+  id?: string;
+  name?: string;
+  type?: 'date' | 'select' | 'text' | 'number' | 'boolean';
+  value?: any;
   options?: { label: string; value: any }[];
+  category?: string[];
+  author?: string;
+  favorites?: boolean;
+  dateRange?: {
+    from: Date;
+    to: Date;
+  };
 }
 
 export interface CustomReport {
