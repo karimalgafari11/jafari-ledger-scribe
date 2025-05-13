@@ -21,8 +21,8 @@ export const useDashboardData = () => {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState({
     totalRevenue: '٥٨,٠٠٠ ر.س',
-    newCustomers: ١٢٣,
-    totalOrders: ٧٦٥,
+    newCustomers: 123,
+    totalOrders: 765,
     averageOrderValue: '٤٥٠ ر.س',
     recentInvoices: [
       { id: '1', customer: 'محمد أحمد', amount: '١٢٠٠ ر.س', status: 'paid' as const, date: '١٢ مايو ٢٠٢٥' },
