@@ -5,7 +5,6 @@ import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Printer, Download, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { useTranslation } from "@/hooks/useTranslation";
 
 interface VendorStatementHeaderProps {
   vendorName: string;
@@ -13,44 +12,35 @@ interface VendorStatementHeaderProps {
 
 export const VendorStatementHeader: React.FC<VendorStatementHeaderProps> = ({ vendorName }) => {
   const navigate = useNavigate();
-  const { t, language } = useTranslation();
   
   const handlePrint = () => {
-    toast.success(language === 'ar' ? 'جاري إعداد كشف الحساب للطباعة...' : 'Preparing statement for printing...');
+    toast.success('جاري إعداد كشف الحساب للطباعة...');
     setTimeout(() => {
       window.print();
     }, 500);
   };
 
   const handleExport = () => {
-    toast.success(language === 'ar' ? 'جاري تصدير كشف الحساب...' : 'Exporting statement...');
+    toast.success('جاري تصدير كشف الحساب...');
     setTimeout(() => {
-      toast.success(language === 'ar' ? 'تم تصدير كشف الحساب بنجاح' : 'Statement exported successfully');
+      toast.success('تم تصدير كشف الحساب بنجاح');
     }, 1500);
   };
 
-  const title = language === 'ar' 
-    ? `كشف حساب المورد: ${vendorName}`
-    : `Vendor Statement: ${vendorName}`;
-
-  const printText = language === 'ar' ? 'طباعة' : 'Print';
-  const exportText = language === 'ar' ? 'تصدير' : 'Export';
-  const vendorListText = language === 'ar' ? 'قائمة الموردين' : 'Vendors List';
-  
   return (
-    <Header title={title} showBack={true}>
-      <div className={`flex gap-2 ${language === 'ar' ? 'rtl' : 'ltr'}`}>
+    <Header title={`كشف حساب المورد: ${vendorName}`} showBack={true}>
+      <div className="flex gap-2 rtl">
         <Button variant="outline" size="sm" onClick={handlePrint}>
-          <Printer size={16} className={language === 'ar' ? 'ml-1' : 'mr-1'} />
-          {printText}
+          <Printer size={16} className="ml-1" />
+          طباعة
         </Button>
         <Button variant="outline" size="sm" onClick={handleExport}>
-          <Download size={16} className={language === 'ar' ? 'ml-1' : 'mr-1'} />
-          {exportText}
+          <Download size={16} className="ml-1" />
+          تصدير
         </Button>
         <Button variant="outline" size="sm" onClick={() => navigate('/vendors/statement')}>
-          <ArrowLeft size={16} className={language === 'ar' ? 'ml-1' : 'mr-1'} />
-          {vendorListText}
+          <ArrowLeft size={16} className="ml-1" />
+          قائمة الموردين
         </Button>
       </div>
     </Header>

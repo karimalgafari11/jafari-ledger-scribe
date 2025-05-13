@@ -21,9 +21,7 @@ const queryClient = new QueryClient({
 
 // Loading component with better visual feedback
 const LoadingFallback = () => {
-  // Get current language from localStorage to show appropriate loading message
-  const language = localStorage.getItem('language') || 'ar';
-  const loadingText = language === 'ar' ? 'جاري التحميل...' : 'Loading...';
+  const loadingText = 'جاري التحميل...';
   
   return (
     <div className="h-screen w-full flex items-center justify-center bg-background">

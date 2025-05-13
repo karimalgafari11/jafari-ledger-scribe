@@ -5,26 +5,19 @@ import { defaultDarkTheme, defaultLightTheme } from "@/hooks/theme/themeDefaults
 import { applyThemeToDOM } from "@/hooks/theme/themeUtils";
 import { loadSavedTheme } from "@/hooks/theme/themeUtils";
 
-// تعريف نوع اللغة
-export type Language = "ar" | "en";
-
 // تعريف نوع السمة
 export type ThemeMode = "light" | "dark";
 
 // تعريف نوع سياق التطبيق
 interface AppContextType {
   themeMode: ThemeMode;
-  language: Language;
   toggleTheme: () => void;
-  setLanguage: (lang: Language) => void;
 }
 
 // إنشاء سياق التطبيق مع قيم افتراضية
 export const AppContext = createContext<AppContextType>({
   themeMode: "light",
-  language: "ar",
   toggleTheme: () => {},
-  setLanguage: () => {},
 });
 
 // مزود سياق التطبيق
@@ -34,17 +27,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // محاولة استرداد الوضع المخزن محليًا
     const savedTheme = localStorage.getItem("themeMode") as ThemeMode;
     return savedTheme || "light";
-  });
-
-  // حالة اللغة
-  const [language, setLanguage] = useState<Language>(() => {
-    // محاولة استرداد اللغة المخزنة محليًا
-    const savedLanguage = localStorage.getItem("language") as Language;
-    // التحقق من صلاحية القيمة
-    if (savedLanguage && (savedLanguage === "ar" || savedLanguage === "en")) {
-      return savedLanguage;
-    }
-    return "ar"; // القيمة الافتراضية
   });
 
   // تطبيق السمة مباشرة عند بدء التشغيل
@@ -72,23 +54,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("themeMode", themeMode);
   }, [themeMode]);
 
-  // تأثير لتطبيق اللغة عند تغييرها
+  // Set document direction and language to Arabic by default
   useEffect(() => {
-    // تحديث اتجاه الصفحة بناءً على اللغة
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    // تحديث اتجاه الصفحة للعربية
+    document.documentElement.dir = "rtl";
     // تحديث لغة الصفحة
-    document.documentElement.lang = language;
+    document.documentElement.lang = "ar";
     // تحديث الفئات لدعم الاتجاه
-    if (language === "ar") {
-      document.documentElement.classList.add("rtl");
-      document.documentElement.classList.remove("ltr");
-    } else {
-      document.documentElement.classList.add("ltr");
-      document.documentElement.classList.remove("rtl");
-    }
-    // حفظ اللغة في التخزين المحلي
-    localStorage.setItem("language", language);
-  }, [language]);
+    document.documentElement.classList.add("rtl");
+    document.documentElement.classList.remove("ltr");
+  }, []);
 
   // وظيفة لتبديل السمة
   const toggleTheme = () => {
@@ -98,13 +73,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // تجميع قيمة السياق
   const value = {
     themeMode,
-    language,
     toggleTheme,
-    setLanguage: (lang: Language) => {
-      if (lang !== language) {
-        setLanguage(lang);
-      }
-    },
   };
 
   return (
