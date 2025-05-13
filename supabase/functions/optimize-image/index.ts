@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { decode } from 'https://deno.land/std@0.177.0/encoding/base64.ts';
-import Sharp from 'https://esm.sh/sharp@0.32.1';
+import { Image, decode as decodeImage, encode } from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 // تكوين CORS
 const corsHeaders = {
@@ -48,45 +48,68 @@ serve(async (req) => {
     const base64Data = fileData.split(';base64,').pop();
     const fileBuffer = decode(base64Data);
     
-    // ضغط الصورة باستخدام Sharp
-    let sharpInstance = Sharp(fileBuffer);
+    // معالجة الصورة باستخدام ImageScript
+    let outputBuffer: Uint8Array;
+    let imageWidth: number;
+    let imageHeight: number;
     
-    // تغيير حجم الصورة إذا كانت أكبر من الحد الأقصى
-    sharpInstance = sharpInstance.resize({
-      width: maxWidth,
-      height: maxHeight,
-      fit: 'inside',
-      withoutEnlargement: true
-    });
-    
-    // تحويل إلى التنسيق المطلوب مع ضبط الجودة
-    switch (outputFormat.toLowerCase()) {
-      case 'jpeg':
-      case 'jpg':
-        sharpInstance = sharpInstance.jpeg({ quality });
-        break;
-      case 'png':
-        sharpInstance = sharpInstance.png({ quality });
-        break;
-      case 'webp':
-        sharpInstance = sharpInstance.webp({ quality });
-        break;
-      case 'avif':
-        sharpInstance = sharpInstance.avif({ quality });
-        break;
-      default:
-        sharpInstance = sharpInstance.webp({ quality });
+    try {
+      // فك تشفير الصورة
+      const image = await decodeImage(fileBuffer);
+      imageWidth = image.width;
+      imageHeight = image.height;
+      
+      // حساب أبعاد الصورة الجديدة مع الحفاظ على النسبة
+      const aspectRatio = image.width / image.height;
+      let newWidth = image.width;
+      let newHeight = image.height;
+      
+      if (newWidth > maxWidth) {
+        newWidth = maxWidth;
+        newHeight = Math.round(newWidth / aspectRatio);
+      }
+      
+      if (newHeight > maxHeight) {
+        newHeight = maxHeight;
+        newWidth = Math.round(newHeight * aspectRatio);
+      }
+      
+      // تغيير حجم الصورة إذا لزم الأمر
+      if (newWidth !== image.width || newHeight !== image.height) {
+        await image.resize(newWidth, newHeight);
+      }
+      
+      // تحويل الجودة من نطاق 0-100 إلى نطاق 0-1 للتوافق مع ImageScript
+      const normalizedQuality = quality / 100;
+      
+      // ضغط الصورة وتحويلها إلى التنسيق المطلوب
+      switch (outputFormat.toLowerCase()) {
+        case 'jpeg':
+        case 'jpg':
+          outputBuffer = await image.encodeJPEG(normalizedQuality);
+          break;
+        case 'png':
+          outputBuffer = await image.encodePNG();
+          break;
+        case 'webp':
+          outputBuffer = await encode(image, { format: "webp", quality: normalizedQuality });
+          break;
+        default:
+          // استخدام JPEG كتنسيق افتراضي
+          outputBuffer = await image.encodeJPEG(normalizedQuality);
+          break;
+      }
+    } catch (error) {
+      console.error('خطأ في معالجة الصورة:', error);
+      throw new Error(`فشل معالجة الصورة: ${error.message}`);
     }
-    
-    // الحصول على الصورة المضغوطة كـ Buffer
-    const optimizedImageBuffer = await sharpInstance.toBuffer();
     
     // حفظ الصورة المضغوطة في Supabase Storage
     const optimizedFileName = `${fileName.split('.')[0]}_optimized.${outputFormat}`;
     const { data: uploadData, error: uploadError } = await supabaseClient
       .storage
       .from(bucketName)
-      .upload(`optimized/${optimizedFileName}`, optimizedImageBuffer, {
+      .upload(`optimized/${optimizedFileName}`, outputBuffer, {
         contentType: `image/${outputFormat}`,
         upsert: true
       });
@@ -103,7 +126,7 @@ serve(async (req) => {
     
     // حساب نسبة الضغط
     const originalSize = fileBuffer.length;
-    const optimizedSize = optimizedImageBuffer.length;
+    const optimizedSize = outputBuffer.length;
     const compressionRate = Math.round((1 - (optimizedSize / originalSize)) * 100);
     
     // إرجاع البيانات
@@ -116,6 +139,16 @@ serve(async (req) => {
         url: publicUrlData.publicUrl,
         fileName: optimizedFileName,
         format: outputFormat,
+        dimensions: {
+          original: {
+            width: imageWidth,
+            height: imageHeight
+          },
+          optimized: {
+            width: newWidth,
+            height: newHeight
+          }
+        }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
