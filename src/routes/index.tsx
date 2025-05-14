@@ -1,14 +1,48 @@
+
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Import your components/pages here
-import DashboardPage from '@/pages/DashboardPage';
+import Index from '@/pages/Index';
+import Dashboard from '@/pages/Dashboard'; 
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
-import ActivityLogPage from '@/pages/settings/activitylog/ActivityLogPage';
+import ActivityLogPage from '@/pages/settings/ActivityLogPage'; 
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
+
+// Import settings pages
+import SystemSettingsPage from '@/pages/settings/SystemSettingsPage';
+import UserRolesPage from '@/pages/settings/UserRolesPage';
+import UsersPage from '@/pages/settings/UsersPage';
+import BackupPage from '@/pages/settings/BackupPage';
+import BackupTestPage from '@/pages/settings/BackupTestPage';
+import BranchesPage from '@/pages/settings/BranchesPage';
+import NotificationsPage from '@/pages/settings/NotificationsPage';
+import NotificationSettingsPage from '@/pages/settings/NotificationSettingsPage';
+import SendNotificationPage from '@/pages/settings/SendNotificationPage';
+import AiEngineSettingsPage from '@/pages/settings/AiEngineSettingsPage';
+import PageManagementPage from '@/pages/settings/PageManagementPage';
+import ThemeCustomizationPage from '@/pages/settings/ThemeCustomizationPage';
+
+// Import all route modules
+import { accountingRoutes } from './accountingRoutes';
+import { customersRoutes } from './customersRoutes';
+import { vendorRoutes } from './vendorsRoutes';
+import { inventoryRoutes } from './inventoryRoutes';
+import { inventoryControlRoutes } from './inventoryControlRoutes';
+import { purchasesRoutes } from './purchasesRoutes';
+import { invoicesRoutes } from './invoicesRoutes';
+import { receivablesPayablesRoutes } from './receivablesPayablesRoutes';
+import { expensesRoutes } from './expensesRoutes';
+import { reportsRoutes } from './reportsRoutes';
+import { definitionsRoutes } from './definitionsRoutes';
+import { settingsRoutes } from './settingsRoutes';
+import { integrationsRoutes } from './integrationsRoutes';
+import { aboutRoutes } from './aboutRoutes';
+import { aiRoutes } from './aiRoutes';
+import { hrRoutes } from './hrRoutes';
 
 // Example of a PublicRoute component
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,11 +61,88 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return user ? <>{children}</> : <Navigate to="/auth/login" />;
 };
 
+// Combine all route children
+const routeChildren = [
+  {
+    index: true,
+    element: <Dashboard />,
+  },
+  {
+    path: "settings/activity-log",
+    element: <ActivityLogPage />,
+  },
+  // إضافة مسارات الإعدادات
+  {
+    path: "settings/system",
+    element: <SystemSettingsPage />,
+  },
+  {
+    path: "settings/roles",
+    element: <UserRolesPage />,
+  },
+  {
+    path: "settings/users",
+    element: <UsersPage />,
+  },
+  {
+    path: "settings/backup",
+    element: <BackupPage />,
+  },
+  {
+    path: "settings/backup-test",
+    element: <BackupTestPage />,
+  },
+  {
+    path: "settings/branches",
+    element: <BranchesPage />,
+  },
+  {
+    path: "settings/notifications",
+    element: <NotificationsPage />,
+  },
+  {
+    path: "settings/notification-settings",
+    element: <NotificationSettingsPage />,
+  },
+  {
+    path: "settings/send-notification",
+    element: <SendNotificationPage />,
+  },
+  {
+    path: "settings/ai-engine",
+    element: <AiEngineSettingsPage />,
+  },
+  {
+    path: "settings/page-management",
+    element: <PageManagementPage />,
+  },
+  {
+    path: "settings/theme",
+    element: <ThemeCustomizationPage />,
+  },
+  // Spread all other route modules
+  ...accountingRoutes,
+  ...inventoryRoutes,
+  ...inventoryControlRoutes,
+  ...purchasesRoutes,
+  ...invoicesRoutes,
+  ...customersRoutes,
+  ...vendorRoutes,
+  ...receivablesPayablesRoutes,
+  ...expensesRoutes,
+  ...reportsRoutes,
+  ...definitionsRoutes,
+  ...aiRoutes,
+  ...hrRoutes,
+  ...integrationsRoutes,
+  ...aboutRoutes,
+];
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <PrivateRoute><DashboardPage /></PrivateRoute>,
+    element: <PrivateRoute><Index /></PrivateRoute>,
+    children: routeChildren,
   },
   {
     path: "/auth/login",
@@ -40,10 +151,6 @@ export const router = createBrowserRouter([
   {
     path: "/auth/register",
     element: <PublicRoute><RegisterPage /></PublicRoute>
-  },
-  {
-    path: "/settings/activity-log",
-    element: <PrivateRoute><ActivityLogPage /></PrivateRoute>
   },
   {
     path: "/auth/reset-password",

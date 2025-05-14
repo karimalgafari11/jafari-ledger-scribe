@@ -6,17 +6,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, Printer, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/utils/formatters";
-
-interface Vendor {
-  id: string;
-  name: string;
-  contactPerson?: string;
-  phone?: string;
-  email?: string;
-  balance: number;
-  lastTransaction?: string;
-  status: string;
-}
+import { Vendor } from "@/types/vendor";
 
 interface VendorStatementListProps {
   vendors: Vendor[];

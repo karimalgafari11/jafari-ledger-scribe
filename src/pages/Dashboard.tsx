@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import DashboardWelcomeBanner from "@/components/dashboard/DashboardWelcomeBanner";
 import DisplayOptionsForm from "@/components/dashboard/DisplayOptionsForm";
+import { DashboardSettings } from "@/components/dashboard/settings/DashboardSettings";
 import { useDashboard } from "@/hooks/useDashboard";
 
 const Dashboard = () => {
@@ -29,7 +30,22 @@ const Dashboard = () => {
 
   return (
     <div className="page-container">
-      <Header title="لوحة التحكم" showBack={false} className="w-full" />
+      <Header 
+        title="لوحة التحكم" 
+        showBack={false} 
+        className="w-full"
+        actions={
+          <DashboardSettings
+            displayOptions={displayOptions}
+            shortcuts={shortcuts}
+            onDisplayOptionsChange={setDisplayOptions}
+            onShortcutsChange={(newShortcuts) => {
+              // في التطبيق الحقيقي، سنقوم بتحديث الاختصارات في قاعدة البيانات
+              console.log("تم تحديث الاختصارات:", newShortcuts);
+            }}
+          />
+        }
+      />
 
       <div className="page-content">
         <DashboardWelcomeBanner />

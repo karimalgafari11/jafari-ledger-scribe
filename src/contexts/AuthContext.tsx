@@ -13,6 +13,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, userData?: any) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // إعداد مستمع لتغييرات حالة المصادقة
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         setSession(currentSession);
@@ -40,7 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // التحقق من وجود جلسة حالية
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
@@ -56,7 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // وظيفة لجلب بيانات الملف الشخصي للمستخدم
   const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -66,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
-        console.error("خطأ في جلب بيانات الملف الشخصي:", error);
+        console.error("Error in fetching user profile:", error);
         return;
       }
 
@@ -74,11 +72,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(data);
       }
     } catch (error) {
-      console.error("خطأ غير متوقع:", error);
+      console.error("Unexpected error:", error);
     }
   };
 
-  // وظيفة تسجيل الدخول
   const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     setIsLoading(true);
     try {
@@ -86,11 +83,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: {
-          // تعيين فترة انتهاء صلاحية الجلسة حسب خيار "تذكرني"
-          shouldCreateUser: true,
-          emailRedirectTo: window.location.origin,
-          // إذا تم تحديد "تذكرني"، استخدم فترة أطول (30 يوماً)، وإلا استخدم الافتراضي (1 يوم)
-          session: rememberMe ? { rememberMe: true } : undefined
+          // Remove the incorrect property
+          // Using options that are supported by the Supabase auth API
+          captchaToken: undefined // only include if you're using captchas
         }
       });
 
@@ -100,12 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setIsLoading(false);
     } catch (error: any) {
-      toast.error(error.message || "حدث خطأ أثناء تسجيل الدخول");
+      toast.error(error.message || "Error during sign in");
       setIsLoading(false);
     }
   };
 
-  // وظيفة إنشاء حساب جديد
   const signUp = async (email: string, password: string, userData?: any) => {
     setIsLoading(true);
     try {
@@ -120,29 +114,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success("تم إنشاء الحساب بنجاح! تحقق من بريدك الإلكتروني.");
+        toast.success("Account created successfully! Check your email.");
       }
 
       setIsLoading(false);
     } catch (error: any) {
-      toast.error(error.message || "حدث خطأ أثناء إنشاء الحساب");
+      toast.error(error.message || "Error during account creation");
       setIsLoading(false);
     }
   };
 
-  // وظيفة تسجيل الخروج
   const signOut = async () => {
     setIsLoading(true);
     try {
       await supabase.auth.signOut();
       setIsLoading(false);
     } catch (error: any) {
-      toast.error(error.message || "حدث خطأ أثناء تسجيل الخروج");
+      toast.error(error.message || "Error during sign out");
       setIsLoading(false);
     }
   };
 
-  // وظيفة إعادة تعيين كلمة المرور
   const resetPassword = async (email: string) => {
     setIsLoading(true);
     try {
@@ -151,13 +143,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        toast.error(error.message || "حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور");
+        toast.error(error.message || "Error sending password reset link");
       } else {
-        toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
+        toast.success("Password reset link sent to your email");
       }
       setIsLoading(false);
     } catch (error: any) {
-      toast.error(error.message || "حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور");
+      toast.error(error.message || "Error sending password reset link");
+      setIsLoading(false);
+    }
+  };
+
+  const updatePassword = async (password: string) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password
+      });
+
+      if (error) {
+        toast.error(error.message || "Error during password update");
+      } else {
+        toast.success("Password updated successfully");
+      }
+      setIsLoading(false);
+    } catch (error: any) {
+      toast.error(error.message || "Error during password update");
       setIsLoading(false);
     }
   };
@@ -171,16 +182,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// Hook لاستخدام سياق المصادقة
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("يجب استخدام useAuth داخل AuthProvider");
+    throw new Error("You must use useAuth inside AuthProvider");
   }
   return context;
 }

@@ -8,6 +8,7 @@ import { VendorTransactionsTable } from "@/components/vendors/statement/VendorTr
 import { VendorInfoCard } from "@/components/vendors/statement/VendorInfoCard";
 import { VendorNotFound } from "@/components/vendors/statement/VendorNotFound";
 import { useVendorStatement } from "@/hooks/vendors/useVendorStatement";
+import { Vendor } from "@/types/vendor";
 
 const VendorStatementPage = () => {
   const { id } = useParams<{ id: string }>();

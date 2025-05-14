@@ -11,13 +11,11 @@ const initialCashRegisters: CashRegister[] = [
     name: "صندوق المبيعات الرئيسي",
     branchId: "1",
     branchName: "الفرع الرئيسي",
-    currencyId: "1",
+    currency: "1", // Changed from currencyId to currency
     currencyCode: "ريال",
     balance: 5000,
     isActive: true,
-    userId: "1",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    userId: "1"
   },
   {
     id: "2",
@@ -25,13 +23,11 @@ const initialCashRegisters: CashRegister[] = [
     name: "صندوق المشتريات",
     branchId: "1",
     branchName: "الفرع الرئيسي",
-    currencyId: "1",
+    currency: "1", // Changed from currencyId to currency
     currencyCode: "ريال",
     balance: 2500,
     isActive: true,
-    userId: "2",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    userId: "2"
   },
   {
     id: "3",
@@ -39,13 +35,11 @@ const initialCashRegisters: CashRegister[] = [
     name: "صندوق فرع الشمال",
     branchId: "2",
     branchName: "فرع الشمال",
-    currencyId: "1",
+    currency: "1", // Changed from currencyId to currency
     currencyCode: "ريال",
     balance: 3000,
     isActive: false,
-    userId: "1",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    userId: "1"
   },
 ];
 
@@ -65,7 +59,7 @@ export const useCashRegister = () => {
     (register) =>
       register.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       register.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      register.branchName.toLowerCase().includes(searchTerm.toLowerCase())
+      register.branchName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Generate a new cash register code
@@ -78,12 +72,10 @@ export const useCashRegister = () => {
   };
 
   // CRUD operations
-  const createCashRegister = (data: Omit<CashRegister, "id" | "createdAt" | "updatedAt">) => {
+  const createCashRegister = (data: Omit<CashRegister, "id">) => {
     const newRegister: CashRegister = {
       id: uuidv4(),
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      ...data
     };
     setCashRegisters((prev) => [...prev, newRegister]);
   };
@@ -92,7 +84,7 @@ export const useCashRegister = () => {
     setCashRegisters((prev) =>
       prev.map((register) =>
         register.id === id
-          ? { ...register, ...data, updatedAt: new Date() }
+          ? { ...register, ...data }
           : register
       )
     );
@@ -106,7 +98,7 @@ export const useCashRegister = () => {
     setCashRegisters((prev) =>
       prev.map((register) =>
         register.id === id
-          ? { ...register, isActive: !register.isActive, updatedAt: new Date() }
+          ? { ...register, isActive: !register.isActive }
           : register
       )
     );

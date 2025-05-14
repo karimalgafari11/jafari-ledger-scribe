@@ -1,44 +1,59 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useAuth } from "@/contexts/AuthContext";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// تعريف مخطط التحقق باستخدام Zod
+const loginSchema = z.object({
+  email: z.string()
+    .email({ message: "البريد الإلكتروني غير صالح" }),
+  password: z.string()
+    .min(1, { message: "كلمة المرور مطلوبة" }),
+  rememberMe: z.boolean().optional(),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const { signIn, isLoading, user } = useAuth();
+  const { signIn, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // إذا كان المستخدم مسجل الدخول بالفعل، انتقل إلى الصفحة الرئيسية
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: LoginFormValues) => {
+    setError(null);
     
-    if (!email || !password) {
-      toast.error("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
-      return;
+    try {
+      await signIn(values.email, values.password, values.rememberMe || false);
+      // ستتم إعادة التوجيه تلقائيًا بواسطة AuthGuard
+    } catch (err: any) {
+      console.error("Error during login:", err);
+      
+      if (err.message.includes("invalid credentials") || err.message.includes("Invalid login")) {
+        setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      } else {
+        setError(err.message || "حدث خطأ أثناء تسجيل الدخول");
+      }
     }
-
-    // إرسال معلومات تذكر المستخدم مع بيانات تسجيل الدخول
-    await signIn(email, password, rememberMe);
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
   };
 
   return (
@@ -64,70 +79,86 @@ const LoginPage: React.FC = () => {
             <h2 className="text-xl font-medium">تسجيل الدخول</h2>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-1">البريد الإلكتروني</label>
-                  <Input 
-                    id="email"
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="أدخل البريد الإلكتروني"
-                    className="rtl"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium mb-1">كلمة المرور</label>
-                  <div className="relative">
-                    <Input 
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password} 
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="أدخل كلمة المرور"
-                      className="rtl"
-                      required
-                    />
-                    <button 
-                      type="button" 
-                      onClick={toggleShowPassword}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Checkbox 
-                      id="remember-me" 
-                      checked={rememberMe} 
-                      onCheckedChange={(checked) => setRememberMe(checked === true)}
-                    />
-                    <label htmlFor="remember-me" className="text-sm font-medium leading-none cursor-pointer mr-2">
-                      تذكرني
-                    </label>
-                  </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>البريد الإلكتروني</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          placeholder="أدخل البريد الإلكتروني"
+                          className="rtl"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>كلمة المرور</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          type="password"
+                          placeholder="أدخل كلمة المرور"
+                          className="rtl"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="flex justify-between items-center">
+                  <FormField
+                    control={form.control}
+                    name="rememberMe"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-3 space-x-reverse rtl">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="mr-2">تذكرني</FormLabel>
+                      </FormItem>
+                    )}
+                  />
                   
-                  <Link to="/auth/reset-password" className="text-sm text-blue-600 hover:underline">
+                  <Link 
+                    to="/auth/forgot-password" 
+                    className="text-sm text-teal-600 hover:underline"
+                  >
                     نسيت كلمة المرور؟
                   </Link>
                 </div>
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full mt-6"
-                disabled={isLoading}
-              >
-                {isLoading ? "جاري التحقق..." : "تسجيل الدخول"}
-              </Button>
-            </form>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full mt-4"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+                </Button>
+              </form>
+            </Form>
           </CardContent>
           <CardFooter className="flex justify-center space-y-2 flex-col">
             <div className="text-sm text-center">

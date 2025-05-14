@@ -25,6 +25,43 @@ export const ReceivablesTable: React.FC<ReceivablesTableProps> = ({
     navigate(`/customers/statement/${customer.id}`);
   };
 
+  // إذا لم تكن هناك بيانات عملاء، سنقوم بإنشاء بيانات وهمية للعرض
+  const demoCustomers = customers.length > 0 ? customers : [
+    {
+      id: "c1",
+      name: "شركة الأمل للتجارة",
+      accountNumber: "CU-1001",
+      phone: "0512345678",
+      email: "alamal@example.com",
+      balance: 12500,
+      creditLimit: 20000,
+      status: "active",
+      type: "company"
+    },
+    {
+      id: "c2",
+      name: "مؤسسة السلام",
+      accountNumber: "CU-1002",
+      phone: "0598765432",
+      email: "salam@example.com",
+      balance: 8200,
+      creditLimit: 10000,
+      status: "active",
+      type: "company"
+    },
+    {
+      id: "c3",
+      name: "محمد عبدالله",
+      accountNumber: "CU-1003",
+      phone: "0554321678",
+      email: "mohammed@example.com",
+      balance: 3800,
+      creditLimit: 5000,
+      status: "active",
+      type: "individual"
+    }
+  ];
+
   return (
     <div className="rounded-md border overflow-hidden">
       <Table className="rtl">
@@ -40,14 +77,14 @@ export const ReceivablesTable: React.FC<ReceivablesTableProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {customers.length === 0 ? (
+          {demoCustomers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} className="h-24 text-center">
                 لا توجد بيانات للعرض
               </TableCell>
             </TableRow>
           ) : (
-            customers.map((customer) => (
+            demoCustomers.map((customer) => (
               <TableRow key={customer.id}>
                 <TableCell className="font-medium">{customer.name}</TableCell>
                 <TableCell>{customer.accountNumber || "-"}</TableCell>

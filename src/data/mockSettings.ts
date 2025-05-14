@@ -1,164 +1,112 @@
-
-import { SystemSettings, Branch, User, BackupSettings, BackupHistoryItem } from "@/types/settings";
-
-export const mockSystemSettings: SystemSettings = {
-  id: "1",
-  companyName: "شركة قطع غيار السيارات",
-  taxNumber: "123456789",
-  currency: "SAR",
-  language: "ar",
-  theme: "light",
-  fiscalYearStart: new Date(2025, 0, 1),
-  address: "الرياض - المملكة العربية السعودية",
-  phone: "966500000000",
-  email: "info@autoparts.com"
-};
-
-export const mockBranches: Branch[] = [
+export const mockBranches = [
   {
-    id: "1",
-    name: "الفرع الرئيسي",
-    code: "HQ",
-    address: "الرياض - شارع العليا",
-    phone: "966500000001",
-    email: "main@autoparts.com",
-    manager: "أحمد محمد",
+    id: '1',
+    name: 'الرياض',
+    code: 'RYD',
+    address: 'الرياض - طريق الملك فهد',
+    phone: '011-4567890',
+    email: 'riyadh@example.com',
+    manager: 'أحمد محمد',
     isActive: true,
     isMainBranch: true
   },
   {
-    id: "2",
-    name: "فرع جدة",
-    code: "JED",
-    address: "جدة - شارع التحلية",
-    phone: "966500000002",
-    email: "jeddah@autoparts.com",
-    manager: "خالد عبدالله",
+    id: '2',
+    name: 'جدة',
+    code: 'JED',
+    address: 'جدة - شارع التحلية',
+    phone: '012-3456789',
+    email: 'jeddah@example.com',
+    manager: 'سعيد عبدالله',
     isActive: true,
     isMainBranch: false
   },
   {
-    id: "3",
-    name: "فرع الدمام",
-    code: "DMM",
-    address: "الدمام - شارع الملك فهد",
-    phone: "966500000003",
-    email: "dammam@autoparts.com",
-    manager: "عمر سعيد",
+    id: '3',
+    name: 'الدمام',
+    code: 'DMM',
+    address: 'الدمام - شارع الأمير محمد',
+    phone: '013-4567890',
+    email: 'dammam@example.com',
+    manager: 'فهد العتيبي',
     isActive: true,
+    isMainBranch: false
+  },
+  {
+    id: '4',
+    name: 'المدينة المنورة',
+    code: 'MED',
+    address: 'المدينة المنورة - شارع الهجرة',
+    phone: '014-3456789',
+    email: 'madinah@example.com',
+    manager: 'عمر الشمري',
+    isActive: false,
     isMainBranch: false
   }
 ];
 
-export const mockUsers: User[] = [
-  {
-    id: "1",
-    username: "admin",
-    fullName: "مدير النظام",
-    email: "admin@autoparts.com",
-    role: "admin",
-    branch: "الفرع الرئيسي",
-    phone: "966500000010",
-    isActive: true,
-    createdAt: new Date(2024, 0, 1)
-  },
-  {
-    id: "2",
-    username: "accountant1",
-    fullName: "محمد المحاسب",
-    email: "accountant@autoparts.com",
-    role: "accountant",
-    branch: "الفرع الرئيسي",
-    phone: "966500000011",
-    isActive: true,
-    lastLogin: new Date(2025, 3, 25),
-    createdAt: new Date(2024, 1, 1)
-  },
-  {
-    id: "3",
-    username: "inventory1",
-    fullName: "سعد المخزن",
-    email: "inventory@autoparts.com",
-    role: "inventory",
-    branch: "فرع جدة",
-    phone: "966500000012",
-    isActive: true,
-    lastLogin: new Date(2025, 3, 26),
-    createdAt: new Date(2024, 2, 1)
-  }
-];
+export const mockSystemSettings = {
+  id: '1',
+  companyName: 'شركة نظام المحاسبة',
+  taxNumber: '300012345600003',
+  currency: 'SAR',
+  language: 'ar' as const,
+  theme: 'light' as const,
+  fiscalYearStart: new Date('2023-01-01'),
+  logo: '/logo.png',
+  address: 'المملكة العربية السعودية، الرياض',
+  phone: '966512345678',
+  email: 'info@accounting.example',
+  timezone: 'Asia/Riyadh',
+  dateFormat: 'dd/MM/yyyy',
+  numberFormat: '#,##0.00',
+  fontSize: 'medium' as const,
+  density: 'comfortable' as const,
+  invoicePrefix: 'INV-',
+  invoiceStartNumber: 1001,
+  lockPeriod: 'month' as const,
+  autoSave: true,
+  notifications: true,
+  darkMode: false,
+  compactMode: false
+};
 
-const backupHistoryItems: BackupHistoryItem[] = [
-  {
-    id: "bk1",
-    createdAt: new Date(2025, 3, 25, 23, 0),
-    size: "42.5 MB",
-    path: "/backups/backup-2025-04-25.zip",
-    status: "success",
-    type: "auto",
-    destination: "local",
-    fileFormat: "compressed"
-  },
-  {
-    id: "bk2",
-    createdAt: new Date(2025, 3, 18, 23, 0),
-    size: "41.2 MB",
-    path: "/backups/backup-2025-04-18.zip",
-    status: "success",
-    type: "auto",
-    destination: "local",
-    fileFormat: "compressed"
-  },
-  {
-    id: "bk3",
-    createdAt: new Date(2025, 3, 10, 12, 30),
-    size: "40.7 MB",
-    path: "/backups/backup-2025-04-10.zip", 
-    status: "success",
-    type: "manual",
-    destination: "local",
-    fileFormat: "compressed"
-  },
-  {
-    id: "bk4",
-    createdAt: new Date(2025, 3, 5, 14, 15),
-    size: "85.3 MB",
-    path: "/backups/backup-2025-04-05.sql",
-    status: "success",
-    type: "manual",
-    destination: "local",
-    fileFormat: "sql"
-  },
-  {
-    id: "bk5",
-    createdAt: new Date(2025, 3, 1, 9, 0),
-    size: "36.8 MB",
-    path: "/backups/backup-2025-04-01.json",
-    status: "success",
-    type: "manual",
-    destination: "cloud",
-    fileFormat: "json",
-    googleDriveFileId: "1Ab2Cd3Ef4Gh5Ij6Kl7Mn8Op9"
-  }
-];
-
-export const mockBackupSettings: BackupSettings = {
-  id: "1",
-  frequency: "daily",
-  time: "23:00",
-  keepBackups: 30,
-  lastBackup: new Date(2025, 3, 25, 23, 0),
-  location: "/backups/",
-  destinationType: "local",
-  encryptBackup: false,
-  compressionLevel: "medium",
+// Update backup settings for backupState.ts
+export const mockBackupSettings = {
+  id: '1',
+  frequency: 'daily' as 'daily' | 'weekly' | 'monthly' | 'manual',
+  time: '02:00',
+  keepBackups: 7,
+  lastBackup: new Date('2023-05-10T02:00:00'),
+  location: '/backups/',
+  destinationType: 'cloud' as 'local' | 'cloud' | 'ftp' | 'email',
+  ftpHost: '',
+  ftpUsername: '',
+  ftpPassword: '',
+  ftpPort: 21,
+  ftpPath: '',
+  emailRecipients: [] as string[],
+  cloudProvider: 'google-drive' as 'google-drive' | 'dropbox' | 'onedrive',
+  cloudAuthToken: '',
+  cloudFolderId: '',
+  cloudPath: '/backups/',
+  encryptBackups: true,
+  encryptBackup: true,
+  encryptionPassword: '',
+  compressionLevel: 'high' as 'none' | 'low' | 'medium' | 'high',
   includeAttachments: true,
   includeSettings: true,
-  backupHistory: backupHistoryItems,
+  backupHistory: [],
   autoRestore: false,
-  cloudProvider: "google-drive",
+  restorePoint: undefined,
   googleDriveAuth: {
     isAuthenticated: false,
+    token: '',
+    refreshToken: '',
+    expiresAt: undefined,
     email: ''
-  }
+  },
+  autoCloudBackup: false,
+  cloudBackupFormat: 'compressed' as 'compressed' | 'sql' | 'json',
+  autoDownloadFromCloud: false
 };

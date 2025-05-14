@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
-import { appRoutes } from './routes';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes'; // Fixed import
 import { Toaster } from './components/ui/sonner';
 import { AppWithErrorHandling } from './AppWithErrorHandling';
 
@@ -25,23 +25,8 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <AppWithErrorHandling>
-            <Router>
-              <Routes>
-                {appRoutes.map((route, index) => (
-                  <Route key={index} path={route.path} element={route.element}>
-                    {route.children?.map((childRoute, childIndex) => (
-                      <Route
-                        key={`${index}-${childIndex}`}
-                        path={childRoute.path}
-                        element={childRoute.element}
-                        index={childRoute.index}
-                      />
-                    ))}
-                  </Route>
-                ))}
-                <Route path="*" element={<Navigate to="/not-found" replace />} />
-              </Routes>
-            </Router>
+            <RouterProvider router={router} />
+            <Toaster />
           </AppWithErrorHandling>
         </AuthProvider>
       </ThemeProvider>

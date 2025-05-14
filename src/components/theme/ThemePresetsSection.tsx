@@ -1,111 +1,83 @@
 
 import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ThemePreset, ThemeSettings } from "@/types/theme";
-import { Check, Copy, Download, Save, Trash2, Upload } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Check, Download, Save, Trash, Upload } from "lucide-react";
+import { ThemePreset } from "@/types/theme";
 
 interface ThemePresetsSectionProps {
-  currentTheme: ThemeSettings;
   presets: ThemePreset[];
-  onSavePreset: (name: string) => void;
-  onDeletePreset: (id: string) => void;
+  currentTheme: any;
   onApplyPreset: (preset: ThemePreset) => void;
+  onDeletePreset: (id: string) => void;
+  onSaveAsPreset: (name: string) => void;
   onExportTheme: () => void;
   onImportTheme: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ThemePresetsSection: React.FC<ThemePresetsSectionProps> = ({
-  currentTheme,
   presets,
-  onSavePreset,
-  onDeletePreset,
+  currentTheme,
   onApplyPreset,
+  onDeletePreset,
+  onSaveAsPreset,
   onExportTheme,
   onImportTheme
 }) => {
+  const [isAddPresetDialogOpen, setIsAddPresetDialogOpen] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSaveNewPreset = () => {
-    if (!newPresetName.trim()) {
-      toast.error("يرجى إدخال اسم للسمة");
-      return;
+    if (newPresetName.trim()) {
+      onSaveAsPreset(newPresetName.trim());
+      setNewPresetName("");
+      setIsAddPresetDialogOpen(false);
     }
-
-    onSavePreset(newPresetName);
-    setNewPresetName("");
-    setIsCreateDialogOpen(false);
-    toast.success("تم حفظ السمة بنجاح");
   };
 
+  const filteredPresets = presets.filter(preset => 
+    preset.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const userPresets = filteredPresets.filter(preset => !preset.isPredefined);
+  const predefinedPresets = filteredPresets.filter(preset => preset.isPredefined);
+
+  // Reference to hidden file input for import
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-        <h2 className="text-xl font-semibold">سمات محفوظة</h2>
-        <div className="flex flex-wrap items-center gap-2">
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Save className="h-4 w-4 ml-2" />
-                حفظ كسمة جديدة
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>حفظ السمة الحالية</DialogTitle>
-                <DialogDescription>
-                  أدخل اسماً للسمة الجديدة ليتم حفظها واستخدامها لاحقاً
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="presetName">اسم السمة</Label>
-                  <Input
-                    id="presetName"
-                    placeholder="مثال: السمة الرسمية للشركة"
-                    value={newPresetName}
-                    onChange={(e) => setNewPresetName(e.target.value)}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  إلغاء
-                </Button>
-                <Button onClick={handleSaveNewPreset}>
-                  <Save className="h-4 w-4 ml-2" />
-                  حفظ السمة
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={onExportTheme}>
-              <Download className="h-4 w-4 ml-2" />
+    <Card>
+      <CardHeader>
+        <CardTitle>السمات المحفوظة</CardTitle>
+        <CardDescription>
+          قم بحفظ وتطبيق السمات المخصصة
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex justify-between mb-4">
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsAddPresetDialogOpen(true)}
+            >
+              <Save className="h-4 w-4 ml-1" />
+              حفظ السمة الحالية
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onExportTheme}
+            >
+              <Download className="h-4 w-4 ml-1" />
               تصدير
             </Button>
-            
-            <Button variant="outline" onClick={triggerFileInput}>
-              <Upload className="h-4 w-4 ml-2" />
-              استيراد
-            </Button>
+          </div>
+          <div>
             <input
               type="file"
               ref={fileInputRef}
@@ -113,90 +85,131 @@ export const ThemePresetsSection: React.FC<ThemePresetsSectionProps> = ({
               className="hidden"
               accept=".json"
             />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="h-4 w-4 ml-1" />
+              استيراد
+            </Button>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {presets.map((preset) => (
-          <Card 
-            key={preset.id} 
-            className={`overflow-hidden transition-all duration-200 ${
-              selectedPreset === preset.id ? 'ring-2 ring-primary' : ''
-            }`}
-          >
-            <div 
-              className="h-2" 
-              style={{ backgroundColor: preset.settings.colors.primary }}
-            ></div>
-            <CardHeader className="p-4">
-              <CardTitle className="flex items-center justify-between">
-                <span>{preset.name}</span>
-                {preset.isPredefined ? (
-                  <span className="text-xs bg-muted px-2 py-1 rounded-full">افتراضي</span>
-                ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>هل أنت متأكد من حذف هذه السمة؟</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          هذا الإجراء لا يمكن التراجع عنه، وسيتم حذف هذه السمة نهائياً.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                        <AlertDialogAction 
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          onClick={() => onDeletePreset(preset.id)}
-                        >
-                          حذف السمة
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </CardTitle>
-              <CardDescription>
-                {preset.isPredefined ? 'سمة افتراضية في النظام' : 'سمة مخصصة'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <div className="flex items-center space-x-2 space-x-reverse mb-3">
-                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.settings.colors.primary }}></div>
-                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.settings.colors.secondary }}></div>
-                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.settings.colors.button }}></div>
-                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.settings.colors.sidebar.background }}></div>
-              </div>
-              <div className="flex items-center justify-between mt-3">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">الخط: </span>
-                  <span>{preset.settings.fonts.family}</span>
+        <Input
+          placeholder="بحث في السمات..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mb-4"
+        />
+        
+        {filteredPresets.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            لم يتم العثور على سمات
+          </div>
+        ) : (
+          <ScrollArea className="h-[300px] rounded-md border p-4">
+            {predefinedPresets.length > 0 && (
+              <>
+                <h3 className="font-medium mb-3">السمات الافتراضية</h3>
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  {predefinedPresets.map((preset) => (
+                    <PresetCard
+                      key={preset.id}
+                      preset={preset}
+                      onApply={() => onApplyPreset(preset)}
+                      isPredefined
+                    />
+                  ))}
                 </div>
-                <Button 
-                  variant="outline" 
-                  className="text-sm h-8"
-                  onClick={() => {
-                    onApplyPreset(preset);
-                    setSelectedPreset(preset.id);
-                    setTimeout(() => setSelectedPreset(null), 500);
-                  }}
-                >
-                  {selectedPreset === preset.id ? (
-                    <Check className="h-4 w-4 ml-2" />
-                  ) : (
-                    <Copy className="h-4 w-4 ml-2" />
-                  )}
-                  تطبيق
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </>
+            )}
+            
+            {userPresets.length > 0 && (
+              <>
+                <h3 className="font-medium mb-3">السمات المخصصة</h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {userPresets.map((preset) => (
+                    <PresetCard
+                      key={preset.id}
+                      preset={preset}
+                      onApply={() => onApplyPreset(preset)}
+                      onDelete={() => onDeletePreset(preset.id)}
+                      isPredefined={false}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </ScrollArea>
+        )}
+        
+        <Dialog open={isAddPresetDialogOpen} onOpenChange={setIsAddPresetDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>حفظ السمة الحالية</DialogTitle>
+              <DialogDescription>
+                أدخل اسمًا للسمة المخصصة الجديدة.
+              </DialogDescription>
+            </DialogHeader>
+            <Input
+              placeholder="اسم السمة"
+              value={newPresetName}
+              onChange={(e) => setNewPresetName(e.target.value)}
+              className="mt-4"
+              autoFocus
+            />
+            <DialogFooter className="mt-4">
+              <Button variant="outline" onClick={() => setIsAddPresetDialogOpen(false)}>
+                إلغاء
+              </Button>
+              <Button onClick={handleSaveNewPreset}>
+                حفظ
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
+};
+
+interface PresetCardProps {
+  preset: ThemePreset;
+  onApply: () => void;
+  onDelete?: () => void;
+  isPredefined: boolean;
+}
+
+const PresetCard: React.FC<PresetCardProps> = ({ preset, onApply, onDelete, isPredefined }) => {
+  return (
+    <div className="flex items-center justify-between p-3 border rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="flex gap-1">
+          <div 
+            className="w-4 h-4 rounded-full" 
+            style={{ backgroundColor: preset.settings.colors.primary }}
+          />
+          <div 
+            className="w-4 h-4 rounded-full" 
+            style={{ backgroundColor: preset.settings.colors.button }}
+          />
+          <div 
+            className="w-4 h-4 rounded-full" 
+            style={{ backgroundColor: preset.settings.colors.sidebar.background }}
+          />
+        </div>
+        <span className="font-medium">{preset.name}</span>
+      </div>
+      <div className="flex gap-1">
+        <Button variant="ghost" size="icon" onClick={onApply} title="تطبيق">
+          <Check className="h-4 w-4" />
+        </Button>
+        {!isPredefined && onDelete && (
+          <Button variant="ghost" size="icon" onClick={onDelete} title="حذف">
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

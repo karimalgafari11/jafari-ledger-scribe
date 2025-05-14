@@ -6,14 +6,23 @@ interface UseInvoiceActionsProps {
   invoice: PurchaseInvoice;
 }
 
-export const useInvoiceActions = ({
-  invoice
-}: UseInvoiceActionsProps) => {
+export const useInvoiceActions = ({ invoice }: UseInvoiceActionsProps) => {
   
-  // Save invoice
+  // Save invoice to database/backend
   const saveInvoice = async () => {
+    // Validate invoice
+    if (!invoice.vendorId) {
+      toast.error("يرجى اختيار المورد أولاً");
+      return false;
+    }
+    
+    if (invoice.items.length === 0) {
+      toast.error("يرجى إضافة صنف واحد على الأقل");
+      return false;
+    }
+    
     try {
-      // Logic to save invoice to database
+      // In a real app, this would be an API call
       console.log("Saving invoice:", invoice);
       toast.success("تم حفظ الفاتورة بنجاح");
       return true;
@@ -31,21 +40,19 @@ export const useInvoiceActions = ({
 
   // Send invoice via WhatsApp
   const sendViaWhatsApp = () => {
-    if (!invoice.vendorPhone) {
-      toast.error("رقم هاتف المورد غير متوفر");
+    if (!invoice.vendorName || !invoice.vendorPhone) {
+      toast.error("بيانات المورد غير مكتملة");
       return;
     }
 
-    const message = `فاتورة شراء رقم: ${invoice.invoiceNumber}\n` +
-      `التاريخ: ${invoice.date}\n` +
-      `المورد: ${invoice.vendorName}\n` +
-      `المبلغ الإجمالي: ${invoice.totalAmount.toFixed(2)} ريال`;
-    
     const phoneNumber = invoice.vendorPhone.replace(/[^\d+]/g, '');
+    const message = `فاتورة مشتريات رقم: ${invoice.invoiceNumber}\n` +
+      `التاريخ: ${invoice.date}\n` +
+      `المبلغ الإجمالي: ${invoice.totalAmount} ر.س`;
+      
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
     window.open(whatsappUrl, '_blank');
-    toast.success("تم فتح رابط واتساب");
+    toast.success("تم فتح الواتساب لإرسال الفاتورة");
   };
 
   return {

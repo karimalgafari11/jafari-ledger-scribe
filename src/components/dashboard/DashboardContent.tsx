@@ -58,14 +58,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const { analyzePerformance } = useAiAssistant();
-  const performance = analyzePerformance();
+  const performance = analyzePerformance ? analyzePerformance() : null;
 
   const dashboardContent = (
     <div className="w-full max-w-full">
       {/* عرض الاختصارات إذا كان هناك اختصارات مفعلة */}
       {shortcuts && shortcuts.length > 0 && (
         <div className="mb-6">
-          <DashboardShortcuts shortcuts={shortcuts} />
+          <DashboardShortcuts shortcuts={shortcuts.filter(s => s.enabled)} />
         </div>
       )}
 

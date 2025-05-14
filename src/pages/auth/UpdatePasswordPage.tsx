@@ -1,59 +1,52 @@
 
 import React, { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useAuth } from "@/contexts/AuthContext";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// تعريف مخطط التحقق باستخدام Zod
+const updatePasswordSchema = z.object({
+  password: z.string()
+    .min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" }),
+  confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "كلمتا المرور غير متطابقتين",
+  path: ["confirmPassword"],
+});
+
+type UpdatePasswordFormValues = z.infer<typeof updatePasswordSchema>;
 
 const UpdatePasswordPage: React.FC = () => {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { updatePassword, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const form = useForm<UpdatePasswordFormValues>({
+    resolver: zodResolver(updatePasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const toggleShowConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: UpdatePasswordFormValues) => {
+    setError(null);
     
-    if (password !== confirmPassword) {
-      toast.error("كلمات المرور غير متطابقة");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("يجب أن تكون كلمة المرور 6 أحرف على الأقل");
-      return;
-    }
-
-    setIsLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: password
-      });
-
-      if (error) {
-        toast.error(error.message || "حدث خطأ أثناء تحديث كلمة المرور");
-      } else {
-        toast.success("تم تحديث كلمة المرور بنجاح");
-        navigate("/auth/login");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "حدث خطأ أثناء تحديث كلمة المرور");
-    } finally {
-      setIsLoading(false);
+      await updatePassword(values.password);
+      navigate("/auth/login");
+    } catch (err: any) {
+      console.error("Error updating password:", err);
+      setError(err.message || "حدث خطأ أثناء تحديث كلمة المرور");
     }
   };
 
@@ -80,73 +73,63 @@ const UpdatePasswordPage: React.FC = () => {
             <h2 className="text-xl font-medium">تحديث كلمة المرور</h2>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <p className="text-sm text-gray-600 text-center mb-4">
-                  الرجاء إدخال كلمة المرور الجديدة
-                </p>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>كلمة المرور الجديدة</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          type="password"
+                          placeholder="أدخل كلمة المرور الجديدة"
+                          className="rtl"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium mb-1">كلمة المرور الجديدة</label>
-                  <div className="relative">
-                    <Input 
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password} 
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="أدخل كلمة المرور الجديدة"
-                      className="rtl"
-                      required
-                    />
-                    <button 
-                      type="button" 
-                      onClick={toggleShowPassword}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>تأكيد كلمة المرور</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          type="password"
+                          placeholder="أعد إدخال كلمة المرور الجديدة"
+                          className="rtl"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div>
-                  <label htmlFor="confirm-password" className="block text-sm font-medium mb-1">تأكيد كلمة المرور</label>
-                  <div className="relative">
-                    <Input 
-                      id="confirm-password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      value={confirmPassword} 
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="أعد إدخال كلمة المرور"
-                      className="rtl"
-                      required
-                    />
-                    <button 
-                      type="button" 
-                      onClick={toggleShowConfirmPassword}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      aria-label={showConfirmPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full mt-6"
-                disabled={isLoading}
-              >
-                {isLoading ? "جاري التحديث..." : "تحديث كلمة المرور"}
-              </Button>
-            </form>
+                <Button 
+                  type="submit" 
+                  className="w-full mt-4"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "جاري التحديث..." : "تحديث كلمة المرور"}
+                </Button>
+              </form>
+            </Form>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <div className="text-sm text-muted-foreground text-center">
-              نظام إدارة الحسابات المتكامل
-            </div>
-          </CardFooter>
         </Card>
       </div>
     </div>

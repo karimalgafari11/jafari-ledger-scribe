@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo } from 'react';
 import { Report, ReportFilter } from '@/types/custom-reports';
 
@@ -157,7 +158,15 @@ const sampleCustomReports: Report[] = [
 
 export const useCustomReports = () => {
   const [reports, setReports] = useState<Report[]>(sampleCustomReports);
-  const [filters, setFilters] = useState<ReportFilter>({});
+  const [filters, setFilters] = useState<ReportFilter>({
+    category: [],
+    author: '',
+    favorites: false,
+    dateRange: {
+      from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      to: new Date()
+    }
+  });
   const [searchQuery, setSearchQuery] = useState('');
   
   // Filtered reports

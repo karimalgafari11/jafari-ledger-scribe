@@ -41,12 +41,13 @@ export interface User {
   username: string;
   fullName: string;
   email: string;
-  role: 'admin' | 'manager' | 'accountant' | 'inventory' | 'sales';
+  role: string;
   branch: string;
-  phone: string;
+  phone?: string;
   isActive: boolean;
   lastLogin?: Date;
   createdAt: Date;
+  avatar?: string;
 }
 
 export interface BackupSettings {
@@ -67,7 +68,8 @@ export interface BackupSettings {
   cloudAuthToken?: string;
   cloudFolderId?: string;
   cloudPath?: string;
-  encryptBackup: boolean;
+  encryptBackups: boolean;
+  encryptBackup?: boolean; // Alias for encryptBackups
   encryptionPassword?: string;
   compressionLevel: 'none' | 'low' | 'medium' | 'high';
   includeAttachments: boolean;

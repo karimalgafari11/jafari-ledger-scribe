@@ -80,20 +80,24 @@ export type PermissionCategory =
   | 'reports'
   | 'settings'
   | 'admin'
+  | 'system'  // Added system category
+  | 'finance'  // Added finance category
   | string;
 
 // تعريف واجهة الصلاحيات
 export interface Permission {
   id: string;
-  code: string;
+  code?: string;
   name: string;
   category: PermissionCategory;
-  description: string;
+  description?: string;
 }
 
 // تعريف مجموعة الصلاحيات
 export interface PermissionGroup {
   category: PermissionCategory;
+  id?: string;  // Added id for compatibility
+  name?: string; // Added name for compatibility
   permissions: Permission[];
 }
 
@@ -102,7 +106,7 @@ export interface UserRole {
   id: string;
   name: string;
   description: string;
-  permissions: Permission[];
+  permissions: Permission[] | string[];  // Allow either Permission objects or string IDs
   createdAt: Date;
   updatedAt: Date;
   isSystem: boolean;

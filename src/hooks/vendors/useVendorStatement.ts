@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { DateRange } from "react-day-picker";
 import { Customer } from "@/types/customers";
+import { Vendor } from "@/types/vendor";
 
 // بيانات وهمية للمعاملات
 const MOCK_TRANSACTIONS = [
@@ -40,7 +41,7 @@ const MOCK_TRANSACTIONS = [
   }
 ];
 
-export const useVendorStatement = (vendor: any) => {
+export const useVendorStatement = (vendor: Vendor) => {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
     to: new Date()

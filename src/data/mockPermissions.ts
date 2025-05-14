@@ -1,306 +1,166 @@
-
-import { 
-  UserRole, 
-  Permission, 
-  PermissionCategory, 
-  PermissionGroup,
-  UserActivity,
-  SecuritySettings,
-  UserPermissions,
-  PermissionMatrix
-} from '@/types/permissions';
-
-// تعريف الصلاحيات حسب الفئات
-export const mockPermissions: Permission[] = [
-  // صلاحيات المحاسبة
-  { id: 'acc-view', code: 'accounting.view', name: 'عرض البيانات المحاسبية', category: 'accounting', description: 'صلاحية عرض البيانات المحاسبية والحسابات' },
-  { id: 'acc-edit', code: 'accounting.edit', name: 'تعديل البيانات المحاسبية', category: 'accounting', description: 'صلاحية تعديل البيانات المحاسبية والحسابات' },
-  { id: 'acc-create', code: 'accounting.create', name: 'إنشاء قيود محاسبية', category: 'accounting', description: 'صلاحية إنشاء قيود محاسبية جديدة' },
-  { id: 'acc-delete', code: 'accounting.delete', name: 'حذف قيود محاسبية', category: 'accounting', description: 'صلاحية حذف القيود المحاسبية' },
-  { id: 'acc-approve', code: 'accounting.approve', name: 'اعتماد قيود محاسبية', category: 'accounting', description: 'صلاحية اعتماد القيود المحاسبية' },
-  { id: 'acc-period', code: 'accounting.period', name: 'إدارة الفترات المحاسبية', category: 'accounting', description: 'صلاحية إدارة الفترات المحاسبية وإغلاقها' },
-
-  // صلاحيات المخزون
-  { id: 'inv-view', code: 'inventory.view', name: 'عرض المخزون', category: 'inventory', description: 'صلاحية عرض بيانات المخزون والأصناف' },
-  { id: 'inv-edit', code: 'inventory.edit', name: 'تعديل المخزون', category: 'inventory', description: 'صلاحية تعديل بيانات المخزون والأصناف' },
-  { id: 'inv-create', code: 'inventory.create', name: 'إضافة أصناف', category: 'inventory', description: 'صلاحية إضافة أصناف جديدة للمخزون' },
-  { id: 'inv-delete', code: 'inventory.delete', name: 'حذف أصناف', category: 'inventory', description: 'صلاحية حذف أصناف من المخزون' },
-  { id: 'inv-transfer', code: 'inventory.transfer', name: 'نقل مخزون', category: 'inventory', description: 'صلاحية نقل المخزون بين المستودعات' },
-  { id: 'inv-count', code: 'inventory.count', name: 'جرد المخزون', category: 'inventory', description: 'صلاحية إجراء عمليات جرد المخزون' },
-
-  // صلاحيات المبيعات
-  { id: 'sales-view', code: 'sales.view', name: 'عرض المبيعات', category: 'sales', description: 'صلاحية عرض بيانات المبيعات والفواتير' },
-  { id: 'sales-create', code: 'sales.create', name: 'إنشاء فواتير', category: 'sales', description: 'صلاحية إنشاء فواتير مبيعات جديدة' },
-  { id: 'sales-edit', code: 'sales.edit', name: 'تعديل فواتير', category: 'sales', description: 'صلاحية تعديل فواتير المبيعات' },
-  { id: 'sales-delete', code: 'sales.delete', name: 'حذف فواتير', category: 'sales', description: 'صلاحية حذف فواتير المبيعات' },
-  { id: 'sales-returns', code: 'sales.returns', name: 'إدارة المرتجعات', category: 'sales', description: 'صلاحية إدارة مرتجعات المبيعات' },
-  { id: 'sales-discount', code: 'sales.discount', name: 'منح خصومات', category: 'sales', description: 'صلاحية منح خصومات على المبيعات' },
-
-  // صلاحيات العملاء
-  { id: 'cust-view', code: 'customers.view', name: 'عرض بيانات العملاء', category: 'customers', description: 'صلاحية عرض بيانات العملاء وحساباتهم' },
-  { id: 'cust-edit', code: 'customers.edit', name: 'تعديل بيانات العملاء', category: 'customers', description: 'صلاحية تعديل بيانات العملاء' },
-  { id: 'cust-create', code: 'customers.create', name: 'إضافة عملاء', category: 'customers', description: 'صلاحية إضافة عملاء جدد' },
-  { id: 'cust-delete', code: 'customers.delete', name: 'حذف عملاء', category: 'customers', description: 'صلاحية حذف بيانات العملاء' },
-
-  // صلاحيات المصروفات
-  { id: 'exp-view', code: 'expenses.view', name: 'عرض المصروفات', category: 'expenses', description: 'صلاحية عرض بيانات المصروفات' },
-  { id: 'exp-create', code: 'expenses.create', name: 'إضافة مصروفات', category: 'expenses', description: 'صلاحية إضافة مصروفات جديدة' },
-  { id: 'exp-edit', code: 'expenses.edit', name: 'تعديل مصروفات', category: 'expenses', description: 'صلاحية تعديل بيانات المصروفات' },
-  { id: 'exp-delete', code: 'expenses.delete', name: 'حذف مصروفات', category: 'expenses', description: 'صلاحية حذف المصروفات' },
-  { id: 'exp-approve', code: 'expenses.approve', name: 'اعتماد مصروفات', category: 'expenses', description: 'صلاحية اعتماد المصروفات' },
-
-  // صلاحيات التقارير
-  { id: 'rep-view', code: 'reports.view', name: 'عرض التقارير', category: 'reports', description: 'صلاحية عرض التقارير المختلفة' },
-  { id: 'rep-create', code: 'reports.create', name: 'إنشاء تقارير', category: 'reports', description: 'صلاحية إنشاء تقارير جديدة' },
-  { id: 'rep-edit', code: 'reports.edit', name: 'تعديل قوالب التقارير', category: 'reports', description: 'صلاحية تعديل قوالب التقارير' },
-  { id: 'rep-export', code: 'reports.export', name: 'تصدير التقارير', category: 'reports', description: 'صلاحية تصدير التقارير' },
-
-  // صلاحيات الإعدادات
-  { id: 'set-view', code: 'settings.view', name: 'عرض الإعدادات', category: 'settings', description: 'صلاحية عرض إعدادات النظام' },
-  { id: 'set-edit', code: 'settings.edit', name: 'تعديل الإعدادات', category: 'settings', description: 'صلاحية تعديل إعدادات النظام' },
-  { id: 'set-backup', code: 'settings.backup', name: 'النسخ الاحتياطي', category: 'settings', description: 'صلاحية إدارة النسخ الاحتياطي واستعادة البيانات' },
-
-  // صلاحيات إدارة المستخدمين
-  { id: 'adm-users-view', code: 'admin.users.view', name: 'عرض المستخدمين', category: 'admin', description: 'صلاحية عرض بيانات المستخدمين' },
-  { id: 'adm-users-edit', code: 'admin.users.edit', name: 'تعديل المستخدمين', category: 'admin', description: 'صلاحية تعديل بيانات المستخدمين' },
-  { id: 'adm-users-create', code: 'admin.users.create', name: 'إضافة مستخدمين', category: 'admin', description: 'صلاحية إضافة مستخدمين جدد' },
-  { id: 'adm-users-delete', code: 'admin.users.delete', name: 'حذف مستخدمين', category: 'admin', description: 'صلاحية حذف المستخدمين' },
-  { id: 'adm-roles-manage', code: 'admin.roles.manage', name: 'إدارة الصلاحيات', category: 'admin', description: 'صلاحية إدارة مجموعات المستخدمين والصلاحيات' },
-  { id: 'adm-security', code: 'admin.security', name: 'إعدادات الأمان', category: 'admin', description: 'صلاحية إدارة إعدادات الأمان والخصوصية' },
-  { id: 'adm-activity', code: 'admin.activity', name: 'سجل الأحداث', category: 'admin', description: 'صلاحية عرض سجل أحداث وأنشطة المستخدمين' }
-];
-
-// تقسيم الصلاحيات حسب الفئات
-export const permissionGroups: PermissionGroup[] = [
-  { category: 'accounting', permissions: mockPermissions.filter(p => p.category === 'accounting') },
-  { category: 'inventory', permissions: mockPermissions.filter(p => p.category === 'inventory') },
-  { category: 'sales', permissions: mockPermissions.filter(p => p.category === 'sales') },
-  { category: 'customers', permissions: mockPermissions.filter(p => p.category === 'customers') },
-  { category: 'expenses', permissions: mockPermissions.filter(p => p.category === 'expenses') },
-  { category: 'reports', permissions: mockPermissions.filter(p => p.category === 'reports') },
-  { category: 'settings', permissions: mockPermissions.filter(p => p.category === 'settings') },
-  { category: 'admin', permissions: mockPermissions.filter(p => p.category === 'admin') }
-];
-
-// تعريف أدوار المستخدمين
-export const mockUserRoles: UserRole[] = [
+export const mockUserRoles = [
   {
     id: 'admin',
     name: 'مدير النظام',
-    description: 'صلاحيات كاملة للنظام',
-    permissions: mockPermissions,
-    createdAt: new Date(2024, 0, 1),
-    updatedAt: new Date(2024, 0, 1),
-    isSystem: true
+    permissions: ['all'],
+    description: 'صلاحيات كاملة للنظام'
   },
   {
     id: 'manager',
     name: 'مدير',
-    description: 'مدير مع صلاحيات واسعة لكن مقيدة',
-    permissions: mockPermissions.filter(p => 
-      !(['admin.security', 'admin.roles.manage', 'settings.backup'].includes(p.code))
-    ),
-    createdAt: new Date(2024, 0, 1),
-    updatedAt: new Date(2024, 2, 15),
-    isSystem: true
+    permissions: ['manage_users', 'manage_inventory', 'manage_finance', 'view_reports'],
+    description: 'إدارة كافة العمليات بدون تعديل إعدادات النظام'
   },
   {
     id: 'accountant',
     name: 'محاسب',
-    description: 'صلاحيات محاسبية ومالية',
-    permissions: mockPermissions.filter(p => 
-      p.category === 'accounting' || 
-      p.category === 'reports' || 
-      ['expenses.view', 'expenses.create', 'expenses.edit'].includes(p.code)
-    ),
-    createdAt: new Date(2024, 0, 1),
-    updatedAt: new Date(2024, 1, 10),
-    isSystem: true
+    permissions: ['manage_finance', 'view_reports'],
+    description: 'إدارة المالية وعرض التقارير'
   },
   {
     id: 'inventory',
-    name: 'أمين مخزن',
-    description: 'إدارة المخزون والأصناف',
-    permissions: mockPermissions.filter(p => 
-      p.category === 'inventory' || 
-      ['reports.view', 'reports.export'].includes(p.code)
-    ),
-    createdAt: new Date(2024, 0, 1),
-    updatedAt: new Date(2024, 0, 1),
-    isSystem: true
+    name: 'مخزون',
+    permissions: ['manage_inventory', 'view_inventory_reports'],
+    description: 'إدارة المخزون وعرض تقارير المخزون'
   },
   {
     id: 'sales',
-    name: 'مندوب مبيعات',
-    description: 'إدارة المبيعات والعملاء',
-    permissions: mockPermissions.filter(p => 
-      p.category === 'sales' || 
-      p.category === 'customers' || 
-      ['reports.view', 'reports.export'].includes(p.code)
-    ),
-    createdAt: new Date(2024, 0, 1),
-    updatedAt: new Date(2024, 3, 5),
-    isSystem: true
-  },
-  {
-    id: 'viewer',
-    name: 'مطلع',
-    description: 'صلاحيات عرض فقط',
-    permissions: mockPermissions.filter(p => p.code.includes('view') || p.code.includes('export')),
-    createdAt: new Date(2024, 0, 1),
-    updatedAt: new Date(2024, 0, 1),
-    isSystem: true
+    name: 'مبيعات',
+    permissions: ['manage_sales', 'view_customers', 'view_sales_reports'],
+    description: 'إدارة المبيعات وعرض العملاء وتقارير المبيعات'
   }
 ];
 
-// مصفوفة الصلاحيات
-export const mockPermissionMatrix: PermissionMatrix = {
+export const mockPermissionGroups = [
+  {
+    id: 'system',
+    name: 'إدارة النظام',
+    category: 'system',
+    permissions: [
+      { id: 'manage_settings', name: 'إدارة إعدادات النظام', category: 'system' },
+      { id: 'manage_users', name: 'إدارة المستخدمين', category: 'system' },
+      { id: 'manage_roles', name: 'إدارة الصلاحيات', category: 'system' },
+      { id: 'view_activity_log', name: 'عرض سجل النشاط', category: 'system' },
+      { id: 'manage_backup', name: 'إدارة النسخ الاحتياطي', category: 'system' }
+    ]
+  },
+  {
+    id: 'finance',
+    name: 'المالية',
+    category: 'finance',
+    permissions: [
+      { id: 'view_finance', name: 'عرض البيانات المالية', category: 'finance' },
+      { id: 'manage_finance', name: 'إدارة البيانات المالية', category: 'finance' },
+      { id: 'create_journal', name: 'إنشاء قيود محاسبية', category: 'finance' },
+      { id: 'approve_journal', name: 'اعتماد قيود محاسبية', category: 'finance' },
+      { id: 'view_reports', name: 'عرض التقارير المالية', category: 'finance' }
+    ]
+  },
+  {
+    id: 'inventory',
+    name: 'المخزون',
+    category: 'inventory',
+    permissions: [
+      { id: 'view_inventory', name: 'عرض المخزون', category: 'inventory' },
+      { id: 'manage_inventory', name: 'إدارة المخزون', category: 'inventory' },
+      { id: 'create_purchase', name: 'إنشاء أوامر شراء', category: 'inventory' },
+      { id: 'approve_purchase', name: 'اعتماد أوامر شراء', category: 'inventory' },
+      { id: 'view_inventory_reports', name: 'عرض تقارير المخزون', category: 'inventory' }
+    ]
+  },
+  {
+    id: 'sales',
+    name: 'المبيعات',
+    category: 'sales',
+    permissions: [
+      { id: 'view_sales', name: 'عرض المبيعات', category: 'sales' },
+      { id: 'manage_sales', name: 'إدارة المبيعات', category: 'sales' },
+      { id: 'view_customers', name: 'عرض العملاء', category: 'sales' },
+      { id: 'manage_customers', name: 'إدارة العملاء', category: 'sales' },
+      { id: 'view_sales_reports', name: 'عرض تقارير المبيعات', category: 'sales' }
+    ]
+  }
+];
+
+// Add the missing exports that are referenced in other files
+
+// Mock permissions for usePermissions.ts
+export const mockPermissions = mockPermissionGroups.flatMap(group => 
+  group.permissions.map(permission => ({
+    ...permission,
+    category: group.category
+  }))
+);
+
+// Alias for backward compatibility
+export const permissionGroups = mockPermissionGroups;
+
+// Mock permission matrix for usePermissions.ts
+export const mockPermissionMatrix = {
   'admin': {
-    'accounting': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'inventory': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'sales': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'customers': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'expenses': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'reports': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'settings': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true },
-    'admin': { canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true, canExport: true, canImport: true }
+    'accounting': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: true,
+      canApprove: true,
+      canExport: true,
+      canImport: true,
+    },
+    'inventory': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: true,
+      canApprove: true,
+      canExport: true,
+      canImport: true,
+    }
+  },
+  'manager': {
+    'accounting': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canApprove: true,
+      canExport: true,
+      canImport: false,
+    },
+    'inventory': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canApprove: true,
+      canExport: true,
+      canImport: true,
+    }
   },
   'accountant': {
-    'accounting': { canView: true, canCreate: true, canEdit: true, canDelete: false, canApprove: true, canExport: true, canImport: true },
-    'inventory': { canView: true, canCreate: false, canEdit: false, canDelete: false, canApprove: false, canExport: true, canImport: false },
-    'sales': { canView: true, canCreate: false, canEdit: false, canDelete: false, canApprove: false, canExport: true, canImport: false },
-    'customers': { canView: true, canCreate: false, canEdit: false, canDelete: false, canApprove: false, canExport: true, canImport: false },
-    'expenses': { canView: true, canCreate: true, canEdit: true, canDelete: false, canApprove: true, canExport: true, canImport: true },
-    'reports': { canView: true, canCreate: true, canEdit: true, canDelete: false, canApprove: false, canExport: true, canImport: false },
-    'settings': { canView: false, canCreate: false, canEdit: false, canDelete: false, canApprove: false, canExport: false, canImport: false },
-    'admin': { canView: false, canCreate: false, canEdit: false, canDelete: false, canApprove: false, canExport: false, canImport: false }
+    'accounting': {
+      canView: true,
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canApprove: false,
+      canExport: true,
+      canImport: false,
+    },
+    'inventory': {
+      canView: true,
+      canCreate: false,
+      canEdit: false,
+      canDelete: false,
+      canApprove: false,
+      canExport: true,
+      canImport: false,
+    }
   }
 };
 
-// سجل الأنشطة والأحداث
-export const mockUserActivities: UserActivity[] = [
-  {
-    id: '1',
-    userId: '1',
-    username: 'admin',
-    action: 'login',
-    module: 'auth',
-    details: 'تسجيل دخول ناجح',
-    timestamp: new Date(2025, 3, 30, 9, 15),
-    ipAddress: '192.168.1.100',
-    status: 'success'
-  },
-  {
-    id: '2',
-    userId: '2',
-    username: 'accountant1',
-    action: 'create',
-    module: 'accounting',
-    details: 'إنشاء قيد محاسبي جديد: ق-2025-042',
-    timestamp: new Date(2025, 3, 30, 10, 22),
-    ipAddress: '192.168.1.102',
-    status: 'success',
-    metadata: { journalId: 'J-2025-042', amount: 1500 }
-  },
-  {
-    id: '3',
-    userId: '3',
-    username: 'inventory1',
-    action: 'update',
-    module: 'inventory',
-    details: 'تحديث مخزون منتج: OIL-FILTER-001',
-    timestamp: new Date(2025, 3, 30, 11, 5),
-    ipAddress: '192.168.1.105',
-    status: 'success',
-    metadata: { productId: 'OIL-FILTER-001', quantity: 50 }
-  },
-  {
-    id: '4',
-    userId: '2',
-    username: 'accountant1',
-    action: 'approve',
-    module: 'expenses',
-    details: 'اعتماد مصروف: مصروفات تشغيلية - 2500 ريال',
-    timestamp: new Date(2025, 3, 30, 12, 30),
-    ipAddress: '192.168.1.102',
-    status: 'success',
-    metadata: { expenseId: 'EXP-2025-015', amount: 2500 }
-  },
-  {
-    id: '5',
-    userId: '1',
-    username: 'admin',
-    action: 'backup',
-    module: 'settings',
-    details: 'إنشاء نسخة احتياطية للنظام',
-    timestamp: new Date(2025, 3, 30, 23, 0),
-    ipAddress: '192.168.1.100',
-    status: 'success',
-    metadata: { backupId: 'BK20250430', size: '42.7 MB' }
-  },
-  {
-    id: '6',
-    userId: '4',
-    username: 'sales1',
-    action: 'create',
-    module: 'sales',
-    details: 'إنشاء فاتورة مبيعات جديدة: ف-2025-136',
-    timestamp: new Date(2025, 3, 30, 15, 40),
-    ipAddress: '192.168.1.110',
-    status: 'success',
-    metadata: { invoiceId: 'INV-2025-136', amount: 3750, customerId: 'CUST-0054' }
-  },
-  {
-    id: '7',
-    userId: '5',
-    username: 'user5',
-    action: 'login',
-    module: 'auth',
-    details: 'محاولة تسجيل دخول فاشلة',
-    timestamp: new Date(2025, 3, 30, 8, 5),
-    ipAddress: '192.168.1.120',
-    status: 'failed'
-  },
-  {
-    id: '8',
-    userId: '1',
-    username: 'admin',
-    action: 'update',
-    module: 'admin',
-    details: 'تحديث صلاحيات المستخدم: user3',
-    timestamp: new Date(2025, 3, 30, 16, 15),
-    ipAddress: '192.168.1.100',
-    status: 'success',
-    metadata: { targetUserId: '3', roleId: 'inventory' }
-  },
-  {
-    id: '9',
-    userId: '2',
-    username: 'accountant1',
-    action: 'export',
-    module: 'reports',
-    details: 'تصدير تقرير: أرصدة الحسابات',
-    timestamp: new Date(2025, 3, 30, 14, 30),
-    ipAddress: '192.168.1.102',
-    status: 'success',
-    metadata: { reportId: 'REP-ACC-BAL', format: 'excel' }
-  },
-  {
-    id: '10',
-    userId: '6',
-    username: 'manager1',
-    action: 'view',
-    module: 'accounting',
-    details: 'عرض تقرير الأرباح والخسائر',
-    timestamp: new Date(2025, 3, 30, 17, 0),
-    ipAddress: '192.168.1.115',
-    status: 'success',
-    metadata: { reportId: 'REP-PL', periodId: '2025-Q1' }
-  }
-];
-
-// إعدادات الأمان
-export const mockSecuritySettings: SecuritySettings = {
+// Mock security settings for usePermissions.ts
+export const mockSecuritySettings = {
   id: '1',
   passwordPolicy: {
     minimumLength: 8,
@@ -311,30 +171,143 @@ export const mockSecuritySettings: SecuritySettings = {
     passwordExpiryDays: 90,
     preventPasswordReuse: 5,
     lockoutThreshold: 5,
-    lockoutDurationMinutes: 15
+    lockoutDurationMinutes: 30
   },
   loginSettings: {
     maxFailedAttempts: 5,
-    lockoutDurationMinutes: 15,
+    lockoutDurationMinutes: 30,
     requireTwoFactor: false,
-    sessionTimeoutMinutes: 30,
+    sessionTimeoutMinutes: 60,
     allowMultipleSessions: true,
     allowRememberMe: true
   },
   dataAccessControls: {
     restrictBranchAccess: true,
-    restrictDataByDate: false,
-    restrictedDateRangeDays: 365,
+    restrictDataByDate: true,
+    restrictedDateRangeDays: 90,
     hideFinancialFigures: false,
     restrictExports: false,
     auditAllChanges: true
   },
   encryptionSettings: {
     encryptionEnabled: true,
-    encryptionType: 'standard',
-    keyRotationDays: 90,
-    lastKeyRotation: new Date(2025, 3, 1)
+    encryptionType: 'standard' as const,
+    keyRotationDays: 180,
+    lastKeyRotation: new Date('2023-01-01')
   },
-  updatedAt: new Date(2025, 3, 1),
+  updatedAt: new Date('2023-06-15'),
+  updatedBy: 'admin'
+};
+
+// Mock user activities for useUserActivity.ts
+export const mockUserActivities = [
+  {
+    id: 'act-001',
+    userId: '1',
+    username: 'ahmed.mohamed',
+    action: 'user_login',
+    module: 'auth',
+    details: 'تسجيل دخول ناجح',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-12T10:30:00'),
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: 'act-002',
+    userId: '1',
+    username: 'ahmed.mohamed',
+    action: 'setting_update',
+    module: 'settings',
+    details: 'تحديث إعدادات النظام',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-12T11:45:00'),
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: 'act-003',
+    userId: '2',
+    username: 'sara.abdullah',
+    action: 'invoice_create',
+    module: 'invoices',
+    details: 'إنشاء فاتورة جديدة رقم INV-2023-054',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-12T13:20:00'),
+    ipAddress: '192.168.1.110'
+  },
+  {
+    id: 'act-004',
+    userId: '3',
+    username: 'khalid.otaibi',
+    action: 'product_update',
+    module: 'inventory',
+    details: 'تحديث بيانات المنتج SKU-8901',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-11T09:15:00'),
+    ipAddress: '192.168.1.120'
+  },
+  {
+    id: 'act-005',
+    userId: '2',
+    username: 'sara.abdullah',
+    action: 'journal_post',
+    module: 'accounting',
+    details: 'ترحيل قيد محاسبي رقم JE-2023-105',
+    status: 'failed' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-11T14:30:00'),
+    ipAddress: '192.168.1.110'
+  },
+  {
+    id: 'act-006',
+    userId: '5',
+    username: 'fahad.saeed',
+    action: 'report_generate',
+    module: 'reports',
+    details: 'إنشاء تقرير الميزانية العمومية',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-10T16:45:00'),
+    ipAddress: '192.168.1.130'
+  },
+  {
+    id: 'act-007',
+    userId: '1',
+    username: 'ahmed.mohamed',
+    action: 'user_create',
+    module: 'users',
+    details: 'إنشاء مستخدم جديد: nasser.ali',
+    status: 'success' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-10T11:10:00'),
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: 'act-008',
+    userId: '4',
+    username: 'mona.zahrani',
+    action: 'inventory_adjust',
+    module: 'inventory',
+    details: 'تعديل مخزون المنتج SKU-5432',
+    status: 'warning' as 'success' | 'failed' | 'warning' | 'info',
+    timestamp: new Date('2023-05-09T10:20:00'),
+    ipAddress: '192.168.1.115'
+  }
+];
+
+// Add the mockBackupSettings export for backupState.ts
+export const mockBackupSettings = {
+  id: '1',
+  autoBackup: true,
+  backupFrequency: 'daily',
+  backupTime: '02:00',
+  retentionPeriodDays: 30,
+  compressionLevel: 'high',
+  encryptBackups: true,
+  backupLocation: 'cloud',
+  cloudProvider: 'aws',
+  lastBackupDate: new Date('2023-05-10T02:00:00'),
+  nextBackupDate: new Date('2023-05-11T02:00:00'),
+  backupNotifications: true,
+  notifyOnSuccess: true,
+  notifyOnFailure: true,
+  notifyEmail: 'admin@example.com',
+  updatedAt: new Date('2023-04-01'),
   updatedBy: 'admin'
 };

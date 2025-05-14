@@ -1,14 +1,12 @@
-
 import { useState } from "react";
 import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
 import {
-  transformSalesData,
-  transformProfitData,
-  transformCategoryData,
-  transformDailySalesData
-} from "@/utils/chartDataTransformers";
-import { FileText, BarChart, Receipt, Database, CreditCard, Users } from "lucide-react";
-import { SystemAlert } from "@/types/ai";
+  FileText, BarChart, Receipt, Database, CreditCard, Users, 
+  FileUp, FileDown, Bot, Zap
+} from "lucide-react";
+import { mockBranches } from "@/data/mockSettings";
+import { mockUserRoles } from "@/data/mockPermissions";
+import { SystemAlert } from "@/types/ai"; 
 
 export const useDashboard = () => {
   const [displayOptions, setDisplayOptions] = useState<DisplayOptions>({
@@ -30,35 +28,39 @@ export const useDashboard = () => {
     },
     {
       id: "2",
-      name: "إضافة مصروف جديد",
-      icon: FileText,
-      route: "/expenses/new",
+      name: "سند قبض",
+      icon: FileUp,
+      route: "/receivables/receipt-module",
       enabled: true,
-      description: "تسجيل مصروف جديد"
+      description: "إنشاء وإدارة سندات القبض من العملاء"
     },
     {
       id: "3",
-      name: "عرض التقارير",
-      icon: BarChart,
-      route: "/reports",
+      name: "سند دفع",
+      icon: FileDown,
+      route: "/payables/payment-module",
       enabled: true,
-      description: "عرض تقارير النظام"
+      description: "إنشاء وإدارة سندات الدفع للموردين"
     },
     {
       id: "4",
-      name: "دفتر الأستاذ",
-      icon: Database,
-      route: "/accounting/ledger-module",
+      name: "فاتورة مشتريات",
+      icon: FileText,
+      route: "/purchases/new",
       enabled: true,
-      description: "عرض وتحليل كافة الحركات المالية"
+      description: "إنشاء فاتورة مشتريات جديدة"
     },
     {
       id: "5",
-      name: "إدارة العملاء",
-      icon: Users,
-      route: "/customers/module",
+      name: "مساعد الذكاء الاصطناعي",
+      icon: Bot,
+      route: "/ai/assistant-module",
       enabled: true,
-      description: "إدارة قاعدة بيانات العملاء"
+      badge: {
+        text: "جديد",
+        variant: "secondary"
+      },
+      description: "استخدم مساعد الذكاء الاصطناعي لتحليل البيانات واتخاذ القرارات"
     },
     {
       id: "6",
@@ -114,12 +116,13 @@ export const useDashboard = () => {
     { day: "الخميس", sales: 27000 },
   ];
 
+  // Alerts data - Fix type to match SystemAlert
   const alerts: SystemAlert[] = [
     {
       id: "1",
       title: "تنبيه المخزون",
       message: "المنتج 'أ' وصل إلى الحد الأدنى للمخزون",
-      type: "inventory",
+      type: "inventory", 
       priority: "high",
       severity: "high",
       timestamp: new Date(),
@@ -130,7 +133,7 @@ export const useDashboard = () => {
       id: "2",
       title: "تنبيه الفواتير",
       message: "تأخر سداد الفاتورة رقم 123",
-      type: "invoices",
+      type: "invoices", 
       priority: "medium",
       severity: "medium",
       timestamp: new Date(),
@@ -139,19 +142,101 @@ export const useDashboard = () => {
     },
   ];
 
-  // Transform raw data to ChartData format
-  const transformedSalesData = transformSalesData(salesData);
-  const transformedProfitData = transformProfitData(profitData);
-  const transformedCustomerDebtData = transformCategoryData(customerDebtData);
-  const transformedSupplierCreditData = transformCategoryData(supplierCreditData);
-  const transformedCostCenterData = transformCategoryData(costCenterData);
-  const transformedDailySalesData = transformDailySalesData(dailySalesData);
+  // Transformed data for charts - Fix property name from 'name' to 'label'
+  const transformedSalesData = {
+    labels: salesData.map(item => item.name),
+    datasets: [
+      {
+        label: "المبيعات",
+        data: salesData.map(item => item.sales),
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+      },
+      {
+        label: "المستهدف",
+        data: salesData.map(item => item.target),
+        backgroundColor: 'rgba(153, 102, 255, 0.7)'
+      },
+      {
+        label: "المصروفات",
+        data: salesData.map(item => item.expenses),
+        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+      },
+    ]
+  };
+
+  const transformedProfitData = {
+    labels: profitData.map(item => item.name),
+    datasets: [
+      {
+        label: "الأرباح",
+        data: profitData.map(item => item.profit),
+        backgroundColor: 'rgba(75, 192, 192, 0.7)'
+      }
+    ]
+  };
+
+  const transformedCustomerDebtData = {
+    labels: customerDebtData.map(item => item.name),
+    datasets: [
+      {
+        label: "القيمة",
+        data: customerDebtData.map(item => item.value),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)'
+        ]
+      }
+    ]
+  };
+
+  const transformedSupplierCreditData = {
+    labels: supplierCreditData.map(item => item.name),
+    datasets: [
+      {
+        label: "القيمة",
+        data: supplierCreditData.map(item => item.value),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)'
+        ]
+      }
+    ]
+  };
+
+  const transformedCostCenterData = {
+    labels: costCenterData.map(item => item.name),
+    datasets: [
+      {
+        label: "القيمة",
+        data: costCenterData.map(item => item.value),
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)'
+        ]
+      }
+    ]
+  };
+
+  const transformedDailySalesData = {
+    labels: dailySalesData.map(item => item.day),
+    datasets: [
+      {
+        label: "المبيعات اليومية",
+        data: dailySalesData.map(item => item.sales),
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+      }
+    ]
+  };
 
   // Calculate summary data
   const totalSales = salesData.reduce((sum, item) => sum + item.sales, 0);
   const totalExpenses = salesData.reduce((sum, item) => sum + item.expenses, 0);
   const netProfit = totalSales - totalExpenses;
-  const profitMargin = "50.03%";
+  const profitMargin = ((netProfit / totalSales) * 100).toFixed(2) + "%";
   const overdueInvoices = 12;
   const overdueTotalAmount = 18500.75;
 
@@ -164,12 +249,12 @@ export const useDashboard = () => {
       description: "مقارنة بالفترة السابقة"
     }, {
       title: "نسبة الربح الإجمالي",
-      value: "50.03%",
+      value: profitMargin,
       status: "up" as const,
       description: "من إجمالي المبيعات"
     }, {
       title: "متوسط قيمة الفاتورة",
-      value: "645 ريال",
+      value: "645 ري��ل",
       status: "down" as const,
       description: "انخفاض 3.2% عن الشهر السابق"
     }, {

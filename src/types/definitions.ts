@@ -1,55 +1,162 @@
+// Add FiltersType export
+export interface FiltersType {
+  userId: string;
+  startDate?: Date;
+  endDate?: Date;
+  action?: string;
+  module?: string;
+  status?: 'success' | 'failed' | 'warning' | 'info' | '';
+  searchText?: string;
+}
+
+// Updated Bank interface with additional fields used in the components
+export interface Bank {
+  id: string;
+  name: string;
+  code: string;
+  branch?: string;
+  branchName?: string;
+  address?: string;
+  swiftCode?: string;
+  iban?: string;
+  accountNumber?: string;
+  accountId?: string;
+  currency?: string;
+  isActive: boolean;
+}
+
+// Updated Branch interface with additional fields used in the components
 export interface Branch {
   id: string;
   code: string;
   name: string;
-  address: string;
-  manager: string;
-  phone: string;
-  email: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  manager?: string;
   isActive: boolean;
-  isMainBranch: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  isMain: boolean;
+  isMainBranch?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
+// Updated CashRegister interface with all fields used in components
+export interface CashRegister {
+  id: string;
+  name: string;
+  code: string;
+  branchId: string;
+  branchName?: string;
+  balance: number;
+  isActive: boolean;
+  userId?: string;
+  currency: string;
+  currencyId?: string;  // Add this to support both currency and currencyId
+  currencyCode?: string;
+  notes?: string;
+}
+
+// Updated Warehouse interface with additional fields used in components
 export interface Warehouse {
   id: string;
   code: string;
   name: string;
   branchId: string;
-  branchName: string;
-  type: 'main' | 'sub' | 'external';
-  address: string;
-  inventoryControl: 'manual' | 'automatic';
+  address?: string;
+  manager?: string;
+  phone?: string;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  branchName?: string;
+  type: 'main' | 'sub' | 'external';
+  inventoryControl: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface Bank {
+// Updated Discount interface with additional fields used in components
+export interface Discount {
+  id: string;
+  code: string;
+  name: string;
+  type: 'percentage' | 'fixed' | 'tiered';
+  value: number;
+  isActive: boolean;
+  startDate?: Date;
+  endDate?: Date;
+  minAmount?: number;
+  maxAmount?: number;
+  minimumAmount?: number; // Alias for minAmount
+  maximumAmount?: number; // Alias for maxAmount
+  limitPerCustomer?: number;
+  customerGroups?: string[];
+  productCategories?: string[];
+  excludedProducts?: string[];
+  applicableCategories?: string[];
+}
+
+// Updated AccountingPeriod interface with additional fields
+export interface AccountingPeriod {
   id: string;
   name: string;
-  branch: string;
-  accountNumber: string;
-  accountId: string; // ربط مع شجرة الحسابات
-  swiftCode?: string;
-  iban?: string;
-  currency: string;
-  isActive: boolean;
+  startDate: Date;
+  endDate: Date;
+  isClosed: boolean;
+  closedBy?: string;
+  closedAt?: Date;
+  closedDate?: Date; // Alias for closedAt
+  fiscalYearId?: string;
 }
 
+// Updated CommercialPaper interface with additional fields
+export interface CommercialPaper {
+  id: string;
+  type: 'check' | 'bond' | 'bill' | 'cheque' | 'promissory_note';
+  number: string;
+  referenceNumber?: string;
+  amount: number;
+  currencyCode: string;
+  currencyId?: string;
+  issueDate: Date;
+  dueDate: Date;
+  status: 'draft' | 'active' | 'collected' | 'bounced' | 'void';
+  bankId?: string;
+  bankName?: string;
+  customerId?: string;
+  customerName?: string;
+  vendorName?: string;
+  notes?: string;
+}
+
+// Updated DueNotification interface with additional fields
+export interface DueNotification {
+  id: string;
+  paperId?: string;
+  entityId?: string;
+  entityType?: string;
+  paperNumber?: string;
+  dueDate: Date;
+  amount: number;
+  currencyId?: string;
+  title?: string;
+  message?: string;
+  priority?: 'high' | 'medium' | 'low';
+  status: 'pending' | 'sent' | 'failed' | 'processed' | 'dismissed';
+  sentAt?: Date;
+  notificationDate?: Date;
+}
+
+// Keep existing interfaces
 export interface Currency {
   id: string;
-  code: string; // مثل USD, SAR
+  code: string;
   name: string;
   symbol: string;
-  country: string;
   isDefault: boolean;
   isActive: boolean;
   exchangeRate: number;
   decimalPlaces: number;
-  roundingMethod?: 'up' | 'down' | 'nearest'; // طريقة التقريب
-  lastUpdated?: Date; // تاريخ آخر تحديث
+  country?: string;
 }
 
 export interface ExchangeRate {
@@ -59,19 +166,6 @@ export interface ExchangeRate {
   rate: number;
   date: string;
   isManual: boolean;
-  provider?: string; // مزود بيانات سعر الصرف
-  effectiveDate?: Date; // تاريخ بداية سريان السعر
-  expiryDate?: Date; // تاريخ انتهاء سريان السعر
-}
-
-export interface AccountingPeriod {
-  id: string;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  isClosed: boolean;
-  closedDate?: Date;
-  fiscalYearId: string;
 }
 
 export interface VoucherType {
@@ -100,73 +194,5 @@ export interface SalesRepresentative {
   email: string;
   commissionRate: number;
   isActive: boolean;
-  branchIds: string[]; // الفروع التي يعمل بها
-}
-
-// إضافة مكون صندوق النقدية
-export interface CashRegister {
-  id: string;
-  code: string;
-  name: string;
-  branchId: string;
-  branchName: string;
-  currencyId: string;
-  currencyCode: string;
-  balance: number;
-  isActive: boolean;
-  userId?: string; // المستخدم المسؤول
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// إضافة مكون الخصومات
-export interface Discount {
-  id: string;
-  code: string;
-  name: string;
-  type: 'percentage' | 'fixed'; // نوع الخصم (نسبة مئوية أو قيمة ثابتة)
-  value: number; // قيمة الخصم
-  startDate: Date; // تاريخ بداية سريان الخصم
-  endDate?: Date; // تاريخ انتهاء سريان الخصم
-  minimumAmount?: number; // الحد الأدنى للطلب لتطبيق الخصم
-  maximumAmount?: number; // الحد الأقصى للخصم
-  isActive: boolean;
-  applicableItems?: string[]; // الأصناف التي ينطبق عليها الخصم
-  applicableCategories?: string[]; // فئات الأصناف التي ينطبق عليها الخصم
-}
-
-// إضافة مكون الأوراق التجارية
-export interface CommercialPaper {
-  id: string;
-  referenceNumber: string;
-  type: 'cheque' | 'promissory_note' | 'bill_of_exchange'; // نوع الورقة التجارية
-  customerId?: string;
-  customerName?: string;
-  vendorId?: string;
-  vendorName?: string;
-  amount: number;
-  currencyId: string;
-  currencyCode: string;
-  issueDate: Date;
-  dueDate: Date;
-  bankId?: string;
-  bankName?: string;
-  status: 'draft' | 'active' | 'completed' | 'cancelled' | 'dishonored';
-  notes?: string;
-}
-
-// إضافة مكون تنبيهات الاستحقاق
-export interface DueNotification {
-  id: string;
-  entityId: string; // معرف الكيان (مثل الورقة التجارية)
-  entityType: 'commercial_paper' | 'invoice' | 'expense'; // نوع الكيان
-  dueDate: Date;
-  amount: number;
-  currencyId: string;
-  title: string;
-  message: string;
-  priority: 'low' | 'medium' | 'high';
-  status: 'pending' | 'processed' | 'dismissed';
-  notificationDate: Date; // تاريخ إرسال التنبيه
-  userId?: string; // المستخدم المسؤول
+  branchIds: string[];
 }

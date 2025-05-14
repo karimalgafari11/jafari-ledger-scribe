@@ -1,158 +1,113 @@
 
-import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import React, { useState, useEffect } from "react";
+import { X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, X, Grid3X3, List } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Product } from "@/types/inventory";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProductGridView } from "./product-search/ProductGridView";
-import { ProductTableView } from "./product-search/ProductTableView";
-import { SearchHeader } from "./product-search/SearchHeader";
-import { SearchFooter } from "./product-search/SearchFooter";
-import { useProductSearch } from "./product-search/useProductSearch";
+
+// Mock products for testing
+const mockProducts: Product[] = [
+  { id: "p1", code: "PR001", name: "شاشة كمبيوتر 24 بوصة", price: 850, quantity: 30, unit: "قطعة", isActive: true },
+  { id: "p2", code: "PR002", name: "لوحة مفاتيح لاسلكية", price: 120, quantity: 45, unit: "قطعة", isActive: true },
+  { id: "p3", code: "PR003", name: "ماوس لاسلكي", price: 80, quantity: 50, unit: "قطعة", isActive: true },
+  { id: "p4", code: "PR004", name: "سماعات رأس مع ميكروفون", price: 200, quantity: 25, unit: "قطعة", isActive: true },
+  { id: "p5", code: "PR005", name: "كامرة ويب HD", price: 150, quantity: 20, unit: "قطعة", isActive: true },
+  { id: "p6", code: "PR006", name: "كيبل HDMI 2م", price: 25, quantity: 100, unit: "قطعة", isActive: true },
+  { id: "p7", code: "PR007", name: "وحدة تخزين خارجية 1TB", price: 300, quantity: 15, unit: "قطعة", isActive: true },
+  { id: "p8", code: "PR008", name: "حامل شاشة كمبيوتر", price: 120, quantity: 10, unit: "قطعة", isActive: true },
+  { id: "p9", code: "PR009", name: "حقيبة لابتوب", price: 90, quantity: 30, unit: "قطعة", isActive: true },
+  { id: "p10", code: "PR010", name: "فلاش درايف 64GB", price: 60, quantity: 40, unit: "قطعة", isActive: true }
+];
 
 interface QuickProductSearchProps {
   onClose: () => void;
   onSelect: (product: Product) => void;
-  initialQuery?: string;
 }
 
 export const QuickProductSearch: React.FC<QuickProductSearchProps> = ({
   onClose,
-  onSelect,
-  initialQuery = ""
+  onSelect
 }) => {
-  const {
-    searchTerm,
-    setSearchTerm,
-    filteredProducts,
-    selectedProductId,
-    setSelectedProductId,
-    viewMode,
-    setViewMode,
-    searchInputRef,
-    getStockLevelClass
-  } = useProductSearch();
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>(mockProducts);
   
-  // Focus search input on mount
+  // Filter products based on search query
   useEffect(() => {
-    setTimeout(() => {
-      searchInputRef.current?.focus();
-    }, 100);
-  }, []);
+    if (query.trim()) {
+      const filtered = mockProducts.filter(
+        product =>
+          product.name.toLowerCase().includes(query.toLowerCase()) ||
+          product.code.toLowerCase().includes(query.toLowerCase())
+      );
+      setResults(filtered);
+    } else {
+      setResults(mockProducts);
+    }
+  }, [query]);
   
-  // Handle product selection and close dialog
-  const handleSelectProduct = (product: Product) => {
+  // Handle product selection
+  const handleSelect = (product: Product) => {
     onSelect(product);
     onClose();
   };
-
-  // Find the currently selected product
-  const getSelectedProduct = (): Product | undefined => {
-    return filteredProducts.find(p => p.id === selectedProductId);
-  };
-  
-  // Handle keyboard navigation
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      const selectedProduct = getSelectedProduct();
-      if (selectedProduct) {
-        e.preventDefault();
-        handleSelectProduct(selectedProduct);
-      }
-    } else if (e.key === 'Escape') {
-      onClose();
-    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      // Navigate through products with arrow keys
-      e.preventDefault();
-      const currentIndex = filteredProducts.findIndex(p => p.id === selectedProductId);
-      
-      if (currentIndex === -1) {
-        // If no product is selected, select the first one
-        if (filteredProducts.length > 0) {
-          setSelectedProductId(filteredProducts[0].id);
-        }
-        return;
-      }
-      
-      let newIndex;
-      if (e.key === 'ArrowDown') {
-        newIndex = (currentIndex + 1) % filteredProducts.length;
-      } else {
-        newIndex = (currentIndex - 1 + filteredProducts.length) % filteredProducts.length;
-      }
-      
-      setSelectedProductId(filteredProducts[newIndex].id);
-    }
-  };
-
-  // This is a mock since these weren't in useProductSearch - will only be used for UI rendering
-  const categories = [];
   
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-3xl h-[80vh] flex flex-col p-0 gap-0" 
-        onKeyDown={handleKeyDown}
-      >
-        <DialogTitle className="sr-only">البحث عن المنتجات</DialogTitle>
-        <SearchHeader 
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          searchInputRef={searchInputRef}
-        />
+    <Dialog open={true} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-center">البحث عن منتجات</DialogTitle>
+        </DialogHeader>
         
-        <Tabs defaultValue="products" className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="mx-4 justify-start">
-            <TabsTrigger value="products">المنتجات ({filteredProducts.length})</TabsTrigger>
-            <TabsTrigger value="categories">الفئات ({categories.length})</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="products" className="flex-1 overflow-hidden m-0 p-0">
-            {viewMode === 'grid' ? (
-              <ProductGridView 
-                products={filteredProducts} 
-                selectedProductId={selectedProductId} 
-                handleSelect={handleSelectProduct}
-              />
-            ) : (
-              <ProductTableView 
-                products={filteredProducts} 
-                selectedProductId={selectedProductId}
-                setSelectedProductId={setSelectedProductId}
-                handleSelect={handleSelectProduct}
-                getStockLevelClass={getStockLevelClass}
-              />
-            )}
-          </TabsContent>
-          
-          <TabsContent value="categories" className="flex-1 overflow-auto m-0 p-2">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={category.selected ? "default" : "outline"}
-                  className="justify-start h-auto py-2"
-                  onClick={() => {}}
-                >
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full mr-2 ${category.color}`}></div>
-                    <span>{category.name} ({category.count})</span>
-                  </div>
-                </Button>
-              ))}
+        <div className="relative mb-4">
+          <Input
+            placeholder="ابحث بالاسم أو الكود..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-10"
+            autoFocus
+          />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+        </div>
+        
+        <div className="max-h-80 overflow-y-auto border rounded-md">
+          {results.length > 0 ? (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الكود</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المنتج</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المتاح</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {results.map((product) => (
+                  <tr key={product.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2">{product.code}</td>
+                    <td className="px-4 py-2">{product.name}</td>
+                    <td className="px-4 py-2">{product.price}</td>
+                    <td className="px-4 py-2">{product.quantity}</td>
+                    <td className="px-4 py-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleSelect(product)}
+                      >
+                        إضافة
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="flex justify-center items-center h-32">
+              <p className="text-gray-500">لا توجد نتائج للبحث</p>
             </div>
-          </TabsContent>
-        </Tabs>
-        
-        <SearchFooter 
-          productCount={filteredProducts.length}
-          selectedProductId={selectedProductId}
-          onClose={onClose}
-        />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,59 +1,69 @@
 
-import React, { useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React, { useEffect, useRef } from "react";
 
 interface EditableCellProps {
   value: string;
   active: boolean;
   onActivate: () => void;
   onChange: (value: string) => void;
-  inputRef?: React.RefObject<HTMLInputElement>;
   type?: "text" | "number";
-  className?: string;
   placeholder?: string;
+  className?: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-export const EditableCell: React.FC<EditableCellProps> = ({ 
-  value, 
-  active, 
-  onActivate, 
-  onChange, 
-  inputRef,
+export const EditableCell: React.FC<EditableCellProps> = ({
+  value,
+  active,
+  onActivate,
+  onChange,
   type = "text",
+  placeholder = "",
   className = "",
-  placeholder = ""
+  inputRef
 }) => {
-  // Focus the input when active state changes
+  const localInputRef = useRef<HTMLInputElement>(null);
+  
   useEffect(() => {
-    if (active && inputRef && inputRef.current) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }, 10);
+    if (active) {
+      const inputElement = inputRef?.current || localInputRef.current;
+      if (inputElement) {
+        inputElement.focus();
+        inputElement.select();
+      }
     }
   }, [active, inputRef]);
-
+  
+  const handleBlur = () => {
+    onChange(localInputRef.current?.value || "");
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      onChange(localInputRef.current?.value || "");
+    }
+  };
+  
   if (active) {
     return (
-      <Input
-        ref={inputRef}
+      <input
+        ref={inputRef || localInputRef}
         type={type}
-        className={`w-full border-none focus:ring-0 ${className}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        defaultValue={value}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className={`w-full border-0 p-0 focus:ring-0 focus:outline-none ${className}`}
         placeholder={placeholder}
-        onClick={(e) => e.stopPropagation()}
       />
     );
   }
-
+  
   return (
-    <div 
-      className={`cursor-pointer w-full min-h-[24px] flex items-center ${className}`}
+    <div
       onClick={onActivate}
+      className={`cursor-pointer ${value ? "" : "text-gray-400"} ${className}`}
     >
-      {value || (placeholder && <span className="text-gray-400">{placeholder}</span>)}
+      {value || placeholder}
     </div>
   );
 };
