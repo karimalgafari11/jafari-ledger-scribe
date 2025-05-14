@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SystemAlert } from '@/types/ai';
@@ -141,7 +140,7 @@ const useExecutiveDashboard = () => {
       id: uuidv4(),
       title: "Budget Overrun",
       message: "Project A has exceeded budget by 20%",
-      type: "financial" as const,
+      type: "expenses", // Changed from "financial" to "expenses"
       priority: "high" as const,
       severity: "high" as const,
       timestamp: new Date(),
@@ -152,7 +151,7 @@ const useExecutiveDashboard = () => {
       id: uuidv4(),
       title: "Contract Expiration",
       message: "3 vendor contracts are expiring within 30 days",
-      type: "vendors" as const,
+      type: "system", // Changed from "vendors" to "system"
       priority: "medium" as const,
       severity: "medium" as const,
       timestamp: new Date(),
