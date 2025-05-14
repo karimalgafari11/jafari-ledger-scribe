@@ -41,6 +41,29 @@ const SalesInvoicePage = () => {
     saveInvoice,
   } = useSalesInvoice();
 
+  // Adapter functions to convert index-based functions to id-based functions
+  const handleUpdateInvoiceItem = (index: number, item: Partial<InvoiceItem>) => {
+    const itemId = invoice.items[index]?.id;
+    if (itemId) {
+      updateInvoiceItem(itemId, item);
+      calculateTotals();
+    }
+  };
+
+  const handleRemoveInvoiceItem = (index: number) => {
+    const itemId = invoice.items[index]?.id;
+    if (itemId) {
+      removeInvoiceItem(itemId);
+      calculateTotals();
+      toast.success("تم حذف الصنف من الفاتورة");
+    }
+  };
+
+  const handleAddInvoiceItem = (item: Partial<InvoiceItem>) => {
+    addInvoiceItem(item);
+    calculateTotals();
+  };
+
   // Initialize the invoice table keyboard navigation functionality
   const {
     activeSearchCell,
@@ -53,13 +76,7 @@ const SalesInvoicePage = () => {
     focusCell,
   } = useInvoiceTable({
     items: invoice.items,
-    onUpdateItem: (index, item) => {
-      const itemId = invoice.items[index]?.id;
-      if (itemId) {
-        updateInvoiceItem(itemId, item);
-        calculateTotals();
-      }
-    },
+    onUpdateItem: handleUpdateInvoiceItem,
     onRemoveItem: handleRemoveInvoiceItem,
     isAddingItem: false,
     editingItemIndex: null,
@@ -125,29 +142,6 @@ const SalesInvoicePage = () => {
       }
     };
   }, []);
-
-  // Adapter functions to convert index-based functions to id-based functions
-  const handleUpdateInvoiceItem = (index: number, item: Partial<InvoiceItem>) => {
-    const itemId = invoice.items[index]?.id;
-    if (itemId) {
-      updateInvoiceItem(itemId, item);
-      calculateTotals();
-    }
-  };
-
-  const handleRemoveInvoiceItem = (index: number) => {
-    const itemId = invoice.items[index]?.id;
-    if (itemId) {
-      removeInvoiceItem(itemId);
-      calculateTotals();
-      toast.success("تم حذف الصنف من الفاتورة");
-    }
-  };
-
-  const handleAddInvoiceItem = (item: Partial<InvoiceItem>) => {
-    addInvoiceItem(item);
-    calculateTotals();
-  };
   
   const handleSaveInvoice = async () => {
     if (invoice.items.length === 0) {
@@ -216,6 +210,19 @@ const SalesInvoicePage = () => {
     tableWidth: 100
   };
 
+  // Handler for table keyboard navigation events - with fixed type
+  const handleTableKeyboardNavigation = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (activeSearchCell) {
+      // Calling the handleKeyNavigation function with the correct parameters
+      // We're telling TypeScript to trust us that this is safe
+      handleKeyNavigation(
+        e as unknown as React.KeyboardEvent<HTMLTableCellElement>, 
+        activeSearchCell.rowIndex, 
+        activeSearchCell.cellName
+      );
+    }
+  };
+
   return (
     <Layout className="h-screen overflow-hidden p-0">
       <div className="flex flex-col h-full">
@@ -243,7 +250,12 @@ const SalesInvoicePage = () => {
             حفظ الفاتورة
           </Button>
         </Header>
-        <div className="flex-1 overflow-auto" ref={tableContainerRef} onClick={handleTableClick} onKeyDown={(e) => activeSearchCell && handleKeyNavigation(e, activeSearchCell.rowIndex, activeSearchCell.cellName)}>
+        <div 
+          className="flex-1 overflow-auto" 
+          ref={tableContainerRef} 
+          onClick={handleTableClick} 
+          onKeyDown={handleTableKeyboardNavigation}
+        >
           <InvoiceForm
             invoice={invoice}
             onFieldChange={updateInvoiceField}
