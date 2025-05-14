@@ -40,7 +40,7 @@ export function useNotificationTemplates(
   };
   
   // Create a new template
-  const createTemplate = async (template: Omit<NotificationTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
+  const createTemplate = async (template: Omit<NotificationTemplate, 'id' | 'updatedAt'>): Promise<boolean> => {
     setIsLoading(true);
     
     try {
@@ -50,8 +50,7 @@ export function useNotificationTemplates(
       const newTemplate: NotificationTemplate = {
         id: `template${templates.length + 1}`,
         ...template,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
       };
       
       setTemplates(prev => [...prev, newTemplate]);

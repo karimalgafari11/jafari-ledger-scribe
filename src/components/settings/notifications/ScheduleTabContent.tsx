@@ -1,111 +1,97 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Clock } from "lucide-react";
-import { NotificationSettings } from "@/types/notifications";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Clock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { NotificationSettings } from '@/types/notifications';
 
 interface ScheduleTabContentProps {
-  notificationEvents: {
-    id: string;
-    name: string;
-    description: string;
-    icon: React.ReactNode;
-  }[];
+  notificationEvents: { id: string; name: string; description: string }[];
   settings: NotificationSettings[];
   handleQuietHoursToggle: (eventType: string) => void;
   handleQuietHoursChange: (eventType: string, field: "startTime" | "endTime", value: string) => void;
   handleSaveSettings: () => void;
 }
 
-const ScheduleTabContent = ({
+const ScheduleTabContent: React.FC<ScheduleTabContentProps> = ({
   notificationEvents,
   settings,
   handleQuietHoursToggle,
   handleQuietHoursChange,
-  handleSaveSettings,
-}: ScheduleTabContentProps) => {
+  handleSaveSettings
+}) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>جدولة الإشعارات</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-gray-500 mb-6">تحديد أوقات الهدوء وجدولة الإشعارات</p>
-        
-        {notificationEvents.map(event => {
-          const setting = settings.find(s => s.eventType === event.id);
-          const quietHours = setting?.scheduleQuiet;
-          
-          return (
-            <div key={event.id} className="mb-6 p-4 border rounded-md">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  {event.icon}
-                  <h3 className="text-lg font-medium">{event.name}</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock size={16} />
-                  <Label htmlFor={`quiet-${event.id}`}>تفعيل أوقات الهدوء</Label>
+    <div className="space-y-6">
+      <Card className="p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-2">ساعات الهدوء</h2>
+          <p className="text-muted-foreground">
+            تكوين الفترات الزمنية التي لا يتم فيها إرسال الإشعارات. يمكنك تكوين ساعات الهدوء لكل نوع من أنواع الإشعارات.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {notificationEvents.map((event) => {
+            const setting = settings.find(s => s.eventType === event.id);
+            const enabled = setting?.scheduleQuiet?.enabled || false;
+            const startTime = setting?.scheduleQuiet?.startTime || "22:00";
+            const endTime = setting?.scheduleQuiet?.endTime || "08:00";
+
+            return (
+              <div key={event.id} className="p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="font-medium">{event.name}</h3>
+                    <p className="text-sm text-muted-foreground">{event.description}</p>
+                  </div>
                   <Switch
-                    id={`quiet-${event.id}`}
-                    checked={quietHours?.enabled || false}
+                    checked={enabled}
                     onCheckedChange={() => handleQuietHoursToggle(event.id)}
                   />
                 </div>
+
+                {enabled && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium block">وقت البداية</label>
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="time"
+                          value={startTime}
+                          onChange={(e) => handleQuietHoursChange(event.id, "startTime", e.target.value)}
+                          className="max-w-[120px]"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium block">وقت الانتهاء</label>
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="time"
+                          value={endTime}
+                          onChange={(e) => handleQuietHoursChange(event.id, "endTime", e.target.value)}
+                          className="max-w-[120px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              
-              {quietHours?.enabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <Label htmlFor={`start-${event.id}`} className="mb-1 block">وقت البداية</Label>
-                    <Input
-                      id={`start-${event.id}`}
-                      type="time"
-                      value={quietHours.startTime}
-                      onChange={(e) => handleQuietHoursChange(event.id, "startTime", e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`end-${event.id}`} className="mb-1 block">وقت النهاية</Label>
-                    <Input
-                      id={`end-${event.id}`}
-                      type="time"
-                      value={quietHours.endTime}
-                      onChange={(e) => handleQuietHoursChange(event.id, "endTime", e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-        
-        <Separator className="my-6" />
-        
-        <div className="mb-6">
-          <h3 className="text-lg font-medium mb-4">إعدادات عامة للإشعارات</h3>
-          
-          <div className="flex items-center justify-between mb-4">
-            <Label htmlFor="digest-emails">تجميع الإشعارات في رسالة واحدة</Label>
-            <Switch id="digest-emails" />
-          </div>
-          
-          <div className="flex items-center justify-between mb-4">
-            <Label htmlFor="realtime-critical">إرسال الإشعارات الحرجة فوراً</Label>
-            <Switch id="realtime-critical" defaultChecked />
-          </div>
+            );
+          })}
         </div>
-        
-        <div className="flex justify-end mt-6">
-          <Button onClick={handleSaveSettings}>حفظ الإعدادات</Button>
-        </div>
-      </CardContent>
-    </Card>
+      </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSaveSettings}>
+          حفظ الإعدادات
+        </Button>
+      </div>
+    </div>
   );
 };
 

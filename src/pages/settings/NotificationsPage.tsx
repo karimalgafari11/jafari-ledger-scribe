@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { NotificationSettings } from "@/types/notifications";
 
 const NotificationsPage = () => {
   const {
@@ -62,10 +63,10 @@ const NotificationsPage = () => {
   const handleQuietHoursToggle = (eventType: string) => {
     const setting = notificationSettings.find(s => s.eventType === eventType);
     if (setting) {
-      const updatedSetting = {
+      const updatedSetting: NotificationSettings = {
         ...setting,
         scheduleQuiet: {
-          ...setting.scheduleQuiet || { start: "22:00", end: "08:00", timezone: "Asia/Riyadh" },
+          ...setting.scheduleQuiet || { startTime: "22:00", endTime: "08:00", timezone: "Asia/Riyadh" },
           enabled: !setting.scheduleQuiet?.enabled
         }
       };
@@ -73,13 +74,13 @@ const NotificationsPage = () => {
     }
   };
 
-  const handleQuietHoursChange = (eventType: string, field: "start" | "end", value: string) => {
+  const handleQuietHoursChange = (eventType: string, field: "startTime" | "endTime", value: string) => {
     const setting = notificationSettings.find(s => s.eventType === eventType);
     if (setting) {
-      const updatedSetting = {
+      const updatedSetting: NotificationSettings = {
         ...setting,
         scheduleQuiet: {
-          ...setting.scheduleQuiet || { start: "22:00", end: "08:00", timezone: "Asia/Riyadh", enabled: false },
+          ...setting.scheduleQuiet || { startTime: "22:00", endTime: "08:00", timezone: "Asia/Riyadh", enabled: false },
           [field]: value
         }
       };

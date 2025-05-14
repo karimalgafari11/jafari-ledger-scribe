@@ -1,50 +1,84 @@
 
-import React from 'react';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import NotificationItem from '@/components/notifications/NotificationItem';
+import React, { useState } from 'react';
+import { Notification } from '@/types/notifications';
+import NotificationItem from './NotificationItem';
+import { useNotifications } from '@/hooks/useNotifications';
+import { Checkbox } from '@/components/ui/checkbox';
+import NotificationBulkActions from './NotificationBulkActions';
 
 interface NotificationsListProps {
-  notifications: any[];
-  selectedIds: string[];
-  onToggleSelect: (id: string) => void;
+  notifications: Notification[];
+  showActions?: boolean;
 }
 
-const NotificationsList = ({ notifications, selectedIds, onToggleSelect }: NotificationsListProps) => {
-  if (notifications.length === 0) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        لا توجد إشعارات لعرضها
-      </div>
-    );
-  }
+const NotificationsList: React.FC<NotificationsListProps> = ({ 
+  notifications,
+  showActions = true
+}) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { markAsRead, deleteNotification } = useNotifications();
   
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(item => item !== id) 
+        : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(notifications.map(n => n.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
   return (
-    <ScrollArea className="h-[600px]">
-      <div>
-        {notifications.map((notification, index) => (
-          <React.Fragment key={notification.id}>
-            <div className="flex items-start p-0">
-              <div className="p-4 flex items-start">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(notification.id)}
-                  onChange={() => onToggleSelect(notification.id)}
-                  className="ml-3 mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex-1">
-                <NotificationItem 
-                  notification={notification} 
-                  showActions={true} 
-                />
-              </div>
-            </div>
-            {index < notifications.length - 1 && <Separator />}
-          </React.Fragment>
-        ))}
+    <div className="space-y-1">
+      {notifications.length > 0 && (
+        <div className="flex justify-between items-center px-3 py-2">
+          <div className="flex items-center gap-2">
+            <Checkbox 
+              id="select-all" 
+              checked={selectedIds.length === notifications.length && notifications.length > 0}
+              indeterminate={selectedIds.length > 0 && selectedIds.length < notifications.length}
+              onCheckedChange={handleSelectAll}
+            />
+            <label htmlFor="select-all" className="text-sm">
+              تحديد الكل
+            </label>
+          </div>
+          
+          {selectedIds.length > 0 && (
+            <NotificationBulkActions 
+              selectedIds={selectedIds} 
+              onSelectionChange={setSelectedIds}
+            />
+          )}
+        </div>
+      )}
+      
+      <div className="divide-y">
+        {notifications.length === 0 ? (
+          <div className="p-6 text-center text-muted-foreground">
+            لا توجد إشعارات
+          </div>
+        ) : (
+          notifications.map(notification => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkRead={markAsRead}
+              onDelete={deleteNotification}
+              showActions={showActions}
+              isSelected={selectedIds.includes(notification.id)}
+              onToggleSelect={handleToggleSelect}
+            />
+          ))
+        )}
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 

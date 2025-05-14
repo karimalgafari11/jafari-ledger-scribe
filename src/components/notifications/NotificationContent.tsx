@@ -1,33 +1,21 @@
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 
-interface NotificationContentProps {
-  title: string;
+export interface NotificationContentProps {
   message: string;
-  read: boolean;
-  relatedEntityId?: string;
-  relatedEntityType?: string;
+  title?: string;
+  read?: boolean;
 }
 
-const NotificationContent = ({
-  title,
-  message,
-  read,
-  relatedEntityId,
-  relatedEntityType
-}: NotificationContentProps) => {
+const NotificationContent: React.FC<NotificationContentProps> = ({ message, title, read }) => {
   return (
-    <div className="space-y-1">
-      <p className={cn("text-sm", !read ? "font-medium" : "text-muted-foreground")}>
-        {message}
-      </p>
-      
-      {relatedEntityId && relatedEntityType && (
-        <div className="text-xs text-blue-600">
-          عرض التفاصيل
-        </div>
+    <div className="text-sm">
+      {title && (
+        <h3 className={`font-medium ${!read ? 'font-semibold' : ''}`}>
+          {title}
+        </h3>
       )}
+      <p className="text-muted-foreground line-clamp-2">{message}</p>
     </div>
   );
 };

@@ -108,7 +108,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
             )}
           </div>
           
-          <NotificationContent message={message} />
+          <NotificationContent message={message} title={title} read={read} />
           
           <div className="text-[11px] text-muted-foreground mt-1">
             {formattedDate}
