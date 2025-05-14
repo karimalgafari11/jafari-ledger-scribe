@@ -1,30 +1,35 @@
 
-import { useRef } from "react";
+import { useCallback } from "react";
 
 export function useCellFocus() {
-  // تحسين التركيز على خلية معينة
-  const focusCell = (cellRefs: Map<string, HTMLTableCellElement>, rowIndex: number, cellName: string, setActiveSearchCell, setLastSelectedRowIndex) => {
-    if (rowIndex < 0) return;
+  // وظيفة لتركيز خلية محددة
+  const focusCell = useCallback((
+    cellRefs: Map<string, HTMLTableCellElement>,
+    rowIndex: number,
+    cellName: string,
+    setActiveSearchCell: (cell: { rowIndex: number; cellName: string } | null) => void,
+    setLastSelectedRowIndex: (index: number | null) => void
+  ) => {
+    // تحديث الخلية النشطة
+    setActiveSearchCell({ rowIndex, cellName });
+    setLastSelectedRowIndex(rowIndex);
     
+    // الحصول على معرف الخلية
     const cellId = `${rowIndex}-${cellName}`;
-    const cell = cellRefs.get(cellId);
     
+    // تركيز الخلية الجديدة
+    const cell = cellRefs.get(cellId);
     if (cell) {
-      try {
-        // تأخير التركيز قليلاً للسماح بإعادة الرسم
-        requestAnimationFrame(() => {
-          cell.focus();
-          cell.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-          setActiveSearchCell({ rowIndex, cellName });
-          setLastSelectedRowIndex(rowIndex);
-        });
-      } catch (err) {
-        console.error("فشل التركيز على الخلية:", err);
+      cell.focus();
+      
+      // محاولة تحديد محتوى الخلية إذا كانت تحتوي على عنصر نصي قابل للتحرير
+      const input = cell.querySelector('input');
+      if (input) {
+        input.focus();
+        input.select();
       }
-    } else {
-      console.warn(`لم يتم العثور على خلية ${cellId}`);
     }
-  };
+  }, []);
   
   return { focusCell };
 }

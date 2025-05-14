@@ -9,14 +9,18 @@ import { format } from "date-fns";
 import { InvoiceItem } from "@/types/invoices";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Save, Search, Plus } from "lucide-react";
+import { Save, Search, Plus, Users } from "lucide-react";
 import { ProductSearchSection } from "@/components/purchases/table/item-form";
 import { QuickProductSearch } from "@/components/purchases";
 import { Product } from "@/types/inventory";
+import { CustomerSelector } from "@/components/customers/CustomerSelector";
+import { Customer } from "@/types/customers";
 
 const SalesInvoicePage = () => {
   // State for showing the product search dialog
   const [showProductSearch, setShowProductSearch] = useState(false);
+  // State for showing the customer selector dialog
+  const [showCustomerSelector, setShowCustomerSelector] = useState(false);
 
   // Use the sales invoice hook to get all the necessary data and functions
   const {
@@ -121,6 +125,22 @@ const SalesInvoicePage = () => {
     setShowProductSearch(false);
     toast.success(`تم إضافة ${product.name} إلى الفاتورة`);
   };
+  
+  // Open customer selector dialog
+  const handleOpenCustomerSelector = () => {
+    setShowCustomerSelector(true);
+  };
+  
+  // Handle customer selection
+  const handleCustomerSelect = (customer: Customer) => {
+    updateInvoiceField("customerId", customer.id);
+    updateInvoiceField("customerName", customer.name);
+    updateInvoiceField("customerPhone", customer.phone);
+    updateInvoiceField("customerAccountNumber", customer.accountNumber || "");
+    
+    toast.success(`تم اختيار العميل: ${customer.name}`);
+    setShowCustomerSelector(false);
+  };
 
   // Settings for the invoice form with all required properties
   const invoiceSettings = {
@@ -140,6 +160,13 @@ const SalesInvoicePage = () => {
     <Layout className="h-screen overflow-hidden p-0">
       <div className="flex flex-col h-full">
         <Header title="فاتورة مبيعات جديدة" showBack={true}>
+          <Button
+            onClick={handleOpenCustomerSelector}
+            className="ml-2 bg-purple-600 hover:bg-purple-700"
+          >
+            <Users className="ml-1 h-4 w-4" />
+            اختيار العميل
+          </Button>
           <Button
             onClick={handleOpenProductSearch}
             className="ml-2 bg-blue-600 hover:bg-blue-700"
@@ -190,6 +217,13 @@ const SalesInvoicePage = () => {
           onSelect={handleProductSelect}
         />
       )}
+      
+      {/* Customer Selector Dialog */}
+      <CustomerSelector
+        isOpen={showCustomerSelector}
+        onClose={() => setShowCustomerSelector(false)}
+        onSelect={handleCustomerSelect}
+      />
     </Layout>
   );
 };

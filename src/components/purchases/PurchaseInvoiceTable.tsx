@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { PurchaseItem } from "@/types/purchases";
 import { Table } from "@/components/ui/table";
@@ -113,7 +114,13 @@ export const PurchaseInvoiceTable: React.FC<PurchaseInvoiceTableProps> = ({
         
         {/* Items table */}
         <div className="border rounded overflow-auto rtl">
-          <Table className="min-w-full border-collapse table-bordered">
+          <Table 
+            className="min-w-full" 
+            gridLines={true} 
+            bordered={true} 
+            striped={true}
+            hoverable={true}
+          >
             <TableHeader 
               showItemCodes={showItemCodes} 
               showItemNotes={showItemNotes} 
