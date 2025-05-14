@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { InvoiceItem } from "@/types/invoices";
 import { formatCurrency } from "@/lib/utils";
 import { Plus, Trash2, X, Check } from "lucide-react";
 import { InvoiceSettingsType } from "./InvoiceSettings";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -154,58 +156,61 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
               maxWidth: `${tableWidth}%`
             }}
           >
-            <table className="w-full text-sm text-right border-collapse">
-              <thead className="bg-gray-100">
-                <tr className="border-b">
-                  <th className="p-3 w-10">#</th>
-                  {showItemCodes && <th className="p-3 w-24">الرمز</th>}
-                  <th className="p-3">الصنف</th>
-                  <th className="p-3 w-20">الكمية</th>
-                  <th className="p-3 w-24">السعر</th>
-                  <th className="p-3 w-24">الإجمالي</th>
-                  {showItemNotes && <th className="p-3">ملاحظات</th>}
-                  <th className="p-3 w-20 print-hide">
+            <Table bordered gridLines hoverable className="w-full text-sm text-right">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="p-3 w-10">#</TableHead>
+                  {showItemCodes && <TableHead className="p-3 w-24">الرمز</TableHead>}
+                  <TableHead className="p-3">الصنف</TableHead>
+                  <TableHead className="p-3 w-20">الكمية</TableHead>
+                  <TableHead className="p-3 w-24">السعر</TableHead>
+                  <TableHead className="p-3 w-24">الإجمالي</TableHead>
+                  {showItemNotes && <TableHead className="p-3">ملاحظات</TableHead>}
+                  <TableHead className="p-3 w-20 print-hide">
                     <span className="sr-only">الإجراءات</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {items.map((item, index) => (
                   editingItemIndex === index ? (
-                    <tr key={`edit-${item.id}`} className="bg-blue-50 border-b">
-                      <td className="p-3">{index + 1}</td>
+                    <TableRow key={`edit-${item.id}`} className="bg-blue-50">
+                      <TableCell className="p-3">{index + 1}</TableCell>
                       
                       {showItemCodes && (
-                        <td className="p-3">
+                        <TableCell className="p-3">
                           <Input
                             type="text"
                             value={editItem.code ?? item.code}
                             onChange={(e) => handleEditItemChange('code', e.target.value)}
                             className="h-8"
+                            data-cell-name="code"
                           />
-                        </td>
+                        </TableCell>
                       )}
                       
-                      <td className="p-3">
+                      <TableCell className="p-3">
                         <Input
                           type="text"
                           value={editItem.name ?? item.name}
                           onChange={(e) => handleEditItemChange('name', e.target.value)}
                           className="h-8"
+                          data-cell-name="name"
                         />
-                      </td>
+                      </TableCell>
                       
-                      <td className="p-3">
+                      <TableCell className="p-3">
                         <Input
                           type="number"
                           min="1"
                           value={editItem.quantity ?? item.quantity}
                           onChange={(e) => handleEditItemChange('quantity', parseFloat(e.target.value) || 1)}
                           className="h-8"
+                          data-cell-name="quantity"
                         />
-                      </td>
+                      </TableCell>
                       
-                      <td className="p-3">
+                      <TableCell className="p-3">
                         <Input
                           type="number"
                           min="0"
@@ -213,25 +218,27 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                           value={editItem.price ?? item.price}
                           onChange={(e) => handleEditItemChange('price', parseFloat(e.target.value) || 0)}
                           className="h-8"
+                          data-cell-name="price"
                         />
-                      </td>
+                      </TableCell>
                       
-                      <td className="p-3">
+                      <TableCell className="p-3">
                         {formatCurrency((editItem.total !== undefined ? editItem.total : item.total) || 0)}
-                      </td>
+                      </TableCell>
                       
                       {showItemNotes && (
-                        <td className="p-3">
+                        <TableCell className="p-3">
                           <Input
                             type="text"
                             value={editItem.notes ?? item.notes}
                             onChange={(e) => handleEditItemChange('notes', e.target.value)}
                             className="h-8"
+                            data-cell-name="notes"
                           />
-                        </td>
+                        </TableCell>
                       )}
                       
-                      <td className="p-3 print-hide">
+                      <TableCell className="p-3 print-hide">
                         <div className="flex gap-1">
                           <Button 
                             size="sm"
@@ -250,22 +257,22 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ) : (
-                    <tr 
+                    <TableRow 
                       key={item.id} 
-                      className="border-b hover:bg-gray-50 cursor-pointer"
+                      className="hover:bg-gray-50 cursor-pointer"
                       onClick={() => handleEditItem(index)}
                     >
-                      <td className="p-3">{index + 1}</td>
-                      {showItemCodes && <td className="p-3">{item.code}</td>}
-                      <td className="p-3">{item.name}</td>
-                      <td className="p-3">{item.quantity}</td>
-                      <td className="p-3">{formatCurrency(item.price)}</td>
-                      <td className="p-3">{formatCurrency(item.total)}</td>
-                      {showItemNotes && <td className="p-3">{item.notes}</td>}
-                      <td className="p-3 print-hide">
+                      <TableCell className="p-3">{index + 1}</TableCell>
+                      {showItemCodes && <TableCell className="p-3" data-cell-name="code">{item.code}</TableCell>}
+                      <TableCell className="p-3" data-cell-name="name">{item.name}</TableCell>
+                      <TableCell className="p-3" data-cell-name="quantity">{item.quantity}</TableCell>
+                      <TableCell className="p-3" data-cell-name="price">{formatCurrency(item.price)}</TableCell>
+                      <TableCell className="p-3">{formatCurrency(item.total)}</TableCell>
+                      {showItemNotes && <TableCell className="p-3" data-cell-name="notes">{item.notes}</TableCell>}
+                      <TableCell className="p-3 print-hide">
                         <Button 
                           size="sm"
                           variant="ghost"
@@ -277,37 +284,39 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   )
                 ))}
                 
                 {isAddingItem ? (
-                  <tr className="bg-green-50 border-b">
-                    <td className="p-3">{items.length + 1}</td>
+                  <TableRow className="bg-green-50">
+                    <TableCell className="p-3">{items.length + 1}</TableCell>
                     
                     {showItemCodes && (
-                      <td className="p-3">
+                      <TableCell className="p-3">
                         <Input
                           type="text"
                           value={newItem.code}
                           onChange={(e) => handleNewItemChange('code', e.target.value)}
                           className="h-8"
+                          data-cell-name="code"
                         />
-                      </td>
+                      </TableCell>
                     )}
                     
-                    <td className="p-3">
+                    <TableCell className="p-3">
                       <Input
                         type="text"
                         value={newItem.name}
                         onChange={(e) => handleNewItemChange('name', e.target.value)}
                         className="h-8"
                         required
+                        data-cell-name="name"
                       />
-                    </td>
+                    </TableCell>
                     
-                    <td className="p-3">
+                    <TableCell className="p-3">
                       <Input
                         type="number"
                         min="1"
@@ -315,10 +324,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                         onChange={(e) => handleNewItemChange('quantity', parseFloat(e.target.value) || 1)}
                         className="h-8"
                         required
+                        data-cell-name="quantity"
                       />
-                    </td>
+                    </TableCell>
                     
-                    <td className="p-3">
+                    <TableCell className="p-3">
                       <Input
                         type="number"
                         min="0"
@@ -327,25 +337,27 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                         onChange={(e) => handleNewItemChange('price', parseFloat(e.target.value) || 0)}
                         className="h-8"
                         required
+                        data-cell-name="price"
                       />
-                    </td>
+                    </TableCell>
                     
-                    <td className="p-3">
+                    <TableCell className="p-3">
                       {formatCurrency(newItem.total || 0)}
-                    </td>
+                    </TableCell>
                     
                     {showItemNotes && (
-                      <td className="p-3">
+                      <TableCell className="p-3">
                         <Input
                           type="text"
                           value={newItem.notes}
                           onChange={(e) => handleNewItemChange('notes', e.target.value)}
                           className="h-8"
+                          data-cell-name="notes"
                         />
-                      </td>
+                      </TableCell>
                     )}
                     
-                    <td className="p-3 print-hide">
+                    <TableCell className="p-3 print-hide">
                       <div className="flex gap-1">
                         <Button 
                           size="sm"
@@ -364,11 +376,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ) : (
-                  <tr className="border-b print-hide">
-                    <td colSpan={showItemCodes ? (showItemNotes ? 8 : 7) : (showItemNotes ? 7 : 6)} className="p-2">
+                  <TableRow className="print-hide">
+                    <TableCell colSpan={showItemCodes ? (showItemNotes ? 8 : 7) : (showItemNotes ? 7 : 6)} className="p-2">
                       {renderProductSearch ? (
                         renderProductSearch(onAddItem)
                       ) : (
@@ -382,11 +394,11 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                           إضافة صنف جديد
                         </Button>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
           
           <div 

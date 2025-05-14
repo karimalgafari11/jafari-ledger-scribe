@@ -1,9 +1,9 @@
 
-import React, { useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
-import { useSalesInvoice } from "@/hooks/sales";
+import { useSalesInvoice, useInvoiceTable } from "@/hooks/sales";
 import { v4 as uuid } from "uuid";
 import { format } from "date-fns";
 import { InvoiceItem } from "@/types/invoices";
@@ -15,12 +15,18 @@ import { QuickProductSearch } from "@/components/purchases";
 import { Product } from "@/types/inventory";
 import { CustomerSelector } from "@/components/customers/CustomerSelector";
 import { Customer } from "@/types/customers";
+import { TableKeyboardNavigation } from "@/components/invoices/invoice-form/table-components/TableKeyboardNavigation";
 
 const SalesInvoicePage = () => {
   // State for showing the product search dialog
   const [showProductSearch, setShowProductSearch] = useState(false);
   // State for showing the customer selector dialog
   const [showCustomerSelector, setShowCustomerSelector] = useState(false);
+  // State for tracking if the table has keyboard focus
+  const [tableHasFocus, setTableHasFocus] = useState(false);
+  
+  // Reference to the table container
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Use the sales invoice hook to get all the necessary data and functions
   const {
@@ -34,6 +40,31 @@ const SalesInvoicePage = () => {
     isLoading,
     saveInvoice,
   } = useSalesInvoice();
+
+  // Initialize the invoice table keyboard navigation functionality
+  const {
+    activeSearchCell,
+    handleCellClick,
+    handleKeyNavigation,
+    handleTableClick,
+    isEditingCell,
+    cellRefs,
+    lastSelectedRowIndex,
+    focusCell,
+  } = useInvoiceTable({
+    items: invoice.items,
+    onUpdateItem: (index, item) => {
+      const itemId = invoice.items[index]?.id;
+      if (itemId) {
+        updateInvoiceItem(itemId, item);
+        calculateTotals();
+      }
+    },
+    onRemoveItem: handleRemoveInvoiceItem,
+    isAddingItem: false,
+    editingItemIndex: null,
+    setEditingItemIndex: () => {},
+  });
 
   // Create a default invoice if one doesn't exist
   React.useEffect(() => {
@@ -64,6 +95,35 @@ const SalesInvoicePage = () => {
         updateInvoiceField(key, newInvoice[key]);
       });
     }
+  }, []);
+
+  // Add table focus event listeners
+  useEffect(() => {
+    const handleTableFocus = () => {
+      setTableHasFocus(true);
+    };
+
+    const handleTableBlur = (e) => {
+      if (!tableContainerRef.current?.contains(e.relatedTarget)) {
+        setTableHasFocus(false);
+      }
+    };
+
+    const tableElement = tableContainerRef.current;
+    if (tableElement) {
+      tableElement.addEventListener('focusin', handleTableFocus);
+      tableElement.addEventListener('focusout', handleTableBlur);
+      
+      // Add tabindex to make the table focusable
+      tableElement.setAttribute('tabindex', '0');
+    }
+
+    return () => {
+      if (tableElement) {
+        tableElement.removeEventListener('focusin', handleTableFocus);
+        tableElement.removeEventListener('focusout', handleTableBlur);
+      }
+    };
   }, []);
 
   // Adapter functions to convert index-based functions to id-based functions
@@ -183,7 +243,7 @@ const SalesInvoicePage = () => {
             حفظ الفاتورة
           </Button>
         </Header>
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto" ref={tableContainerRef} onClick={handleTableClick} onKeyDown={(e) => activeSearchCell && handleKeyNavigation(e, activeSearchCell.rowIndex, activeSearchCell.cellName)}>
           <InvoiceForm
             invoice={invoice}
             onFieldChange={updateInvoiceField}
@@ -206,6 +266,16 @@ const SalesInvoicePage = () => {
                 </Button>
               </div>
             )}
+          />
+          
+          {/* Table keyboard navigation component */}
+          <TableKeyboardNavigation
+            tableHasFocus={tableHasFocus}
+            isAddingItem={false}
+            editingItemIndex={null}
+            activeSearchCell={activeSearchCell}
+            handleCellClick={handleCellClick}
+            handleAddItemClick={handleOpenProductSearch}
           />
         </div>
       </div>
