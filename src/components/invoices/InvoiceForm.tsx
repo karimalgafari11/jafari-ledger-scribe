@@ -22,7 +22,6 @@ interface InvoiceFormProps {
   onApplyDiscount: (type: 'percentage' | 'fixed', value: number) => void;
   isLoading: boolean;
   settings?: InvoiceSettingsType;
-  renderProductSearch?: (onAddItem: (item: Partial<import("@/types/invoices").InvoiceItem>) => void) => React.ReactNode;
 }
 
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({
@@ -33,8 +32,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   onRemoveItem,
   onApplyDiscount,
   isLoading,
-  settings,
-  renderProductSearch
+  settings
 }) => {
   const {
     companyInfo,
@@ -93,9 +91,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         handleResizeStart={handleResizeStart}
         onRemoveItem={onRemoveItem}
         onAddItem={onAddItem}
-        onUpdateItem={onUpdateItem}
+        onUpdateItem={onUpdateItem}  // Add the missing prop here
         settings={settings}
-        renderProductSearch={renderProductSearch}
       />
 
       {/* قسم ملخص الفاتورة */}

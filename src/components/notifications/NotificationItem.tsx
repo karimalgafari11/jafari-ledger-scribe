@@ -17,15 +17,15 @@ interface NotificationItemProps {
 const NotificationItem = ({ notification, showActions = false }: NotificationItemProps) => {
   const { markAsRead, deleteNotification } = useNotifications();
   
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!notification.read) {
-      markAsRead(notification.id);
+      await markAsRead(notification.id);
     }
     
     // Handle click based on notification type/entity
     if (notification.relatedEntityId && notification.relatedEntityType) {
       console.log(`Navigate to: ${notification.relatedEntityType}/${notification.relatedEntityId}`);
-      // Navigate to related entity - would use router here
+      // Navigation logic would go here based on entity type and ID
     }
   };
   

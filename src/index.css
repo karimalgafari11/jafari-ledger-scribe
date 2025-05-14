@@ -1,246 +1,109 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 187 76% 26%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    /* Custom sidebar variables will be applied dynamically from theme */
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 187 76% 26%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    
-    /* Custom sidebar variables will be applied dynamically from theme */
-  }
+/* مؤشرات تحميل الصفحة والتصميم العام */
+body {
+  @apply bg-background text-foreground overflow-x-hidden;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Tajawal', sans-serif;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    /* تكبير حجم الخط الأساسي */
-    font-size: 1.1rem;
-    line-height: 1.7;
-  }
-  
-  html {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  
-  #root {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  
-  html[dir="rtl"] {
-    text-align: right;
-  }
-  
-  html[dir="ltr"] {
-    text-align: left;
-  }
-
-  /* تكبير العناوين */
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-  }
-
-  h2 {
-    font-size: 2.1rem;
-    font-weight: 600;
-  }
-
-  h3 {
-    font-size: 1.75rem;
-    font-weight: 600;
-  }
-
-  h4 {
-    font-size: 1.4rem;
-    font-weight: 600;
-  }
-
-  h5 {
-    font-size: 1.25rem;
-    font-weight: 500;
-  }
-
-  /* تكبير نص الزر */
-  button, .btn {
-    font-size: 1.1rem;
-    font-weight: 500;
-  }
-
-  /* تكبير نص الإدخال */
-  input, select, textarea {
-    font-size: 1.1rem;
-  }
-
-  /* تكبير النصوص في القائمة الجانبية */
-  [data-sidebar="sidebar"] {
-    font-size: 1.1rem;
-  }
+.app-loaded {
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Common Language-specific styles */
-html[dir="rtl"] .ltr-element {
-  direction: ltr;
-  text-align: left;
+.app-container {
+  transition: opacity 0.5s ease-in-out;
 }
 
-html[dir="ltr"] .rtl-element {
-  direction: rtl;
-  text-align: right;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Make sure RTL images get flipped if needed */
-html[dir="rtl"] .flip-in-rtl {
-  transform: scaleX(-1);
+/* تحسينات للطبقات على المستوى الكلي */
+.z-page-content {
+  @apply z-10;
 }
 
-/* اضافة طبقات مخصصة للتطبيق */
-@layer components {
-  .app-container {
-    @apply flex h-screen w-full overflow-hidden bg-gradient-to-b from-cyan-50 to-blue-50;
-  }
-  
-  .app-content {
-    @apply flex-1 overflow-auto w-full min-h-screen;
-  }
+.z-watermark {
+  @apply z-0;
+}
 
-  .page-container {
-    @apply w-full h-full flex flex-col overflow-hidden;
-  }
-  
-  .page-content {
-    @apply flex-1 p-5 overflow-auto;
-  }
-  
-  .card-container {
-    @apply bg-white rounded-lg shadow-md border border-gray-100 p-5 h-full;
-  }
-  
-  .page-header {
-    @apply mb-5 flex items-center justify-between;
-  }
-  
-  .page-title {
-    @apply text-2xl font-semibold;
-  }
-  
-  .page-actions {
-    @apply flex items-center space-x-reverse space-x-2;
-  }
+/* تحسينات للعناصر الثابتة */
+.fixed-content {
+  will-change: transform;
+}
 
-  /* تعديل النوافذ المنبثقة لتكون غير شفافة */
-  .dialog-content, 
-  [role="dialog"],
-  .popover-content {
-    @apply bg-white shadow-lg border border-gray-200;
-    backdrop-filter: none !important;
-    background-color: white !important;
-    background-opacity: 100% !important;
-  }
+/* الشفافية الانتقالية */
+.transition-fade {
+  @apply transition-opacity duration-300;
+}
 
-  .dark .dialog-content,
-  .dark [role="dialog"],
-  .dark .popover-content {
-    @apply bg-gray-900 border-gray-700;
-    background-color: #1a1f2c !important;
-  }
-  
-  /* تحسين مظهر العناصر */
-  button, .btn {
-    @apply shadow-sm transition-all duration-200;
-  }
+/* إصلاح مشكلات الفلاش البصري */
+.no-flash {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
 
-  input, select, textarea {
-    @apply shadow-sm;
-  }
+/* تحسينات الأداء */
+.content-container {
+  transform: translateZ(0);
+  will-change: transform;
+}
 
-  /* تحسين القوائم المنسدلة */
-  select {
-    @apply appearance-none bg-no-repeat;
-    background-position: left 0.75rem center;
-    background-size: 0.75rem;
-  }
-  
-  /* تحسين مظهر البطاقات */
-  .card-container:hover {
-    @apply shadow-md transition-shadow duration-200;
-  }
+/* تحسينات ظهور العناصر */
+@keyframes appearIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.appear-in {
+  animation: appearIn 0.3s ease-out forwards;
+}
+
+/* تحسين الاستقرار المرئي */
+.stable-element {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* أنميشن للتبديلات الناعمة */
+.slide-in-right {
+  animation: slideInRight 0.3s forwards;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.slide-out-right {
+  animation: slideOutRight 0.3s forwards;
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* Fix for transparent dialogs and dropdowns */
+.radix-dropdown-content,
+.radix-dialog-content,
+.radix-popover-content,
+.radix-select-content {
+  background-color: #ffffff !important; 
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Dark mode fixes */
+.dark .radix-dropdown-content,
+.dark .radix-dialog-content,
+.dark .radix-popover-content,
+.dark .radix-select-content {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
 }

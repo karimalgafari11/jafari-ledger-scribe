@@ -1,414 +1,231 @@
 
-import React, { useRef, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { TableActionButtons } from "./table-components/TableActionButtons";
+import { ProductSearchInput } from "./table-components/ProductSearchInput";
 import { InvoiceItem } from "@/types/invoices";
-import { formatCurrency } from "@/lib/utils";
-import { Plus, Trash2, X, Check } from "lucide-react";
-import { InvoiceSettingsType } from "./InvoiceSettings";
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
+import { useInvoiceItemsTable } from "./hooks/useInvoiceItemsTable";
+import { InvoiceItemForm } from "./InvoiceItemForm";
+import { Trash2, Edit } from "lucide-react";
+import { QuickProductSearch } from "./QuickProductSearch";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
-  isAddingItem: boolean;
-  editingItemIndex: number | null;
-  tableWidth: number;
-  tableRef: React.RefObject<HTMLDivElement>;
-  setIsAddingItem: (isAdding: boolean) => void;
-  handleEditItem: (index: number) => void;
-  handleResizeStart: (e: React.MouseEvent<HTMLDivElement>) => void;
+  isAddingItem?: boolean;
+  editingItemIndex?: number | null;
+  tableWidth?: number;
+  tableRef?: React.RefObject<HTMLDivElement>;
+  setIsAddingItem?: (isAdding: boolean) => void;
+  handleEditItem?: (index: number) => void;
+  handleResizeStart?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onRemoveItem: (index: number) => void;
   onAddItem: (item: Partial<InvoiceItem>) => void;
   onUpdateItem: (index: number, item: Partial<InvoiceItem>) => void;
-  settings?: InvoiceSettingsType;
-  renderProductSearch?: (onAddItem: (item: Partial<InvoiceItem>) => void) => React.ReactNode;
+  settings?: {
+    showItemCodes?: boolean;
+    showItemNotes?: boolean;
+    fontSize?: 'small' | 'medium' | 'large';
+    tableColumns?: string[];
+    tableWidth?: number;
+  }
 }
 
 export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   items,
   isAddingItem,
   editingItemIndex,
-  tableWidth,
+  tableWidth = 100,
   tableRef,
-  setIsAddingItem,
-  handleEditItem,
-  handleResizeStart,
+  setIsAddingItem = () => {},
+  handleEditItem = () => {},
+  handleResizeStart = () => {},
   onRemoveItem,
   onAddItem,
   onUpdateItem,
-  settings,
-  renderProductSearch
+  settings = {}
 }) => {
-  const [newItem, setNewItem] = useState<Partial<InvoiceItem>>({
-    id: '',
-    code: '',
-    name: '',
-    description: '',
-    quantity: 1,
-    price: 0,
-    discount: 0,
-    discountType: 'fixed',
-    tax: 0,
-    total: 0,
-    notes: ''
-  });
+  const {
+    searchTerm,
+    isSearching,
+    searchResults,
+    quickSearchActive,
+    showItemForm,
+    showItemDialog,
+    currentEditItem,
+    handleSearchChange,
+    toggleSearch,
+    handleQuickSelect,
+    handleRowClick,
+    handleAddNewItem,
+    handleFormCancel,
+    handleFormSubmit,
+    setQuickSearchActive,
+    setShowItemDialog,
+  } = useInvoiceItemsTable(items, onAddItem, onRemoveItem);
 
-  const [editItem, setEditItem] = useState<Partial<InvoiceItem>>({});
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleAddNewItem = () => {
-    if (newItem.name && newItem.quantity && newItem.price) {
-      const total = calculateItemTotal(newItem.price || 0, newItem.quantity || 0, newItem.discount || 0, newItem.discountType || 'fixed');
-      
-      onAddItem({
-        ...newItem,
-        id: `item-${Date.now()}`,
-        total: total
-      });
-      
-      setNewItem({
-        id: '',
-        code: '',
-        name: '',
-        description: '',
-        quantity: 1,
-        price: 0,
-        discount: 0,
-        discountType: 'fixed',
-        tax: 0,
-        total: 0,
-        notes: ''
-      });
-      
-      setIsAddingItem(false);
-    }
-  };
-
-  const handleSaveEditItem = (index: number) => {
-    if (editItem.name && editItem.quantity && editItem.price) {
-      const total = calculateItemTotal(editItem.price || 0, editItem.quantity || 0, editItem.discount || 0, editItem.discountType || 'fixed');
-      
-      onUpdateItem(index, {
-        ...editItem,
-        total: total
-      });
-      
-      setEditItem({});
-    }
-  };
-
-  const handleNewItemChange = (field: string, value: any) => {
-    const updates = { ...newItem, [field]: value };
-    
-    if ((field === 'price' || field === 'quantity' || field === 'discount') && updates.price && updates.quantity) {
-      updates.total = calculateItemTotal(
-        updates.price,
-        updates.quantity,
-        updates.discount || 0,
-        updates.discountType || 'fixed'
-      );
-    }
-    
-    setNewItem(updates);
-  };
-
-  const handleEditItemChange = (field: string, value: any) => {
-    const updates = { ...editItem, [field]: value };
-    
-    if ((field === 'price' || field === 'quantity' || field === 'discount') && updates.price && updates.quantity) {
-      updates.total = calculateItemTotal(
-        updates.price,
-        updates.quantity,
-        updates.discount || 0,
-        updates.discountType || 'fixed'
-      );
-    }
-    
-    setEditItem(updates);
-  };
-
-  const calculateItemTotal = (price: number, quantity: number, discount: number = 0, discountType: 'percentage' | 'fixed' = 'fixed') => {
-    const subtotal = price * quantity;
-    let discountAmount;
-    
-    if (discountType === 'percentage') {
-      discountAmount = subtotal * (discount / 100);
-    } else {
-      discountAmount = discount;
-    }
-    
-    return subtotal - discountAmount;
-  };
+  const fontSize = settings.fontSize || 'medium';
+  const fontSizeClass = fontSize === 'small' ? 'text-xs' : fontSize === 'large' ? 'text-base' : 'text-sm';
   
-  // تحديد أعمدة الجدول المعروضة بناءً على الإعدادات
-  const showItemCodes = settings?.showItemCodes !== false;
-  const showItemNotes = settings?.showItemNotes !== false;
+  // إظهار قائمة الأصناف
+  const handleUpdateItemForm = (index: number, item: Partial<InvoiceItem>) => {
+    onUpdateItem(index, item);
+  };
 
   return (
-    <Card className="print-section overflow-hidden">
-      <CardContent className="p-0">
-        <div className="relative overflow-x-auto">
-          <div 
-            ref={tableRef} 
-            className="w-full overflow-x-auto"
-            style={{ 
-              maxWidth: `${tableWidth}%`
-            }}
-          >
-            <Table bordered gridLines hoverable className="w-full text-sm text-right">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="p-3 w-10">#</TableHead>
-                  {showItemCodes && <TableHead className="p-3 w-24">الرمز</TableHead>}
-                  <TableHead className="p-3">الصنف</TableHead>
-                  <TableHead className="p-3 w-20">الكمية</TableHead>
-                  <TableHead className="p-3 w-24">السعر</TableHead>
-                  <TableHead className="p-3 w-24">الإجمالي</TableHead>
-                  {showItemNotes && <TableHead className="p-3">ملاحظات</TableHead>}
-                  <TableHead className="p-3 w-20 print-hide">
-                    <span className="sr-only">الإجراءات</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((item, index) => (
-                  editingItemIndex === index ? (
-                    <TableRow key={`edit-${item.id}`} className="bg-blue-50">
-                      <TableCell className="p-3">{index + 1}</TableCell>
-                      
-                      {showItemCodes && (
-                        <TableCell className="p-3">
-                          <Input
-                            type="text"
-                            value={editItem.code ?? item.code}
-                            onChange={(e) => handleEditItemChange('code', e.target.value)}
-                            className="h-8"
-                            data-cell-name="code"
-                          />
-                        </TableCell>
-                      )}
-                      
-                      <TableCell className="p-3">
-                        <Input
-                          type="text"
-                          value={editItem.name ?? item.name}
-                          onChange={(e) => handleEditItemChange('name', e.target.value)}
-                          className="h-8"
-                          data-cell-name="name"
-                        />
-                      </TableCell>
-                      
-                      <TableCell className="p-3">
-                        <Input
-                          type="number"
-                          min="1"
-                          value={editItem.quantity ?? item.quantity}
-                          onChange={(e) => handleEditItemChange('quantity', parseFloat(e.target.value) || 1)}
-                          className="h-8"
-                          data-cell-name="quantity"
-                        />
-                      </TableCell>
-                      
-                      <TableCell className="p-3">
-                        <Input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={editItem.price ?? item.price}
-                          onChange={(e) => handleEditItemChange('price', parseFloat(e.target.value) || 0)}
-                          className="h-8"
-                          data-cell-name="price"
-                        />
-                      </TableCell>
-                      
-                      <TableCell className="p-3">
-                        {formatCurrency((editItem.total !== undefined ? editItem.total : item.total) || 0)}
-                      </TableCell>
-                      
-                      {showItemNotes && (
-                        <TableCell className="p-3">
-                          <Input
-                            type="text"
-                            value={editItem.notes ?? item.notes}
-                            onChange={(e) => handleEditItemChange('notes', e.target.value)}
-                            className="h-8"
-                            data-cell-name="notes"
-                          />
-                        </TableCell>
-                      )}
-                      
-                      <TableCell className="p-3 print-hide">
-                        <div className="flex gap-1">
-                          <Button 
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleSaveEditItem(index)}
-                            className="h-7 w-7 p-0"
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setEditItem({})}
-                            className="h-7 w-7 p-0"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    <TableRow 
-                      key={item.id} 
-                      className="hover:bg-gray-50 cursor-pointer"
-                      onClick={() => handleEditItem(index)}
+    <div className="relative mt-4 overflow-auto border rounded-md">
+      <div className="sticky top-0 z-10 bg-white p-2 border-b flex justify-between items-center">
+        <h3 className="text-lg font-semibold">الأصناف</h3>
+        <TableActionButtons 
+          onAddNewItem={() => setQuickSearchActive(true)}
+          onToggleSearch={toggleSearch}
+        />
+      </div>
+      
+      {isSearching && (
+        <ProductSearchInput
+          searchTerm={searchTerm}
+          searchResults={searchResults}
+          onSearchChange={handleSearchChange}
+          onSelect={handleQuickSelect}
+          onClose={toggleSearch}
+        />
+      )}
+      
+      <div
+        ref={tableRef}
+        className="overflow-x-auto"
+        style={{ width: `${tableWidth}%` }}
+      >
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12 text-right">#</TableHead>
+              {settings.showItemCodes !== false && (
+                <TableHead className="w-28 text-right">الرمز</TableHead>
+              )}
+              <TableHead className="text-right">اسم الصنف</TableHead>
+              <TableHead className="w-20 text-right">الكمية</TableHead>
+              <TableHead className="w-28 text-right">السعر</TableHead>
+              <TableHead className="w-28 text-right">الإجمالي</TableHead>
+              {settings.showItemNotes !== false && (
+                <TableHead className="w-40 text-right">ملاحظات</TableHead>
+              )}
+              <TableHead className="w-20 text-right">إجراءات</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={settings.showItemNotes !== false ? 7 : 6}
+                  className="text-center h-32 text-muted-foreground"
+                >
+                  لم يتم إضافة أي أصناف بعد
+                  <div className="mt-2">
+                    <Button
+                      onClick={() => setQuickSearchActive(true)}
+                      variant="outline"
+                      size="sm"
                     >
-                      <TableCell className="p-3">{index + 1}</TableCell>
-                      {showItemCodes && <TableCell className="p-3" data-cell-name="code">{item.code}</TableCell>}
-                      <TableCell className="p-3" data-cell-name="name">{item.name}</TableCell>
-                      <TableCell className="p-3" data-cell-name="quantity">{item.quantity}</TableCell>
-                      <TableCell className="p-3" data-cell-name="price">{formatCurrency(item.price)}</TableCell>
-                      <TableCell className="p-3">{formatCurrency(item.total)}</TableCell>
-                      {showItemNotes && <TableCell className="p-3" data-cell-name="notes">{item.notes}</TableCell>}
-                      <TableCell className="p-3 print-hide">
-                        <Button 
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRemoveItem(index);
-                          }}
-                          className="h-7 w-7 p-0 text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                ))}
-                
-                {isAddingItem ? (
-                  <TableRow className="bg-green-50">
-                    <TableCell className="p-3">{items.length + 1}</TableCell>
-                    
-                    {showItemCodes && (
-                      <TableCell className="p-3">
-                        <Input
-                          type="text"
-                          value={newItem.code}
-                          onChange={(e) => handleNewItemChange('code', e.target.value)}
-                          className="h-8"
-                          data-cell-name="code"
-                        />
-                      </TableCell>
-                    )}
-                    
-                    <TableCell className="p-3">
-                      <Input
-                        type="text"
-                        value={newItem.name}
-                        onChange={(e) => handleNewItemChange('name', e.target.value)}
-                        className="h-8"
-                        required
-                        data-cell-name="name"
-                      />
+                      اضغط هنا لإضافة صنف
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              items.map((item, index) => (
+                <TableRow key={item.id} className={fontSizeClass}>
+                  <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                  {settings.showItemCodes !== false && (
+                    <TableCell>{item.code}</TableCell>
+                  )}
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.price.toFixed(2)}</TableCell>
+                  <TableCell className="font-bold">{item.total.toFixed(2)}</TableCell>
+                  {settings.showItemNotes !== false && (
+                    <TableCell className="text-muted-foreground text-xs">
+                      {item.notes}
                     </TableCell>
-                    
-                    <TableCell className="p-3">
-                      <Input
-                        type="number"
-                        min="1"
-                        value={newItem.quantity}
-                        onChange={(e) => handleNewItemChange('quantity', parseFloat(e.target.value) || 1)}
-                        className="h-8"
-                        required
-                        data-cell-name="quantity"
-                      />
-                    </TableCell>
-                    
-                    <TableCell className="p-3">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={newItem.price}
-                        onChange={(e) => handleNewItemChange('price', parseFloat(e.target.value) || 0)}
-                        className="h-8"
-                        required
-                        data-cell-name="price"
-                      />
-                    </TableCell>
-                    
-                    <TableCell className="p-3">
-                      {formatCurrency(newItem.total || 0)}
-                    </TableCell>
-                    
-                    {showItemNotes && (
-                      <TableCell className="p-3">
-                        <Input
-                          type="text"
-                          value={newItem.notes}
-                          onChange={(e) => handleNewItemChange('notes', e.target.value)}
-                          className="h-8"
-                          data-cell-name="notes"
-                        />
-                      </TableCell>
-                    )}
-                    
-                    <TableCell className="p-3 print-hide">
-                      <div className="flex gap-1">
-                        <Button 
-                          size="sm"
-                          variant="ghost"
-                          onClick={handleAddNewItem}
-                          className="h-7 w-7 p-0"
-                        >
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setIsAddingItem(false)}
-                          className="h-7 w-7 p-0"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <TableRow className="print-hide">
-                    <TableCell colSpan={showItemCodes ? (showItemNotes ? 8 : 7) : (showItemNotes ? 7 : 6)} className="p-2">
-                      {renderProductSearch ? (
-                        renderProductSearch(onAddItem)
-                      ) : (
-                        <Button 
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setIsAddingItem(true)}
-                          className="w-full border border-dashed border-gray-300 text-gray-500"
-                        >
-                          <Plus className="h-4 w-4 ml-1" />
-                          إضافة صنف جديد
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          
-          <div 
-            className="absolute top-0 right-full h-full w-4 cursor-col-resize print-hide"
-            onMouseDown={handleResizeStart}
-          >
-            <div className="absolute top-0 left-2 bottom-0 w-1 bg-gray-300 hover:bg-blue-500"></div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+                  )}
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => {
+                          // تعديل الصنف
+                          setShowItemDialog(true);
+                          handleEditItem(index);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => onRemoveItem(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      
+      {/* إظهار نافذة البحث عن المنتجات عند الضغط على إضافة صنف */}
+      {quickSearchActive && (
+        <QuickProductSearch 
+          onClose={() => setQuickSearchActive(false)} 
+          onSelect={handleQuickSelect} 
+          initialQuery=""
+        />
+      )}
+      
+      {/* نافذة إضافة/تعديل الصنف */}
+      <Dialog open={showItemDialog} onOpenChange={setShowItemDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <InvoiceItemForm 
+            item={currentEditItem || undefined}
+            onCancel={() => setShowItemDialog(false)}
+            onSave={(item) => {
+              if (currentEditItem) {
+                const index = items.findIndex(i => i.id === currentEditItem.id);
+                if (index !== -1) {
+                  handleUpdateItemForm(index, item);
+                }
+              } else {
+                handleFormSubmit(item);
+              }
+              setShowItemDialog(false);
+            }}
+            settings={{
+              showItemCodes: settings.showItemCodes,
+              showItemNotes: settings.showItemNotes
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <div
+        className="absolute top-0 bottom-0 right-0 w-1 cursor-ew-resize hover:bg-blue-400 opacity-0 hover:opacity-100"
+        onMouseDown={handleResizeStart}
+      />
+    </div>
   );
 };

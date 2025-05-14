@@ -1,50 +1,28 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Save } from "lucide-react";
 
 interface FormActionsProps {
-  onSubmit: () => void;
-  onCancel: () => void;
-  isSubmitting?: boolean;
-  editingItemIndex?: number | null;
-  showSaveButton?: boolean;
+  editingItemIndex: number | null;
+  showSaveButton: boolean;
+  onSave: () => void;
   actionLabel?: string;
-  onSave?: () => void;
 }
 
-export const FormActions: React.FC<FormActionsProps> = ({ 
-  onSubmit, 
-  onCancel,
-  isSubmitting = false,
+export const FormActions: React.FC<FormActionsProps> = ({
   editingItemIndex,
   showSaveButton,
-  actionLabel,
-  onSave
+  onSave,
+  actionLabel = "إضافة"
 }) => {
-  // If onSave is provided, use it instead of onSubmit
-  const handleSaveClick = onSave || onSubmit;
-  
-  // Use actionLabel if provided, otherwise default based on whether we're editing
-  const buttonLabel = actionLabel || (editingItemIndex !== null ? "تحديث" : "حفظ");
+  if (!showSaveButton) return null;
   
   return (
-    <div className="flex justify-end gap-2 mt-4">
-      <Button
-        variant="outline"
-        onClick={onCancel}
-        type="button"
-      >
-        <X className="ml-1 h-4 w-4" />
-        إلغاء
-      </Button>
-      <Button
-        onClick={handleSaveClick}
-        disabled={isSubmitting}
-        className="bg-green-600 hover:bg-green-700"
-      >
-        <Check className="ml-1 h-4 w-4" />
-        {isSubmitting ? "جاري الحفظ..." : buttonLabel}
+    <div className="flex justify-end mt-4">
+      <Button onClick={onSave} className="gap-2 rtl:flex-row-reverse">
+        <Save className="h-4 w-4" />
+        {editingItemIndex !== null ? "تحديث الصنف" : actionLabel}
       </Button>
     </div>
   );

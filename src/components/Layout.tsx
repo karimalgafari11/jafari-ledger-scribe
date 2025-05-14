@@ -18,9 +18,13 @@ export function Layout({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`page-container h-screen w-full flex flex-col ${className}`}>
+    <div 
+      className={`page-container min-h-screen w-full flex flex-col rtl ${className} transition-opacity duration-300`}
+      dir="rtl"
+      lang="ar"
+    >
       {showWatermark && !isMobile && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0">
           <img 
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
             alt="الجعفري للمحاسبة" 
@@ -29,9 +33,9 @@ export function Layout({
         </div>
       )}
       
-      {/* العلامة المائية للجوال (أصغر حجماً) */}
+      {/* Mobile watermark (smaller size) */}
       {showWatermark && isMobile && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0">
           <img 
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
             alt="الجعفري للمحاسبة" 
@@ -41,8 +45,8 @@ export function Layout({
       )}
       
       <TooltipProvider>
-        <div className="w-full h-full flex flex-col">
-          <div className="flex-1 flex flex-col w-full h-full overflow-auto">
+        <div className="w-full h-full flex flex-col flex-1">
+          <div className="flex-1 flex flex-col w-full h-full overflow-auto relative z-10 animate-in fade-in-50 duration-300">
             {children || <Outlet />}
           </div>
         </div>

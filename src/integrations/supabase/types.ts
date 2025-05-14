@@ -779,45 +779,6 @@ export type Database = {
         }
         Relationships: []
       }
-      software_versions: {
-        Row: {
-          created_at: string
-          description: string | null
-          features: Json | null
-          id: string
-          is_stable: boolean
-          min_required_version: string | null
-          release_date: string
-          release_notes: string | null
-          requires_update: boolean | null
-          version: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          features?: Json | null
-          id?: string
-          is_stable?: boolean
-          min_required_version?: string | null
-          release_date?: string
-          release_notes?: string | null
-          requires_update?: boolean | null
-          version: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          features?: Json | null
-          id?: string
-          is_stable?: boolean
-          min_required_version?: string | null
-          release_date?: string
-          release_notes?: string | null
-          requires_update?: boolean | null
-          version?: string
-        }
-        Relationships: []
-      }
       system_settings: {
         Row: {
           address: string | null
@@ -865,41 +826,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      user_updates: {
-        Row: {
-          id: string
-          installed_at: string
-          notes: string | null
-          status: string
-          user_id: string
-          version_id: string
-        }
-        Insert: {
-          id?: string
-          installed_at?: string
-          notes?: string | null
-          status?: string
-          user_id: string
-          version_id: string
-        }
-        Update: {
-          id?: string
-          installed_at?: string
-          notes?: string | null
-          status?: string
-          user_id?: string
-          version_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_updates_version_id_fkey"
-            columns: ["version_id"]
-            isOneToOne: false
-            referencedRelation: "software_versions"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {

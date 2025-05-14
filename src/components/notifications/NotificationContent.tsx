@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Link } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 interface NotificationContentProps {
   title: string;
@@ -11,27 +11,47 @@ interface NotificationContentProps {
   relatedEntityType?: string;
 }
 
-const NotificationContent = ({ 
-  title, 
-  message, 
+const NotificationContent = ({
+  title,
+  message,
   read,
   relatedEntityId,
-  relatedEntityType 
+  relatedEntityType
 }: NotificationContentProps) => {
+  const getEntityUrl = () => {
+    if (!relatedEntityId || !relatedEntityType) return null;
+    
+    switch (relatedEntityType) {
+      case 'invoice':
+        return `/invoices/${relatedEntityId}`;
+      case 'product':
+        return `/inventory/products/${relatedEntityId}`;
+      case 'expense':
+        return `/expenses/${relatedEntityId}`;
+      default:
+        return null;
+    }
+  };
+  
+  const entityUrl = getEntityUrl();
+  
   return (
-    <div className="flex-1 space-y-1">
-      <p className={cn("text-sm font-medium", !read && "font-semibold")}>
-        {title}
-      </p>
-      
-      <p className="text-xs text-muted-foreground">
+    <div>
+      <p className={cn(
+        "text-sm",
+        read ? "text-muted-foreground" : "text-foreground"
+      )}>
         {message}
       </p>
       
-      {relatedEntityId && relatedEntityType && (
-        <div className="flex items-center text-xs text-blue-600 pt-1">
-          <Link className="h-3 w-3 mr-1" />
-          <span className="hover:underline">عرض التفاصيل</span>
+      {entityUrl && (
+        <div className="mt-1">
+          <Link 
+            to={entityUrl}
+            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            عرض التفاصيل
+          </Link>
         </div>
       )}
     </div>

@@ -16,6 +16,10 @@ export function Sidebar({ activePage, onChangePage }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -32,7 +36,7 @@ export function Sidebar({ activePage, onChangePage }: SidebarProps) {
     >
       <SidebarHeader 
         collapsed={collapsed} 
-        toggleCollapsed={() => setCollapsed(!collapsed)} 
+        toggleCollapsed={toggleCollapsed} 
       />
 
       <div className="flex flex-col gap-1 p-2 overflow-y-auto flex-grow">

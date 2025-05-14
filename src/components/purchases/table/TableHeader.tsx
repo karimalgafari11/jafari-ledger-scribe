@@ -19,8 +19,8 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
         <TableHead>الصنف</TableHead>
         <TableHead className="w-16 text-center">الوحدة</TableHead>
         <TableHead className="w-20 text-center">الكمية</TableHead>
-        <TableHead className="w-24 text-left">السعر</TableHead>
-        <TableHead className="w-24 text-left">الإجمالي</TableHead>
+        <TableHead className="w-24 text-right">السعر</TableHead>
+        <TableHead className="w-24 text-right">الإجمالي</TableHead>
         {showItemNotes && <TableHead className="w-32 text-center">ملاحظات</TableHead>}
         <TableHead className="w-20 text-center">الإجراءات</TableHead>
       </TableRow>

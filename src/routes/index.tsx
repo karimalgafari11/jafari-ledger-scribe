@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,6 +11,7 @@ import RegisterPage from '@/pages/auth/RegisterPage';
 import ActivityLogPage from '@/pages/settings/ActivityLogPage'; 
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import UpdatePasswordPage from '@/pages/auth/UpdatePasswordPage';
+import NotFound from '@/pages/NotFound'; // Import the NotFound page for 404 handling
 
 // Import settings pages
 import SystemSettingsPage from '@/pages/settings/SystemSettingsPage';
@@ -60,84 +62,94 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return user ? <>{children}</> : <Navigate to="/auth/login" />;
 };
 
+// Combine all route children
+const routeChildren = [
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "settings/activity-log",
+    element: <ActivityLogPage />,
+  },
+  // إضافة مسارات الإعدادات
+  {
+    path: "settings/system",
+    element: <SystemSettingsPage />,
+  },
+  {
+    path: "settings/roles",
+    element: <UserRolesPage />,
+  },
+  {
+    path: "settings/users",
+    element: <UsersPage />,
+  },
+  {
+    path: "settings/backup",
+    element: <BackupPage />,
+  },
+  {
+    path: "settings/backup-test",
+    element: <BackupTestPage />,
+  },
+  {
+    path: "settings/branches",
+    element: <BranchesPage />,
+  },
+  {
+    path: "settings/notifications",
+    element: <NotificationsPage />,
+  },
+  {
+    path: "settings/notification-settings",
+    element: <NotificationSettingsPage />,
+  },
+  {
+    path: "settings/send-notification",
+    element: <SendNotificationPage />,
+  },
+  {
+    path: "settings/ai-engine",
+    element: <AiEngineSettingsPage />,
+  },
+  {
+    path: "settings/page-management",
+    element: <PageManagementPage />,
+  },
+  {
+    path: "settings/theme",
+    element: <ThemeCustomizationPage />,
+  },
+  // Spread all other route modules
+  ...accountingRoutes,
+  ...inventoryRoutes,
+  ...inventoryControlRoutes,
+  ...purchasesRoutes,
+  ...invoicesRoutes,
+  ...customersRoutes,
+  ...vendorRoutes,
+  ...receivablesPayablesRoutes,
+  ...expensesRoutes,
+  ...reportsRoutes,
+  ...definitionsRoutes,
+  ...aiRoutes,
+  ...hrRoutes,
+  ...integrationsRoutes,
+  ...aboutRoutes,
+];
+
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <PrivateRoute><Index /></PrivateRoute>,
+    errorElement: <NotFound />,
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <Navigate to="/dashboard" />,
       },
-      {
-        path: "settings/activity-log",
-        element: <ActivityLogPage />,
-      },
-      // إضافة مسارات الإعدادات
-      {
-        path: "settings/system",
-        element: <SystemSettingsPage />,
-      },
-      {
-        path: "settings/roles",
-        element: <UserRolesPage />,
-      },
-      {
-        path: "settings/users",
-        element: <UsersPage />,
-      },
-      {
-        path: "settings/backup",
-        element: <BackupPage />,
-      },
-      {
-        path: "settings/backup-test",
-        element: <BackupTestPage />,
-      },
-      {
-        path: "settings/branches",
-        element: <BranchesPage />,
-      },
-      {
-        path: "settings/notifications",
-        element: <NotificationsPage />,
-      },
-      {
-        path: "settings/notification-settings",
-        element: <NotificationSettingsPage />,
-      },
-      {
-        path: "settings/send-notification",
-        element: <SendNotificationPage />,
-      },
-      {
-        path: "settings/ai-engine",
-        element: <AiEngineSettingsPage />,
-      },
-      {
-        path: "settings/page-management",
-        element: <PageManagementPage />,
-      },
-      {
-        path: "settings/theme",
-        element: <ThemeCustomizationPage />,
-      },
-      // Spread all other route modules
-      ...accountingRoutes,
-      ...inventoryRoutes,
-      ...inventoryControlRoutes,
-      ...purchasesRoutes,
-      ...invoicesRoutes,
-      ...customersRoutes,
-      ...vendorRoutes,
-      ...receivablesPayablesRoutes,
-      ...expensesRoutes,
-      ...reportsRoutes,
-      ...definitionsRoutes,
-      ...aiRoutes,
-      ...hrRoutes,
-      ...integrationsRoutes,
-      ...aboutRoutes,
+      ...routeChildren,
     ]
   },
   {

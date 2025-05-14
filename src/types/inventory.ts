@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   code: string;
@@ -22,7 +23,6 @@ export interface Product {
   cost?: number; // Added for EditProductPage
   taxRate?: number; // Added for EditProductPage
   subcategory?: string; // Added for EditProductPage
-  imageUrl?: string; // Added to fix the QuickProductSearch component
 }
 
 export interface ProductCategory {

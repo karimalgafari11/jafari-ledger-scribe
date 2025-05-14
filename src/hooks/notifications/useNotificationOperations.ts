@@ -1,12 +1,8 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { 
-  Notification, 
-  NotificationChannel,
-  NotificationEvent,
-  NotificationPriority
-} from '@/types/notifications';
+import { Notification, NotificationChannel, NotificationEvent, NotificationPriority } from '@/types/notifications';
+import { supabase } from '@/integrations/supabase/client';
 
 export function useNotificationOperations(
   initialNotifications: Notification[]
@@ -14,7 +10,7 @@ export function useNotificationOperations(
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Count of unread notifications
+  // Get unread notifications count
   const unreadCount = notifications.filter(n => !n.read).length;
   
   // Mark a notification as read
@@ -22,8 +18,12 @@ export function useNotificationOperations(
     setIsLoading(true);
     
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 300));
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId);
+      
+      if (error) throw error;
       
       setNotifications(prev => 
         prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
@@ -31,6 +31,7 @@ export function useNotificationOperations(
       
       return true;
     } catch (error) {
+      console.error('Error marking notification as read:', error);
       toast.error('حدث خطأ أثناء تعيين الإشعار كمقروء');
       return false;
     } finally {
@@ -43,16 +44,20 @@ export function useNotificationOperations(
     setIsLoading(true);
     
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('read', false);
+      
+      if (error) throw error;
       
       setNotifications(prev => 
         prev.map(n => ({ ...n, read: true }))
       );
       
-      toast.success('تم تعيين جميع الإشعارات كمقروءة');
       return true;
     } catch (error) {
+      console.error('Error marking all notifications as read:', error);
       toast.error('حدث خطأ أثناء تعيين جميع الإشعارات كمقروءة');
       return false;
     } finally {
@@ -65,8 +70,12 @@ export function useNotificationOperations(
     setIsLoading(true);
     
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 300));
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+      
+      if (error) throw error;
       
       setNotifications(prev => 
         prev.filter(n => n.id !== notificationId)
@@ -74,6 +83,7 @@ export function useNotificationOperations(
       
       return true;
     } catch (error) {
+      console.error('Error deleting notification:', error);
       toast.error('حدث خطأ أثناء حذف الإشعار');
       return false;
     } finally {
@@ -92,37 +102,41 @@ export function useNotificationOperations(
     setIsLoading(true);
     
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Instead of using protected supabaseUrl and supabaseKey properties, 
+      // we'll use the supabase functions.invoke method
+      const { data: result, error } = await supabase.functions.invoke('send-notification', {
+        body: {
+          userId,
+          eventType,
+          title: data.title,
+          message: data.message,
+          priority,
+          channels,
+          relatedEntityId: data.entityId,
+          relatedEntityType: data.entityType,
+        }
+      });
       
-      // Create a new notification
-      const newNotification: Notification = {
-        id: `notif-${Date.now()}`,
-        userId,
-        title: data.title || eventType.split('.').join(' '),
-        message: data.message || JSON.stringify(data),
-        priority,
-        channel: 'in-app', // Start with in-app notifications only
-        eventType,
-        relatedEntityId: data.entityId,
-        relatedEntityType: data.entityType,
-        read: false,
-        createdAt: new Date(),
-        deliveryStatus: 'delivered',
-      };
+      if (error) {
+        throw new Error(error.message || 'Failed to send notification');
+      }
       
-      setNotifications(prev => [newNotification, ...prev]);
+      // If this is an in-app notification, add it to the state
+      const newInAppNotifications = result?.notifications
+        ?.filter((n: any) => n && n.channel === 'in-app')
+        ?.map((n: any) => ({
+          ...n,
+          created_at: new Date(n.created_at),
+        })) || [];
       
-      // Show a toast notification
-      const toastType = priority === 'high' || priority === 'critical' ? 
-        toast.error : priority === 'medium' ? 
-        toast.warning : toast.info;
-      
-      toastType(`${newNotification.title}: ${newNotification.message}`);
+      if (newInAppNotifications.length > 0) {
+        setNotifications(prev => [...newInAppNotifications, ...prev]);
+      }
       
       return true;
     } catch (error) {
       console.error('Error sending notification:', error);
+      toast.error('حدث خطأ أثناء إرسال الإشعار');
       return false;
     } finally {
       setIsLoading(false);

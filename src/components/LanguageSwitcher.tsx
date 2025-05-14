@@ -1,31 +1,20 @@
 
-import React from "react";
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useAppContext } from "@/contexts/AppContext";
-import { Globe } from "lucide-react";
 
-interface LanguageSwitcherProps {
-  className?: string;
-}
-
-export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = "" }) => {
-  const { language, setLanguage } = useAppContext();
-  
-  const toggleLanguage = () => {
-    setLanguage(language === 'ar' ? 'en' : 'ar');
-  };
-
+export const LanguageSwitcher = () => {
+  // Since we're only supporting Arabic now, we'll make this a non-functional component
+  // that just displays Arabic indicator
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleLanguage}
-      title={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
-      aria-label={language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
-      className={className}
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      className="h-8 min-w-8 px-2"
+      title="اللغة العربية"
     >
-      <Globe className="h-5 w-5" />
-      <span className="sr-only">{language === 'ar' ? 'English' : 'العربية'}</span>
+      <span className="text-xs font-medium">عربي</span>
     </Button>
   );
 };
+
+export default LanguageSwitcher;

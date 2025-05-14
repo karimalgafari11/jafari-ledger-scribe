@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Header } from "@/components/Header";
 import { Layout } from "@/components/Layout";
 import { AccountPageHeader } from "./AccountPageHeader";
 import { AccountsContent } from "./AccountsContent";
@@ -31,8 +32,10 @@ export const AccountChartContainer: React.FC = () => {
   return (
     <Layout>
       <AccountDialogsProvider initialSelectedAccount={selectedAccount}>
-        <div className="flex flex-col h-screen w-full overflow-hidden bg-gray-50">
-          <div className="flex-1 overflow-auto p-4 pb-16 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col h-screen w-full overflow-hidden">
+          <Header title="دليل الحسابات" showBack={true} />
+
+          <div className="flex-1 overflow-auto p-4 pb-16">
             <AccountPageHeader
               onSearch={handleSearch}
               filterType={filterType}
