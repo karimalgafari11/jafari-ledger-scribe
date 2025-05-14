@@ -4,14 +4,15 @@ import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
 import { useSalesInvoice } from "@/hooks/sales";
-import { useInvoiceForm } from "@/hooks/useInvoiceForm";
 import { v4 as uuid } from "uuid";
 import { format } from "date-fns";
 import { InvoiceItem } from "@/types/invoices";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Save, Search, Plus } from "lucide-react";
 import { ProductSearchSection } from "@/components/purchases/table/item-form";
+import { QuickProductSearch } from "@/components/purchases";
+import { Product } from "@/types/inventory";
 
 const SalesInvoicePage = () => {
   // State for showing the product search dialog
@@ -96,6 +97,31 @@ const SalesInvoicePage = () => {
     }
   };
 
+  // Open product search dialog
+  const handleOpenProductSearch = () => {
+    setShowProductSearch(true);
+  };
+
+  // Handle product selection from quick search
+  const handleProductSelect = (product: Product) => {
+    const newItem: Partial<InvoiceItem> = {
+      id: uuid(),
+      productId: product.id,
+      code: product.code,
+      name: product.name,
+      quantity: 1,
+      price: product.price,
+      discount: 0,
+      discountType: 'percentage',
+      tax: 15,
+      total: product.price
+    };
+    
+    handleAddInvoiceItem(newItem);
+    setShowProductSearch(false);
+    toast.success(`تم إضافة ${product.name} إلى الفاتورة`);
+  };
+
   // Settings for the invoice form with all required properties
   const invoiceSettings = {
     showCompanyLogo: true,
@@ -114,6 +140,13 @@ const SalesInvoicePage = () => {
     <Layout className="h-screen overflow-hidden p-0">
       <div className="flex flex-col h-full">
         <Header title="فاتورة مبيعات جديدة" showBack={true}>
+          <Button
+            onClick={handleOpenProductSearch}
+            className="ml-2 bg-blue-600 hover:bg-blue-700"
+          >
+            <Search className="ml-1 h-4 w-4" />
+            البحث عن منتج
+          </Button>
           <Button
             onClick={handleSaveInvoice}
             disabled={isLoading || invoice.items.length === 0}
@@ -134,11 +167,29 @@ const SalesInvoicePage = () => {
             isLoading={isLoading}
             settings={invoiceSettings}
             renderProductSearch={(onAddItem) => (
-              <ProductSearchSection onAddItem={onAddItem} />
+              <div className="w-full">
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleOpenProductSearch}
+                  className="w-full border border-dashed border-gray-300 text-gray-500 hover:bg-blue-50 hover:border-blue-300"
+                >
+                  <Plus className="h-4 w-4 ml-1" />
+                  إضافة صنف من المخزون
+                </Button>
+              </div>
             )}
           />
         </div>
       </div>
+
+      {/* Product Search Dialog */}
+      {showProductSearch && (
+        <QuickProductSearch
+          onClose={() => setShowProductSearch(false)}
+          onSelect={handleProductSelect}
+        />
+      )}
     </Layout>
   );
 };
