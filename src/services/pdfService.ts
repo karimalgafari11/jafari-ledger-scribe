@@ -1,13 +1,9 @@
 
 import { InvoiceAnalysisResult } from "@/hooks/ai/usePDFInvoiceAnalysis";
 import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 export class PDFService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL || "",
-    import.meta.env.VITE_SUPABASE_ANON_KEY || ""
-  );
-
   /**
    * Extract text from a PDF file
    */
@@ -48,7 +44,7 @@ export class PDFService {
       const pdfText = await this.extractTextFromPDF(file);
       
       // 2. Call the DeepSeek AI endpoint to analyze the invoice
-      const { data, error } = await this.supabase.functions.invoke('analyze-invoice', {
+      const { data, error } = await supabase.functions.invoke('analyze-invoice', {
         body: { pdfText }
       });
       
