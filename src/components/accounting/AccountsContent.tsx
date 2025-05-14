@@ -6,6 +6,7 @@ import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountAnalysisCharts } from "./AccountAnalysisCharts";
 import { useAccountDialogs } from "./AccountDialogsContext";
+import { Card } from "@/components/ui/card";
 
 interface AccountsContentProps {
   filteredAccounts: Account[] | AccountNode[];
@@ -58,14 +59,20 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
   }) as AccountNode[];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4">
+    <Card className="bg-white rounded-lg shadow-md overflow-hidden border-none">
       <Tabs defaultValue="tree" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="tree">شجرة الحسابات</TabsTrigger>
-          <TabsTrigger value="analysis">تحليل الحسابات</TabsTrigger>
-        </TabsList>
+        <div className="bg-muted/20 p-2 border-b">
+          <TabsList className="bg-background/80 backdrop-blur-sm">
+            <TabsTrigger value="tree" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+              شجرة الحسابات
+            </TabsTrigger>
+            <TabsTrigger value="analysis" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+              تحليل الحسابات
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="tree" className="p-2">
+        <TabsContent value="tree" className="p-4">
           <AccountTree
             accounts={accountNodes}
             onEdit={handleEditClick}
@@ -75,7 +82,7 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
           />
         </TabsContent>
 
-        <TabsContent value="analysis" className="p-2">
+        <TabsContent value="analysis" className="p-4">
           <AccountAnalysisCharts
             accounts={filteredAccounts as Account[]}
           />
@@ -90,6 +97,6 @@ export const AccountsContent: React.FC<AccountsContentProps> = ({
           accountName={accountToDelete.name}
         />
       )}
-    </div>
+    </Card>
   );
 };
