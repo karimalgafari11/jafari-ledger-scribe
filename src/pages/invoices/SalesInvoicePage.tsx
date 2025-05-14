@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
@@ -11,8 +11,12 @@ import { InvoiceItem } from "@/types/invoices";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
+import { ProductSearchSection } from "@/components/purchases/table/item-form";
 
 const SalesInvoicePage = () => {
+  // State for showing the product search dialog
+  const [showProductSearch, setShowProductSearch] = useState(false);
+
   // Use the sales invoice hook to get all the necessary data and functions
   const {
     invoice,
@@ -62,7 +66,7 @@ const SalesInvoicePage = () => {
     const itemId = invoice.items[index]?.id;
     if (itemId) {
       updateInvoiceItem(itemId, item);
-      calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
+      calculateTotals();
     }
   };
 
@@ -70,15 +74,14 @@ const SalesInvoicePage = () => {
     const itemId = invoice.items[index]?.id;
     if (itemId) {
       removeInvoiceItem(itemId);
-      calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
+      calculateTotals();
       toast.success("تم حذف الصنف من الفاتورة");
     }
   };
 
   const handleAddInvoiceItem = (item: Partial<InvoiceItem>) => {
     addInvoiceItem(item);
-    calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
-    toast.success(`تم إضافة العنصر إلى الفاتورة`);
+    calculateTotals();
   };
   
   const handleSaveInvoice = async () => {
@@ -130,6 +133,9 @@ const SalesInvoicePage = () => {
             onApplyDiscount={applyDiscount}
             isLoading={isLoading}
             settings={invoiceSettings}
+            renderProductSearch={(onAddItem) => (
+              <ProductSearchSection onAddItem={onAddItem} />
+            )}
           />
         </div>
       </div>

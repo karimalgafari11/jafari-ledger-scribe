@@ -1,28 +1,36 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 interface FormActionsProps {
-  editingItemIndex: number | null;
-  showSaveButton: boolean;
-  onSave: () => void;
-  actionLabel?: string;
+  onSubmit: () => void;
+  onCancel: () => void;
+  isSubmitting?: boolean;
 }
 
-export const FormActions: React.FC<FormActionsProps> = ({
-  editingItemIndex,
-  showSaveButton,
-  onSave,
-  actionLabel = "إضافة"
+export const FormActions: React.FC<FormActionsProps> = ({ 
+  onSubmit, 
+  onCancel,
+  isSubmitting = false 
 }) => {
-  if (!showSaveButton) return null;
-  
   return (
-    <div className="flex justify-end mt-4">
-      <Button onClick={onSave} className="gap-2 rtl:flex-row-reverse">
-        <Save className="h-4 w-4" />
-        {editingItemIndex !== null ? "تحديث الصنف" : actionLabel}
+    <div className="flex justify-end gap-2 mt-4">
+      <Button
+        variant="outline"
+        onClick={onCancel}
+        type="button"
+      >
+        <X className="ml-1 h-4 w-4" />
+        إلغاء
+      </Button>
+      <Button
+        onClick={onSubmit}
+        disabled={isSubmitting}
+        className="bg-green-600 hover:bg-green-700"
+      >
+        <Check className="ml-1 h-4 w-4" />
+        {isSubmitting ? "جاري الحفظ..." : "حفظ"}
       </Button>
     </div>
   );

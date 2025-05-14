@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ interface InvoiceItemsTableProps {
   onAddItem: (item: Partial<InvoiceItem>) => void;
   onUpdateItem: (index: number, item: Partial<InvoiceItem>) => void;
   settings?: InvoiceSettingsType;
+  renderProductSearch?: (onAddItem: (item: Partial<InvoiceItem>) => void) => React.ReactNode;
 }
 
 export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
@@ -35,7 +35,8 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   onRemoveItem,
   onAddItem,
   onUpdateItem,
-  settings
+  settings,
+  renderProductSearch
 }) => {
   const [newItem, setNewItem] = useState<Partial<InvoiceItem>>({
     id: '',
@@ -368,15 +369,19 @@ export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
                 ) : (
                   <tr className="border-b print-hide">
                     <td colSpan={showItemCodes ? (showItemNotes ? 8 : 7) : (showItemNotes ? 7 : 6)} className="p-2">
-                      <Button 
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsAddingItem(true)}
-                        className="w-full border border-dashed border-gray-300 text-gray-500"
-                      >
-                        <Plus className="h-4 w-4 ml-1" />
-                        إضافة صنف جديد
-                      </Button>
+                      {renderProductSearch ? (
+                        renderProductSearch(onAddItem)
+                      ) : (
+                        <Button 
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsAddingItem(true)}
+                          className="w-full border border-dashed border-gray-300 text-gray-500"
+                        >
+                          <Plus className="h-4 w-4 ml-1" />
+                          إضافة صنف جديد
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 )}
