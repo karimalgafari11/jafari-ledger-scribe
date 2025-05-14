@@ -9,28 +9,59 @@ import NotificationBulkActions from './NotificationBulkActions';
 interface NotificationsListProps {
   notifications: Notification[];
   showActions?: boolean;
+  selectedIds?: string[];
+  onToggleSelect?: (id: string) => void;
 }
 
 const NotificationsList: React.FC<NotificationsListProps> = ({ 
   notifications,
-  showActions = true
+  showActions = true,
+  selectedIds: externalSelectedIds,
+  onToggleSelect: externalToggleSelect
 }) => {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>([]);
   const { markAsRead, deleteNotification } = useNotifications();
   
+  // Use either external or internal state based on what's provided
+  const selectedIds = externalSelectedIds !== undefined ? externalSelectedIds : internalSelectedIds;
+  
   const handleToggleSelect = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) 
-        ? prev.filter(item => item !== id) 
-        : [...prev, id]
-    );
+    if (externalToggleSelect) {
+      externalToggleSelect(id);
+    } else {
+      setInternalSelectedIds(prev => 
+        prev.includes(id) 
+          ? prev.filter(item => item !== id) 
+          : [...prev, id]
+      );
+    }
   };
 
   const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(notifications.map(n => n.id));
+    if (externalToggleSelect) {
+      // If using external management, we need to notify for each ID
+      notifications.forEach(notification => {
+        if (checked && !externalSelectedIds.includes(notification.id)) {
+          externalToggleSelect(notification.id);
+        } else if (!checked && externalSelectedIds.includes(notification.id)) {
+          externalToggleSelect(notification.id);
+        }
+      });
     } else {
-      setSelectedIds([]);
+      if (checked) {
+        setInternalSelectedIds(notifications.map(n => n.id));
+      } else {
+        setInternalSelectedIds([]);
+      }
+    }
+  };
+
+  const handleSelectionClear = () => {
+    if (externalToggleSelect && externalSelectedIds) {
+      // Clear each selected ID individually through the external handler
+      [...externalSelectedIds].forEach(id => externalToggleSelect(id));
+    } else {
+      setInternalSelectedIds([]);
     }
   };
 
@@ -42,7 +73,9 @@ const NotificationsList: React.FC<NotificationsListProps> = ({
             <Checkbox 
               id="select-all" 
               checked={selectedIds.length === notifications.length && notifications.length > 0}
-              indeterminate={selectedIds.length > 0 && selectedIds.length < notifications.length}
+              // Don't use indeterminate prop as it's not in the type
+              // Instead, use aria-checked="mixed" for visual indeterminacy
+              aria-checked={selectedIds.length > 0 && selectedIds.length < notifications.length ? "mixed" : undefined}
               onCheckedChange={handleSelectAll}
             />
             <label htmlFor="select-all" className="text-sm">
@@ -53,7 +86,7 @@ const NotificationsList: React.FC<NotificationsListProps> = ({
           {selectedIds.length > 0 && (
             <NotificationBulkActions 
               selectedIds={selectedIds} 
-              onSelectionChange={setSelectedIds}
+              onSelectionClear={handleSelectionClear}
             />
           )}
         </div>

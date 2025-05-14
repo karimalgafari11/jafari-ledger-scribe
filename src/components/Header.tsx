@@ -1,6 +1,6 @@
 
 import React from 'react';
-import NotificationsDropdown from './notifications/NotificationsDropdown';
+import { NotificationsDropdown } from './notifications/NotificationsDropdown';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { ArrowLeft } from 'lucide-react';

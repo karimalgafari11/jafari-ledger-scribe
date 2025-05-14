@@ -120,7 +120,6 @@ export const useNotifications = () => {
           notification.id === id ? { ...notification, read: true } : notification
         )
       );
-      toast.success('تم تحديد الإشعار كمقروء');
       return true;
     } catch (error) {
       console.error("Error marking notification as read:", error);
@@ -148,7 +147,6 @@ export const useNotifications = () => {
       setNotifications(prevNotifications => 
         prevNotifications.filter(notification => notification.id !== id)
       );
-      toast.success('تم حذف الإشعار');
       return true;
     } catch (error) {
       console.error("Error deleting notification:", error);
@@ -162,7 +160,6 @@ export const useNotifications = () => {
       setNotifications(prevNotifications => 
         prevNotifications.filter(notification => !ids.includes(notification.id))
       );
-      toast.success(`تم حذف ${ids.length} إشعارات`);
       return true;
     } catch (error) {
       console.error("Error deleting multiple notifications:", error);

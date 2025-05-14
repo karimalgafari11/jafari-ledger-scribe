@@ -7,7 +7,7 @@ import NotificationStatsCards from '@/components/notifications/NotificationStats
 import NotificationsList from '@/components/notifications/NotificationsList';
 import NotificationBulkActions from '@/components/notifications/NotificationBulkActions';
 import { Button } from '@/components/ui/button';
-import { Bell, Loader2, MessageSquarePlus, RefreshCcw } from 'lucide-react';
+import { Bell, Loader2, MessageSquarePlus, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Notification } from '@/types/notifications';
 
@@ -95,7 +95,7 @@ const NotificationsPage = () => {
               {refreshing || isLoading ? (
                 <Loader2 className="h-4 w-4 ml-2 animate-spin" />
               ) : (
-                <RefreshCcw className="h-4 w-4 ml-2" />
+                <RefreshCw className="h-4 w-4 ml-2" />
               )}
               تحديث
             </Button>

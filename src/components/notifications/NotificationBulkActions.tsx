@@ -46,13 +46,27 @@ const NotificationBulkActions: React.FC<NotificationBulkActionsProps> = ({
     
     setIsProcessing(true);
     try {
-      const success = await deleteNotifications(selectedIds);
-      
-      if (success) {
-        toast.success(`تم حذف ${selectedIds.length} إشعارات`);
-        onSelectionClear();
+      // Check if deleteNotifications is available, otherwise fallback to deleting individually
+      if (deleteNotifications) {
+        const success = await deleteNotifications(selectedIds);
+        
+        if (success) {
+          toast.success(`تم حذف ${selectedIds.length} إشعارات`);
+          onSelectionClear();
+        } else {
+          toast.error("فشل حذف بعض الإشعارات");
+        }
       } else {
-        toast.error("فشل حذف بعض الإشعارات");
+        // Fallback to deleting one by one
+        const promises = selectedIds.map(id => deleteNotification(id));
+        const results = await Promise.all(promises);
+        
+        if (results.every(Boolean)) {
+          toast.success(`تم حذف ${selectedIds.length} إشعارات`);
+          onSelectionClear();
+        } else {
+          toast.error("فشل حذف بعض الإشعارات");
+        }
       }
     } catch (error) {
       console.error("Error deleting notifications:", error);
