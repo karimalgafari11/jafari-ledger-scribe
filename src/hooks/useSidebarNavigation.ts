@@ -8,10 +8,7 @@ export const useSidebarNavigation = () => {
 
   const handleItemClick = (path?: string) => {
     if (path) {
-      // Ensure path is properly formatted
       navigate(path);
-      
-      // Close mobile sidebar if needed
       if (isMobile) {
         setOpenMobile(false);
       }

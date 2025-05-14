@@ -11,7 +11,7 @@ export const TotalCell = forwardRef<HTMLTableCellElement, TotalCellProps>(
   ({ total }, ref) => {
     return (
       <TableCell className="text-center font-semibold" ref={ref}>
-        {formatCurrency(total, 'SAR')}
+        {formatCurrency(total)}
       </TableCell>
     );
   }

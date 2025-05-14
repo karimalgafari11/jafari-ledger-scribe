@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   UserRole,
@@ -52,21 +53,9 @@ type SecuritySettingsUpdate = {
 };
 
 export function usePermissions() {
-  // Transform mockUserRoles to include the required properties for UserRole type
-  const initialUserRoles = mockUserRoles.map(role => ({
-    ...role,
-    permissions: mockPermissions.filter(p => 
-      role.permissions.includes(p.id) || role.permissions.includes('all')
-    ),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isSystem: role.id === 'admin' // Mark admin as system role
-  }));
-
-  const [roles, setRoles] = useState<UserRole[]>(initialUserRoles);
+  const [roles, setRoles] = useState<UserRole[]>(mockUserRoles);
   const [permissions, setPermissions] = useState<Permission[]>(mockPermissions);
-  // Cast permissionGroups to make it compatible with PermissionGroup[] type
-  const [groups] = useState<PermissionGroup[]>(permissionGroups as unknown as PermissionGroup[]);
+  const [groups] = useState<PermissionGroup[]>(permissionGroups);
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>(mockSecuritySettings);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -204,8 +193,8 @@ export function usePermissions() {
     permissionGroups: groups,
     securitySettings,
     isLoading,
-    checkPermission,
-    checkModulePermissions,
+    checkPermission: checkPermission,
+    checkModulePermissions: checkModulePermissions,
     addRole,
     updateRole,
     deleteRole,

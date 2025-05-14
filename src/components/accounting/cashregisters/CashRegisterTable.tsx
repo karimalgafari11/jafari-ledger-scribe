@@ -58,9 +58,9 @@ export const CashRegisterTable = ({
                 <TableCell className="font-medium">{register.code}</TableCell>
                 <TableCell>{register.name}</TableCell>
                 <TableCell>{register.branchName}</TableCell>
-                <TableCell>{register.currency || register.currencyCode}</TableCell>
+                <TableCell>{register.currencyCode}</TableCell>
                 <TableCell className="text-left font-medium">
-                  {register.balance.toLocaleString()} {register.currency || register.currencyCode}
+                  {register.balance.toLocaleString()} {register.currencyCode}
                 </TableCell>
                 <TableCell>
                   <Badge

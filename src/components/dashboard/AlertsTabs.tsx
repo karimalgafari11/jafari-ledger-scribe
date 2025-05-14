@@ -49,7 +49,7 @@ export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts = [] }) => {
           </div>
         ) : (
           safeAlerts.map((alert, index) => (
-            <SystemAlertCard key={alert.id || index} alert={alert} />
+            <SystemAlertCard key={index} alert={alert} />
           ))
         )}
       </TabsContent>
@@ -61,7 +61,7 @@ export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts = [] }) => {
           </div>
         ) : (
           highPriorityAlerts.map((alert, index) => (
-            <SystemAlertCard key={alert.id || index} alert={alert} />
+            <SystemAlertCard key={index} alert={alert} />
           ))
         )}
       </TabsContent>
@@ -73,7 +73,7 @@ export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts = [] }) => {
           </div>
         ) : (
           mediumPriorityAlerts.map((alert, index) => (
-            <SystemAlertCard key={alert.id || index} alert={alert} />
+            <SystemAlertCard key={index} alert={alert} />
           ))
         )}
       </TabsContent>
@@ -85,7 +85,7 @@ export const AlertsTabs: React.FC<AlertsTabsProps> = ({ alerts = [] }) => {
           </div>
         ) : (
           lowPriorityAlerts.map((alert, index) => (
-            <SystemAlertCard key={alert.id || index} alert={alert} />
+            <SystemAlertCard key={index} alert={alert} />
           ))
         )}
       </TabsContent>

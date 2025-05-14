@@ -3,7 +3,11 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { AuthProvider } from "./AuthContext";
 import { defaultDarkTheme, defaultLightTheme } from "@/hooks/theme/themeDefaults";
 import { applyThemeToDOM } from "@/hooks/theme/themeUtils";
+import { ThemeSettings } from "@/types/theme";
 import { loadSavedTheme } from "@/hooks/theme/themeUtils";
+
+// تعريف نوع اللغة
+export type Language = "ar" | "en";
 
 // تعريف نوع السمة
 export type ThemeMode = "light" | "dark";
@@ -11,15 +15,17 @@ export type ThemeMode = "light" | "dark";
 // تعريف نوع سياق التطبيق
 interface AppContextType {
   themeMode: ThemeMode;
+  language: Language;
   toggleTheme: () => void;
-  language: string; // Add language property to type
+  setLanguage: (lang: Language) => void;
 }
 
 // إنشاء سياق التطبيق مع قيم افتراضية
 export const AppContext = createContext<AppContextType>({
   themeMode: "light",
+  language: "ar",
   toggleTheme: () => {},
-  language: 'ar', // Default to Arabic
+  setLanguage: () => {},
 });
 
 // مزود سياق التطبيق
@@ -31,7 +37,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return savedTheme || "light";
   });
 
-  // تطبيق السمة مباشرة عند بدء التشغيل
+  // حالة اللغة
+  const [language, setLanguage] = useState<Language>(() => {
+    // محاولة استرداد اللغة المخزنة محليًا
+    const savedLanguage = localStorage.getItem("language") as Language;
+    return savedLanguage || "ar";
+  });
+
+  // Apply theme immediately on startup
   useEffect(() => {
     const defaultTheme = themeMode === 'dark' ? defaultDarkTheme : defaultLightTheme;
     const savedTheme = loadSavedTheme(defaultTheme);
@@ -43,12 +56,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // تحديث سمة الصفحة
     if (themeMode === "dark") {
       document.documentElement.classList.add("dark");
-      // تطبيق السمة الداكنة
+      // Apply dark theme
       const savedTheme = loadSavedTheme(defaultDarkTheme);
       applyThemeToDOM(savedTheme);
     } else {
       document.documentElement.classList.remove("dark");
-      // تطبيق السمة الفاتحة
+      // Apply light theme
       const savedTheme = loadSavedTheme(defaultLightTheme);
       applyThemeToDOM(savedTheme);
     }
@@ -56,16 +69,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("themeMode", themeMode);
   }, [themeMode]);
 
-  // Set document direction and language to Arabic by default
+  // تأثير لتطبيق اللغة عند تغييرها
   useEffect(() => {
-    // تحديث اتجاه الصفحة للعربية
-    document.documentElement.dir = "rtl";
+    // تحديث اتجاه الصفحة بناءً على اللغة
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     // تحديث لغة الصفحة
-    document.documentElement.lang = "ar";
-    // تحديث الفئات لدعم الاتجاه
-    document.documentElement.classList.add("rtl");
-    document.documentElement.classList.remove("ltr");
-  }, []);
+    document.documentElement.lang = language;
+    // حفظ اللغة في التخزين المحلي
+    localStorage.setItem("language", language);
+  }, [language]);
 
   // وظيفة لتبديل السمة
   const toggleTheme = () => {
@@ -75,8 +87,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // تجميع قيمة السياق
   const value = {
     themeMode,
+    language,
     toggleTheme,
-    language: 'ar', // Always Arabic now
+    setLanguage,
   };
 
   return (

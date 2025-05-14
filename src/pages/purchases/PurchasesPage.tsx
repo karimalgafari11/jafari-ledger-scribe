@@ -3,7 +3,7 @@ import React from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, FileText, Truck, Plus } from "lucide-react";
+import { ShoppingBag, FileText, Truck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PurchasesPage = () => {
@@ -28,25 +28,19 @@ const PurchasesPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">إدارة فواتير المشتريات والموردين</p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => {
-                e.stopPropagation();
-                navigate("/purchases/purchase-invoice");
-              }}>عرض الفواتير</Button>
+              <Button variant="link" className="p-0 mt-2 h-auto">عرض الفواتير</Button>
             </CardContent>
           </Card>
 
           {/* أوامر الشراء */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/purchases/orders")}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/purchases/purchase-orders")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-lg">أوامر الشراء</CardTitle>
               <FileText className="h-5 w-5 text-blue-500" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">إدارة طلبات وأوامر الشراء</p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => {
-                e.stopPropagation();
-                navigate("/purchases/orders");
-              }}>عرض الأوامر</Button>
+              <Button variant="link" className="p-0 mt-2 h-auto">عرض الأوامر</Button>
             </CardContent>
           </Card>
 
@@ -58,28 +52,9 @@ const PurchasesPage = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">إدارة حسابات الموردين</p>
-              <Button variant="link" className="p-0 mt-2 h-auto" onClick={(e) => {
-                e.stopPropagation();
-                navigate("/vendors");
-              }}>عرض الموردين</Button>
+              <Button variant="link" className="p-0 mt-2 h-auto">عرض الموردين</Button>
             </CardContent>
           </Card>
-        </div>
-        
-        {/* قسم الإجراءات السريعة */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">الإجراءات السريعة</h2>
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={() => navigate("/purchases/invoice/new")}>
-              <Plus className="ml-2 h-4 w-4" /> فاتورة مشتريات
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/purchases/orders/new")}>
-              <Plus className="ml-2 h-4 w-4" /> أمر شراء
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/vendors/new")}>
-              <Plus className="ml-2 h-4 w-4" /> مورد جديد
-            </Button>
-          </div>
         </div>
       </div>
     </PageContainer>

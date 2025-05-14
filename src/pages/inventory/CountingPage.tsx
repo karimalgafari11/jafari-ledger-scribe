@@ -92,7 +92,7 @@ const CountingPage = () => {
           setSearchQuery={setSearchQuery}
           warehouseFilter={warehouseFilter}
           setWarehouseFilter={setWarehouseFilter}
-          statusFilter={statusFilter as "" | "draft" | "completed"}
+          statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
           onNewCount={startNewCount}
         />

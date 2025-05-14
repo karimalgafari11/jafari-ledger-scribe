@@ -28,22 +28,22 @@ export const BranchesModule = () => {
     generateBranchCode,
   } = useBranches();
 
-  const handleEdit = (branch) => {
+  const handleEdit = (branch: typeof selectedBranch) => {
     setSelectedBranch(branch);
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = (branch) => {
+  const handleDelete = (branch: typeof selectedBranch) => {
     setSelectedBranch(branch);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleCreateSubmit = (data) => {
+  const handleCreateSubmit = (data: any) => {
     createBranch(data);
     setIsCreateDialogOpen(false);
   };
 
-  const handleEditSubmit = (data) => {
+  const handleEditSubmit = (data: any) => {
     if (selectedBranch) {
       updateBranch(selectedBranch.id, data);
       setIsEditDialogOpen(false);

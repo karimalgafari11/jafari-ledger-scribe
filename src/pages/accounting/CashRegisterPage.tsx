@@ -1,126 +1,36 @@
 
-import React, { useState } from 'react';
-import { PageContainer } from '@/components/PageContainer';
-import { Layout } from '@/components/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, ArrowUp, ArrowDown } from 'lucide-react';
+import React from "react";
+import { Layout } from "@/components/Layout";
+import { Header } from "@/components/Header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CashRegistersModule } from "@/components/accounting/cashregisters/CashRegistersModule";
+import { CashTransactionsModule } from "@/components/accounting/cashregisters/CashTransactionsModule";
 
 const CashRegisterPage = () => {
-  const [activeTab, setActiveTab] = useState('transactions');
-  
+  const [activeTab, setActiveTab] = React.useState("registers");
+
   return (
-    <Layout>
-      <PageContainer title="صندوق النقدية">
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">إدارة صندوق النقدية</h1>
-            <div className="space-x-2 flex">
-              <Button size="sm">
-                <ArrowDown className="mr-2 h-4 w-4" />
-                تسجيل صرف
-              </Button>
-              <Button size="sm">
-                <ArrowUp className="mr-2 h-4 w-4" />
-                تسجيل قبض
-              </Button>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                صندوق جديد
-              </Button>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">الرصيد الحالي</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">15,230.50 ريال</p>
-                <p className="text-xs text-muted-foreground">تم تحديثه: اليوم الساعة 10:45 ص</p>
-              </CardContent>
-            </Card>
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
+        <Header title="إدارة صناديق النقدية" showBack={true} />
+        
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <Tabs defaultValue="registers" value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
+            <TabsList className="grid grid-cols-2 w-full max-w-md mb-2">
+              <TabsTrigger value="registers">الصناديق</TabsTrigger>
+              <TabsTrigger value="transactions">العمليات</TabsTrigger>
+            </TabsList>
             
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">إجمالي المقبوضات</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-green-600">3,750.00 ريال</p>
-                <p className="text-xs text-muted-foreground">اليوم</p>
-              </CardContent>
-            </Card>
+            <TabsContent value="registers" className="mt-2">
+              <CashRegistersModule />
+            </TabsContent>
             
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">إجمالي المصروفات</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-red-600">1,250.00 ريال</p>
-                <p className="text-xs text-muted-foreground">اليوم</p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">عدد العمليات</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">12</p>
-                <p className="text-xs text-muted-foreground">اليوم</p>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>سجل العمليات</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>رقم العملية</TableHead>
-                    <TableHead>التاريخ</TableHead>
-                    <TableHead>النوع</TableHead>
-                    <TableHead>الوصف</TableHead>
-                    <TableHead className="text-left">المبلغ</TableHead>
-                    <TableHead>الرصيد</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>CR-2023-001</TableCell>
-                    <TableCell>2023/06/15 10:30</TableCell>
-                    <TableCell className="text-green-600">قبض</TableCell>
-                    <TableCell>تحصيل من العميل محمد أحمد</TableCell>
-                    <TableCell className="text-left text-green-600">+1,500.00</TableCell>
-                    <TableCell>15,230.50</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>CR-2023-002</TableCell>
-                    <TableCell>2023/06/15 09:45</TableCell>
-                    <TableCell className="text-red-600">صرف</TableCell>
-                    <TableCell>دفع مصاريف نثرية</TableCell>
-                    <TableCell className="text-left text-red-600">-250.00</TableCell>
-                    <TableCell>13,730.50</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>CR-2023-003</TableCell>
-                    <TableCell>2023/06/14 15:20</TableCell>
-                    <TableCell className="text-green-600">قبض</TableCell>
-                    <TableCell>تحصيل من العميل شركة الرياض</TableCell>
-                    <TableCell className="text-left text-green-600">+2,250.00</TableCell>
-                    <TableCell>13,980.50</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+            <TabsContent value="transactions" className="mt-2">
+              <CashTransactionsModule />
+            </TabsContent>
+          </Tabs>
         </div>
-      </PageContainer>
+      </div>
     </Layout>
   );
 };

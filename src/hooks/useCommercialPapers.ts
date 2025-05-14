@@ -8,12 +8,12 @@ import { toast } from "sonner";
 const initialPapers: CommercialPaper[] = [
   {
     id: uuid(),
-    number: "001",
     referenceNumber: "CHQ-20250430-001",
-    type: "check", // Changed from "cheque" to "check"
+    type: "cheque",
     customerId: "1",
     customerName: "شركة الأفق للتجارة",
     amount: 5000,
+    currencyId: "1",
     currencyCode: "SAR",
     issueDate: new Date("2025-04-15"),
     dueDate: new Date("2025-05-15"),
@@ -24,12 +24,12 @@ const initialPapers: CommercialPaper[] = [
   },
   {
     id: uuid(),
-    number: "002",
     referenceNumber: "PN-20250430-002",
-    type: "bill", // Changed from "promissory_note" to "bill"
+    type: "promissory_note",
     customerId: "2",
     customerName: "مؤسسة النور للمقاولات",
     amount: 12000,
+    currencyId: "1",
     currencyCode: "SAR",
     issueDate: new Date("2025-04-01"),
     dueDate: new Date("2025-06-01"),
@@ -54,7 +54,7 @@ export const useCommercialPapers = () => {
   // البحث في الأوراق التجارية
   const filteredPapers = papers.filter(
     (paper) =>
-      paper.referenceNumber?.includes(searchTerm) ||
+      paper.referenceNumber.includes(searchTerm) ||
       (paper.customerName && paper.customerName.includes(searchTerm)) ||
       (paper.vendorName && paper.vendorName.includes(searchTerm))
   );
@@ -75,7 +75,7 @@ export const useCommercialPapers = () => {
           if (dueDate <= nextWeek && dueDate >= today) {
             // التحقق من عدم وجود تنبيه مسبق
             const existingNotification = notifications.find(
-              n => n.paperId === paper.id && n.status === 'pending'
+              n => n.entityId === paper.id && n.status === 'pending'
             );
             
             if (!existingNotification) {
@@ -84,14 +84,13 @@ export const useCommercialPapers = () => {
               
               const newNotification: DueNotification = {
                 id: uuid(),
-                paperId: paper.id,
                 entityId: paper.id,
                 entityType: 'commercial_paper',
                 dueDate: paper.dueDate,
                 amount: paper.amount,
-                currencyId: paper.currencyCode,
-                title: `استحقاق ${paper.type === 'check' ? 'شيك' : paper.type === 'bill' ? 'سند لأمر' : 'كمبيالة'}`,
-                message: `يستحق ${paper.type === 'check' ? 'الشيك' : paper.type === 'bill' ? 'السند لأمر' : 'الكمبيالة'} رقم ${paper.referenceNumber} بقيمة ${paper.amount} ${paper.currencyCode} في تاريخ ${dueDate.toLocaleDateString('ar-SA')}`,
+                currencyId: paper.currencyId,
+                title: `استحقاق ${paper.type === 'cheque' ? 'شيك' : paper.type === 'promissory_note' ? 'سند لأمر' : 'كمبيالة'}`,
+                message: `يستحق ${paper.type === 'cheque' ? 'الشيك' : paper.type === 'promissory_note' ? 'السند لأمر' : 'الكمبيالة'} رقم ${paper.referenceNumber} بقيمة ${paper.amount} ${paper.currencyCode} في تاريخ ${dueDate.toLocaleDateString('ar-SA')}`,
                 priority: priority,
                 status: 'pending',
                 notificationDate: today,
@@ -150,7 +149,7 @@ export const useCommercialPapers = () => {
     setTimeout(() => {
       setPapers(papers.filter((paper) => paper.id !== id));
       // حذف التنبيهات المرتبطة
-      setNotifications(notifications.filter(n => n.paperId !== id));
+      setNotifications(notifications.filter(n => n.entityId !== id));
       toast.success("تم حذف الورقة التجارية بنجاح");
       setIsLoading(false);
     }, 500);
@@ -163,7 +162,7 @@ export const useCommercialPapers = () => {
   };
 
   // معالجة تنبيه
-  const updateNotificationStatus = (id: string, status: 'pending' | 'sent' | 'failed') => {
+  const updateNotificationStatus = (id: string, status: DueNotification['status']) => {
     setNotifications(
       notifications.map((notification) =>
         notification.id === id
@@ -172,9 +171,9 @@ export const useCommercialPapers = () => {
       )
     );
     
-    if (status === 'sent') {
+    if (status === 'processed') {
       toast.success("تم معالجة التنبيه بنجاح");
-    } else if (status === 'failed') {
+    } else if (status === 'dismissed') {
       toast.info("تم تجاهل التنبيه");
     }
   };

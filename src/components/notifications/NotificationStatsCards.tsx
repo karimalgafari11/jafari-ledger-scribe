@@ -1,92 +1,100 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Bell, CheckCircle2, Clock, FileClock } from "lucide-react";
-import { Notification } from '@/types/notifications';
+import { Bell, TrendingUp, TrendingDown } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface NotificationStatsCardsProps {
-  notifications: Notification[];
+  total: number;
+  unread: number;
+  critical: number;
 }
 
-const NotificationStatsCards = ({ notifications }: NotificationStatsCardsProps) => {
-  // Count stats from notifications
-  const totalCount = notifications.length;
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const readCount = totalCount - unreadCount;
-  const criticalCount = notifications.filter(n => n.priority === 'critical').length;
-  const highPriorityCount = notifications.filter(n => n.priority === 'high').length;
-  
-  // Calculate read percentage
-  const readPercentage = totalCount > 0 ? Math.round((readCount / totalCount) * 100) : 0;
+const NotificationStatsCards = ({ total, unread, critical }: NotificationStatsCardsProps) => {
+  // حساب النسب المئوية للعرض
+  const unreadPercentage = total > 0 ? Math.round((unread / total) * 100) : 0;
+  const criticalPercentage = total > 0 ? Math.round((critical / total) * 100) : 0;
   
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium">إجمالي الإشعارات</CardTitle>
-          <Bell className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{totalCount}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {readCount} مقروءة, {unreadCount} غير مقروءة
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium">غير مقروءة</CardTitle>
-          <FileClock className="h-4 w-4 text-amber-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{unreadCount}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {unreadCount > 0 ? 'تحتاج إلى المراجعة' : 'لا توجد إشعارات جديدة'}
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium">نسبة القراءة</CardTitle>
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{readPercentage}%</div>
-          <div className="mt-1 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-green-500 rounded-full" 
-              style={{ width: `${readPercentage}%` }}
-            />
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <Card className="p-4 flex items-center justify-between relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+        <div className="z-10">
+          <p className="text-sm text-muted-foreground">إجمالي الإشعارات</p>
+          <p className="text-2xl font-bold mt-1">{total}</p>
+          <div className="mt-2 flex items-center text-xs text-muted-foreground">
+            <TrendingUp className="h-3 w-3 ml-1" />
+            <span>زيادة بنسبة 12% عن الأسبوع الماضي</span>
           </div>
-        </CardContent>
+        </div>
+        <div className="relative">
+          <Bell className="h-8 w-8 text-blue-500 opacity-80 group-hover:scale-110 transition-transform duration-300" />
+          <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+            {total > 99 ? "99+" : total}
+          </span>
+        </div>
+        <div className="absolute bottom-0 left-0 h-1 bg-blue-500 opacity-70" style={{ width: '100%' }}></div>
       </Card>
       
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium">أولوية عالية</CardTitle>
-          <Clock className="h-4 w-4 text-amber-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{highPriorityCount}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {highPriorityCount > 0 ? 'تحتاج إلى اهتمام' : 'لا توجد إشعارات ذات أولوية عالية'}
-          </p>
-        </CardContent>
+      <Card className="p-4 flex items-center justify-between relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+        <div className="z-10">
+          <p className="text-sm text-muted-foreground">الإشعارات غير المقروءة</p>
+          <p className="text-2xl font-bold mt-1">{unread}</p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="mt-2 flex items-center text-xs text-muted-foreground cursor-help">
+                  {unreadPercentage > 30 ? (
+                    <TrendingUp className="h-3 w-3 ml-1 text-amber-500" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 ml-1 text-green-500" />
+                  )}
+                  <span>{unreadPercentage}% من إجمالي الإشعارات</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>نسبة الإشعارات غير المقروءة من إجمالي الإشعارات</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="relative">
+          <Bell className="h-8 w-8 text-amber-500 opacity-80 group-hover:scale-110 transition-transform duration-300" />
+          <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+            {unread > 99 ? "99+" : unread}
+          </span>
+        </div>
+        <div className="absolute bottom-0 left-0 h-1 bg-amber-500 opacity-70" style={{ width: `${unreadPercentage}%` }}></div>
       </Card>
       
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium">أولوية حرجة</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-red-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{criticalCount}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {criticalCount > 0 ? 'تحتاج إلى اهتمام فوري' : 'لا توجد إشعارات حرجة'}
-          </p>
-        </CardContent>
+      <Card className="p-4 flex items-center justify-between relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+        <div className="z-10">
+          <p className="text-sm text-muted-foreground">الإشعارات الهامة</p>
+          <p className="text-2xl font-bold mt-1">{critical}</p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="mt-2 flex items-center text-xs text-muted-foreground cursor-help">
+                  {criticalPercentage > 10 ? (
+                    <TrendingUp className="h-3 w-3 ml-1 text-red-500" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 ml-1 text-green-500" />
+                  )}
+                  <span>{criticalPercentage}% من إجمالي الإشعارات</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>نسبة الإشعارات الهامة من إجمالي الإشعارات</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="relative">
+          <Bell className="h-8 w-8 text-red-500 opacity-80 group-hover:scale-110 transition-transform duration-300" />
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+            {critical > 99 ? "99+" : critical}
+          </span>
+        </div>
+        <div className="absolute bottom-0 left-0 h-1 bg-red-500 opacity-70" style={{ width: `${criticalPercentage}%` }}></div>
       </Card>
     </div>
   );

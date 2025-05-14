@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Filter, Plus, Search } from "lucide-react";
-import { Report } from "@/types/custom-reports";
+import { Report } from "@/hooks/useReports";
 import { useReports } from "@/hooks/useReports";
 import CustomReportBuilder from "@/components/reports/CustomReportBuilder";
 
@@ -18,7 +17,7 @@ const CustomReportsPage: React.FC = () => {
   
   const recentReports: Report[] = [
     {
-      id: "1",
+      id: "1", // Changed to string
       title: "تقرير المبيعات الشهري",
       name: "تقرير المبيعات الشهري",
       description: "تفاصيل المبيعات حسب المنتج والعميل للشهر الحالي",
@@ -27,11 +26,11 @@ const CustomReportsPage: React.FC = () => {
       favorite: true,
       author: "محمد أحمد",
       type: "monthly",
-      lastRun: new Date(2023, 4, 28),
-      dateCreated: new Date(2023, 4, 1)
+      createdAt: new Date(2023, 4, 1),
+      lastRun: new Date(2023, 4, 28)
     },
     {
-      id: "2",
+      id: "2", // Changed to string
       title: "تقرير المصروفات الربع سنوي",
       name: "تقرير المصروفات الربع سنوي",
       description: "تحليل المصروفات حسب الفئة والوقت للربع الحالي",
@@ -40,11 +39,11 @@ const CustomReportsPage: React.FC = () => {
       favorite: false,
       author: "ليلى سالم",
       type: "quarterly",
-      lastRun: new Date(2023, 4, 15),
-      dateCreated: new Date(2023, 3, 15)
+      createdAt: new Date(2023, 3, 15),
+      lastRun: new Date(2023, 4, 15)
     },
     {
-      id: "3",
+      id: "3", // Changed to string
       title: "تقرير المخزون اليومي",
       name: "تقرير المخزون اليومي",
       description: "ملخص مستويات المخزون وتحديثات المنتجات اليومية",
@@ -53,14 +52,14 @@ const CustomReportsPage: React.FC = () => {
       favorite: true,
       author: "خالد عبد الله",
       type: "daily",
-      lastRun: new Date(2023, 4, 29),
-      dateCreated: new Date(2023, 2, 1)
+      createdAt: new Date(2023, 2, 1),
+      lastRun: new Date(2023, 4, 29)
     }
   ];
 
   const savedReports: Report[] = [
     {
-      id: "101",
+      id: "101", // Changed to string
       title: "تقرير الميزانية السنوية",
       name: "تقرير الميزانية السنوية",
       description: "تحليل الميزانية والمصروفات للسنة المالية",
@@ -69,11 +68,11 @@ const CustomReportsPage: React.FC = () => {
       favorite: true,
       author: "سارة محمد",
       type: "annual",
-      lastRun: new Date(2023, 3, 1),
-      dateCreated: new Date(2023, 0, 15)
+      createdAt: new Date(2023, 0, 15),
+      lastRun: new Date(2023, 3, 1)
     },
     {
-      id: "102",
+      id: "102", // Changed to string
       title: "تقرير الأرباح والخسائر",
       name: "تقرير الأرباح والخسائر",
       description: "بيان الأرباح والخسائر ربع السنوي",
@@ -82,11 +81,11 @@ const CustomReportsPage: React.FC = () => {
       favorite: false,
       author: "أحمد علي",
       type: "quarterly",
-      lastRun: new Date(2023, 2, 31),
-      dateCreated: new Date(2022, 9, 1)
+      createdAt: new Date(2022, 9, 1),
+      lastRun: new Date(2023, 2, 31)
     },
     {
-      id: "103",
+      id: "103", // Changed to string
       title: "تقرير التدفقات النقدية",
       name: "تقرير التدفقات النقدية",
       description: "تحليل التدفقات النقدية الداخلة والخارجة",
@@ -95,8 +94,8 @@ const CustomReportsPage: React.FC = () => {
       favorite: true,
       author: "نورة إبراهيم",
       type: "monthly",
-      lastRun: new Date(2023, 4, 1),
-      dateCreated: new Date(2023, 1, 1)
+      createdAt: new Date(2023, 1, 1),
+      lastRun: new Date(2023, 4, 1)
     }
   ];
   

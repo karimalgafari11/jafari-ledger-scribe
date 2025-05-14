@@ -1,75 +1,71 @@
-
 import { RouteObject } from "react-router-dom";
-import AccountingDashboardPage from "@/pages/accounting/AccountingDashboardPage";
-import AccountsPage from "@/pages/accounting/AccountsPage";
+import AccountChartPage from "@/pages/accounting/AccountChartPage";
 import JournalEntriesPage from "@/pages/accounting/JournalEntriesPage";
 import LedgerPage from "@/pages/accounting/LedgerPage";
-import AccountingSettingsPage from "@/pages/accounting/AccountingSettingsPage";
 import CostCentersPage from "@/pages/accounting/CostCentersPage";
-import CashRegistersPage from "@/pages/accounting/CashRegistersPage";
-import CashTransactionsPage from "@/pages/accounting/CashTransactionsPage";
+import BudgetsPage from "@/pages/accounting/BudgetsPage";
+import AccountingSettingsPage from "@/pages/accounting/AccountingSettingsPage";
+import BankAccountsPage from "@/pages/accounting/BankAccountsPage";
 import CommercialPapersPage from "@/pages/accounting/CommercialPapersPage";
-import DueNotificationsPage from "@/pages/accounting/DueNotificationsPage";
 import AccountingRulesPage from "@/pages/accounting/AccountingRulesPage";
-import AutomaticEntriesPage from "@/pages/accounting/AutomaticEntriesPage";
-import ValidationRulesPage from "@/pages/accounting/ValidationRulesPage";
-import PDFInvoiceProcessorPage from "@/pages/accounting/PDFInvoiceProcessorPage";
+import CashRegisterPage from "@/pages/accounting/CashRegisterPage";
+import CashRegisterModulePage from "@/pages/accounting/CashRegisterModulePage";
 
 export const accountingRoutes: RouteObject[] = [
   {
-    path: "accounting",
-    element: <AccountingDashboardPage />,
+    path: "accounting/chart",
+    element: <AccountChartPage />,
   },
   {
     path: "accounting/accounts",
-    element: <AccountsPage />,
+    element: <AccountChartPage />,
   },
   {
-    path: "accounting/journal-entries",
+    path: "accounting/journals",
     element: <JournalEntriesPage />,
-  },
-  {
-    path: "accounting/pdf-invoice-processor",
-    element: <PDFInvoiceProcessorPage />,
   },
   {
     path: "accounting/ledger",
     element: <LedgerPage />,
   },
   {
-    path: "accounting/settings",
-    element: <AccountingSettingsPage />,
+    path: "accounting/ledger-module",
+    element: <LedgerPage />,
+  },
+  {
+    path: "accounting/journals/new",
+    element: <JournalEntriesPage />,
   },
   {
     path: "accounting/cost-centers",
     element: <CostCentersPage />,
   },
   {
-    path: "accounting/cash-registers",
-    element: <CashRegistersPage />,
+    path: "accounting/budgets",
+    element: <BudgetsPage />,
   },
   {
-    path: "accounting/cash-transactions",
-    element: <CashTransactionsPage />,
+    path: "accounting/settings",
+    element: <AccountingSettingsPage />,
+  },
+  {
+    path: "accounting/bank-accounts",
+    element: <BankAccountsPage />,
   },
   {
     path: "accounting/commercial-papers",
     element: <CommercialPapersPage />,
   },
   {
-    path: "accounting/due-notifications",
-    element: <DueNotificationsPage />,
-  },
-  {
-    path: "accounting/accounting-rules",
+    path: "accounting/rules",
     element: <AccountingRulesPage />,
   },
   {
-    path: "accounting/automatic-entries",
-    element: <AutomaticEntriesPage />,
+    path: "accounting/cashregister",
+    element: <CashRegisterPage />,
   },
   {
-    path: "accounting/validation-rules",
-    element: <ValidationRulesPage />,
-  },
+    path: "accounting/cashregister-module",
+    element: <CashRegisterModulePage />,
+  }
 ];

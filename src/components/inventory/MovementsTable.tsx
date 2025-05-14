@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Table, 
@@ -30,8 +29,7 @@ export function MovementsTable({
   selectedMovements,
   onToggleSelection
 }: MovementsTableProps) {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+  const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('ar-SA', { 
       year: 'numeric', 
       month: 'short', 
@@ -39,7 +37,7 @@ export function MovementsTable({
     }).format(date);
   };
 
-  const getMovementTypeBadge = (type: string) => {
+  const getMovementTypeBadge = (type: StockMovement['type']) => {
     switch (type) {
       case 'purchase':
       case 'inbound':

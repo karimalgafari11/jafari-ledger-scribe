@@ -1,7 +1,7 @@
 
-import React, { forwardRef } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
-import { EditableCell } from "../EditableCell";
+import { Input } from "@/components/ui/input";
 
 interface QuantityCellProps {
   quantity: number;
@@ -9,7 +9,7 @@ interface QuantityCellProps {
   isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTableCellElement>) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
   tabIndex?: number;
 }
 
@@ -22,21 +22,59 @@ export const QuantityCell = forwardRef<HTMLTableCellElement, QuantityCellProps>(
   onKeyDown,
   tabIndex
 }, ref) => {
+  const [inputValue, setInputValue] = useState(quantity.toString());
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(quantity.toString());
+    }
+  }, [isEditing, quantity]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow only numbers and decimal point
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    setInputValue(value);
+  };
+  
+  const handleBlur = () => {
+    const numValue = parseFloat(inputValue);
+    if (!isNaN(numValue) && numValue !== quantity) {
+      handleDirectEdit(index, 'quantity', numValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const numValue = parseFloat(inputValue);
+      if (!isNaN(numValue)) {
+        handleDirectEdit(index, 'quantity', numValue);
+      }
+    }
+  };
+  
   return (
     <TableCell 
-      className="px-3 py-2" 
-      ref={ref} 
-      tabIndex={tabIndex}
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'quantity')}
       onKeyDown={onKeyDown}
+      data-row-index={index}
+      data-cell-name="quantity"
+      ref={ref}
+      tabIndex={tabIndex}
     >
-      <EditableCell
-        value={quantity.toString()}
-        active={isEditing}
-        onActivate={() => handleCellClick(index, "quantity")}
-        onChange={(value) => handleDirectEdit(index, "quantity", parseFloat(value) || 0)}
-        type="number"
-        className="text-center"
-      />
+      {isEditing ? (
+        <Input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
+        />
+      ) : (
+        <span className="cursor-text">{quantity}</span>
+      )}
     </TableCell>
   );
 });

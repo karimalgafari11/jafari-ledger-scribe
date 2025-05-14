@@ -1,21 +1,39 @@
 
 import React from 'react';
+import { Link } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export interface NotificationContentProps {
+interface NotificationContentProps {
+  title: string;
   message: string;
-  title?: string;
-  read?: boolean;
+  read: boolean;
+  relatedEntityId?: string;
+  relatedEntityType?: string;
 }
 
-const NotificationContent: React.FC<NotificationContentProps> = ({ message, title, read }) => {
+const NotificationContent = ({ 
+  title, 
+  message, 
+  read,
+  relatedEntityId,
+  relatedEntityType 
+}: NotificationContentProps) => {
   return (
-    <div className="text-sm">
-      {title && (
-        <h3 className={`font-medium ${!read ? 'font-semibold' : ''}`}>
-          {title}
-        </h3>
+    <div className="flex-1 space-y-1">
+      <p className={cn("text-sm font-medium", !read && "font-semibold")}>
+        {title}
+      </p>
+      
+      <p className="text-xs text-muted-foreground">
+        {message}
+      </p>
+      
+      {relatedEntityId && relatedEntityType && (
+        <div className="flex items-center text-xs text-blue-600 pt-1">
+          <Link className="h-3 w-3 mr-1" />
+          <span className="hover:underline">عرض التفاصيل</span>
+        </div>
       )}
-      <p className="text-muted-foreground line-clamp-2">{message}</p>
     </div>
   );
 };

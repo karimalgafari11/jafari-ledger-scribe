@@ -20,9 +20,8 @@ export const useInventoryTransfer = () => {
   ): StockMovement => {
     const newTransfer: StockMovement = {
       id: uuidv4(),
-      date: new Date().toISOString(), // Changed from Date to string
+      date: new Date(),
       type: "transfer",
-      movementType: "transfer",
       productId,
       productName,
       itemName: productName, // Set alias for backward compatibility
@@ -34,7 +33,6 @@ export const useInventoryTransfer = () => {
       userId: "1",
       userName: "Admin",
       notes,
-      createdAt: new Date().toISOString()
     };
 
     setTransfers((prev) => [newTransfer, ...prev]);

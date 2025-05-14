@@ -1,116 +1,49 @@
-
 export interface Product {
   id: string;
   code: string;
   name: string;
   description?: string;
-  category?: string;
   price: number;
-  purchasePrice?: number;
-  costPrice?: number;
+  cost?: number;
+  quantity?: number;
   unit?: string;
-  quantity: number;
-  reorderLevel?: number;
-  manufacturer?: string;
-  barcode?: string;
+  category?: string;
+  categoryId?: string;
+  subcategory?: string;
+  subcategoryId?: string;
   brand?: string;
-  size?: string;
+  brandId?: string;
+  barcode?: string;
   sku?: string;
-  isActive: boolean;
+  image?: string;
+  taxRate?: number;
   createdAt?: string;
   updatedAt?: string;
-  images?: string[];
-  cost?: number; // Added for EditProductPage
-  taxRate?: number; // Added for EditProductPage
-  subcategory?: string; // Added for EditProductPage
+  
+  // Add missing properties that are being used in the codebase
+  costPrice?: number;
+  reorderLevel?: number;
+  isActive?: boolean;
+  productId?: string; // Used in QuoteToInvoicePage
+  size?: string; // Added size property to fix the errors
 }
 
-export interface ProductCategory {
-  id: string;
-  name: string;
-  description?: string;
-  parentId?: string;
-}
-
-export interface Warehouse {
-  id: string;
-  name: string;
-  location: string;
-  isMain: boolean;
-  isActive: boolean;
-}
-
-export interface InventoryMovement {
-  id: string;
-  productId: string;
-  warehouseId: string;
-  quantity: number;
-  direction: 'in' | 'out';
-  referenceType: 'purchase' | 'sale' | 'return' | 'transfer' | 'adjustment';
-  referenceId: string;
-  date: string;
-  cost: number;
-  notes?: string;
-}
-
-export interface StockBalance {
-  productId: string;
-  warehouseId: string;
-  quantity: number;
-  lastUpdated: string;
-}
-
-export interface InventoryCount {
-  id: string;
-  name: string;
-  date: string;
-  warehouseId: string;
-  warehouseName: string;
-  status: 'draft' | 'in_progress' | 'completed';
-  notes?: string;
-  createdBy: string;
-  createdAt: string;
-  completedAt?: string;
-  items: InventoryCountItem[];
-}
-
-export interface InventoryCountItem {
-  id: string;
-  countId: string;
-  productId: string;
-  itemId: string;
-  expectedQuantity: number;
-  actualQuantity: number;
-  difference: number;
-  itemName: string;
-  notes?: string;
-}
-
+// Add missing inventory-related interfaces
 export interface StockMovement {
   id: string;
-  date: string; // Changed from Date to string for consistency
+  date: Date;
   productId: string;
   productName: string;
-  productCode?: string;
-  fromWarehouseId?: string;
-  fromWarehouseName?: string;
-  toWarehouseId?: string;
-  toWarehouseName?: string;
+  itemName: string;
   quantity: number;
-  movementType: 'purchase' | 'sale' | 'transfer' | 'adjustment' | 'return';
-  referenceNumber?: string;
-  notes?: string;
-  createdBy?: string;
-  createdAt: string;
-  // Additional fields for compatibility
-  type: 'purchase' | 'sale' | 'transfer' | 'adjustment' | 'return' | 'inbound' | 'outbound' | 'damaged';
-  sourceWarehouse?: string;
-  sourceWarehouseName?: string;
+  type: "inbound" | "outbound" | "transfer" | "purchase" | "sale" | "return" | "adjustment" | "damaged";
+  sourceWarehouse: string;
+  sourceWarehouseName: string;
   destinationWarehouse?: string;
   destinationWarehouseName?: string;
-  itemName?: string;
-  userId?: string;
-  userName?: string;
+  userId: string;
+  userName: string;
+  notes?: string;
 }
 
 export interface ReorderItem {
@@ -129,8 +62,29 @@ export interface FilterOptions {
   brand: string;
   priceRange: { min: number; max: number };
   inStock: boolean | null;
-  status: string;
-  warehouse: string;
-  minPrice: number;
-  maxPrice: number;
+  
+  // Add the missing properties that are being used in the codebase
+  status?: string;
+  warehouse?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
+export interface InventoryCountItem {
+  itemId: string;
+  itemName: string;
+  expectedQuantity: number;
+  actualQuantity: number;
+  difference: number;
+  notes: string;
+}
+
+export interface InventoryCount {
+  id: string;
+  date: Date;
+  warehouseId: string;
+  warehouseName: string;
+  status: 'draft' | 'in_progress' | 'completed';
+  items: InventoryCountItem[];
+  notes: string;
 }

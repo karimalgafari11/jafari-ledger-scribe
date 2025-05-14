@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -6,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, Edit, Trash } from "lucide-react";
 import { Position } from "@/types/hr";
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   Table,
   TableHeader,
@@ -88,7 +86,6 @@ const initialPositions: Position[] = [
 const PositionsPage: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>(initialPositions);
   const [searchTerm, setSearchTerm] = useState("");
-  const { t } = useTranslation();
 
   const filteredPositions = positions.filter(position =>
     position.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,12 +93,12 @@ const PositionsPage: React.FC = () => {
   );
 
   return (
-    <PageContainer title={t("positions")}>
+    <PageContainer title="الوظائف والمناصب">
       <div className="container mx-auto px-4 py-6 rtl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">تعريف الوظائف والمناصب وهيكلها التنظيمي</h2>
           <Button onClick={() => console.log("إضافة منصب جديد")}>
-            {t("add")}
+            إضافة منصب جديد
           </Button>
         </div>
 
@@ -110,7 +107,7 @@ const PositionsPage: React.FC = () => {
             <div className="relative w-full md:max-w-sm">
               <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
               <Input
-                placeholder={t("search")}
+                placeholder="البحث عن منصب..."
                 className="pr-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -119,7 +116,7 @@ const PositionsPage: React.FC = () => {
 
             <div className="flex gap-2">
               <Button variant="outline">
-                {t("exportCsv")}
+                تصدير البيانات
               </Button>
             </div>
           </div>

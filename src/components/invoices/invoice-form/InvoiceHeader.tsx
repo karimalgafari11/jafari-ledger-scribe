@@ -1,26 +1,21 @@
 
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import { Input } from "@/components/ui/input";
-import { Pencil, Check, X } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Edit2, Save } from "lucide-react";
 
-export interface CompanyInfo {
+interface CompanyInfo {
   name: string;
-  logo?: string;
-  address: string;
   phone: string;
   email: string;
-  taxNumber: string;
-  website: string;
+  address: string;
+  isEditing: boolean;
 }
 
 interface InvoiceHeaderProps {
   companyInfo: CompanyInfo;
   toggleCompanyEdit: () => void;
-  handleCompanyInfoChange: (key: keyof CompanyInfo, value: string) => void;
+  handleCompanyInfoChange: (field: string, value: string) => void;
   showLogo?: boolean;
 }
 
@@ -30,143 +25,76 @@ export const InvoiceHeader: React.FC<InvoiceHeaderProps> = ({
   handleCompanyInfoChange,
   showLogo = true
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  
-  const startEditing = () => {
-    setIsEditing(true);
-    toggleCompanyEdit();
-  };
-  
-  const stopEditing = () => {
-    setIsEditing(false);
-    toggleCompanyEdit();
-  };
-
   return (
-    <Card className="print-section mb-4">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1">
-            {isEditing ? (
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="companyName">اسم الشركة</Label>
-                  <Input
-                    id="companyName"
-                    value={companyInfo.name}
-                    onChange={(e) => handleCompanyInfoChange('name', e.target.value)}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="companyPhone">رقم الهاتف</Label>
-                    <Input
-                      id="companyPhone"
-                      value={companyInfo.phone}
-                      onChange={(e) => handleCompanyInfoChange('phone', e.target.value)}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="companyEmail">البريد الإلكتروني</Label>
-                    <Input
-                      id="companyEmail"
-                      value={companyInfo.email}
-                      onChange={(e) => handleCompanyInfoChange('email', e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="companyAddress">العنوان</Label>
-                  <Textarea
-                    id="companyAddress"
-                    value={companyInfo.address}
-                    onChange={(e) => handleCompanyInfoChange('address', e.target.value)}
-                    rows={2}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="taxNumber">الرقم الضريبي</Label>
-                    <Input
-                      id="taxNumber"
-                      value={companyInfo.taxNumber}
-                      onChange={(e) => handleCompanyInfoChange('taxNumber', e.target.value)}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="website">الموقع الإلكتروني</Label>
-                    <Input
-                      id="website"
-                      value={companyInfo.website}
-                      onChange={(e) => handleCompanyInfoChange('website', e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{companyInfo.name || "اسم الشركة"}</h2>
-                <div className="text-gray-600 text-sm space-y-1">
-                  <p>{companyInfo.address || "عنوان الشركة"}</p>
-                  <p>هاتف: {companyInfo.phone || "000-0000-0000"}</p>
-                  <p>بريد إلكتروني: {companyInfo.email || "info@company.com"}</p>
-                  <p>الرقم الضريبي: {companyInfo.taxNumber || "000-000-000"}</p>
-                  <p>موقع إلكتروني: {companyInfo.website || "www.company.com"}</p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {showLogo && (
-            <div className="ml-6">
-              <div className="w-24 h-24 bg-gray-100 border flex items-center justify-center">
-                {companyInfo.logo ? (
-                  <img src={companyInfo.logo} alt="Company Logo" className="max-w-full max-h-full" />
-                ) : (
-                  <span className="text-gray-400 text-xs text-center">شعار الشركة</span>
-                )}
-              </div>
-            </div>
-          )}
+    <div className="flex justify-between items-start border-b border-gray-200 pb-1 mb-1 print:pb-2 print:mb-2">
+      {/* Company Logo (Left) */}
+      {showLogo && (
+        <div className="w-12 h-12 print:w-16 print:h-16">
+          <img 
+            src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
+            alt="Company Logo" 
+            className="w-full h-full object-contain" 
+          />
         </div>
-        
-        <div className="print-hide">
-          {isEditing ? (
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={stopEditing}
-              >
-                <X className="ml-1 h-4 w-4" />
-                إلغاء
-              </Button>
-              <Button
-                size="sm"
-                onClick={stopEditing}
-              >
-                <Check className="ml-1 h-4 w-4" />
-                حفظ
-              </Button>
+      )}
+
+      {/* Company Information (Center) */}
+      <div className="text-center flex-1 px-2">
+        {companyInfo.isEditing ? (
+          <div className="space-y-0.5">
+            <Input
+              value={companyInfo.name}
+              onChange={(e) => handleCompanyInfoChange('name', e.target.value)}
+              className="text-center font-bold h-5 text-xs"
+            />
+            <div className="flex gap-1 justify-center">
+              <Input
+                value={companyInfo.phone}
+                onChange={(e) => handleCompanyInfoChange('phone', e.target.value)}
+                className="text-center w-1/3 h-5 text-xs"
+              />
+              <Input
+                value={companyInfo.email}
+                onChange={(e) => handleCompanyInfoChange('email', e.target.value)}
+                className="text-center w-1/3 h-5 text-xs"
+              />
             </div>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={startEditing}
-              className="flex items-center text-gray-600"
-            >
-              <Pencil className="ml-1 h-4 w-4" />
-              تعديل معلومات الشركة
+            <Input
+              value={companyInfo.address}
+              onChange={(e) => handleCompanyInfoChange('address', e.target.value)}
+              className="text-center h-5 text-xs"
+            />
+            <Button onClick={toggleCompanyEdit} size="xs" className="h-5 text-xs">
+              <Save className="ml-1 h-3 w-3" />
+              حفظ
             </Button>
-          )}
+          </div>
+        ) : (
+          <div className="space-y-0.5 relative">
+            <h2 className="font-bold text-sm">{companyInfo.name}</h2>
+            <p className="text-xs">
+              {companyInfo.phone} | {companyInfo.email}
+            </p>
+            <p className="text-xs">{companyInfo.address}</p>
+            <Button
+              onClick={toggleCompanyEdit}
+              variant="ghost"
+              size="xs"
+              className="absolute -left-1 top-0 h-5 w-5 p-0.5 print-hide"
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Invoice Title (Right) */}
+      <div className="text-center w-16">
+        <div className="border border-gray-300 rounded-md p-1">
+          <h2 className="text-sm font-bold mb-0.5">فاتورة</h2>
+          <p className="text-xs">مبيعات</p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

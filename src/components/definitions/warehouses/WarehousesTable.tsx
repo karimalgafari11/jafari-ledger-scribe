@@ -82,7 +82,7 @@ export const WarehousesTable = ({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {warehouse.inventoryControl ? "آلي" : "يدوي"}
+                    {warehouse.inventoryControl === 'automatic' ? "آلي" : "يدوي"}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

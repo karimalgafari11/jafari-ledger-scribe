@@ -1,6 +1,19 @@
 
 import { useState, useEffect } from "react";
-import { Report } from "@/types/custom-reports"; 
+
+export interface Report {
+  id: string;
+  title: string;
+  name?: string; // Add this to make it compatible with both naming conventions
+  description: string;
+  date: string;
+  category: string | string[];
+  favorite: boolean;
+  author?: string;
+  type?: string | string[];
+  createdAt?: Date;
+  lastRun?: Date;
+}
 
 export const useReports = (initialReports: Report[]) => {
   const [reports, setReports] = useState<Report[]>(initialReports);
@@ -9,8 +22,7 @@ export const useReports = (initialReports: Report[]) => {
   
   // Filter reports based on search query and active category
   const filteredReports = reports.filter((report) => {
-    const matchesSearch = report.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       report.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCategory = activeCategory === 'all' || 

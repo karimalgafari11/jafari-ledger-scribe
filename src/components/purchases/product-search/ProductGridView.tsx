@@ -52,9 +52,9 @@ export const ProductGridView: React.FC<ProductGridViewProps> = ({
                   <span className="text-sm">{product.unit || ""}</span>
                   <span className="text-sm font-bold">{product.price?.toFixed(2)} ر.س</span>
                 </div>
-                {product.size && (
+                {product.sku && (
                   <div className="w-full text-right mt-1">
-                    <span className="text-xs text-gray-500">المقاس: {product.size}</span>
+                    <span className="text-xs text-gray-500">المقاس: {product.sku}</span>
                   </div>
                 )}
               </div>

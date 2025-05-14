@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, FileText } from "lucide-react";
+import { Edit, Trash2, Check, X } from "lucide-react";
 import { CashRegister } from "@/types/definitions";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -19,8 +19,7 @@ interface CashRegisterTableProps {
   isLoading: boolean;
   onEdit: (register: CashRegister) => void;
   onDelete: (register: CashRegister) => void;
-  onToggleStatus?: (id: string) => void;
-  onViewTransactions?: (register: CashRegister) => void;
+  onToggleStatus: (id: string) => void;
 }
 
 export const CashRegisterTable: React.FC<CashRegisterTableProps> = ({
@@ -29,7 +28,6 @@ export const CashRegisterTable: React.FC<CashRegisterTableProps> = ({
   onEdit,
   onDelete,
   onToggleStatus,
-  onViewTransactions,
 }) => {
   if (isLoading) {
     return (
@@ -74,7 +72,7 @@ export const CashRegisterTable: React.FC<CashRegisterTableProps> = ({
                   <Badge
                     variant={register.isActive ? "default" : "secondary"}
                     className="cursor-pointer"
-                    onClick={() => onToggleStatus && onToggleStatus(register.id)}
+                    onClick={() => onToggleStatus(register.id)}
                   >
                     {register.isActive ? "نشط" : "غير نشط"}
                   </Badge>
@@ -94,15 +92,6 @@ export const CashRegisterTable: React.FC<CashRegisterTableProps> = ({
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                  {onViewTransactions && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onViewTransactions(register)}
-                    >
-                      <FileText className="h-4 w-4" />
-                    </Button>
-                  )}
                 </TableCell>
               </TableRow>
             ))

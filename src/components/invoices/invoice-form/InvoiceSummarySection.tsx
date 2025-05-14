@@ -1,26 +1,23 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Invoice } from "@/types/invoices";
-import { formatCurrency } from "@/utils/formatters";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { InvoiceDiscountForm } from "./InvoiceDiscountForm";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tag, Plus } from "lucide-react";
 
-interface InvoiceSummaryProps {
+interface InvoiceSummarySectionProps {
   invoice: Invoice;
   isDiscountFormOpen: boolean;
-  calculateRemaining: () => number;
+  calculateRemaining: () => string;
   setIsDiscountFormOpen: (isOpen: boolean) => void;
-  onAmountPaidChange: (value: number) => void;
+  onAmountPaidChange: (amount: number) => void;
   handleApplyDiscount: (type: 'percentage' | 'fixed', value: number) => void;
-  showDiscount?: boolean;
-  showTax?: boolean;
+  showDiscount: boolean;
+  showTax: boolean;
 }
 
-export const InvoiceSummarySection: React.FC<InvoiceSummaryProps> = ({
+export const InvoiceSummarySection: React.FC<InvoiceSummarySectionProps> = ({
   invoice,
   isDiscountFormOpen,
   calculateRemaining,
@@ -28,129 +25,115 @@ export const InvoiceSummarySection: React.FC<InvoiceSummaryProps> = ({
   onAmountPaidChange,
   handleApplyDiscount,
   showDiscount = true,
-  showTax = true,
+  showTax = true
 }) => {
-  // للتأكد من أن لدينا بيانات صالحة للفاتورة
-  const subtotal = invoice?.subtotal || 0;
-  const discount = invoice?.discount || 0;
-  const discountType = invoice?.discountType || 'fixed';
-  const tax = invoice?.tax || 0;
-  const totalAmount = invoice?.totalAmount || 0;
-  const amountPaid = invoice?.amountPaid || 0;
-  const remaining = calculateRemaining();
+  // Calculate subtotal (sum of all item prices * quantities)
+  const subtotal = invoice.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  
+  // Calculate total tax
+  const totalTax = invoice.items.reduce((sum, item) => {
+    const itemSubtotal = item.price * item.quantity;
+    const taxAmount = itemSubtotal * (item.tax / 100);
+    return sum + taxAmount;
+  }, 0);
 
-  // تسجيل بيانات الفاتورة للتأكد من أنها تعمل بشكل صحيح
-  console.info("Invoice data in summary:", {
-    items: invoice.items?.length || 0,
+  // Calculate discount
+  const discountAmount = invoice.discountType === 'percentage'
+    ? (subtotal * (invoice.discount || 0) / 100)
+    : (invoice.discount || 0);
+
+  const hasDiscount = invoice.discount && invoice.discount > 0;
+
+  console.log("Invoice data in summary:", {
+    items: invoice.items.length,
     subtotal,
-    totalTax: tax,
-    discountAmount: discount,
-    totalAmount
+    totalTax,
+    discountAmount,
+    totalAmount: invoice.totalAmount
   });
 
   return (
-    <Card className="print-section mt-4">
-      <CardContent className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* العمود الأول - المجاميع الفرعية */}
-          <div>
+    <div className="mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="w-full md:col-span-1">
+          <CardContent className="p-3">
+            <h3 className="text-lg font-bold mb-2">ملخص الفاتورة</h3>
+            
             <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-600">المجموع الفرعي:</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-lg">المجموع الفرعي:</span>
+                <span className="text-lg font-semibold">{subtotal.toFixed(2)} ر.س</span>
               </div>
               
               {showDiscount && (
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">الخصم:</span>
                   <div className="flex items-center">
-                    <span className="font-medium ml-2">
-                      {discountType === 'percentage' ? `${discount}%` : formatCurrency(discount)}
-                    </span>
-                    <Popover open={isDiscountFormOpen} onOpenChange={setIsDiscountFormOpen}>
-                      <PopoverTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-6 text-xs px-2 print-hide"
-                        >
-                          تعديل
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-80">
-                        <InvoiceDiscountForm 
-                          onApply={handleApplyDiscount}
-                          currentDiscount={discount}
-                          currentType={discountType}
-                          onClose={() => setIsDiscountFormOpen(false)}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <span className="text-lg">الخصم:</span>
+                    {!isDiscountFormOpen && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setIsDiscountFormOpen(true)}
+                        className="ml-1 h-6 p-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
+                  <span className="text-lg font-semibold">
+                    {hasDiscount 
+                      ? `${discountAmount.toFixed(2)} ر.س ${invoice.discountType === 'percentage' ? `(${invoice.discount}%)` : ''}`
+                      : "0.00 ر.س"}
+                  </span>
                 </div>
               )}
               
               {showTax && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">الضريبة:</span>
-                  <span className="font-medium">{formatCurrency(tax)}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg">الضريبة (15%):</span>
+                  <span className="text-lg font-semibold">{totalTax.toFixed(2)} ر.س</span>
                 </div>
               )}
               
-              <div className="flex justify-between border-t pt-2">
-                <span className="font-semibold">الإجمالي:</span>
-                <span className="font-bold text-lg">{formatCurrency(totalAmount)}</span>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span className="text-xl font-bold">الإجمالي:</span>
+                <span className="text-xl font-bold">{invoice.totalAmount.toFixed(2)} ر.س</span>
               </div>
             </div>
-          </div>
-          
-          {/* العمود الثاني - المدفوع والمتبقي */}
-          <div className="md:border-r md:border-l md:px-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="amountPaid">المبلغ المدفوع</Label>
+          </CardContent>
+        </Card>
+        
+        <Card className="w-full md:col-span-1">
+          <CardContent className="p-3">
+            <h3 className="text-lg font-bold mb-2">الدفع</h3>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <label htmlFor="amountPaid" className="text-lg">المبلغ المدفوع:</label>
                 <Input
                   id="amountPaid"
                   type="number"
-                  min="0"
-                  step="0.01"
-                  value={amountPaid}
-                  onChange={(e) => onAmountPaidChange(parseFloat(e.target.value) || 0)}
-                  className="text-left"
+                  value={invoice.amountPaid || 0}
+                  onChange={(e) => onAmountPaidChange(Number(e.target.value))}
+                  className="w-40 h-9 text-lg"
                 />
               </div>
               
-              <div className="flex justify-between pt-2">
-                <span className="font-semibold">المتبقي:</span>
-                <span className={`font-bold ${remaining > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  {formatCurrency(remaining)}
+              <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span className="text-lg font-semibold">المبلغ المتبقي:</span>
+                <span className="text-xl font-bold">{calculateRemaining()} ر.س</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-lg">طريقة الدفع:</span>
+                <span className="text-lg font-semibold">
+                  {invoice.paymentMethod === 'cash' ? 'نقداً' : 'آجل'}
                 </span>
               </div>
             </div>
-          </div>
-          
-          {/* العمود الثالث - معلومات الدفع */}
-          <div>
-            <div className="border rounded p-3 bg-gray-50">
-              <h3 className="font-semibold mb-2">معلومات الدفع</h3>
-              <div className="text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span>طريقة الدفع:</span>
-                  <span className="font-medium">
-                    {invoice.paymentMethod === 'cash' ? 'نقدي' : 'آجل'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>حالة الدفع:</span>
-                  <span className={`font-medium ${remaining <= 0 ? 'text-green-600' : 'text-amber-600'}`}>
-                    {remaining <= 0 ? 'مدفوعة بالكامل' : 'غير مكتملة'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };

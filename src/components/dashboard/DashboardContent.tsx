@@ -1,210 +1,129 @@
 
-import React, { useState } from 'react';
-import DashboardWelcome from './DashboardWelcome';
-import { DashboardHeader } from './DashboardHeader';
-import { RecentInvoices } from './RecentInvoices';
-import { Tasks } from './Tasks';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDashboardData } from '@/hooks/useDashboardData';
-import { Skeleton } from '@/components/ui/skeleton';
-import UpdatesNotifier from './UpdatesNotifier';
-import { useDashboard } from '@/hooks/useDashboard';
-import DashboardShortcuts from './DashboardShortcuts';
-import KpiMetricsGrid from './KpiMetricsGrid';
-import ChartsGrid from './ChartsGrid';
+import React from "react";
+import { SystemAlert } from "@/types/ai";
+import { ShortcutItem, DisplayOptions } from "@/types/dashboard";
+import StatsCards from "@/components/dashboard/StatsCards";
+import KpiMetricsGrid from "@/components/dashboard/KpiMetricsGrid";
+import ChartsGrid from "@/components/dashboard/ChartsGrid";
+import FinancialDecisionsWidget from "@/components/ai/FinancialDecisionsWidget";
+import { useIsMobile } from "@/hooks/use-mobile";
+import InteractiveLayout from "@/components/interactive/InteractiveLayout";
+import { useAiAssistant } from "@/hooks/useAiAssistant";
+import { ChartData } from "@/types/custom-reports";
+import DashboardShortcuts from "@/components/dashboard/DashboardShortcuts";
 
-const DashboardContent = () => {
-  const { totalRevenue, newCustomers, totalOrders, averageOrderValue, recentInvoices, tasks, isLoading, error } = useDashboardData();
-  
-  // Use the dashboard hook to get shortcuts, KPIs and chart data
-  const {
-    displayOptions,
-    shortcuts,
-    dashboardKpis,
-    salesData,
-    profitData,
-    customerDebtData,
-    supplierCreditData,
-    costCenterData,
-    dailySalesData,
-    alerts
-  } = useDashboard();
-  
-  // Dashboard Welcome state
-  const [date, setDate] = useState<Date>(new Date());
-  const [period, setPeriod] = useState<string>("monthly");
-  
-  const handleViewAllAlerts = () => {
-    console.log("View all alerts clicked");
-    // Navigate to alerts page or open alerts dialog in a real implementation
-  };
-  
-  if (isLoading) {
-    return (
-      <div className="px-4 py-6 space-y-6">
-        <DashboardHeader />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>إجمالي الإيرادات</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-32" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>عملاء جدد</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-32" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>إجمالي الطلبات</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-32" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>متوسط قيمة الطلب</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-32" />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>أحدث الفواتير</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-48" />
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>المهام</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-48" />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+interface DashboardContentProps {
+  totalSales: number;
+  totalExpenses: number;
+  netProfit: number;
+  profitMargin: string;
+  overdueInvoices: number;
+  overdueTotalAmount: number;
+  kpis: Array<{
+    title: string;
+    value: string;
+    status: "up" | "down" | "neutral";
+    description: string;
+  }>;
+  salesData: ChartData;
+  profitData: ChartData;
+  customerDebtData: ChartData;
+  supplierCreditData: ChartData;
+  costCenterData: ChartData;
+  dailySalesData: ChartData;
+  systemAlerts: SystemAlert[];
+  interactiveMode?: boolean;
+  displayOptions: DisplayOptions;
+  shortcuts: ShortcutItem[];
+}
 
-  if (error) {
-    return (
-      <div className="px-4 py-6 space-y-6">
-        <DashboardHeader />
-        <div className="text-red-500">Error: {error}</div>
-      </div>
-    );
-  }
+const DashboardContent: React.FC<DashboardContentProps> = ({
+  totalSales,
+  totalExpenses,
+  netProfit,
+  profitMargin,
+  overdueInvoices,
+  overdueTotalAmount,
+  kpis,
+  salesData,
+  profitData,
+  customerDebtData,
+  supplierCreditData,
+  costCenterData,
+  dailySalesData,
+  systemAlerts,
+  interactiveMode = false,
+  displayOptions,
+  shortcuts
+}) => {
+  const isMobile = useIsMobile();
+  const { analyzePerformance } = useAiAssistant();
+  const performance = analyzePerformance();
 
-  return (
-    <div className="px-4 py-6 space-y-6">
-      <DashboardWelcome 
-        date={date}
-        onDateChange={setDate}
-        period={period}
-        onPeriodChange={setPeriod}
-        userName="المستخدم"
-        companyName="نظام المحاسبة"
-      />
-      <UpdatesNotifier />
-      
-      {/* Render the shortcuts section if enabled in displayOptions */}
-      {displayOptions.showStats && (
+  const dashboardContent = (
+    <div className="w-full max-w-full">
+      {/* عرض الاختصارات إذا كان هناك اختصارات مفعلة */}
+      {shortcuts && shortcuts.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-xl font-bold mb-3">الاختصارات السريعة</h2>
           <DashboardShortcuts shortcuts={shortcuts} />
         </div>
       )}
 
-      <DashboardHeader />
-      
-      {/* Render the statistics cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>إجمالي الإيرادات</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalRevenue}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>عملاء جدد</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold flex items-center gap-2">
-              {newCustomers}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>إجمالي الطلبات</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalOrders}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>متوسط قيمة الطلب</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageOrderValue}</div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Render KPI metrics if enabled in displayOptions */}
-      {displayOptions.showKpis && (
-        <KpiMetricsGrid metrics={dashboardKpis} />
+      {/* بطاقات الإحصائيات الرئيسية */}
+      {displayOptions.showStats && (
+        <StatsCards 
+          totalSales={totalSales} 
+          totalExpenses={totalExpenses} 
+          netProfit={netProfit} 
+          profitMargin={profitMargin} 
+          overdueInvoices={overdueInvoices} 
+          overdueTotalAmount={overdueTotalAmount} 
+        />
       )}
-      
-      {/* Render charts if enabled in displayOptions */}
+
+      {/* مؤشرات الأداء الرئيسية */}
+      {displayOptions.showKpis && (
+        <KpiMetricsGrid metrics={kpis} />
+      )}
+
+      {/* المخططات والرسوم البيانية */}
       {displayOptions.showCharts && (
         <ChartsGrid 
-          salesData={salesData}
-          profitData={profitData}
-          customerDebtData={customerDebtData}
-          supplierCreditData={supplierCreditData}
-          costCenterData={costCenterData}
-          dailySalesData={dailySalesData}
-          systemAlerts={alerts}
-          onViewAllAlerts={handleViewAllAlerts}
+          salesData={salesData} 
+          profitData={profitData} 
+          customerDebtData={customerDebtData} 
+          supplierCreditData={supplierCreditData} 
+          costCenterData={costCenterData} 
+          dailySalesData={dailySalesData} 
+          profitMargin={profitMargin} 
+          systemAlerts={systemAlerts} 
+          interactiveMode={interactiveMode}
         />
       )}
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle>أحدث الفواتير</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentInvoices invoices={recentInvoices} />
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle>المهام</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tasks tasks={tasks} />
-          </CardContent>
-        </Card>
-      </div>
+      {/* FinancialDecisionsWidget من النظام الذكي */}
+      {displayOptions.showAiWidget && performance && (
+        <div className="mt-6 mb-6">
+          <FinancialDecisionsWidget performance={performance} />
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="w-full flex-1 overflow-auto">
+      {interactiveMode ? (
+        <InteractiveLayout 
+          enableDrag={true} 
+          enableZoom={true}
+          showControls={false}
+          className="h-full w-full"
+        >
+          {dashboardContent}
+        </InteractiveLayout>
+      ) : (
+        dashboardContent
+      )}
     </div>
   );
 };

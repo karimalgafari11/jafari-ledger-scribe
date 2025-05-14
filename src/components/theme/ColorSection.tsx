@@ -1,13 +1,14 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeColors } from "@/types/theme";
 import { Button } from "@/components/ui/button";
 import { Check, Palette, Pipette } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ColorPicker } from "./ColorPicker";
 
 interface ColorSectionProps {
   colors: ThemeColors;
@@ -40,6 +41,34 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
       }
     });
   };
+  
+  const ColorSelector = ({ id, label, color, description, onChange }: { 
+    id: string, 
+    label: string, 
+    color: string,
+    description: string,
+    onChange: (value: string) => void 
+  }) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center gap-2">
+        <div 
+          className="w-8 h-8 rounded-full border"
+          style={{ backgroundColor: color }}
+        />
+        <Input
+          id={id}
+          type="color"
+          value={color}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full h-8"
+        />
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {description}
+      </p>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -58,7 +87,7 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button size="sm" variant="outline" className="flex items-center gap-1">
-                      <Palette className="h-4 w-4 ml-1" />
+                      <Palette className="h-4 w-4 mr-1" />
                       <span>ألوان معدة مسبقاً</span>
                     </Button>
                   </PopoverTrigger>
@@ -84,19 +113,19 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ColorPicker 
+                <ColorSelector 
                   id="primaryColor"
                   label="اللون الرئيسي"
                   color={colors.primary}
-                  description="يستخدم للألوان الأساسية في التطبيق والأزرار الرئيسية."
+                  description="يستخدم للألوان الأساسية في التطبيق"
                   onChange={(value) => onColorChange('primary', value)}
                 />
                 
-                <ColorPicker 
+                <ColorSelector 
                   id="secondaryColor"
                   label="اللون الثانوي"
                   color={colors.secondary}
-                  description="يستخدم للخلفيات والعناصر الثانوية."
+                  description="يستخدم للخلفيات والعناصر الثانوية"
                   onChange={(value) => onColorChange('secondary', value)}
                 />
               </div>
@@ -104,29 +133,29 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
               <Separator className="my-2" />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ColorPicker 
+                <ColorSelector 
                   id="backgroundColor"
                   label="لون الخلفية"
                   color={colors.background}
-                  description="لون خلفية صفحات التطبيق."
+                  description="لون خلفية صفحات التطبيق"
                   onChange={(value) => onColorChange('background', value)}
                 />
                 
-                <ColorPicker 
+                <ColorSelector 
                   id="headerColor"
                   label="لون الترويسة"
                   color={colors.header}
-                  description="لون ترويسة التطبيق (الشريط العلوي)."
+                  description="لون ترويسة التطبيق (الشريط العلوي)"
                   onChange={(value) => onColorChange('header', value)}
                 />
               </div>
               
               <div className="space-y-2">
-                <ColorPicker 
+                <ColorSelector 
                   id="buttonColor"
                   label="لون الأزرار"
                   color={colors.button}
-                  description="لون الأزرار الرئيسية في التطبيق."
+                  description="لون الأزرار الرئيسية في التطبيق"
                   onChange={(value) => onColorChange('button', value)}
                 />
               </div>
@@ -142,29 +171,29 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ColorPicker 
+                <ColorSelector 
                   id="textPrimaryColor"
                   label="لون النص الأساسي"
                   color={colors.textPrimary}
-                  description="لون النص الأساسي المستخدم في معظم أجزاء التطبيق."
+                  description="لون النص الأساسي في التطبيق"
                   onChange={(value) => onColorChange('textPrimary', value)}
                 />
                 
-                <ColorPicker 
+                <ColorSelector 
                   id="textSecondaryColor"
                   label="لون النص الثانوي"
                   color={colors.textSecondary}
-                  description="لون النص الثانوي والوصفي، يستخدم للشروحات والتفاصيل."
+                  description="لون النص الثانوي والوصفي"
                   onChange={(value) => onColorChange('textSecondary', value)}
                 />
               </div>
               
               <div className="space-y-2">
-                <ColorPicker 
+                <ColorSelector 
                   id="linkColor"
                   label="لون الروابط"
                   color={colors.link}
-                  description="لون الروابط النصية في التطبيق."
+                  description="لون الروابط في التطبيق"
                   onChange={(value) => onColorChange('link', value)}
                 />
               </div>
@@ -189,19 +218,19 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ColorPicker 
+                <ColorSelector 
                   id="sidebarBackgroundColor"
                   label="خلفية القائمة الجانبية"
                   color={colors.sidebar.background}
-                  description="لون خلفية القائمة الجانبية."
+                  description="لون خلفية القائمة الجانبية"
                   onChange={(value) => onSidebarColorChange('background', value)}
                 />
                 
-                <ColorPicker
+                <ColorSelector 
                   id="sidebarForegroundColor"
                   label="لون النص الرئيسي"
                   color={colors.sidebar.foreground}
-                  description="لون النص الرئيسي في القائمة الجانبية."
+                  description="لون النص الرئيسي في القائمة الجانبية"
                   onChange={(value) => onSidebarColorChange('foreground', value)}
                 />
               </div>
@@ -209,37 +238,37 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
               <Separator className="my-2" />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ColorPicker 
+                <ColorSelector 
                   id="sidebarItemActiveColor"
                   label="لون العنصر النشط"
                   color={colors.sidebar.item.active}
-                  description="لون خلفية العنصر النشط في القائمة الجانبية."
+                  description="لون خلفية العنصر النشط في القائمة الجانبية"
                   onChange={(value) => onSidebarColorChange('item.active', value)}
                 />
                 
-                <ColorPicker 
+                <ColorSelector 
                   id="sidebarItemHoverColor"
                   label="لون التحويم"
                   color={colors.sidebar.item.hover}
-                  description="لون العنصر عند المرور فوقه بالماوس."
+                  description="لون العنصر عند المرور فوقه بالماوس"
                   onChange={(value) => onSidebarColorChange('item.hover', value)}
                 />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ColorPicker 
+                <ColorSelector 
                   id="sidebarItemTextColor"
                   label="لون النص"
                   color={colors.sidebar.item.text}
-                  description="لون نص العناصر في القائمة الجانبية."
+                  description="لون نص العناصر في القائمة الجانبية"
                   onChange={(value) => onSidebarColorChange('item.text', value)}
                 />
                 
-                <ColorPicker
+                <ColorSelector 
                   id="sidebarItemActiveTextColor"
                   label="لون نص العنصر النشط"
                   color={colors.sidebar.item.activeText}
-                  description="لون نص العنصر النشط في القائمة."
+                  description="لون نص العنصر النشط في القائمة"
                   onChange={(value) => onSidebarColorChange('item.activeText', value)}
                 />
               </div>

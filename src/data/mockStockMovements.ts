@@ -4,7 +4,7 @@ import { StockMovement } from "@/types/inventory";
 export const mockStockMovements: StockMovement[] = [
   {
     id: "1",
-    date: "2025-04-25", // Changed from Date to string
+    date: new Date(2025, 3, 25),
     productId: "1",
     productName: "قميص قطني",
     itemName: "قميص قطني",
@@ -16,13 +16,11 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "المستودع الرئيسي",
     userId: "1",
     userName: "Admin",
-    notes: "استلام طلبية شهرية",
-    movementType: "purchase",
-    createdAt: "2025-04-25"
+    notes: "استلام طلبية شهرية"
   },
   {
     id: "2",
-    date: "2025-04-24", // Changed from Date to string
+    date: new Date(2025, 3, 24),
     productId: "2",
     productName: "بنطلون جينز",
     itemName: "بنطلون جينز",
@@ -34,13 +32,11 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "فرع الرياض",
     userId: "1",
     userName: "Admin",
-    notes: "طلب عادي من الفرع",
-    movementType: "sale",
-    createdAt: "2025-04-24"
+    notes: "طلب عادي من الفرع"
   },
   {
     id: "3",
-    date: "2025-04-23", // Changed from Date to string
+    date: new Date(2025, 3, 23),
     productId: "3",
     productName: "حذاء رياضي",
     itemName: "حذاء رياضي",
@@ -52,13 +48,11 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "فرع جدة",
     userId: "1",
     userName: "Admin",
-    notes: "نقل مخزون بين الفروع",
-    movementType: "transfer",
-    createdAt: "2025-04-23"
+    notes: "نقل مخزون بين الفروع"
   },
   {
     id: "4",
-    date: "2025-04-22", // Changed from Date to string
+    date: new Date(2025, 3, 22),
     productId: "4",
     productName: "ساعة يد",
     itemName: "ساعة يد",
@@ -70,13 +64,11 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "المستودع الرئيسي",
     userId: "1",
     userName: "Admin",
-    notes: "طلبية خاصة",
-    movementType: "purchase",
-    createdAt: "2025-04-22"
+    notes: "طلبية خاصة"
   },
   {
     id: "5",
-    date: "2025-04-21", // Changed from Date to string
+    date: new Date(2025, 3, 21),
     productId: "5",
     productName: "نظارة شمسية",
     itemName: "نظارة شمسية",
@@ -88,13 +80,11 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "فرع الدمام",
     userId: "1",
     userName: "Admin",
-    notes: "طلب عاجل",
-    movementType: "sale",
-    createdAt: "2025-04-21"
+    notes: "طلب عاجل"
   },
   {
     id: "6",
-    date: "2025-04-20", // Changed from Date to string
+    date: new Date(2025, 3, 20),
     productId: "6",
     productName: "حقيبة ظهر",
     itemName: "حقيبة ظهر",
@@ -106,13 +96,11 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "فرع جدة",
     userId: "1",
     userName: "Admin",
-    notes: "إعادة توزيع المخزون",
-    movementType: "transfer",
-    createdAt: "2025-04-20"
+    notes: "إعادة توزيع المخزون"
   },
   {
     id: "7",
-    date: "2025-04-19", // Changed from Date to string
+    date: new Date(2025, 3, 19),
     productId: "7",
     productName: "سماعات لاسلكية",
     itemName: "سماعات لاسلكية",
@@ -124,8 +112,6 @@ export const mockStockMovements: StockMovement[] = [
     destinationWarehouseName: "المستودع الرئيسي",
     userId: "1",
     userName: "Admin",
-    notes: "وصول طلبية جديدة",
-    movementType: "purchase",
-    createdAt: "2025-04-19"
+    notes: "وصول طلبية جديدة"
   }
 ];

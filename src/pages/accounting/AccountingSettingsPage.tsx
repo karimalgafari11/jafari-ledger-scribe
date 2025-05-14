@@ -1,17 +1,16 @@
+import React from "react";
+import { Layout } from "@/components/Layout";
+import { Header } from "@/components/Header";
 
-import React from 'react';
-import { Layout } from '@/components/Layout';
-import { PageContainer } from '@/components/PageContainer';
-
-const AccountingSettingsPage: React.FC = () => {
+const AccountingSettingsPage = () => {
   return (
-    <Layout>
-      <PageContainer title="إعدادات المحاسبة">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">إعدادات المحاسبة</h1>
-          <p>إدارة إعدادات نظام المحاسبة.</p>
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full">
+        <Header title="الإعدادات المحاسبية" showBack={true} />
+        <div className="flex-1 overflow-auto p-6">
+          {/* محتوى الصفحة */}
         </div>
-      </PageContainer>
+      </div>
     </Layout>
   );
 };

@@ -7,7 +7,7 @@ import CustomerStatementListPage from "@/pages/customers/CustomerStatementListPa
 import CustomerReportsPage from "@/pages/customers/CustomerReportsPage";
 import CustomersModulePage from "@/pages/customers/CustomersModulePage";
 
-export const customersRoutes: RouteObject[] = [
+export const customerRoutes: RouteObject[] = [
   {
     path: "customers",
     element: <CustomersPage />,

@@ -48,9 +48,9 @@ export const BanksTable = ({
               banks.map((bank) => (
                 <TableRow key={bank.id}>
                   <TableCell>{bank.name}</TableCell>
-                  <TableCell>{bank.branch || "-"}</TableCell>
-                  <TableCell dir="ltr">{bank.accountNumber || "-"}</TableCell>
-                  <TableCell>{bank.currency || "-"}</TableCell>
+                  <TableCell>{bank.branch}</TableCell>
+                  <TableCell dir="ltr">{bank.accountNumber}</TableCell>
+                  <TableCell>{bank.currency}</TableCell>
                   <TableCell dir="ltr">{bank.iban || "-"}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

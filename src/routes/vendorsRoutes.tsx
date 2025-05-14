@@ -25,10 +25,6 @@ export const vendorRoutes: RouteObject[] = [
     element: <VendorStatementListPage />,
   },
   {
-    path: "vendors/statement",
-    element: <VendorStatementListPage />,
-  },
-  {
     path: "vendors/reports",
     element: <VendorReportsPage />,
   },

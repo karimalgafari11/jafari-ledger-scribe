@@ -1,13 +1,15 @@
 
-// Create a simplified translation hook that just returns Arabic text
+import { useAppContext } from "@/contexts/AppContext";
+import { translations } from "@/translations";
+
+type TranslationKey = keyof typeof translations.en;
 
 export function useTranslation() {
-  // Since we're only using Arabic now, we can simplify this hook
-  const t = (key: string): string => {
-    // This would normally look up translations, but we'll just return the key for now
-    // as our system is Arabic only
-    return key;
+  const { language } = useAppContext();
+
+  const t = (key: TranslationKey): string => {
+    return translations[language][key] || key;
   };
 
-  return { t, language: 'ar' };
+  return { t, language };
 }

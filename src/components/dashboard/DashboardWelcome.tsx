@@ -1,51 +1,47 @@
 
-import React from 'react';
-import { CalendarIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { ReactNode } from "react";
+import { Header } from "@/components/Header";
+import DashboardFilters from "@/components/dashboard/DashboardFilters";
+import { DateRange } from "react-day-picker";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardWelcomeProps {
-  date?: Date;
-  onDateChange?: (date: Date) => void;
-  period?: string;
-  onPeriodChange?: (period: string) => void;
-  userName?: string;
-  companyName?: string;
+  date: DateRange;
+  onDateChange: (date: DateRange) => void;
+  period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  onPeriodChange: (value: any) => void;
+  branch: string;
+  onBranchChange: (value: string) => void;
+  children?: ReactNode;
 }
 
 const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
-  date = new Date(),
+  date,
   onDateChange,
-  period = 'monthly',
+  period,
   onPeriodChange,
-  userName = 'المستخدم',
-  companyName = 'شركتي'
+  branch,
+  onBranchChange,
+  children
 }) => {
-  const formattedDate = new Intl.DateTimeFormat('ar-SA', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
+  const isMobile = useIsMobile();
 
   return (
-    <Card className="mb-6 border-none bg-gradient-to-r from-blue-50 to-indigo-50">
-      <CardContent className="pt-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-blue-900 mb-1">مرحبًا {userName}!</h1>
-            <p className="text-blue-700 flex items-center">
-              <CalendarIcon className="ml-2 h-4 w-4 text-blue-500" />
-              {formattedDate}
-            </p>
-          </div>
-          <div className="mt-3 md:mt-0">
-            <p className="text-sm text-blue-700">
-              نظام {companyName} المحاسبي
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col md:flex-row items-center justify-between bg-blue-500 w-full">
+      <Header title="لوحة التحكم الرئيسية">
+        {children}
+      </Header>
+      <div className={`w-full ${isMobile ? 'px-2 py-2' : ''}`}>
+        <DashboardFilters 
+          date={date} 
+          onDateChange={onDateChange} 
+          period={period} 
+          onPeriodChange={value => onPeriodChange(value)} 
+          branch={branch} 
+          onBranchChange={onBranchChange} 
+        />
+      </div>
+    </div>
   );
 };
 

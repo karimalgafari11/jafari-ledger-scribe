@@ -1,5 +1,5 @@
 
-import { Settings, Users, ShieldAlert, Database, Activity, Building, Bell, Palette, LayoutDashboard, Braces, Download } from "lucide-react";
+import { Settings, Users, ShieldAlert, Database, Activity, Building, Bell, Palette, LayoutDashboard, Braces } from "lucide-react";
 import { MenuItem } from "./types";
 
 export const settingsItems: MenuItem[] = [
@@ -38,7 +38,7 @@ export const settingsItems: MenuItem[] = [
         icon: Building,
       },
       {
-        label: "إعدادات الإشعارات",
+        label: "الإشعارات",
         path: "/settings/notifications",
         icon: Bell,
       },
@@ -56,11 +56,6 @@ export const settingsItems: MenuItem[] = [
         label: "إعدادات الذكاء الاصطناعي",
         path: "/settings/ai-engine",
         icon: Braces,
-      },
-      {
-        label: "التحديثات والإصدارات",
-        path: "/settings/updates",
-        icon: Download,
       },
     ],
   },

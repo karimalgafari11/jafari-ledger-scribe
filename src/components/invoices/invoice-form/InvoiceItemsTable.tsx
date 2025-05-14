@@ -1,231 +1,355 @@
 
-import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import React, { useState, useRef, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TableActionButtons } from "./table-components/TableActionButtons";
-import { ProductSearchInput } from "./table-components/ProductSearchInput";
+import { Table, TableBody } from "@/components/ui/table";
+import { Plus, Search } from "lucide-react";
 import { InvoiceItem } from "@/types/invoices";
-import { useInvoiceItemsTable } from "./hooks/useInvoiceItemsTable";
-import { InvoiceItemForm } from "./InvoiceItemForm";
-import { Trash2, Edit } from "lucide-react";
+import { InvoiceItemRow } from "./InvoiceItemRow";
+import { InvoiceItemSection } from "./InvoiceItemSection";
+import { useInvoiceTable } from "@/hooks/sales/useInvoiceTable";
+import { InvoiceSettingsType } from "./InvoiceSettings";
 import { QuickProductSearch } from "./QuickProductSearch";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Product } from "@/types/inventory";
+import { v4 as uuidv4 } from "uuid";
+
+// Import the newly created components
+import { TableHeader } from "./table-components/TableHeader";
+import { TableColumns } from "./table-components/TableColumns";
+import { TableFooter } from "./table-components/TableFooter";
+import { EmptyTableContent } from "./table-components/EmptyTableContent";
+import { TableStyles } from "./table-components/TableStyles";
+import { useTableInitialFocus } from "./table-components/TableInitialFocus";
+import { TableKeyboardNavigation } from "./table-components/TableKeyboardNavigation";
+import { ItemFormDialog } from "./table-components/ItemFormDialog";
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
-  isAddingItem?: boolean;
-  editingItemIndex?: number | null;
-  tableWidth?: number;
-  tableRef?: React.RefObject<HTMLDivElement>;
-  setIsAddingItem?: (isAdding: boolean) => void;
-  handleEditItem?: (index: number) => void;
-  handleResizeStart?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  isAddingItem: boolean;
+  editingItemIndex: number | null;
+  tableWidth: number;
+  tableRef: React.RefObject<HTMLDivElement>;
+  setIsAddingItem: (isAdding: boolean) => void;
+  handleEditItem: (index: number) => void;
+  handleResizeStart: (e: React.MouseEvent) => void;
   onRemoveItem: (index: number) => void;
   onAddItem: (item: Partial<InvoiceItem>) => void;
   onUpdateItem: (index: number, item: Partial<InvoiceItem>) => void;
-  settings?: {
-    showItemCodes?: boolean;
-    showItemNotes?: boolean;
-    fontSize?: 'small' | 'medium' | 'large';
-    tableColumns?: string[];
-    tableWidth?: number;
-  }
+  settings?: InvoiceSettingsType;
 }
 
 export const InvoiceItemsTable: React.FC<InvoiceItemsTableProps> = ({
   items,
   isAddingItem,
   editingItemIndex,
-  tableWidth = 100,
+  tableWidth,
   tableRef,
-  setIsAddingItem = () => {},
-  handleEditItem = () => {},
-  handleResizeStart = () => {},
+  setIsAddingItem,
+  handleEditItem,
+  handleResizeStart,
   onRemoveItem,
   onAddItem,
   onUpdateItem,
-  settings = {}
+  settings
 }) => {
-  const {
-    searchTerm,
-    isSearching,
-    searchResults,
-    quickSearchActive,
-    showItemForm,
-    showItemDialog,
-    currentEditItem,
-    handleSearchChange,
-    toggleSearch,
-    handleQuickSelect,
-    handleRowClick,
-    handleAddNewItem,
-    handleFormCancel,
-    handleFormSubmit,
-    setQuickSearchActive,
-    setShowItemDialog,
-  } = useInvoiceItemsTable(items, onAddItem, onRemoveItem);
+  // عرض أكواد العناصر
+  const showItemCodes = settings?.showItemCodes !== false;
+  // عرض ملاحظات العناصر
+  const showItemNotes = settings?.showItemNotes !== false;
 
-  const fontSize = settings.fontSize || 'medium';
-  const fontSizeClass = fontSize === 'small' ? 'text-xs' : fontSize === 'large' ? 'text-base' : 'text-sm';
-  
-  // إظهار قائمة الأصناف
-  const handleUpdateItemForm = (index: number, item: Partial<InvoiceItem>) => {
-    onUpdateItem(index, item);
+  const [editingItem, setEditingItem] = useState<InvoiceItem | undefined>(
+    editingItemIndex !== null ? items[editingItemIndex] : undefined
+  );
+  const [showProductSearch, setShowProductSearch] = useState(false);
+  const [tableHasFocus, setTableHasFocus] = useState(false);
+  const [showItemDialog, setShowItemDialog] = useState(false); // إضافة حالة للتحكم في ظهور نافذة إضافة الصنف
+  const [currentEditItem, setCurrentEditItem] = useState<InvoiceItem | null>(null); // حالة لتخزين العنصر الحالي للتحرير
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [firstRender, setFirstRender] = useState(true); // لتتبع التحميل الأولي
+
+  // استخدام هوك لإدارة جدول الفاتورة
+  const {
+    activeSearchCell,
+    showGridLines,
+    isDenseView,
+    handleCellClick,
+    handleDirectEdit,
+    handleProductSelect,
+    handleKeyNavigation,
+    cellRefs,
+    isEditingCell,
+    toggleGridLines,
+    toggleDenseView,
+    handleTableClick,
+    focusCell
+  } = useInvoiceTable({
+    items,
+    onUpdateItem,
+    onRemoveItem,
+    isAddingItem,
+    editingItemIndex,
+    setEditingItemIndex: handleEditItem
+  });
+
+  // استخدام هوك التركيز الأولي
+  useTableInitialFocus({
+    items,
+    isAddingItem,
+    editingItemIndex,
+    activeSearchCell,
+    showItemCodes,
+    focusCell,
+    firstRender,
+    setFirstRender
+  });
+
+  // التعامل مع التركيز على الجدول
+  const handleTableFocus = () => {
+    setTableHasFocus(true);
+  };
+
+  const handleTableBlur = (e: React.FocusEvent) => {
+    // التحقق إذا كان التركيز لا يزال ضمن الجدول
+    if (!tableContainerRef.current?.contains(e.relatedTarget as Node)) {
+      setTableHasFocus(false);
+    }
+  };
+
+  // مقبض لإضافة عنصر جديد
+  const handleAddItemClick = () => {
+    if (editingItemIndex === null && !isAddingItem) {
+      setShowItemDialog(true);
+      setCurrentEditItem(null);
+    }
+  };
+
+  // مقبضات للتحرير والإلغاء
+  const handleCancelEdit = () => {
+    handleEditItem(null);
+  };
+
+  const handleCancelAdd = () => {
+    setIsAddingItem(false);
+  };
+
+  // مقبضات لحفظ العنصر المحرر
+  const handleUpdateItem = (item: Partial<InvoiceItem>) => {
+    if (editingItemIndex !== null && items[editingItemIndex]) {
+      onUpdateItem(editingItemIndex, item);
+    }
+    handleEditItem(null);
+  };
+
+  // معالج إغلاق نافذة إضافة/تعديل العنصر
+  const handleCloseItemDialog = () => {
+    setShowItemDialog(false);
+    setCurrentEditItem(null);
+  };
+
+  // معالج حفظ الصنف من النافذة
+  const handleSubmitItemForm = (item: Partial<InvoiceItem>) => {
+    if (currentEditItem) {
+      // تحديث صنف موجود
+      const index = items.findIndex(i => i.id === currentEditItem.id);
+      if (index !== -1) {
+        onUpdateItem(index, item);
+      }
+    } else {
+      // إضافة صنف جديد
+      onAddItem(item);
+    }
+    setShowItemDialog(false);
+    setCurrentEditItem(null);
+  };
+
+  // معالج تعديل صنف موجود
+  const handleEditExistingItem = (index: number) => {
+    const item = items[index];
+    if (item) {
+      setCurrentEditItem(item);
+      setShowItemDialog(true);
+    }
+  };
+
+  // معالج اختيار المنتج من البحث السريع
+  const handleProductSelected = (product: Product) => {
+    const newItem: Partial<InvoiceItem> = {
+      id: uuidv4(),
+      productId: product.id,
+      code: product.code,
+      name: product.name,
+      quantity: 1,
+      price: product.price,
+      discount: 0,
+      discountType: "percentage",
+      tax: 15,
+      total: product.price
+    };
+    
+    onAddItem(newItem);
+    setShowProductSearch(false);
+    
+    // بعد إضافة عنصر، ركز على الصف الجديد بعد تأخير كافٍ للسماح بإنشاء العنصر
+    const timer = setTimeout(() => {
+      const newRowIndex = items.length; // الفهرس الجديد بعد الإضافة
+      focusCell(newRowIndex, 'quantity');
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  };
+
+  // معالج تبديل البحث السريع
+  const handleToggleSearch = () => {
+    setShowProductSearch(!showProductSearch);
   };
 
   return (
-    <div className="relative mt-4 overflow-auto border rounded-md">
-      <div className="sticky top-0 z-10 bg-white p-2 border-b flex justify-between items-center">
-        <h3 className="text-lg font-semibold">الأصناف</h3>
-        <TableActionButtons 
-          onAddNewItem={() => setQuickSearchActive(true)}
-          onToggleSearch={toggleSearch}
-        />
-      </div>
-      
-      {isSearching && (
-        <ProductSearchInput
-          searchTerm={searchTerm}
-          searchResults={searchResults}
-          onSearchChange={handleSearchChange}
-          onSelect={handleQuickSelect}
-          onClose={toggleSearch}
-        />
-      )}
-      
-      <div
-        ref={tableRef}
-        className="overflow-x-auto"
-        style={{ width: `${tableWidth}%` }}
-      >
-        <Table className="w-full">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12 text-right">#</TableHead>
-              {settings.showItemCodes !== false && (
-                <TableHead className="w-28 text-right">الرمز</TableHead>
-              )}
-              <TableHead className="text-right">اسم الصنف</TableHead>
-              <TableHead className="w-20 text-right">الكمية</TableHead>
-              <TableHead className="w-28 text-right">السعر</TableHead>
-              <TableHead className="w-28 text-right">الإجمالي</TableHead>
-              {settings.showItemNotes !== false && (
-                <TableHead className="w-40 text-right">ملاحظات</TableHead>
-              )}
-              <TableHead className="w-20 text-right">إجراءات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={settings.showItemNotes !== false ? 7 : 6}
-                  className="text-center h-32 text-muted-foreground"
-                >
-                  لم يتم إضافة أي أصناف بعد
-                  <div className="mt-2">
-                    <Button
-                      onClick={() => setQuickSearchActive(true)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      اضغط هنا لإضافة صنف
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              items.map((item, index) => (
-                <TableRow key={item.id} className={fontSizeClass}>
-                  <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                  {settings.showItemCodes !== false && (
-                    <TableCell>{item.code}</TableCell>
-                  )}
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.price.toFixed(2)}</TableCell>
-                  <TableCell className="font-bold">{item.total.toFixed(2)}</TableCell>
-                  {settings.showItemNotes !== false && (
-                    <TableCell className="text-muted-foreground text-xs">
-                      {item.notes}
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => {
-                          // تعديل الصنف
-                          setShowItemDialog(true);
-                          handleEditItem(index);
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => onRemoveItem(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      
-      {/* إظهار نافذة البحث عن المنتجات عند الضغط على إضافة صنف */}
-      {quickSearchActive && (
-        <QuickProductSearch 
-          onClose={() => setQuickSearchActive(false)} 
-          onSelect={handleQuickSelect} 
-          initialQuery=""
-        />
-      )}
-      
-      {/* نافذة إضافة/تعديل الصنف */}
-      <Dialog open={showItemDialog} onOpenChange={setShowItemDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <InvoiceItemForm 
-            item={currentEditItem || undefined}
-            onCancel={() => setShowItemDialog(false)}
-            onSave={(item) => {
-              if (currentEditItem) {
-                const index = items.findIndex(i => i.id === currentEditItem.id);
-                if (index !== -1) {
-                  handleUpdateItemForm(index, item);
-                }
-              } else {
-                handleFormSubmit(item);
-              }
-              setShowItemDialog(false);
-            }}
-            settings={{
-              showItemCodes: settings.showItemCodes,
-              showItemNotes: settings.showItemNotes
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <div
-        className="absolute top-0 bottom-0 right-0 w-1 cursor-ew-resize hover:bg-blue-400 opacity-0 hover:opacity-100"
-        onMouseDown={handleResizeStart}
+    <div className="space-y-4">
+      {/* قسم إضافة/تحرير العنصر */}
+      <InvoiceItemSection
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        editingItem={editingItem}
+        handleAddItem={onAddItem}
+        handleUpdateItem={handleUpdateItem}
+        handleCancelEdit={handleCancelEdit}
+        handleCancelAdd={handleCancelAdd}
+        settings={settings}
       />
+
+      {/* نافذة البحث عن المنتجات */}
+      {showProductSearch && (
+        <QuickProductSearch
+          onClose={() => setShowProductSearch(false)}
+          onSelect={handleProductSelected}
+        />
+      )}
+
+      {/* نافذة إضافة/تعديل الصنف */}
+      <ItemFormDialog 
+        open={showItemDialog}
+        currentEditItem={currentEditItem}
+        onClose={handleCloseItemDialog}
+        onSubmit={handleSubmitItemForm}
+        includeNotes={showItemNotes}
+      />
+
+      {/* إضافة مستمع أحداث لوحة المفاتيح */}
+      <TableKeyboardNavigation
+        tableHasFocus={tableHasFocus}
+        isAddingItem={isAddingItem}
+        editingItemIndex={editingItemIndex}
+        activeSearchCell={activeSearchCell}
+        handleCellClick={handleCellClick}
+        handleAddItemClick={handleAddItemClick}
+      />
+
+      {/* جدول العناصر */}
+      <Card>
+        <CardContent className="p-0">
+          <TableHeader
+            handleAddItemClick={handleAddItemClick}
+            isAddingItem={isAddingItem}
+            editingItemIndex={editingItemIndex}
+            showGridLines={showGridLines}
+            isDenseView={isDenseView}
+            toggleGridLines={toggleGridLines}
+            toggleDenseView={toggleDenseView}
+          />
+          
+          <div className="p-4 flex flex-wrap gap-2 border-b">
+            <Button
+              onClick={handleAddItemClick}
+              className="flex items-center gap-2"
+              size="sm"
+              disabled={isAddingItem || editingItemIndex !== null || showItemDialog}
+            >
+              <Plus className="h-4 w-4" />
+              إضافة صنف جديد
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleSearch}
+              className="flex items-center gap-2"
+              disabled={isAddingItem || editingItemIndex !== null || showItemDialog}
+            >
+              <Search className="h-4 w-4" />
+              البحث عن صنف
+            </Button>
+          </div>
+          
+          <div 
+            ref={(node) => {
+              // دمج المرجعين
+              if (tableRef && typeof tableRef === 'object') {
+                (tableRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+              }
+              tableContainerRef.current = node;
+            }}
+            className="overflow-x-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            style={{ width: `${tableWidth}%` }}
+            onFocus={handleTableFocus}
+            onBlur={handleTableBlur}
+            onClick={handleTableClick}
+            tabIndex={0}
+            role="grid"
+            aria-label="جدول الفاتورة"
+          >
+            <Table className={`${showGridLines ? 'table-bordered' : ''} ${isDenseView ? 'table-sm' : ''}`}>
+              <TableColumns
+                showItemCodes={showItemCodes}
+                showItemNotes={showItemNotes}
+              />
+              <TableBody>
+                {items.length === 0 ? (
+                  <EmptyTableContent
+                    colSpanValue={showItemCodes && showItemNotes ? 8 : showItemCodes || showItemNotes ? 7 : 6}
+                    handleAddItemClick={handleAddItemClick}
+                    isAddingItem={isAddingItem}
+                    editingItemIndex={editingItemIndex}
+                  />
+                ) : (
+                  items.map((item, index) => (
+                    <InvoiceItemRow
+                      key={item.id || index}
+                      item={item}
+                      index={index}
+                      activeSearchCell={activeSearchCell}
+                      handleCellClick={handleCellClick}
+                      handleProductSelect={handleProductSelect}
+                      handleDirectEdit={handleDirectEdit}
+                      isEditingCell={isEditingCell}
+                      editingItemIndex={editingItemIndex}
+                      isAddingItem={isAddingItem}
+                      setEditingItemIndex={(idx) => {
+                        if (idx === index) handleEditExistingItem(index);
+                        else handleEditItem(idx);
+                      }}
+                      onRemoveItem={onRemoveItem}
+                      showItemCodes={showItemCodes}
+                      showItemNotes={showItemNotes}
+                      onKeyDown={handleKeyNavigation}
+                      cellRefs={cellRefs}
+                    />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          
+          <TableFooter itemsCount={items.length} />
+          
+          {/* مقبض تغيير حجم الجدول */}
+          <div
+            className="resize-handle w-3 h-3 absolute bottom-0 left-0 cursor-nwse-resize"
+            onMouseDown={handleResizeStart}
+          />
+        </CardContent>
+      </Card>
+
+      <TableStyles />
     </div>
   );
 };

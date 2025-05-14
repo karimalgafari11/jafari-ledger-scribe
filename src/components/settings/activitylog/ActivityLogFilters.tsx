@@ -9,27 +9,26 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { ActivityAction } from "@/types/permissions";
-import { FiltersType } from "@/types/definitions";
+import { ActivityAction, FiltersType } from "@/types/permissions";
 import { RefreshCw, Download, Search, Filter, X } from "lucide-react";
 
 interface ActivityLogFiltersProps {
   filters: FiltersType;
-  onFilterChange: (newFilters: Partial<FiltersType>) => void;
+  onUpdateFilter: <K extends keyof FiltersType>(key: K, value: FiltersType[K]) => void;
+  onResetFilters: () => void;
   onSearch: () => Promise<any>;
-  onClear: () => void;
   onExport: (format: 'pdf' | 'excel' | 'csv') => Promise<boolean>;
   isLoading: boolean;
 }
 
-const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
+const ActivityLogFilters = ({
   filters,
-  onFilterChange,
-  onClear,
+  onUpdateFilter,
+  onResetFilters,
   onSearch,
   onExport,
   isLoading
-}) => {
+}: ActivityLogFiltersProps) => {
   const [exportFormat, setExportFormat] = useState<'pdf' | 'excel' | 'csv'>('excel');
   const [showFilters, setShowFilters] = useState(false);
   
@@ -54,7 +53,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
           <Button
             variant="secondary"
             size="sm"
-            onClick={onClear}
+            onClick={onResetFilters}
           >
             <RefreshCw className="ml-2 h-4 w-4" />
             إعادة تعيين
@@ -103,7 +102,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
             <Input
               placeholder="اسم المستخدم"
               value={filters.userId}
-              onChange={(e) => onFilterChange({userId: e.target.value})}
+              onChange={(e) => onUpdateFilter('userId', e.target.value)}
             />
           </div>
           
@@ -111,7 +110,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
             <label className="text-sm font-medium mb-2 block">الإجراء</label>
             <Select 
               value={filters.action} 
-              onValueChange={(value) => onFilterChange({action: value as ActivityAction | ''})}
+              onValueChange={(value) => onUpdateFilter('action', value as ActivityAction | '')}
             >
               <SelectTrigger>
                 <SelectValue placeholder="اختر الإجراء" />
@@ -139,7 +138,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
             <label className="text-sm font-medium mb-2 block">الوحدة</label>
             <Select 
               value={filters.module} 
-              onValueChange={(value) => onFilterChange({module: value})}
+              onValueChange={(value) => onUpdateFilter('module', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="اختر الوحدة" />
@@ -162,7 +161,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
             <label className="text-sm font-medium mb-2 block">من تاريخ</label>
             <DatePicker
               date={filters.startDate}
-              onDateChange={(date) => onFilterChange({startDate: date})}
+              onDateChange={(date) => onUpdateFilter('startDate', date)}
               className="w-full"
             />
           </div>
@@ -171,7 +170,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
             <label className="text-sm font-medium mb-2 block">إلى تاريخ</label>
             <DatePicker
               date={filters.endDate}
-              onDateChange={(date) => onFilterChange({endDate: date})}
+              onDateChange={(date) => onUpdateFilter('endDate', date)}
               className="w-full"
             />
           </div>
@@ -180,7 +179,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
             <label className="text-sm font-medium mb-2 block">الحالة</label>
             <Select 
               value={filters.status} 
-              onValueChange={(value) => onFilterChange({status: value as 'success' | 'failed' | 'warning' | 'info' | ''})}
+              onValueChange={(value) => onUpdateFilter('status', value as 'success' | 'failed' | 'warning' | 'info' | '')}
             >
               <SelectTrigger>
                 <SelectValue placeholder="اختر الحالة" />
@@ -196,7 +195,7 @@ const ActivityLogFilters: React.FC<ActivityLogFiltersProps> = ({
           </div>
           
           <div className="md:col-span-2 lg:col-span-3 flex justify-end mt-4">
-            <Button type="button" variant="outline" onClick={onClear} className="ml-2">
+            <Button type="button" variant="outline" onClick={onResetFilters} className="ml-2">
               <X className="ml-2 h-4 w-4" />
               مسح المرشحات
             </Button>

@@ -1,8 +1,9 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Grid, List, Search } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Product } from "@/types/inventory";
+import { Grid3X3, Search, Plus } from "lucide-react";
+import { TableActionButtons } from "./TableActionButtons";
 
 interface TableToolbarProps {
   isAddingItem: boolean;
@@ -21,70 +22,48 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   toggleGridLines,
   onToggleSearch
 }) => {
-  const handleAddItem = () => {
+  const handleAddNewItem = () => {
     if (!isAddingItem && editingItemIndex === null) {
-      setIsAddingItem(true);
+      handleProductSelect();
     }
   };
-  
+
   return (
-    <div className="flex flex-wrap gap-2 items-center justify-between">
-      <div>
-        <Button
-          variant="default"
-          size="sm"
-          className="gap-1"
-          onClick={handleAddItem}
-          disabled={isAddingItem || editingItemIndex !== null}
-        >
-          <Plus className="h-4 w-4 ml-1" />
-          إضافة صنف
-        </Button>
-        
+    <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="outline"
           size="sm"
-          className="gap-1 mr-2"
-          onClick={onToggleSearch}
-          disabled={isAddingItem || editingItemIndex !== null}
+          onClick={toggleGridLines}
+          className="h-9"
+          title="تبديل خطوط الشبكة"
         >
-          <Search className="h-4 w-4 ml-1" />
-          بحث عن منتج
+          <Grid3X3 className="h-4 w-4" />
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onToggleSearch}
+          className="flex items-center gap-1 h-9"
+        >
+          <Search className="h-4 w-4" />
+          البحث في المخزون
         </Button>
       </div>
       
-      <div className="flex items-center gap-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleGridLines}
-              className="h-8 w-8 p-0"
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>إظهار/إخفاء الخطوط</p>
-          </TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleProductSelect}
-              className="h-8 w-8 p-0"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>البحث عن منتجات</p>
-          </TooltipContent>
-        </Tooltip>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="default"
+          size="sm"
+          className="flex items-center gap-1 h-9 bg-primary"
+          onClick={handleAddNewItem}
+          disabled={isAddingItem || editingItemIndex !== null}
+          title="إضافة صنف جديد من المخزون"
+        >
+          <Plus className="h-4 w-4" />
+          إضافة صنف من المخزون
+        </Button>
       </div>
     </div>
   );

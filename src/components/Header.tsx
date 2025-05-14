@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NotificationsDropdown } from './notifications/NotificationsDropdown';
+import NotificationsDropdown from './notifications/NotificationsDropdown';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -10,7 +10,6 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAppContext } from '@/contexts/AppContext';
-import { useTranslation } from '@/hooks/useTranslation';
 
 interface HeaderProps {
   title?: string;
@@ -19,8 +18,7 @@ interface HeaderProps {
   children?: React.ReactNode;
   description?: string;
   backPath?: string;
-  className?: string;
-  actions?: React.ReactNode;
+  className?: string; // Added className prop
 }
 
 // Making Header both a default export and a named export
@@ -31,13 +29,11 @@ const Header = ({
   children,
   description,
   backPath,
-  className = '',
-  actions
+  className = '' // Default value for className
 }: HeaderProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { language } = useAppContext();
-  const { t } = useTranslation();
   
   const handleBackClick = () => {
     if (onBackClick) {
@@ -53,7 +49,7 @@ const Header = ({
     <header className={`border-b border-gray-200 flex items-center justify-between bg-blue-500 ${isMobile ? 'px-2 py-3 w-full' : 'px-[17px] py-[24px]'} my-0 mx-0 ${className}`}>
       <div className="flex items-center">
         {isMobile && (
-          <SidebarTrigger className={`${language === 'ar' ? 'ml-2 mr-0' : 'ml-0 mr-2'}`} />
+          <SidebarTrigger className="ml-0 mr-2" />
         )}
         {showBack && (
           <Button 
@@ -66,9 +62,7 @@ const Header = ({
           </Button>
         )}
         <div>
-          <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>
-            {title || "نظام إدارة الأعمال"}
-          </h1>
+          <h1 className={`font-bold ${isMobile ? 'text-lg' : 'text-xl'}`}>{title || (language === 'ar' ? "نظام إدارة الأعمال" : "Business Management System")}</h1>
           {description && (
             <p className="text-sm opacity-80">{description}</p>
           )}
@@ -76,7 +70,6 @@ const Header = ({
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
-        {actions}
         {children}
         <LanguageSwitcher />
         <ThemeSwitcher />

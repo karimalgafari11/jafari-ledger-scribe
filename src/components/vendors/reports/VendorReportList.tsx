@@ -18,13 +18,11 @@ import { toast } from "sonner";
 interface VendorReportListProps {
   vendors: any[];
   filteredExpenses: Expense[];
-  title?: string; // Add optional title prop
 }
 
 export const VendorReportList: React.FC<VendorReportListProps> = ({
   vendors,
-  filteredExpenses,
-  title
+  filteredExpenses
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -83,7 +81,6 @@ export const VendorReportList: React.FC<VendorReportListProps> = ({
 
   return (
     <div>
-      {title && <h3 className="text-lg font-medium mb-4">{title}</h3>}
       <div className="rounded-md border">
         <Table>
           <TableHeader>

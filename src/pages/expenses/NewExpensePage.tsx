@@ -9,11 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useTranslation } from "@/hooks/useTranslation";
 
 const NewExpensePage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   
   const handleSave = () => {
     toast.success("تم حفظ المصروف بنجاح");
@@ -21,30 +19,30 @@ const NewExpensePage = () => {
   };
 
   return (
-    <PageContainer title={t("add") + " " + t("expenses")}>
+    <PageContainer title="مصروف جديد">
       <div className="p-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t("add") + " " + t("expenses")}</CardTitle>
+            <CardTitle>إضافة مصروف جديد</CardTitle>
           </CardHeader>
           <CardContent>
             <form className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="amount">{t("totalSales")}</Label>
-                  <Input id="amount" type="number" placeholder={t("totalSales")} />
+                  <Label htmlFor="amount">المبلغ</Label>
+                  <Input id="amount" type="number" placeholder="أدخل المبلغ" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="date">{t("date")}</Label>
+                  <Label htmlFor="date">التاريخ</Label>
                   <Input id="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="category">{t("filter")}</Label>
+                  <Label htmlFor="category">التصنيف</Label>
                   <Select>
                     <SelectTrigger id="category">
-                      <SelectValue placeholder={t("filter")} />
+                      <SelectValue placeholder="اختر تصنيف المصروف" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="rent">إيجار</SelectItem>
@@ -78,8 +76,8 @@ const NewExpensePage = () => {
               </div>
               
               <div className="flex justify-end space-x-2 rtl:space-x-reverse pt-4">
-                <Button variant="outline" onClick={() => navigate("/expenses")}>{t("cancel")}</Button>
-                <Button type="button" onClick={handleSave}>{t("save")}</Button>
+                <Button variant="outline" onClick={() => navigate("/expenses")}>إلغاء</Button>
+                <Button type="button" onClick={handleSave}>حفظ المصروف</Button>
               </div>
             </form>
           </CardContent>

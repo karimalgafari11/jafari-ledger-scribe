@@ -11,26 +11,11 @@ export const BanksModule = () => {
     isLoading,
     searchTerm,
     setSearchTerm,
-    selectedBank,
-    setSelectedBank,
-    isCreateDialogOpen,
-    setIsCreateDialogOpen,
+    createBank,
     updateBank,
     deleteBank,
     toggleBankStatus,
   } = useBanks();
-
-  const handleEdit = (bank: typeof selectedBank) => {
-    setSelectedBank(bank);
-    // Additional edit logic here
-    console.log("تعديل البنك", bank);
-  };
-
-  const handleDelete = (bank: typeof selectedBank) => {
-    setSelectedBank(bank);
-    // Additional delete logic here
-    console.log("حذف البنك", bank);
-  };
 
   return (
     <Card>
@@ -41,15 +26,15 @@ export const BanksModule = () => {
         <BanksToolbar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          onAddBank={() => setIsCreateDialogOpen(true)}
+          onAddBank={() => console.log("إضافة بنك جديد")}
         />
 
         <BanksTable
           banks={filteredBanks}
           isLoading={isLoading}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onToggleStatus={toggleBankStatus}
+          onEdit={(bank) => console.log("تعديل البنك", bank)}
+          onDelete={(bank) => console.log("حذف البنك", bank)}
+          onToggleStatus={(id) => toggleBankStatus(id)}
         />
       </CardContent>
     </Card>

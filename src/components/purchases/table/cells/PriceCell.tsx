@@ -1,7 +1,7 @@
 
-import React, { forwardRef } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
-import { EditableCell } from "../EditableCell";
+import { Input } from "@/components/ui/input";
 
 interface PriceCellProps {
   price: number;
@@ -9,7 +9,7 @@ interface PriceCellProps {
   isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTableCellElement>) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
   tabIndex?: number;
 }
 
@@ -22,21 +22,59 @@ export const PriceCell = forwardRef<HTMLTableCellElement, PriceCellProps>(({
   onKeyDown,
   tabIndex
 }, ref) => {
+  const [inputValue, setInputValue] = useState(price.toString());
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(price.toString());
+    }
+  }, [isEditing, price]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow only numbers and decimal point
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    setInputValue(value);
+  };
+  
+  const handleBlur = () => {
+    const numValue = parseFloat(inputValue);
+    if (!isNaN(numValue) && numValue !== price) {
+      handleDirectEdit(index, 'price', numValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const numValue = parseFloat(inputValue);
+      if (!isNaN(numValue)) {
+        handleDirectEdit(index, 'price', numValue);
+      }
+    }
+  };
+  
   return (
     <TableCell 
-      className="px-3 py-2" 
-      ref={ref} 
-      tabIndex={tabIndex}
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'price')}
       onKeyDown={onKeyDown}
+      data-row-index={index}
+      data-cell-name="price"
+      ref={ref}
+      tabIndex={tabIndex}
     >
-      <EditableCell
-        value={price.toString()}
-        active={isEditing}
-        onActivate={() => handleCellClick(index, "price")}
-        onChange={(value) => handleDirectEdit(index, "price", parseFloat(value) || 0)}
-        type="number"
-        className="text-left"
-      />
+      {isEditing ? (
+        <Input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
+        />
+      ) : (
+        <span className="cursor-text">{price.toFixed(2)}</span>
+      )}
     </TableCell>
   );
 });

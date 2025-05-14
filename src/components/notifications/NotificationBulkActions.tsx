@@ -1,122 +1,122 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, RefreshCw, Trash2 } from 'lucide-react';
-import { useNotifications } from '@/hooks/useNotifications';
-import { toast } from 'sonner';
+import { CheckCheck, Archive, Trash, Eye, Filter } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
 
 interface NotificationBulkActionsProps {
-  selectedIds: string[];
-  onSelectionClear: () => void;
+  selectedCount: number;
+  onDeselectAll: () => void;
+  onMarkAsRead: () => void;
+  onDelete: () => void;
+  isLoading: boolean;
 }
 
-const NotificationBulkActions: React.FC<NotificationBulkActionsProps> = ({
-  selectedIds,
-  onSelectionClear
-}) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { markAsRead, deleteNotification, markAllAsRead, deleteNotifications } = useNotifications();
-  
-  if (selectedIds.length === 0) return null;
-  
-  const handleMarkSelectedAsRead = async () => {
-    if (isProcessing) return;
-    
-    setIsProcessing(true);
-    try {
-      const promises = selectedIds.map(id => markAsRead(id));
-      const results = await Promise.all(promises);
-      
-      if (results.every(Boolean)) {
-        toast.success(`تم تعيين ${selectedIds.length} إشعارات كمقروءة`);
-        onSelectionClear();
-      } else {
-        toast.error("فشل تعيين بعض الإشعارات كمقروءة");
-      }
-    } catch (error) {
-      console.error("Error marking notifications as read:", error);
-      toast.error("حدث خطأ أثناء تعيين الإشعارات كمقروءة");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-  
-  const handleDeleteSelected = async () => {
-    if (isProcessing) return;
-    
-    setIsProcessing(true);
-    try {
-      // Check if deleteNotifications is available, otherwise fallback to deleting individually
-      if (deleteNotifications) {
-        const success = await deleteNotifications(selectedIds);
-        
-        if (success) {
-          toast.success(`تم حذف ${selectedIds.length} إشعارات`);
-          onSelectionClear();
-        } else {
-          toast.error("فشل حذف بعض الإشعارات");
-        }
-      } else {
-        // Fallback to deleting one by one
-        const promises = selectedIds.map(id => deleteNotification(id));
-        const results = await Promise.all(promises);
-        
-        if (results.every(Boolean)) {
-          toast.success(`تم حذف ${selectedIds.length} إشعارات`);
-          onSelectionClear();
-        } else {
-          toast.error("فشل حذف بعض الإشعارات");
-        }
-      }
-    } catch (error) {
-      console.error("Error deleting notifications:", error);
-      toast.error("حدث خطأ أثناء حذف الإشعارات");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+const NotificationBulkActions = ({ 
+  selectedCount, 
+  onDeselectAll, 
+  onMarkAsRead, 
+  onDelete, 
+  isLoading 
+}: NotificationBulkActionsProps) => {
+  if (selectedCount === 0) return null;
   
   return (
-    <div className="flex justify-between items-center p-2 border rounded-lg bg-muted/40">
-      <div className="flex items-center">
-        <span className="text-sm font-medium">
-          تم تحديد {selectedIds.length} إشعارات
-        </span>
+    <div className="flex flex-col md:flex-row items-center justify-between bg-muted/30 p-3 border-b rounded-t-md shadow-sm animate-fade-in">
+      <div className="flex items-center mb-2 md:mb-0">
+        <CheckCheck className="h-4 w-4 ml-2 text-primary" />
+        <Badge variant="outline" className="bg-primary/10 text-primary font-medium">
+          {selectedCount}
+        </Badge>
+        <span className="mr-2">إشعارات محددة</span>
       </div>
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onSelectionClear()}
-        >
-          إلغاء التحديد
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleMarkSelectedAsRead}
-          disabled={isProcessing}
-        >
-          {isProcessing ? (
-            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Check className="h-4 w-4 mr-2" />
-          )}
-          تعيين كمقروء
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleDeleteSelected}
-          disabled={isProcessing}
-        >
-          {isProcessing ? (
-            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Trash2 className="h-4 w-4 mr-2" />
-          )}
-          حذف
-        </Button>
+      
+      <div className="flex items-center gap-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onDeselectAll}
+                className="text-xs"
+              >
+                <Filter className="h-3.5 w-3.5 ml-1.5" />
+                إلغاء التحديد
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>إلغاء تحديد جميع الإشعارات</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onMarkAsRead}
+                disabled={isLoading}
+                className="text-xs"
+              >
+                <Eye className="h-3.5 w-3.5 ml-1.5" />
+                تعيين كمقروءة
+                {isLoading && <span className="loading loading-spinner loading-xs mr-2"></span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>تعيين الإشعارات المحددة كمقروءة</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline"
+                size="sm"
+                className="text-xs border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700"
+                disabled={isLoading}
+              >
+                <Archive className="h-3.5 w-3.5 ml-1.5" />
+                أرشفة
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>أرشفة الإشعارات المحددة</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={onDelete}
+                disabled={isLoading}
+                className="text-xs"
+              >
+                <Trash className="h-3.5 w-3.5 ml-1.5" />
+                حذف
+                {isLoading && <span className="loading loading-spinner loading-xs mr-2"></span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>حذف الإشعارات المحددة</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export function useNotificationSettings(
     setIsLoading(true);
     
     try {
-      // Simulate API call with a delay
+      // Simulating API call
       await new Promise(resolve => setTimeout(resolve, 800));
       
       setNotificationSettings(prev => 
@@ -37,88 +37,6 @@ export function useNotificationSettings(
       toast.success('تم تحديث إعدادات الإشعارات بنجاح');
       return true;
     } catch (error) {
-      console.error('Error updating notification settings:', error);
-      toast.error('حدث خطأ أثناء تحديث إعدادات الإشعارات');
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Toggle notification channel for all events
-  const toggleChannelForAllEvents = async (userId: string, channel: string, enabled: boolean): Promise<boolean> => {
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call with a delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      setNotificationSettings(prev => 
-        prev.map(s => s.userId === userId ? {
-          ...s,
-          channels: {
-            ...s.channels,
-            [channel]: {
-              ...s.channels[channel],
-              enabled
-            }
-          },
-          updatedAt: new Date()
-        } : s)
-      );
-      
-      toast.success(`تم ${enabled ? 'تفعيل' : 'تعطيل'} قناة ${channel} لجميع الإشعارات`);
-      return true;
-    } catch (error) {
-      console.error('Error toggling channel for all events:', error);
-      toast.error('حدث خطأ أثناء تحديث إعدادات الإشعارات');
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Update threshold for all channels for an event
-  const updateThresholdForAllChannels = async (
-    userId: string, 
-    eventType: string, 
-    threshold: string
-  ): Promise<boolean> => {
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call with a delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      setNotificationSettings(prev => 
-        prev.map(s => {
-          if (s.userId === userId && s.eventType === eventType) {
-            const updatedChannels = { ...s.channels };
-            
-            // Update threshold for all channels
-            Object.keys(updatedChannels).forEach(channel => {
-              if (updatedChannels[channel]) {
-                updatedChannels[channel] = {
-                  ...updatedChannels[channel],
-                  threshold: threshold as any
-                };
-              }
-            });
-            
-            return {
-              ...s,
-              channels: updatedChannels,
-              updatedAt: new Date()
-            };
-          }
-          return s;
-        })
-      );
-      
-      toast.success(`تم تحديث أولوية جميع القنوات للحدث ${eventType}`);
-      return true;
-    } catch (error) {
-      console.error('Error updating threshold for all channels:', error);
       toast.error('حدث خطأ أثناء تحديث إعدادات الإشعارات');
       return false;
     } finally {
@@ -130,8 +48,6 @@ export function useNotificationSettings(
     notificationSettings,
     getNotificationSettings,
     updateNotificationSettings,
-    toggleChannelForAllEvents,
-    updateThresholdForAllChannels,
     isSettingsLoading: isLoading
   };
 }

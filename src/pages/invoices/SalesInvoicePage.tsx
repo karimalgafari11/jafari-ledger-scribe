@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Layout } from "@/components/Layout";
 import { Header } from "@/components/Header";
 import { InvoiceForm } from "@/components/invoices/InvoiceForm";
@@ -24,13 +24,36 @@ const SalesInvoicePage = () => {
     calculateTotals,
     isLoading,
     saveInvoice,
-    createNewInvoice,
   } = useSalesInvoice();
 
   // Create a default invoice if one doesn't exist
-  useEffect(() => {
+  React.useEffect(() => {
     if (!invoice.id) {
-      createNewInvoice();
+      const date = new Date();
+      const dateStr = format(date, "yyyyMMdd");
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      const invoiceNumber = `INV-${dateStr}-${randomNum}`;
+
+      const newInvoice = {
+        id: uuid(),
+        invoiceNumber: invoiceNumber,
+        customerId: "",
+        customerName: "عميل افتراضي",
+        customerPhone: "0500000000",
+        customerAccountNumber: "",
+        date: date.toISOString(),
+        items: [],
+        totalAmount: 0,
+        status: "draft",
+        paymentMethod: "cash",
+        amountPaid: 0,
+        warehouseId: ""
+      };
+
+      // Update with default invoice
+      Object.keys(newInvoice).forEach(key => {
+        updateInvoiceField(key, newInvoice[key]);
+      });
     }
   }, []);
 
@@ -39,7 +62,7 @@ const SalesInvoicePage = () => {
     const itemId = invoice.items[index]?.id;
     if (itemId) {
       updateInvoiceItem(itemId, item);
-      calculateTotals(); // إعادة حساب المجاميع
+      calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
     }
   };
 
@@ -47,13 +70,15 @@ const SalesInvoicePage = () => {
     const itemId = invoice.items[index]?.id;
     if (itemId) {
       removeInvoiceItem(itemId);
-      calculateTotals(); // إعادة حساب المجاميع
+      calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
+      toast.success("تم حذف الصنف من الفاتورة");
     }
   };
 
   const handleAddInvoiceItem = (item: Partial<InvoiceItem>) => {
     addInvoiceItem(item);
-    calculateTotals(); // إعادة حساب المجاميع
+    calculateTotals(); // إضافة هذا السطر للتأكد من إعادة حساب المجاميع
+    toast.success(`تم إضافة العنصر إلى الفاتورة`);
   };
   
   const handleSaveInvoice = async () => {
@@ -83,28 +108,30 @@ const SalesInvoicePage = () => {
   };
 
   return (
-    <Layout>
-      <Header title="فاتورة مبيعات جديدة" showBack={true}>
-        <Button
-          onClick={handleSaveInvoice}
-          disabled={isLoading || invoice.items.length === 0}
-          className="mr-2 bg-green-600 hover:bg-green-700"
-        >
-          <Save className="ml-1 h-4 w-4" />
-          حفظ الفاتورة
-        </Button>
-      </Header>
-      <div className="p-4 h-full overflow-auto">
-        <InvoiceForm
-          invoice={invoice}
-          onFieldChange={updateInvoiceField}
-          onAddItem={handleAddInvoiceItem}
-          onUpdateItem={handleUpdateInvoiceItem}
-          onRemoveItem={handleRemoveInvoiceItem}
-          onApplyDiscount={applyDiscount}
-          isLoading={isLoading}
-          settings={invoiceSettings}
-        />
+    <Layout className="h-screen overflow-hidden p-0">
+      <div className="flex flex-col h-full">
+        <Header title="فاتورة مبيعات جديدة" showBack={true}>
+          <Button
+            onClick={handleSaveInvoice}
+            disabled={isLoading || invoice.items.length === 0}
+            className="mr-2 bg-green-600 hover:bg-green-700"
+          >
+            <Save className="ml-1 h-4 w-4" />
+            حفظ الفاتورة
+          </Button>
+        </Header>
+        <div className="flex-1 overflow-auto">
+          <InvoiceForm
+            invoice={invoice}
+            onFieldChange={updateInvoiceField}
+            onAddItem={handleAddInvoiceItem}
+            onUpdateItem={handleUpdateInvoiceItem}
+            onRemoveItem={handleRemoveInvoiceItem}
+            onApplyDiscount={applyDiscount}
+            isLoading={isLoading}
+            settings={invoiceSettings}
+          />
+        </div>
       </div>
     </Layout>
   );

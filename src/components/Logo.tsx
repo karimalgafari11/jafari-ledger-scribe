@@ -16,8 +16,8 @@ export const Logo: React.FC<LogoProps> = ({ size = "medium", className = "" }) =
   return (
     <div className={`flex flex-col items-center ${className}`}>
       <img 
-        src="/lovable-uploads/3d743b81-5ccb-4ce5-9824-2af91771013d.png" 
-        alt="AICore" 
+        src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
+        alt="الجعفري للمحاسبة" 
         className={`${sizeClass[size]} object-contain`} 
       />
     </div>

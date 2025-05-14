@@ -15,7 +15,6 @@ const initialBranches: Branch[] = [
     phone: "+966 55 123 4567",
     email: "hq@example.com",
     isActive: true,
-    isMain: true,
     isMainBranch: true,
     createdAt: new Date("2023-01-01"),
     updatedAt: new Date("2023-01-01"),
@@ -29,7 +28,6 @@ const initialBranches: Branch[] = [
     phone: "+966 55 765 4321",
     email: "jeddah@example.com",
     isActive: true,
-    isMain: false,
     isMainBranch: false,
     createdAt: new Date("2023-02-15"),
     updatedAt: new Date("2023-02-15"),
@@ -43,7 +41,6 @@ const initialBranches: Branch[] = [
     phone: "+966 55 222 3333",
     email: "dammam@example.com",
     isActive: true,
-    isMain: false,
     isMainBranch: false,
     createdAt: new Date("2023-03-10"),
     updatedAt: new Date("2023-03-10"),
@@ -64,7 +61,7 @@ export const useBranches = () => {
     (branch) =>
       branch.name.includes(searchTerm) ||
       branch.code.includes(searchTerm) ||
-      branch.manager?.includes(searchTerm)
+      branch.manager.includes(searchTerm)
   );
 
   // إضافة فرع جديد

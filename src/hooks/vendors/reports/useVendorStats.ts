@@ -2,7 +2,6 @@
 import { useMemo } from 'react';
 import { mockVendors } from '@/data/mockVendors';
 import { Expense } from '@/types/expenses';
-import { Vendor } from '@/types/vendor';
 
 export const useVendorStats = (filteredExpenses: Expense[]) => {
   // حساب الإحصائيات

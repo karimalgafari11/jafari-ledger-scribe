@@ -1,36 +1,46 @@
 
 import React from "react";
-import { InvoiceItem } from "@/types/invoices";
-import { InvoiceItemForm } from "./InvoiceItemForm";
 import { Card, CardContent } from "@/components/ui/card";
-import { QuickProductSearch } from "./QuickProductSearch";
+import { InvoiceItemForm } from "@/components/invoices/InvoiceItemForm";
+import { InvoiceItem } from "@/types/invoices";
+import { InvoiceSettingsType } from "./InvoiceSettings";
 
 interface InvoiceItemSectionProps {
-  item?: InvoiceItem;
-  isNewItem?: boolean;
-  onSave: (item: Partial<InvoiceItem>) => void;
-  onCancel: () => void;
-  onProductSearch?: () => void;
+  isAddingItem: boolean;
+  editingItemIndex: number | null;
+  editingItem?: InvoiceItem;
+  handleAddItem: (item: Partial<InvoiceItem>) => void;
+  handleUpdateItem: (item: Partial<InvoiceItem>) => void;
+  handleCancelEdit: () => void;
+  handleCancelAdd: () => void;
+  settings?: InvoiceSettingsType;
 }
 
 export const InvoiceItemSection: React.FC<InvoiceItemSectionProps> = ({
-  item,
-  isNewItem = true,
-  onSave,
-  onCancel,
-  onProductSearch
+  isAddingItem,
+  editingItemIndex,
+  editingItem,
+  handleAddItem,
+  handleUpdateItem,
+  handleCancelEdit,
+  handleCancelAdd,
+  settings
 }) => {
-  const handleSave = (updatedItem: Partial<InvoiceItem>) => {
-    onSave(updatedItem);
-  };
+  if (!isAddingItem && editingItemIndex === null) {
+    return null;
+  }
 
   return (
-    <Card className="border shadow-sm">
-      <CardContent className="p-4">
+    <Card className="mb-2 shadow-sm">
+      <CardContent className="p-1.5">
+        <h3 className="text-xs font-semibold mb-1">
+          {editingItemIndex !== null ? "تعديل صنف" : "إضافة صنف جديد"}
+        </h3>
         <InvoiceItemForm
-          item={item}
-          onCancel={onCancel}
-          onSave={handleSave}
+          item={editingItem}
+          onSubmit={editingItemIndex !== null ? handleUpdateItem : handleAddItem}
+          onCancel={editingItemIndex !== null ? handleCancelEdit : handleCancelAdd}
+          includeNotes={settings?.showItemNotes !== false}
         />
       </CardContent>
     </Card>

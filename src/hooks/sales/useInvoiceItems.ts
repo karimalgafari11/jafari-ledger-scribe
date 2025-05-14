@@ -62,9 +62,8 @@ export const useInvoiceItems = (
         )
       };
     });
-
-    // إظهار رسالة نجاح
-    toast.success(`تم إضافة ${item.name} إلى الفاتورة`);
+    
+    toast.success(`تمت إضافة ${newItem.name} للفاتورة`);
   };
 
   const updateInvoiceItem = (itemId: string, updates: Partial<InvoiceItem>): void => {
@@ -93,8 +92,6 @@ export const useInvoiceItems = (
         )
       };
     });
-
-    toast.success("تم تحديث الصنف بنجاح");
   };
 
   const removeInvoiceItem = (itemId: string): void => {

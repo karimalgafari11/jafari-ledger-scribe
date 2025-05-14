@@ -4,6 +4,7 @@ import {
   NotificationSettings,
   NotificationChannel,
   NotificationPriority,
+  NotificationEvent,
   NotificationTemplate
 } from '@/types/notifications';
 
@@ -27,7 +28,7 @@ export interface NotificationHookReturn {
   deleteNotification: (notificationId: string) => Promise<boolean>;
   sendNotification: (
     userId: string,
-    eventType: string,
+    eventType: NotificationEvent,
     priority: NotificationPriority,
     data: Record<string, any>,
     channels?: NotificationChannel[]

@@ -1,7 +1,25 @@
 
 import { useState, useMemo } from "react";
 import { mockVendors } from "@/data/mockVendors";
-import { Vendor } from "@/types/vendor";
+
+// تحديد نوع البيانات لمورد
+export interface Vendor {
+  id: string;
+  name: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  balance: number;
+  currency: string;
+  status: string;
+  taxNumber?: string;
+  createdAt: string;
+  category?: string;
+  creditLimit?: number;
+  dueDate?: string | null;
+  lastTransaction?: string;
+}
 
 export const useVendorStatementList = () => {
   // حالة البحث والفلترة
@@ -14,6 +32,7 @@ export const useVendorStatementList = () => {
     return mockVendors.map(vendor => ({
       ...vendor,
       lastTransaction: getRandomDate(),
+      status: vendor.dueDate && new Date(vendor.dueDate) < new Date() ? "overdue" : "active"
     }));
   }, []);
 

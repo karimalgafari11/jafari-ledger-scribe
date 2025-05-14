@@ -1,7 +1,7 @@
 
-import React, { forwardRef } from "react";
+import React, { useState, useEffect, forwardRef, KeyboardEvent } from "react";
 import { TableCell } from "@/components/ui/table";
-import { EditableCell } from "../EditableCell";
+import { Input } from "@/components/ui/input";
 
 interface ItemCodeCellProps {
   code: string;
@@ -9,12 +9,12 @@ interface ItemCodeCellProps {
   isEditing: boolean;
   handleCellClick: (rowIndex: number, cellName: string) => void;
   handleDirectEdit: (index: number, field: string, value: any) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTableCellElement>) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLTableCellElement>) => void;
   tabIndex?: number;
 }
 
 export const ItemCodeCell = forwardRef<HTMLTableCellElement, ItemCodeCellProps>(({
-  code,
+  code = "",
   index,
   isEditing,
   handleCellClick,
@@ -22,21 +22,53 @@ export const ItemCodeCell = forwardRef<HTMLTableCellElement, ItemCodeCellProps>(
   onKeyDown,
   tabIndex
 }, ref) => {
+  const [inputValue, setInputValue] = useState(code);
+  
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(code);
+    }
+  }, [isEditing, code]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+  
+  const handleBlur = () => {
+    if (inputValue !== code) {
+      handleDirectEdit(index, 'code', inputValue);
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleDirectEdit(index, 'code', inputValue);
+    }
+  };
+  
   return (
     <TableCell 
-      className="px-3 py-2 text-center" 
-      ref={ref} 
-      tabIndex={tabIndex}
+      className="text-center border border-gray-300 p-2"
+      onClick={() => handleCellClick(index, 'code')}
       onKeyDown={onKeyDown}
+      data-row-index={index}
+      data-cell-name="code"
+      ref={ref}
+      tabIndex={tabIndex}
     >
-      <EditableCell
-        value={code}
-        active={isEditing}
-        onActivate={() => handleCellClick(index, "code")}
-        onChange={(value) => handleDirectEdit(index, "code", value)}
-        placeholder="أدخل الكود"
-        className="text-center"
-      />
+      {isEditing ? (
+        <Input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8 text-center"
+          autoFocus
+        />
+      ) : (
+        <span className="cursor-text">{code || "—"}</span>
+      )}
     </TableCell>
   );
 });

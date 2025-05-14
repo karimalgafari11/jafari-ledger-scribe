@@ -8,7 +8,7 @@ export const useInventoryCounting = () => {
   const [filteredCounts, setFilteredCounts] = useState<InventoryCount[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [warehouseFilter, setWarehouseFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"draft" | "completed" | "in_progress" | "">("");
+  const [statusFilter, setStatusFilter] = useState<"draft" | "completed" | "">("");
   
   // For viewing a specific count
   const [currentCount, setCurrentCount] = useState<InventoryCount | null>(null);
@@ -93,15 +93,12 @@ export const useInventoryCounting = () => {
   const saveNewCount = (notes: string) => {
     const newCount: InventoryCount = {
       id: `new-${Date.now()}`,
-      date: new Date().toISOString(), // Changed from Date to string
+      date: new Date(),
       warehouseId: "new",
       warehouseName: newCountWarehouse,
       status: "draft",
       items: newCountItems,
-      notes,
-      createdBy: "user-1",
-      createdAt: new Date().toISOString(),
-      name: `Inventory Count ${Date.now()}`
+      notes
     };
     
     setCounts(prev => [newCount, ...prev]);
@@ -111,7 +108,7 @@ export const useInventoryCounting = () => {
   const completeCount = (id: string) => {
     setCounts(prev => 
       prev.map(count => 
-        count.id === id ? { ...count, status: "completed" as const } : count
+        count.id === id ? { ...count, status: "completed" } : count
       )
     );
   };

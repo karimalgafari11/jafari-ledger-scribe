@@ -1,10 +1,12 @@
 
 import React from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
+import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Building, Tag } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 interface VendorFiltersProps {
   activeTab: string;
@@ -30,92 +32,67 @@ export const VendorFilters: React.FC<VendorFiltersProps> = ({
   setSearchTerm
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="all">
-              جميع الموردين <span className="mr-1 text-xs bg-gray-200 px-1.5 py-0.5 rounded-full">{totalVendors}</span>
+    <>
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+          <TabsList className="w-full sm:w-auto grid grid-cols-3">
+            <TabsTrigger value="all" className="flex items-center gap-2">
+              <Building size={16} /> كل الموردين
+              <Badge variant="outline" className="ml-2 bg-gray-100">{totalVendors}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="active">
-              موردين نشطين <span className="mr-1 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">{activeVendors}</span>
+            <TabsTrigger value="active" className="flex items-center gap-2">
+              <Tag size={16} /> نشط
+              <Badge variant="outline" className="ml-2 bg-green-100">{activeVendors}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="inactive">
-              غير نشطين <span className="mr-1 text-xs bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full">{inactiveVendors}</span>
+            <TabsTrigger value="inactive" className="flex items-center gap-2">
+              <Tag size={16} /> غير نشط
+              <Badge variant="outline" className="ml-2 bg-gray-100">{inactiveVendors}</Badge>
             </TabsTrigger>
           </TabsList>
-          
-          <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)} className="ml-2">
-            <Filter className="ml-1 h-4 w-4" />
-            {showFilters ? 'إخفاء الفلتر' : 'فلترة متقدمة'}
-          </Button>
         </Tabs>
-      </div>
-      
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <Input
-            placeholder="البحث في الموردين..."
+            type="text"
+            placeholder="بحث عن مورد..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-3 pr-9"
+            className="w-full pl-3 pr-10"
           />
         </div>
       </div>
       
       {showFilters && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-t pt-4 mt-4">
-          <div>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="التصنيف" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">جميع التصنيفات</SelectItem>
-                <SelectItem value="supplies">موردي مستلزمات</SelectItem>
-                <SelectItem value="tech">تقنية</SelectItem>
-                <SelectItem value="materials">مواد خام</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="طريقة الدفع" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">جميع الطرق</SelectItem>
-                <SelectItem value="cash">نقدي</SelectItem>
-                <SelectItem value="transfer">تحويل بنكي</SelectItem>
-                <SelectItem value="credit">آجل</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="ترتيب حسب" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name-asc">الاسم (تصاعدي)</SelectItem>
-                <SelectItem value="name-desc">الاسم (تنازلي)</SelectItem>
-                <SelectItem value="balance-asc">الرصيد (تصاعدي)</SelectItem>
-                <SelectItem value="balance-desc">الرصيد (تنازلي)</SelectItem>
-                <SelectItem value="date-asc">تاريخ الإضافة (الأقدم)</SelectItem>
-                <SelectItem value="date-desc">تاريخ الإضافة (الأحدث)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button variant="outline" className="flex-1">إعادة ضبط</Button>
-            <Button className="flex-1">تطبيق</Button>
+        <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+          <h3 className="text-sm font-medium mb-3">خيارات التصفية المتقدمة</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">التصنيف</label>
+              <select className="w-full p-2 border border-gray-200 rounded text-sm">
+                <option value="">الكل</option>
+                <option value="مستلزمات مكتبية">مستلزمات مكتبية</option>
+                <option value="معدات إلكترونية">معدات إلكترونية</option>
+                <option value="أثاث مكتبي">أثاث مكتبي</option>
+                <option value="أجهزة وتقنية">أجهزة وتقنية</option>
+                <option value="منتجات ورقية">منتجات ورقية</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">الرصيد</label>
+              <select className="w-full p-2 border border-gray-200 rounded text-sm">
+                <option value="">الكل</option>
+                <option value="positive">لديه رصيد مستحق</option>
+                <option value="zero">رصيد صفر</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <Button size="sm" className="mr-2">تطبيق</Button>
+              <Button size="sm" variant="outline" onClick={() => setShowFilters(false)}>إلغاء</Button>
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

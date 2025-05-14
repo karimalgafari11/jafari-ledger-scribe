@@ -1,18 +1,19 @@
 
 import React from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { ar } from 'date-fns/locale';
+import { Clock } from 'lucide-react';
+import { formatTimeAgo } from './utils/notificationItemUtils';
 
 interface NotificationTimestampProps {
-  date: Date;
+  createdAt: Date;
 }
 
-const NotificationTimestamp = ({ date }: NotificationTimestampProps) => {
-  const formattedDate = formatDistanceToNow(new Date(date), { addSuffix: true, locale: ar });
+const NotificationTimestamp = ({ createdAt }: NotificationTimestampProps) => {
+  const timeAgo = formatTimeAgo(createdAt);
   
   return (
-    <span className="text-xs text-muted-foreground ml-2">
-      {formattedDate}
+    <span className="text-xs text-muted-foreground flex items-center">
+      <Clock className="h-3 w-3 mr-1" />
+      {timeAgo}
     </span>
   );
 };

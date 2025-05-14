@@ -1,52 +1,33 @@
 
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
-import { Button } from './ui/button';
-import { useNavigate } from 'react-router-dom';
+import React, { ReactNode } from "react";
+import { Layout } from "@/components/Layout";
+import { Header } from "@/components/Header";
 
 interface PageContainerProps {
   title: string;
-  description?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   showBack?: boolean;
-  actions?: React.ReactNode;
+  headerContent?: ReactNode;
+  className?: string;
 }
 
-export const PageContainer = ({
+export const PageContainer: React.FC<PageContainerProps> = ({
   title,
-  description,
   children,
-  showBack = false,
-  actions
-}: PageContainerProps) => {
-  const navigate = useNavigate();
-
+  showBack = true,
+  headerContent,
+  className = "",
+}) => {
   return (
-    <div className="h-full flex flex-col">
-      <div className="border-b">
-        <div className="flex h-16 items-center px-4">
-          {showBack && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(-1)}
-              className="ml-2"
-            >
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          )}
-          <div className="flex flex-1 items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">{title}</h2>
-              {description && <p className="text-sm text-muted-foreground">{description}</p>}
-            </div>
-            {actions && <div className="flex items-center gap-2">{actions}</div>}
-          </div>
+    <Layout className="h-screen overflow-hidden p-0">
+      <div className="flex flex-col h-full w-full">
+        <Header title={title} showBack={showBack}>
+          {headerContent}
+        </Header>
+        <div className={`flex-1 overflow-auto ${className}`}>
+          {children}
         </div>
       </div>
-      <div className="flex-1 overflow-auto">
-        {children}
-      </div>
-    </div>
+    </Layout>
   );
 };

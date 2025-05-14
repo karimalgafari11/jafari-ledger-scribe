@@ -1,17 +1,42 @@
 
-import React from 'react';
-import { Layout } from '@/components/Layout';
-import { PageContainer } from '@/components/PageContainer';
+import React, { useState } from "react";
+import { Layout } from "@/components/Layout";
+import { Header } from "@/components/Header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AccountingRulesModule } from "@/components/accounting/rules/AccountingRulesModule";
+import { AutomaticEntriesModule } from "@/components/accounting/rules/AutomaticEntriesModule";
+import { ValidationRulesModule } from "@/components/accounting/rules/ValidationRulesModule";
 
-const AccountingRulesPage: React.FC = () => {
+const AccountingRulesPage = () => {
+  const [activeTab, setActiveTab] = useState("basic-rules");
+
   return (
-    <Layout>
-      <PageContainer title="القواعد المحاسبية">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">القواعد المحاسبية</h1>
-          <p>عرض وإدارة القواعد المحاسبية.</p>
+    <Layout className="h-screen overflow-hidden">
+      <div className="flex flex-col h-screen w-full overflow-hidden rtl">
+        <Header title="قوانين وأوامر المحاسبة" showBack={true} />
+        
+        <div className="flex-1 overflow-auto p-4 pb-16">
+          <Tabs defaultValue="basic-rules" value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <TabsList className="mb-4">
+              <TabsTrigger value="basic-rules">القواعد الأساسية</TabsTrigger>
+              <TabsTrigger value="automatic-entries">القيود التلقائية</TabsTrigger>
+              <TabsTrigger value="validation-rules">قواعد التحقق</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="basic-rules">
+              <AccountingRulesModule />
+            </TabsContent>
+            
+            <TabsContent value="automatic-entries">
+              <AutomaticEntriesModule />
+            </TabsContent>
+            
+            <TabsContent value="validation-rules">
+              <ValidationRulesModule />
+            </TabsContent>
+          </Tabs>
         </div>
-      </PageContainer>
+      </div>
     </Layout>
   );
 };

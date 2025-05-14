@@ -1,10 +1,12 @@
 
 import { PurchaseItem } from "@/types/purchases";
 
+// Calculate subtotal from all items
 export const calculateSubtotal = (items: PurchaseItem[]): number => {
   return items.reduce((sum, item) => sum + item.total, 0);
 };
 
+// Calculate total amount with discounts, taxes, and expenses
 export const calculateTotalAmount = (
   subtotal: number, 
   discount?: number, 
