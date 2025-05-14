@@ -9,17 +9,19 @@ interface FormHeaderProps {
   onToggleSearchPanel: () => void;
   searchTerm: string;
   onSearchChange: (value: string) => void;
+  title?: string; // Added title prop
 }
 
 export const FormHeader: React.FC<FormHeaderProps> = ({ 
   onToggleSearchPanel, 
   searchTerm,
-  onSearchChange 
+  onSearchChange,
+  title = "إضافة أصناف" // Default title
 }) => {
   return (
     <Card>
       <CardHeader className="p-4 pb-2">
-        <CardTitle className="text-lg">إضافة أصناف</CardTitle>
+        <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="p-4 pt-2">
         <div className="flex flex-col sm:flex-row gap-2">

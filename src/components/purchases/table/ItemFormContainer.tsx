@@ -47,12 +47,22 @@ export const ItemFormContainer: React.FC<ItemFormContainerProps> = ({
     return null;
   }
   
+  // State for search functionality
+  const [searchTerm, setSearchTerm] = React.useState("");
+  
+  // Toggle search panel
+  const handleToggleSearchPanel = () => {
+    // Implementation will go here
+  };
+  
   return (
     <Card className="mb-4 border-2 border-blue-200 bg-blue-50">
       <CardContent className="p-4">
         <FormHeader 
-          title={editingItemIndex !== null ? "تعديل الصنف" : "إضافة صنف جديد"} 
-          onClose={handleCancel}
+          onToggleSearchPanel={handleToggleSearchPanel}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          title={editingItemIndex !== null ? "تعديل الصنف" : "إضافة صنف جديد"}
         />
         
         <ProductSearchSection 
@@ -62,13 +72,15 @@ export const ItemFormContainer: React.FC<ItemFormContainerProps> = ({
           onProductSelect={handleProductSelect}
           onChange={handleItemChange}
           onUpdateItem={handleUpdateItemField}
-          onSave={handleSave} // تمرير معالج حدث الحفظ
+          onSave={handleSave}
+          onAddItem={onAddItem}
         />
         
         <FormActions
           editingItemIndex={editingItemIndex}
           showSaveButton={editingItemIndex !== null || !!newItem.name}
-          onSave={handleSave}
+          onSubmit={handleSave}
+          onCancel={handleCancel}
           actionLabel="إضافة الصنف"
         />
       </CardContent>

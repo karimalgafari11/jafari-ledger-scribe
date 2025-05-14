@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Search, Plus, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,12 +18,29 @@ import { mockProducts } from "@/data/mockProducts";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
+import { PurchaseItem } from "@/types/purchases";
 
 interface ProductSearchSectionProps {
-  onAddItem: (item: Partial<InvoiceItem>) => void;
+  onAddItem: (item: Partial<InvoiceItem | PurchaseItem>) => void;
+  editingItemIndex?: number | null;
+  items?: any[];
+  newItem?: Partial<PurchaseItem>;
+  onProductSelect?: (product: any) => void;
+  onChange?: (field: string, value: any) => void;
+  onUpdateItem?: (index: number, field: string, value: any) => void;
+  onSave?: () => void;
 }
 
-export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({ onAddItem }) => {
+export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({ 
+  onAddItem,
+  editingItemIndex,
+  items,
+  newItem,
+  onProductSelect,
+  onChange,
+  onUpdateItem,
+  onSave
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [quantity, setQuantity] = useState<Record<string, number>>({});
@@ -102,7 +118,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({ onAd
       const product = mockProducts.find(p => p.id === productId);
       if (product && quantity[productId] > 0) {
         // إنشاء عنصر فاتورة
-        const invoiceItem: Partial<InvoiceItem> = {
+        const invoiceItem: Partial<InvoiceItem | PurchaseItem> = {
           id: uuid(),
           productId: product.id,
           code: product.code,
@@ -125,6 +141,124 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({ onAd
     // عرض رسالة نجاح
     toast.success(`تم إضافة ${selectedItems.length} من الأصناف للفاتورة`);
   };
+
+  // إذا كان هناك onProductSelect فهذا يعني أننا في وضع الإضافة/التعديل الفردي
+  if (onProductSelect) {
+    return (
+      <div className="space-y-4 mt-4">
+        {/* هنا نضع محتوى البحث والاختيار للإضافة/التعديل الفردي */}
+        <div className="mb-4">
+          <Button
+            onClick={handleOpenDialog}
+            variant="outline"
+            className="w-full border-dashed"
+          >
+            <Search className="mr-2 h-4 w-4" />
+            البحث عن منتج
+          </Button>
+        </div>
+        {/* فتح نافذة البحث الحوارية */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>البحث عن منتج</DialogTitle>
+            </DialogHeader>
+            
+            {/* محتوى نافذة البحث */}
+            <div className="mb-4 flex items-center gap-2">
+              <div className="relative w-full">
+                <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  ref={searchInputRef}
+                  className="pr-10"
+                  placeholder="البحث باسم الصنف أو الرمز..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <Card className="mb-4 overflow-hidden border">
+              <CardContent className="p-0">
+                <div className="max-h-[50vh] overflow-auto">
+                  <Table hoverable>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-10 text-center"></TableHead>
+                        <TableHead className="w-24">الرمز</TableHead>
+                        <TableHead>الصنف</TableHead>
+                        <TableHead className="w-32">السعر</TableHead>
+                        <TableHead className="w-28">المتوفر</TableHead>
+                        <TableHead className="w-24">الكمية</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredProducts.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                            لا توجد نتائج مطابقة للبحث
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredProducts.map((product) => (
+                          <TableRow 
+                            key={product.id} 
+                            className={`cursor-pointer ${selectedItems.includes(product.id) ? 'bg-blue-50' : ''}`}
+                            onClick={() => toggleSelectItem(product.id)}
+                          >
+                            <TableCell className="text-center">
+                              <input 
+                                type="checkbox" 
+                                checked={selectedItems.includes(product.id)}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  toggleSelectItem(product.id);
+                                }}
+                                className="h-4 w-4 rounded border-gray-300"
+                              />
+                            </TableCell>
+                            <TableCell className="font-medium">{product.code}</TableCell>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>{formatCurrency(product.price)}</TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded-full text-xs ${product.quantity > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                {product.quantity > 0 ? product.quantity : 'غير متوفر'}
+                              </span>
+                            </TableCell>
+                            <TableCell onClick={(e) => e.stopPropagation()}>
+                              <Input
+                                type="number"
+                                min="1"
+                                value={quantity[product.id] || ''}
+                                onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 0)}
+                                className="h-8 w-20"
+                                disabled={product.quantity <= 0}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={handleCloseDialog}>
+                <X className="ml-1 h-4 w-4" />
+                إلغاء
+              </Button>
+              <Button onClick={handleAddItems} className="bg-green-600 hover:bg-green-700">
+                <Plus className="ml-1 h-4 w-4" />
+                إضافة للفاتورة ({selectedItems.length})
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
 
   return (
     <>
