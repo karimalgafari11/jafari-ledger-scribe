@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -61,88 +60,85 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return user ? <>{children}</> : <Navigate to="/auth/login" />;
 };
 
-// Combine all route children
-const routeChildren = [
-  {
-    index: true,
-    element: <Dashboard />,
-  },
-  {
-    path: "settings/activity-log",
-    element: <ActivityLogPage />,
-  },
-  // إضافة مسارات الإعدادات
-  {
-    path: "settings/system",
-    element: <SystemSettingsPage />,
-  },
-  {
-    path: "settings/roles",
-    element: <UserRolesPage />,
-  },
-  {
-    path: "settings/users",
-    element: <UsersPage />,
-  },
-  {
-    path: "settings/backup",
-    element: <BackupPage />,
-  },
-  {
-    path: "settings/backup-test",
-    element: <BackupTestPage />,
-  },
-  {
-    path: "settings/branches",
-    element: <BranchesPage />,
-  },
-  {
-    path: "settings/notifications",
-    element: <NotificationsPage />,
-  },
-  {
-    path: "settings/notification-settings",
-    element: <NotificationSettingsPage />,
-  },
-  {
-    path: "settings/send-notification",
-    element: <SendNotificationPage />,
-  },
-  {
-    path: "settings/ai-engine",
-    element: <AiEngineSettingsPage />,
-  },
-  {
-    path: "settings/page-management",
-    element: <PageManagementPage />,
-  },
-  {
-    path: "settings/theme",
-    element: <ThemeCustomizationPage />,
-  },
-  // Spread all other route modules
-  ...accountingRoutes,
-  ...inventoryRoutes,
-  ...inventoryControlRoutes,
-  ...purchasesRoutes,
-  ...invoicesRoutes,
-  ...customersRoutes,
-  ...vendorRoutes,
-  ...receivablesPayablesRoutes,
-  ...expensesRoutes,
-  ...reportsRoutes,
-  ...definitionsRoutes,
-  ...aiRoutes,
-  ...hrRoutes,
-  ...integrationsRoutes,
-  ...aboutRoutes,
-];
-
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <PrivateRoute><Index /></PrivateRoute>,
-    children: routeChildren,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: "settings/activity-log",
+        element: <ActivityLogPage />,
+      },
+      // إضافة مسارات الإعدادات
+      {
+        path: "settings/system",
+        element: <SystemSettingsPage />,
+      },
+      {
+        path: "settings/roles",
+        element: <UserRolesPage />,
+      },
+      {
+        path: "settings/users",
+        element: <UsersPage />,
+      },
+      {
+        path: "settings/backup",
+        element: <BackupPage />,
+      },
+      {
+        path: "settings/backup-test",
+        element: <BackupTestPage />,
+      },
+      {
+        path: "settings/branches",
+        element: <BranchesPage />,
+      },
+      {
+        path: "settings/notifications",
+        element: <NotificationsPage />,
+      },
+      {
+        path: "settings/notification-settings",
+        element: <NotificationSettingsPage />,
+      },
+      {
+        path: "settings/send-notification",
+        element: <SendNotificationPage />,
+      },
+      {
+        path: "settings/ai-engine",
+        element: <AiEngineSettingsPage />,
+      },
+      {
+        path: "settings/page-management",
+        element: <PageManagementPage />,
+      },
+      {
+        path: "settings/theme",
+        element: <ThemeCustomizationPage />,
+      },
+      // Spread all other route modules
+      ...accountingRoutes,
+      ...inventoryRoutes,
+      ...inventoryControlRoutes,
+      ...purchasesRoutes,
+      ...invoicesRoutes,
+      ...customersRoutes,
+      ...vendorRoutes,
+      ...receivablesPayablesRoutes,
+      ...expensesRoutes,
+      ...reportsRoutes,
+      ...definitionsRoutes,
+      ...aiRoutes,
+      ...hrRoutes,
+      ...integrationsRoutes,
+      ...aboutRoutes,
+    ]
   },
   {
     path: "/auth/login",
