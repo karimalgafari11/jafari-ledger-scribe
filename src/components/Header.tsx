@@ -18,7 +18,8 @@ interface HeaderProps {
   children?: React.ReactNode;
   description?: string;
   backPath?: string;
-  className?: string; // Added className prop
+  className?: string;
+  actions?: React.ReactNode; // Added the actions prop
 }
 
 // Making Header both a default export and a named export
@@ -29,7 +30,8 @@ const Header = ({
   children,
   description,
   backPath,
-  className = '' // Default value for className
+  className = '',
+  actions // Added actions to the destructured props
 }: HeaderProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -70,6 +72,7 @@ const Header = ({
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
+        {actions} {/* Render the actions prop */}
         {children}
         <LanguageSwitcher />
         <ThemeSwitcher />
