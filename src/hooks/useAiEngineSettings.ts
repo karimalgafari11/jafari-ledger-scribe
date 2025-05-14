@@ -1,8 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { AIEngineSettings } from '@/types/ai-finance';
+import { ErrorTracker } from '@/utils/errorTracker';
 
-// إعدادات افتراضية للمحرك الذكي
+/**
+ * Default AI engine settings
+ * These settings define the initial configuration for AI features
+ */
 const defaultSettings: AIEngineSettings = {
   journalEntrySuggestions: {
     enabled: true,
@@ -29,44 +33,71 @@ const defaultSettings: AIEngineSettings = {
   },
 };
 
+/**
+ * Hook to manage AI engine settings
+ * Handles loading, saving, and resetting settings
+ */
 export const useAiEngineSettings = () => {
   const [settings, setSettings] = useState<AIEngineSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // Load saved settings from localStorage on initial mount
   useEffect(() => {
-    // محاولة استرجاع الإعدادات المحفوظة من localStorage
-    const savedSettings = localStorage.getItem('ai-engine-settings');
-    if (savedSettings) {
-      try {
+    try {
+      const savedSettings = localStorage.getItem('ai-engine-settings');
+      if (savedSettings) {
         setSettings(JSON.parse(savedSettings));
-      } catch (error) {
-        console.error('خطأ في قراءة الإعدادات المحفوظة:', error);
-        setSettings(defaultSettings);
       }
+    } catch (error) {
+      ErrorTracker.error('Failed to load AI engine settings', { 
+        component: 'useAiEngineSettings',
+        additionalInfo: error
+      });
+      setSettings(defaultSettings);
     }
   }, []);
 
+  /**
+   * Update AI engine settings
+   * @param newSettings Updated settings object
+   */
   const updateSettings = (newSettings: AIEngineSettings) => {
     setIsLoading(true);
     
-    // محاكاة طلب API
+    // Simulate API request
     setTimeout(() => {
-      setSettings(newSettings);
-      
-      // حفظ الإعدادات في localStorage للعرض التوضيحي
-      localStorage.setItem('ai-engine-settings', JSON.stringify(newSettings));
-      
-      setIsLoading(false);
+      try {
+        setSettings(newSettings);
+        localStorage.setItem('ai-engine-settings', JSON.stringify(newSettings));
+      } catch (error) {
+        ErrorTracker.error('Failed to save AI engine settings', {
+          component: 'useAiEngineSettings',
+          additionalInfo: error
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }, 500);
   };
 
+  /**
+   * Reset settings to default values
+   */
   const resetSettings = () => {
     setIsLoading(true);
     
     setTimeout(() => {
-      setSettings(defaultSettings);
-      localStorage.setItem('ai-engine-settings', JSON.stringify(defaultSettings));
-      setIsLoading(false);
+      try {
+        setSettings(defaultSettings);
+        localStorage.setItem('ai-engine-settings', JSON.stringify(defaultSettings));
+      } catch (error) {
+        ErrorTracker.error('Failed to reset AI engine settings', {
+          component: 'useAiEngineSettings',
+          additionalInfo: error
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }, 500);
   };
 

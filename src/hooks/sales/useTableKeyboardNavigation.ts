@@ -1,229 +1,148 @@
 
 import { useState } from "react";
-import { toast } from "sonner";
+import { InvoiceItem } from "@/types/invoices";
+import { ErrorTracker } from "@/utils/errorTracker";
 
-export function useTableKeyboardNavigation(items, setActiveSearchCell, setIsEditingCell, setLastSelectedRowIndex, focusCellFn) {
-  // Flag to track active editing cell
-  const [isEditingActive, setIsEditingActive] = useState(false);
+/**
+ * Hook for keyboard navigation in data tables
+ * Provides arrow key navigation, enter to edit, and escape to cancel
+ */
+export const useTableKeyboardNavigation = (
+  items: any[],
+  setActiveCell: (cell: {rowIndex: number; cellName: string} | null) => void,
+  setIsEditingActive: (isEditing: boolean) => void,
+  setLastSelectedRowIndex: (index: number | null) => void,
+  focusCell: (rowIndex: number, cellName: string) => void
+) => {
+  const [isEditingCell, setIsEditingCell] = useState(false);
 
-  // تحسين معالجة أحداث لوحة المفاتيح
-  const handleKeyNavigation = (e: React.KeyboardEvent<HTMLTableCellElement>, rowIndex: number, cellName: string) => {
-    // منع السلوك الافتراضي لمفاتيح الأسهم والتاب دائمًا في حالة عدم التحرير
-    if (!isEditingCell(rowIndex, cellName) && 
-        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter", "Escape"].includes(e.key)) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    // الحصول على ترتيب الخلايا المرئية للتنقل
-    const cellOrder = getVisibleCellOrder();
-    const currentIndex = cellOrder.indexOf(cellName);
-    
-    if (currentIndex === -1) return;
-
-    // إذا كان في وضع التحرير، تعامل مع أحداث خاصة فقط
-    if (isEditingCell(rowIndex, cellName)) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        setIsEditingCell(false);
-        setIsEditingActive(false);
-        return;
-      } 
+  /**
+   * Get the next valid cell when navigating with keyboard
+   * @param direction Direction to move ('up', 'down', 'left', 'right')
+   * @param currentRow Current row index
+   * @param currentCell Current cell name
+   * @param availableCells Array of available cell names in order
+   */
+  const getNextCell = (
+    direction: 'up' | 'down' | 'left' | 'right',
+    currentRow: number,
+    currentCell: string,
+    availableCells: string[]
+  ): {rowIndex: number; cellName: string} | null => {
+    try {
+      const currentCellIndex = availableCells.indexOf(currentCell);
+      if (currentCellIndex === -1) return null;
       
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        setIsEditingCell(false);
-        setIsEditingActive(false);
+      switch (direction) {
+        case 'up':
+          return currentRow > 0 
+            ? { rowIndex: currentRow - 1, cellName: currentCell } 
+            : null;
         
-        // التحرك للخلية التالية بعد الضغط على Enter
-        if (currentIndex < cellOrder.length - 1) {
-          const nextCellName = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCellFn(rowIndex, nextCellName), 100);
-        } else if (rowIndex < items.length - 1) {
-          // الانتقال إلى الصف التالي، الخلية الأولى
-          setTimeout(() => focusCellFn(rowIndex + 1, cellOrder[0]), 100);
-        }
+        case 'down':
+          return currentRow < items.length - 1 
+            ? { rowIndex: currentRow + 1, cellName: currentCell } 
+            : null;
         
-        return;
+        case 'left':
+          return currentCellIndex > 0 
+            ? { rowIndex: currentRow, cellName: availableCells[currentCellIndex - 1] } 
+            : null;
+        
+        case 'right':
+          return currentCellIndex < availableCells.length - 1 
+            ? { rowIndex: currentRow, cellName: availableCells[currentCellIndex + 1] } 
+            : null;
+        
+        default:
+          return null;
       }
-      
-      // معالجة أحداث مفاتيح الأسهم حتى في وضع التحرير
+    } catch (error) {
+      ErrorTracker.error('Error in getNextCell', { 
+        component: 'useTableKeyboardNavigation',
+        additionalInfo: { direction, currentRow, currentCell, error }
+      });
+      return null;
+    }
+  };
+
+  /**
+   * Handle keyboard navigation events
+   * @param e Keyboard event
+   * @param activeCell Current active cell
+   * @param availableCells Array of available cell names in order
+   */
+  const handleKeyNavigation = (
+    e: React.KeyboardEvent,
+    activeCell: {rowIndex: number; cellName: string} | null,
+    availableCells: string[]
+  ) => {
+    if (!activeCell) return;
+    
+    // If currently editing, don't navigate
+    if (isEditingCell) return;
+    
+    const { rowIndex, cellName } = activeCell;
+    
+    try {
       switch (e.key) {
         case 'ArrowUp':
-          if (rowIndex > 0) {
-            e.preventDefault();
-            setIsEditingCell(false);
-            setIsEditingActive(false);
-            setTimeout(() => focusCellFn(rowIndex - 1, cellName), 100);
-          }
-          break;
-        
         case 'ArrowDown':
-          if (rowIndex < items.length - 1) {
-            e.preventDefault();
-            setIsEditingCell(false);
-            setIsEditingActive(false);
-            setTimeout(() => focusCellFn(rowIndex + 1, cellName), 100);
-          }
-          break;
-        
-        case 'ArrowRight':
-          // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليمين يعني الخلية السابقة في الترتيب
-          if (currentIndex > 0) {
-            e.preventDefault();
-            setIsEditingCell(false);
-            setIsEditingActive(false);
-            const prevCell = cellOrder[currentIndex - 1];
-            setTimeout(() => focusCellFn(rowIndex, prevCell), 100);
-          }
-          break;
-        
         case 'ArrowLeft':
-          // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليسار يعني الخلية التالية في الترتيب
-          if (currentIndex < cellOrder.length - 1) {
-            e.preventDefault();
-            setIsEditingCell(false);
-            setIsEditingActive(false);
-            const nextCell = cellOrder[currentIndex + 1];
-            setTimeout(() => focusCellFn(rowIndex, nextCell), 100);
+        case 'ArrowRight': {
+          e.preventDefault();
+          
+          const direction = e.key.replace('Arrow', '').toLowerCase() as 'up' | 'down' | 'left' | 'right';
+          const nextCell = getNextCell(direction, rowIndex, cellName, availableCells);
+          
+          if (nextCell) {
+            focusCell(nextCell.rowIndex, nextCell.cellName);
+            setActiveCell(nextCell);
+            setLastSelectedRowIndex(nextCell.rowIndex);
           }
+          break;
+        }
+        
+        case 'Enter':
+          e.preventDefault();
+          setIsEditingCell(true);
+          setIsEditingActive(true);
+          break;
+        
+        case 'Escape':
+          e.preventDefault();
+          setActiveCell(null);
+          setLastSelectedRowIndex(null);
+          break;
+        
+        case 'Tab':
+          // Allow default tab behavior for accessibility
           break;
           
-        case 'Tab':
-          // نسمح بسلوك Tab الافتراضي
-          return;
+        default:
+          // Ignore other keys
+          break;
       }
-      
-      // باقي المفاتيح يتم تجاهلها في وضع التحرير
-      return;
-    }
-    
-    // معالجة أحداث مفاتيح الأسهم مع مراعاة اتجاه الصفحة من اليمين إلى اليسار
-    switch (e.key) {
-      case 'ArrowRight':
-        // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليمين يعني الخلية السابقة في الترتيب
-        if (currentIndex > 0) {
-          const prevCell = cellOrder[currentIndex - 1];
-          setTimeout(() => focusCellFn(rowIndex, prevCell), 100);
-        } else {
-          // إذا كنا في أول خلية وضغطنا على اليمين، ننتقل إلى الصف السابق آخر خلية
-          if (rowIndex > 0) {
-            setTimeout(() => focusCellFn(rowIndex - 1, cellOrder[cellOrder.length - 1]), 100);
-          }
-        }
-        break;
-      
-      case 'ArrowLeft':
-        // نظرًا لأن الواجهة عربية (RTL)، الانتقال لليسار يعني الخلية التالية في الترتيب
-        if (currentIndex < cellOrder.length - 1) {
-          const nextCell = cellOrder[currentIndex + 1];
-          setTimeout(() => focusCellFn(rowIndex, nextCell), 100);
-        } else {
-          // إذا كنا في آخر خلية وضغطنا على اليسار، ننتقل إلى الصف التالي أول خلية
-          if (rowIndex < items.length - 1) {
-            setTimeout(() => focusCellFn(rowIndex + 1, cellOrder[0]), 100);
-          }
-        }
-        break;
-      
-      case 'ArrowUp':
-        if (rowIndex > 0) {
-          setTimeout(() => focusCellFn(rowIndex - 1, cellName), 100);
-        }
-        break;
-      
-      case 'ArrowDown':
-        if (rowIndex < items.length - 1) {
-          setTimeout(() => focusCellFn(rowIndex + 1, cellName), 100);
-        }
-        break;
-      
-      case 'Enter':
-        if (!isEditingCell(rowIndex, cellName)) {
-          setActiveSearchCell({ rowIndex, cellName });
-          setIsEditingCell(true);
-          setIsEditingActive(true);
-        }
-        break;
-      
-      case 'Escape':
-        finishEditing();
-        break;
-      
-      case 'Tab':
-        navigateWithTab(rowIndex, cellName, e.shiftKey);
-        break;
-      
-      default:
-        // بدء التحرير مباشرة عند كتابة حرف أو رقم
-        if (!isEditingCell(rowIndex, cellName) && /^[a-zA-Z0-9\u0600-\u06FF]$/.test(e.key)) {
-          setActiveSearchCell({ rowIndex, cellName });
-          setIsEditingCell(true);
-          setIsEditingActive(true);
-        }
-        break;
+    } catch (error) {
+      ErrorTracker.error('Error in handleKeyNavigation', { 
+        component: 'useTableKeyboardNavigation',
+        additionalInfo: { key: e.key, activeCell, error }
+      });
     }
   };
-  
-  // Helper function to check if a cell is being edited
-  const isEditingCell = (rowIndex: number, cellName: string) => {
-    // We need to use the callback pattern to get the current activeSearchCell value
-    return isEditingActive && typeof setActiveSearchCell === 'function';
-  };
-  
-  // Function to handle focusing on a cell
-  const focusCell = (rowIndex: number, cellName: string) => {
-    if (focusCellFn && typeof focusCellFn === 'function') {
-      focusCellFn(rowIndex, cellName);
-    }
-  };
-  
-  // الحصول على ترتيب الخلايا المرئية للتنقل
-  const getVisibleCellOrder = () => {
-    // حسب الترتيب الطبيعي للجدول من اليمين إلى اليسار
-    // ملاحظة: تأكد من أن هذا الترتيب متوافق مع ترتيب الخلايا الفعلي في الجدول
-    return ['code', 'name', 'quantity', 'price', 'notes'];
-  };
-  
-  // التنقل باستخدام مفتاح Tab
-  const navigateWithTab = (rowIndex: number, cellName: string, isShiftKey: boolean) => {
-    const cellOrder = getVisibleCellOrder();
-    const currentIndex = cellOrder.indexOf(cellName);
-    
-    if (isShiftKey) {
-      // التنقل للخلف
-      if (currentIndex > 0) {
-        // الانتقال إلى الخلية السابقة في نفس الصف
-        focusCellFn(rowIndex, cellOrder[currentIndex - 1]);
-      } else if (rowIndex > 0) {
-        // الانتقال إلى الخلية الأخيرة من الصف السابق
-        focusCellFn(rowIndex - 1, cellOrder[cellOrder.length - 1]);
-      }
-    } else {
-      // التنقل للأمام
-      if (currentIndex < cellOrder.length - 1) {
-        // الانتقال إلى الخلية التالية في نفس الصف
-        focusCellFn(rowIndex, cellOrder[currentIndex + 1]);
-      } else if (rowIndex < items.length - 1) {
-        // الانتقال إلى الخلية الأولى من الصف التالي
-        focusCellFn(rowIndex + 1, cellOrder[0]);
-      }
-    }
-  };
-  
-  // إنهاء التحرير
+
+  /**
+   * Finish editing the current cell
+   */
   const finishEditing = () => {
-    setActiveSearchCell(null);
     setIsEditingCell(false);
     setIsEditingActive(false);
-    setLastSelectedRowIndex(null);
   };
 
   return {
     handleKeyNavigation,
     finishEditing,
-    getVisibleCellOrder,
     isEditingCell,
-    setIsEditingActive
+    setIsEditingActive: setIsEditingCell
   };
-}
+};
