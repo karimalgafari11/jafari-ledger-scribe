@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PageContainer } from "@/components/PageContainer";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,13 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Download, Printer, Mail, FileText } from "lucide-react";
 import { Expense } from "@/types/expenses";
 import { toast } from "sonner";
-
-// Mock data for reports until the hook provides it
-const mockReports = [
-  { id: '1', type: 'purchases', vendorName: 'Vendor 1' },
-  { id: '2', type: 'payments', vendorName: 'Vendor 2' },
-  { id: '3', type: 'performance', vendorName: 'Vendor 3' }
-];
 
 const VendorReportsPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -48,7 +41,7 @@ const VendorReportsPage = () => {
   } = useVendorReports();
   
   // Switch to overview tab when period changes
-  useEffect(() => {
+  React.useEffect(() => {
     setActiveTab("overview");
   }, [selectedPeriod]);
   
@@ -142,25 +135,25 @@ const VendorReportsPage = () => {
           
           <TabsContent value="purchases" className="m-0">
             <VendorReportList 
-              title="تقارير المشتريات حسب المورد" 
               vendors={vendorData}
               filteredExpenses={filteredExpenses.filter((exp: Expense) => exp.category === 'purchases')}
+              title="تقارير المشتريات حسب المورد"
             />
           </TabsContent>
           
           <TabsContent value="payments" className="m-0">
             <VendorReportList 
-              title="تقارير المدفوعات حسب المورد"
               vendors={vendorData}
               filteredExpenses={filteredExpenses.filter((exp: Expense) => exp.category === 'payments')}
+              title="تقارير المدفوعات حسب المورد"
             />
           </TabsContent>
           
           <TabsContent value="performance" className="m-0">
             <VendorReportList 
-              title="تقييم أداء الموردين"
               vendors={vendorData}
               filteredExpenses={filteredExpenses.filter((exp: Expense) => exp.category === 'performance')}
+              title="تقييم أداء الموردين"
             />
           </TabsContent>
         </Card>
