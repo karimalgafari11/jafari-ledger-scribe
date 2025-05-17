@@ -73,9 +73,9 @@ export const useJournalPage = () => {
   };
 
   const filteredEntries = entries.filter(entry => {
-    // تعديل طريقة التحقق من تاريخ الفلترة للتأكد من وجود القيم قبل المقارنة
-    if (filterDate?.from && new Date(entry.date) < filterDate.from) return false;
-    if (filterDate?.to && new Date(entry.date) > filterDate.to) return false;
+    // Fixed: Safely check if filterDate exists and has 'from' property before comparing
+    if (filterDate && filterDate.from && new Date(entry.date) < filterDate.from) return false;
+    if (filterDate && filterDate.to && new Date(entry.date) > filterDate.to) return false;
     if (filterStatus && entry.status !== filterStatus) return false;
     if (filterUser && entry.createdBy !== filterUser) return false;
     
