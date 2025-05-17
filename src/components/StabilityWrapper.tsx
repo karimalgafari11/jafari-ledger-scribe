@@ -1,25 +1,31 @@
 
 import React, { useEffect, useState, ReactNode, useRef, Suspense } from 'react';
 import { ErrorTracker } from '@/utils/errorTracker';
+import { toast } from 'sonner';
 
 interface StabilityWrapperProps {
   children: ReactNode;
   fallback?: ReactNode;
   maxRetries?: number;
   retryDelay?: number;
+  showToastOnError?: boolean;
+  componentName?: string;
 }
 
 export const StabilityWrapper = ({ 
   children, 
   fallback, 
   maxRetries = 3, 
-  retryDelay = 1000 
+  retryDelay = 1000,
+  showToastOnError = false,
+  componentName = 'المكون'
 }: StabilityWrapperProps) => {
   const [isStable, setIsStable] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const mountedRef = useRef(true);
-  
+  const errorRef = useRef<Error | null>(null);
+
   // Reset state when children change
   const childrenRef = useRef(children);
   if (childrenRef.current !== children) {
@@ -27,6 +33,7 @@ export const StabilityWrapper = ({
     if (hasError) {
       setHasError(false);
       setRetryCount(0);
+      errorRef.current = null;
     }
   }
   
@@ -40,11 +47,27 @@ export const StabilityWrapper = ({
       }
     }, 50);
     
+    // Track if component unmounts due to error
+    const unloadListener = () => {
+      if (hasError && errorRef.current) {
+        ErrorTracker.warning('تم إعادة تحميل الصفحة بسبب خطأ', { 
+          component: componentName,
+          additionalInfo: { 
+            error: errorRef.current.message,
+            retryCount: retryCount 
+          }
+        });
+      }
+    };
+    
+    window.addEventListener('beforeunload', unloadListener);
+    
     return () => {
       mountedRef.current = false;
       clearTimeout(timeout);
+      window.removeEventListener('beforeunload', unloadListener);
     };
-  }, [children]);
+  }, [children, hasError, retryCount, componentName]);
   
   useEffect(() => {
     if (hasError && retryCount < maxRetries) {
@@ -52,24 +75,34 @@ export const StabilityWrapper = ({
         if (mountedRef.current) {
           setHasError(false);
           setRetryCount(prev => prev + 1);
-          ErrorTracker.info(`Retrying component render (attempt ${retryCount + 1}/${maxRetries})`, { 
-            component: 'StabilityWrapper' 
+          ErrorTracker.info(`إعادة محاولة تحميل المكون (محاولة ${retryCount + 1}/${maxRetries})`, { 
+            component: componentName 
           });
+          
+          if (showToastOnError) {
+            toast.info(`جاري إعادة محاولة تحميل ${componentName}...`);
+          }
         }
-      }, retryDelay);
+      }, retryDelay * (retryCount + 1)); // زيادة وقت الانتظار مع كل محاولة
       
       return () => clearTimeout(timeout);
     }
     
     if (hasError && retryCount >= maxRetries) {
-      ErrorTracker.error(`Component failed to render after ${maxRetries} attempts`, { 
-        component: 'StabilityWrapper'
+      ErrorTracker.error(`فشل تحميل المكون بعد ${maxRetries} محاولات`, { 
+        component: componentName,
+        additionalInfo: errorRef.current ? { message: errorRef.current.message } : undefined
       });
+      
+      if (showToastOnError) {
+        toast.error(`تعذر تحميل ${componentName}، يرجى تحديث الصفحة`);
+      }
     }
-  }, [hasError, retryCount, maxRetries, retryDelay]);
+  }, [hasError, retryCount, maxRetries, retryDelay, componentName, showToastOnError]);
   
   const handleError = (error: Error, info: React.ErrorInfo) => {
     setHasError(true);
+    errorRef.current = error;
     ErrorTracker.renderError(error, info.componentStack);
   };
   
@@ -105,17 +138,19 @@ export const StabilityWrapper = ({
     }
   }
   
+  const LoadingSkeleton = () => (
+    <div className="flex justify-center items-center h-20">
+      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+        <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+        <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100"></div>
+        <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200"></div>
+      </div>
+    </div>
+  );
+  
   return (
     <StabilityErrorBoundary>
-      <Suspense fallback={
-        <div className="flex justify-center items-center h-20">
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100"></div>
-            <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200"></div>
-          </div>
-        </div>
-      }>
+      <Suspense fallback={<LoadingSkeleton />}>
         <div 
           className={`transition-opacity duration-300 ${isStable ? 'opacity-100' : 'opacity-0'}`}
           style={{ willChange: 'opacity' }}

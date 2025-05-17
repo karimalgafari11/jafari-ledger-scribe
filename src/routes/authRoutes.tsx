@@ -8,27 +8,68 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import UpdatePasswordPage from "@/pages/auth/UpdatePasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import { AppWithErrorHandling } from "@/AppWithErrorHandling";
+import StabilityWrapper from "@/components/StabilityWrapper";
 
 export const authRoutes: RouteObject[] = [
   {
     path: "auth/login",
-    element: <AppWithErrorHandling><PublicRoute><LoginPage /></PublicRoute></AppWithErrorHandling>,
+    element: (
+      <AppWithErrorHandling>
+        <PublicRoute>
+          <StabilityWrapper componentName="صفحة تسجيل الدخول" maxRetries={2}>
+            <LoginPage />
+          </StabilityWrapper>
+        </PublicRoute>
+      </AppWithErrorHandling>
+    ),
   },
   {
     path: "auth/register",
-    element: <AppWithErrorHandling><PublicRoute><RegisterPage /></PublicRoute></AppWithErrorHandling>,
+    element: (
+      <AppWithErrorHandling>
+        <PublicRoute>
+          <StabilityWrapper componentName="صفحة التسجيل" maxRetries={2}>
+            <RegisterPage />
+          </StabilityWrapper>
+        </PublicRoute>
+      </AppWithErrorHandling>
+    ),
   },
   {
     path: "auth/forgot-password",
-    element: <AppWithErrorHandling><PublicRoute><ForgotPasswordPage /></PublicRoute></AppWithErrorHandling>,
+    element: (
+      <AppWithErrorHandling>
+        <PublicRoute>
+          <StabilityWrapper componentName="صفحة نسيت كلمة المرور" maxRetries={2}>
+            <ForgotPasswordPage />
+          </StabilityWrapper>
+        </PublicRoute>
+      </AppWithErrorHandling>
+    ),
   },
   {
     path: "auth/reset-password",
-    element: <AppWithErrorHandling><PublicRoute><ResetPasswordPage /></PublicRoute></AppWithErrorHandling>,
+    element: (
+      <AppWithErrorHandling>
+        <PublicRoute>
+          <StabilityWrapper componentName="صفحة إعادة تعيين كلمة المرور" maxRetries={2}>
+            <ResetPasswordPage />
+          </StabilityWrapper>
+        </PublicRoute>
+      </AppWithErrorHandling>
+    ),
   },
   {
     path: "auth/update-password",
-    element: <AppWithErrorHandling><PublicRoute><UpdatePasswordPage /></PublicRoute></AppWithErrorHandling>,
+    element: (
+      <AppWithErrorHandling>
+        <PublicRoute>
+          <StabilityWrapper componentName="صفحة تحديث كلمة المرور" maxRetries={2}>
+            <UpdatePasswordPage />
+          </StabilityWrapper>
+        </PublicRoute>
+      </AppWithErrorHandling>
+    ),
   },
 ];
 

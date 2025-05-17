@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Outlet } from "react-router-dom";
@@ -17,6 +17,7 @@ export function Layout({
   showWatermark = true
 }: LayoutProps) {
   const isMobile = useIsMobile();
+  const layoutRef = useRef<HTMLDivElement>(null);
   
   // مراقبة أداء المكون
   useEffect(() => {
@@ -33,9 +34,37 @@ export function Layout({
       }
     };
   }, []);
+
+  // قياس التغيرات المفاجئة في تخطيط الصفحة
+  useEffect(() => {
+    if (layoutRef.current) {
+      const observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect;
+          if (width === 0 || height === 0) {
+            ErrorTracker.warning('تم اكتشاف تغير مفاجئ في حجم المكون', {
+              component: 'Layout',
+              additionalInfo: { width, height }
+            });
+          }
+        }
+      });
+      
+      observer.observe(layoutRef.current);
+      return () => observer.disconnect();
+    }
+  }, []);
+  
+  // التعامل مع أخطاء تحميل الصور
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // إخفاء الصورة عند فشل التحميل
+    e.currentTarget.style.display = 'none';
+    ErrorTracker.warning('فشل في تحميل صورة الخلفية', { component: 'Layout' });
+  };
   
   return (
     <div 
+      ref={layoutRef}
       className={`page-container min-h-screen w-full flex flex-col rtl ${className} transition-opacity duration-300`}
       dir="rtl"
       lang="ar"
@@ -46,11 +75,8 @@ export function Layout({
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
             alt="الجعفري للمحاسبة" 
             className="w-96 h-96 opacity-[0.07] object-contain" 
-            onError={(e) => {
-              // تعامل مع أخطاء تحميل الصور
-              e.currentTarget.style.display = 'none';
-              ErrorTracker.warning('فشل في تحميل صورة الخلفية', { component: 'Layout' });
-            }}
+            onError={handleImageError}
+            loading="lazy"
           />
         </div>
       )}
@@ -62,10 +88,8 @@ export function Layout({
             src="/lovable-uploads/b46a496c-1b88-47b3-bb09-5f709425862f.png" 
             alt="الجعفري للمحاسبة" 
             className="w-48 h-48 opacity-[0.07] object-contain" 
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              ErrorTracker.warning('فشل في تحميل صورة الخلفية المصغرة', { component: 'Layout' });
-            }}
+            onError={handleImageError}
+            loading="lazy"
           />
         </div>
       )}

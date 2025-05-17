@@ -11,6 +11,7 @@ export interface ErrorLogEntry {
   component?: string;
   additionalInfo?: any;
   severity: 'critical' | 'error' | 'warning' | 'info';
+  instanceId?: string; // معرف فريد للخطأ - لتجنب التكرار
 }
 
 // مصفوفة لتخزين سجلات الأخطاء - محدودة بـ 100 خطأ
@@ -18,6 +19,17 @@ let errorLog: ErrorLogEntry[] = [];
 
 // الحد الأقصى لعدد الأخطاء المخزنة
 const MAX_ERROR_LOG_SIZE = 100;
+
+// معرف الجلسة - يتم إنشاؤه عند بدء التطبيق
+const SESSION_ID = Math.random().toString(36).substring(2, 15);
+
+/**
+ * إنشاء معرف فريد للخطأ استنادًا إلى رسالة الخطأ وبعض المعلومات الإضافية
+ */
+const createErrorId = (error: string | Error, component?: string): string => {
+  const errorMsg = typeof error === 'string' ? error : error.message;
+  return `${errorMsg}_${component || 'unknown'}_${Date.now()}`;
+};
 
 /**
  * تسجيل خطأ جديد في النظام
@@ -30,13 +42,38 @@ export const trackError = (
     severity?: 'critical' | 'error' | 'warning' | 'info';
   }
 ) => {
+  // إنشاء معرف فريد للخطأ
+  const instanceId = createErrorId(error, options?.component);
+  
+  // التحقق مما إذا كان الخطأ قد تم تسجيله مسبقًا في الفترة الأخيرة
+  const recentSimilarError = errorLog.find(entry => 
+    entry.message === (typeof error === 'string' ? error : error.message) && 
+    entry.component === options?.component && 
+    Date.now() - entry.timestamp.getTime() < 5000 // في آخر 5 ثواني
+  );
+  
+  if (recentSimilarError) {
+    // تحديث معلومات الخطأ المتشابه فقط
+    recentSimilarError.timestamp = new Date();
+    if (options?.additionalInfo) {
+      recentSimilarError.additionalInfo = {
+        ...recentSimilarError.additionalInfo,
+        ...options.additionalInfo,
+        occurrences: (recentSimilarError.additionalInfo?.occurrences || 1) + 1
+      };
+    }
+    
+    return recentSimilarError;
+  }
+  
   const errorObj: ErrorLogEntry = {
     timestamp: new Date(),
     message: typeof error === 'string' ? error : error.message,
     stack: typeof error !== 'string' ? error.stack : undefined,
     component: options?.component,
-    additionalInfo: options?.additionalInfo,
-    severity: options?.severity || 'error'
+    additionalInfo: options?.additionalInfo ? { ...options.additionalInfo, occurrences: 1 } : { occurrences: 1 },
+    severity: options?.severity || 'error',
+    instanceId
   };
   
   // إضافة الخطأ إلى السجل
@@ -135,29 +172,37 @@ const getConsoleStyleForSeverity = (severity: 'critical' | 'error' | 'warning' |
   }
 };
 
+// منع تسجيل أخطاء متشابهة في نفس الوقت
+let lastErrorMessage = '';
+let lastErrorTime = 0;
+const ERROR_THROTTLE_MS = 1000; // الحد الزمني بين الأخطاء المتشابهة
+
 // تحسين استماع الأخطاء - إضافة مزيد من تفاصيل الخطأ
 if (typeof window !== 'undefined') {
   window.addEventListener('error', (event) => {
-    // Prevent duplicate error reporting for the same error
     const errorMessage = event.error ? event.error.message : event.message;
-    const isDuplicate = errorLog.some(entry => 
-      entry.message === errorMessage && 
-      Date.now() - entry.timestamp.getTime() < 5000 // Within last 5 seconds
-    );
+    const now = Date.now();
     
-    if (!isDuplicate) {
-      trackError(event.error || event.message, {
-        component: 'window',
-        additionalInfo: {
-          source: event.filename,
-          lineNumber: event.lineno,
-          columnNumber: event.colno,
-          timestamp: new Date().toISOString(),
-          url: window.location.href
-        },
-        severity: 'critical'
-      });
+    // منع التكرار السريع للأخطاء المتشابهة
+    if (errorMessage === lastErrorMessage && now - lastErrorTime < ERROR_THROTTLE_MS) {
+      return;
     }
+    
+    lastErrorMessage = errorMessage;
+    lastErrorTime = now;
+    
+    trackError(event.error || event.message, {
+      component: 'window',
+      additionalInfo: {
+        source: event.filename,
+        lineNumber: event.lineno,
+        columnNumber: event.colno,
+        timestamp: new Date().toISOString(),
+        url: window.location.href,
+        sessionId: SESSION_ID
+      },
+      severity: 'critical'
+    });
   });
   
   // تحسين التقاط أخطاء الوعود غير المعالجة
@@ -174,23 +219,41 @@ if (typeof window !== 'undefined') {
       message = event.reason.message || JSON.stringify(event.reason);
     }
     
-    // Prevent duplicate promise rejection errors
-    const isDuplicate = errorLog.some(entry => 
-      entry.message === message && 
-      Date.now() - entry.timestamp.getTime() < 5000 // Within last 5 seconds
-    );
+    const now = Date.now();
     
-    if (!isDuplicate) {
-      trackError(message, {
-        component: 'promise',
-        additionalInfo: {
-          stack,
-          url: window.location.href,
-          timestamp: new Date().toISOString()
-        },
-        severity: 'critical'
-      });
+    // منع التكرار السريع للأخطاء المتشابهة
+    if (message === lastErrorMessage && now - lastErrorTime < ERROR_THROTTLE_MS) {
+      return;
     }
+    
+    lastErrorMessage = message;
+    lastErrorTime = now;
+    
+    trackError(message, {
+      component: 'promise',
+      additionalInfo: {
+        stack,
+        url: window.location.href,
+        timestamp: new Date().toISOString(),
+        sessionId: SESSION_ID
+      },
+      severity: 'critical'
+    });
+  });
+  
+  // مراقبة حالة الشبكة
+  window.addEventListener('online', () => {
+    trackError('تم استعادة الاتصال بالإنترنت', {
+      component: 'connectivity',
+      severity: 'info'
+    });
+  });
+  
+  window.addEventListener('offline', () => {
+    trackError('فقدان الاتصال بالإنترنت', {
+      component: 'connectivity',
+      severity: 'warning'
+    });
   });
 }
 
@@ -210,10 +273,54 @@ export const trackRenderError = (error: Error, componentStack: string) => {
   
   trackError(error, {
     component: 'react-render',
-    additionalInfo: { componentStack },
+    additionalInfo: { 
+      componentStack,
+      sessionId: SESSION_ID,
+      renderErrorCount
+    },
     severity: 'critical'
   });
 };
+
+// تفعيل استقرار صفحة الديناميكي
+const VISIBILITY_CHANGE_THRESHOLD = 10000; // 10 ثواني
+let lastVisibilityChange = 0;
+let visibilityChangeCount = 0;
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    const now = Date.now();
+    
+    if (document.visibilityState === 'hidden') {
+      lastVisibilityChange = now;
+    } else if (document.visibilityState === 'visible' && lastVisibilityChange > 0) {
+      const timeDiff = now - lastVisibilityChange;
+      
+      // إذا عاد المستخدم خلال وقت قصير، قد يشير ذلك إلى تحديث أو إعادة تحميل
+      if (timeDiff < VISIBILITY_CHANGE_THRESHOLD) {
+        visibilityChangeCount++;
+        
+        // إذا كانت هناك تغييرات متكررة في الرؤية، قد يكون هناك مشكلة
+        if (visibilityChangeCount >= 3) {
+          ErrorTracker.warning('تم اكتشاف تبديلات متكررة للصفحة', {
+            component: 'page-stability',
+            additionalInfo: { 
+              timeDiff,
+              visibilityChangeCount,
+              url: window.location.href
+            }
+          });
+          
+          // إعادة ضبط العداد بعد الإبلاغ
+          visibilityChangeCount = 0;
+        }
+      } else {
+        // إعادة ضبط العداد إذا كان الوقت أطول
+        visibilityChangeCount = 0;
+      }
+    }
+  });
+}
 
 // واجهة برمجية مبسطة للاستخدام السريع
 export const ErrorTracker = {
@@ -236,30 +343,54 @@ export const detectStabilityIssues = () => {
   // تتبع إعادة التحميل المتكرر
   const SESSION_RELOAD_KEY = 'app_reload_count';
   const SESSION_RELOAD_TIME_KEY = 'app_reload_timestamp';
+  const SESSION_ERROR_COUNT_KEY = 'app_error_count';
+  const SESSION_LAST_URL_KEY = 'app_last_url';
+  const SESSION_ID_KEY = 'app_session_id';
   
   try {
+    // تحديث معرف الجلسة
+    if (!sessionStorage.getItem(SESSION_ID_KEY)) {
+      sessionStorage.setItem(SESSION_ID_KEY, SESSION_ID);
+    }
+    
     // التحقق من وقت إعادة التحميل
     const now = Date.now();
+    const currentUrl = window.location.href;
+    const lastUrl = sessionStorage.getItem(SESSION_LAST_URL_KEY) || '';
     const lastReload = parseInt(sessionStorage.getItem(SESSION_RELOAD_TIME_KEY) || '0', 10);
     const reloadCount = parseInt(sessionStorage.getItem(SESSION_RELOAD_KEY) || '0', 10);
+    const errorCount = parseInt(sessionStorage.getItem(SESSION_ERROR_COUNT_KEY) || '0', 10);
+    
+    // تخزين الصفحة الحالية للمقارنة في المرة القادمة
+    sessionStorage.setItem(SESSION_LAST_URL_KEY, currentUrl);
     
     // تحديث عداد إعادة التحميل
     if (now - lastReload < 30000) { // إذا كان آخر تحميل قبل أقل من 30 ثانية
-      sessionStorage.setItem(SESSION_RELOAD_KEY, (reloadCount + 1).toString());
+      // فحص ما إذا كانت نفس الصفحة تُعاد تحميلها
+      if (currentUrl === lastUrl) {
+        sessionStorage.setItem(SESSION_RELOAD_KEY, (reloadCount + 1).toString());
+        
+        if (reloadCount + 1 >= 3) {
+          ErrorTracker.warning('تم اكتشاف إعادة تحميل متكررة للصفحة', {
+            component: 'stability-monitor',
+            additionalInfo: { 
+              reloadCount: reloadCount + 1, 
+              timeWindow: '30s',
+              url: currentUrl,
+              errorCount
+            },
+            severity: 'warning'
+          });
+          
+          // إعادة ضبط العداد بعد التسجيل
+          sessionStorage.setItem(SESSION_RELOAD_KEY, '0');
+        }
+      }
     } else {
       sessionStorage.setItem(SESSION_RELOAD_KEY, '1');
     }
     
     sessionStorage.setItem(SESSION_RELOAD_TIME_KEY, now.toString());
-    
-    // تنبيه إذا كان هناك تحميل متكرر
-    if (reloadCount > 3) {
-      trackError('تم اكتشاف إعادة تحميل متكررة للصفحة', {
-        component: 'stability-monitor',
-        additionalInfo: { reloadCount, timeWindow: '30s' },
-        severity: 'warning'
-      });
-    }
   } catch (e) {
     // تجاهل أخطاء الوصول إلى SessionStorage (وضع خصوصية التصفح)
   }
@@ -269,3 +400,31 @@ export const detectStabilityIssues = () => {
 if (typeof window !== 'undefined') {
   window.addEventListener('load', detectStabilityIssues);
 }
+
+// مراقبة الأداء العام للتطبيق
+if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
+  try {
+    // مراقبة طول انتظار النقرات (تأخير الاستجابة)
+    new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        // التحويل إلى أي لتجنب أخطاء TypeScript
+        const interactionEntry = entry as any;
+        if (interactionEntry.interactionId && interactionEntry.duration > 200) {
+          ErrorTracker.info('تأخر استجابة واجهة المستخدم', {
+            component: 'interaction-monitor',
+            additionalInfo: { 
+              duration: interactionEntry.duration,
+              type: interactionEntry.name,
+              target: interactionEntry.target?.nodeName || 'unknown'
+            }
+          });
+        }
+      }
+    }).observe({ type: 'interaction', buffered: true });
+  } catch (e) {
+    // تجاهل الأخطاء - قد لا تكون بعض المراقبات مدعومة في كل المتصفحات
+  }
+}
+
+// تصدير إضافي لتسهيل استخدام المكتبة
+export default ErrorTracker;
