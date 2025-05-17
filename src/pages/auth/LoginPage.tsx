@@ -149,7 +149,7 @@ const LoginPage: React.FC = () => {
                   />
                   
                   <Link 
-                    to="/auth/forgot-password" 
+                    to="/auth/reset-password" 
                     className="text-sm text-teal-600 hover:underline"
                   >
                     {t('forgotPassword')}
