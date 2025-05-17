@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDefinition } from "@/components/inventory/types";
 
 interface CreateColumnsOptions {
-  formatDate: (date: Date) => string;
+  formatDate: (date: Date | string | null | undefined) => string;
 }
 
 export const createStockMovementColumns = ({ formatDate }: CreateColumnsOptions): ColumnDefinition[] => {
@@ -15,7 +14,7 @@ export const createStockMovementColumns = ({ formatDate }: CreateColumnsOptions)
       accessorKey: "date",
       width: "150px",
       isSortable: true,
-      cell: (value: Date) => formatDate(value)
+      cell: (value: Date | string | null | undefined) => formatDate(value)
     },
     {
       id: "type",

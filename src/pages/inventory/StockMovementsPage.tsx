@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { DataGrid } from "@/components/inventory/DataGrid";
@@ -142,12 +141,26 @@ const StockMovementsPage = () => {
     });
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('ar-SA', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    }).format(date);
+  // تعديل دالة تنسيق التاريخ للتعامل بشكل آمن مع القيم غير الصالحة
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return "غير محدد";
+    
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      // التحقق من صحة كائن التاريخ
+      if (!dateObj || isNaN(dateObj.getTime())) {
+        return "تاريخ غير صالح";
+      }
+      
+      return new Intl.DateTimeFormat('ar-SA', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      }).format(dateObj);
+    } catch (e) {
+      console.error("خطأ في تنسيق التاريخ:", e);
+      return "تاريخ غير صالح";
+    }
   };
 
   const columns = createStockMovementColumns({ formatDate });
