@@ -14,14 +14,15 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { arSA } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
 
 interface JournalFilterPopoverProps {
-  dateRange: { from?: Date; to?: Date };
+  dateRange: DateRange | undefined;
   status: JournalStatus | "";
   user: string;
   period: "day" | "week" | "month" | "";
   onApplyFilters: (
-    dateRange: { from?: Date; to?: Date },
+    dateRange: DateRange | undefined,
     status: JournalStatus | "",
     user: string,
     period: "day" | "week" | "month" | ""
@@ -37,10 +38,7 @@ export const JournalFilterPopover: React.FC<JournalFilterPopoverProps> = ({
   onApplyFilters,
   onResetFilters,
 }) => {
-  const [localDateRange, setLocalDateRange] = useState<{
-    from?: Date;
-    to?: Date;
-  }>(dateRange);
+  const [localDateRange, setLocalDateRange] = useState<DateRange | undefined>(dateRange);
   const [localStatus, setLocalStatus] = useState<JournalStatus | "">(status);
   const [localUser, setLocalUser] = useState(user);
   const [localPeriod, setLocalPeriod] = useState<"day" | "week" | "month" | "">(
@@ -54,7 +52,7 @@ export const JournalFilterPopover: React.FC<JournalFilterPopoverProps> = ({
   };
 
   const handleReset = () => {
-    setLocalDateRange({});
+    setLocalDateRange(undefined);
     setLocalStatus("");
     setLocalUser("");
     setLocalPeriod("");
@@ -66,19 +64,19 @@ export const JournalFilterPopover: React.FC<JournalFilterPopoverProps> = ({
     if (!date) return;
     
     setLocalDateRange((prev) => {
-      if (!prev.from) {
-        return { from: date, to: undefined };
+      if (!prev?.from) {
+        return { from: date };
       } else if (prev.from && !prev.to && date >= prev.from) {
         return { from: prev.from, to: date };
       } else {
-        return { from: date, to: undefined };
+        return { from: date };
       }
     });
   };
 
   // حساب عدد الفلاتر النشطة
   const activeFiltersCount =
-    (localDateRange.from || localDateRange.to ? 1 : 0) +
+    (localDateRange?.from || localDateRange?.to ? 1 : 0) +
     (localStatus ? 1 : 0) +
     (localUser ? 1 : 0) +
     (localPeriod ? 1 : 0);
@@ -169,7 +167,7 @@ export const JournalFilterPopover: React.FC<JournalFilterPopoverProps> = ({
                     onClick={() => {}}
                   >
                     <CalendarIcon className="ml-2 h-4 w-4" />
-                    {localDateRange.from ? (
+                    {localDateRange?.from ? (
                       format(localDateRange.from, "PP", { locale: arSA })
                     ) : (
                       <span className="text-gray-400">اختر التاريخ</span>
@@ -184,7 +182,7 @@ export const JournalFilterPopover: React.FC<JournalFilterPopoverProps> = ({
                     onClick={() => {}}
                   >
                     <CalendarIcon className="ml-2 h-4 w-4" />
-                    {localDateRange.to ? (
+                    {localDateRange?.to ? (
                       format(localDateRange.to, "PP", { locale: arSA })
                     ) : (
                       <span className="text-gray-400">اختر التاريخ</span>

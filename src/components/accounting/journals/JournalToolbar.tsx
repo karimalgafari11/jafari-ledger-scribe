@@ -6,18 +6,19 @@ import { JournalStatus } from "@/types/journal";
 import { JournalSearch } from "./toolbar/JournalSearch";
 import { JournalFilterPopover } from "./toolbar/JournalFilterPopover";
 import { JournalActiveFilters } from "./toolbar/JournalActiveFilters";
+import { DateRange } from "react-day-picker";
 
 interface JournalToolbarProps {
   onSearch: (term: string) => void;
   onFilterChange: (
-    dateRange: {from?: Date; to?: Date},
+    dateRange: DateRange | undefined,
     status: JournalStatus | "",
     user: string,
     period: "day" | "week" | "month" | ""
   ) => void;
   onResetFilters: () => void;
   onBulkDelete: () => void;
-  filterDate: {from?: Date; to?: Date};
+  filterDate: DateRange | undefined;
   filterStatus: JournalStatus | "";
   filterUser: string;
   filterPeriod: "day" | "week" | "month" | "";

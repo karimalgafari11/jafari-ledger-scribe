@@ -2,16 +2,17 @@
 import { useState } from 'react';
 import { JournalStatus } from '@/types/journal';
 import { toast } from 'sonner';
+import { DateRange } from 'react-day-picker';
 
 export const useJournalFilters = () => {
-  const [filterDate, setFilterDate] = useState<{from?: Date; to?: Date}>({});
+  const [filterDate, setFilterDate] = useState<DateRange | undefined>(undefined);
   const [filterStatus, setFilterStatus] = useState<JournalStatus | "">("");
   const [filterUser, setFilterUser] = useState("");
   const [filterPeriod, setFilterPeriod] = useState<"day" | "week" | "month" | "">("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFilterChange = (
-    dateRange: {from?: Date; to?: Date},
+    dateRange: DateRange | undefined,
     status: JournalStatus | "",
     user: string,
     period: "day" | "week" | "month" | ""
@@ -27,7 +28,7 @@ export const useJournalFilters = () => {
   };
 
   const handleResetFilters = () => {
-    setFilterDate({});
+    setFilterDate(undefined);
     setFilterStatus("");
     setFilterUser("");
     setFilterPeriod("");

@@ -3,14 +3,15 @@ import React from "react";
 import { JournalStatus } from "@/types/journal";
 import { toast } from "sonner";
 import { JournalToolbar } from "@/components/accounting/journals/JournalToolbar";
+import { DateRange } from 'react-day-picker';
 
 interface JournalFiltersProps {
-  filterDate: {from?: Date; to?: Date};
+  filterDate: DateRange | undefined;
   filterStatus: JournalStatus | "";
   filterUser: string;
   filterPeriod: "day" | "week" | "month" | "";
   onFilterChange: (
-    dateRange: {from?: Date; to?: Date},
+    dateRange: DateRange | undefined,
     status: JournalStatus | "",
     user: string,
     period: "day" | "week" | "month" | ""
@@ -33,7 +34,7 @@ export const JournalFilters: React.FC<JournalFiltersProps> = ({
   selectedCount
 }) => {
   const handleFilterChange = (
-    dateRange: {from?: Date; to?: Date},
+    dateRange: DateRange | undefined,
     status: JournalStatus | "",
     user: string,
     period: "day" | "week" | "month" | ""

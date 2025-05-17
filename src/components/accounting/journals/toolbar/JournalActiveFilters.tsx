@@ -1,13 +1,14 @@
 
 import React from "react";
+import { Badge } from "@/components/ui/badge";
 import { JournalStatus } from "@/types/journal";
-import { Button } from "@/components/ui/button";
-import { X, Calendar, User, Tag } from "lucide-react";
+import { X } from "lucide-react";
 import { format } from "date-fns";
 import { arSA } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
 
 interface JournalActiveFiltersProps {
-  dateRange: { from?: Date; to?: Date };
+  dateRange: DateRange | undefined;
   status: JournalStatus | "";
   user: string;
   period: "day" | "week" | "month" | "";
@@ -21,99 +22,79 @@ export const JournalActiveFilters: React.FC<JournalActiveFiltersProps> = ({
   period,
   onResetFilters,
 }) => {
-  const hasActiveFilters =
-    dateRange.from || dateRange.to || status || user || period;
-
-  if (!hasActiveFilters) return null;
-
-  const getStatusLabel = (status: JournalStatus | "") => {
+  const hasFilters = dateRange?.from || status || user || period;
+  
+  if (!hasFilters) return null;
+  
+  const getStatusLabel = (status: string) => {
     switch (status) {
-      case "draft":
-        return "مسودة";
-      case "pending":
-        return "معلق";
-      case "approved":
-        return "معتمد";
-      case "canceled":
-        return "ملغي";
-      default:
-        return "";
+      case "draft": return "مسودة";
+      case "pending": return "معلق";
+      case "approved": return "معتمد";
+      case "canceled": return "ملغي";
+      default: return status;
     }
   };
-
-  const getUserLabel = (userId: string) => {
-    switch (userId) {
-      case "admin":
-        return "مدير النظام";
-      case "accountant":
-        return "المحاسب";
-      default:
-        return "";
-    }
-  };
-
-  const getPeriodLabel = (period: "day" | "week" | "month" | "") => {
+  
+  const getPeriodLabel = (period: string) => {
     switch (period) {
-      case "day":
-        return "اليوم";
-      case "week":
-        return "هذا الأسبوع";
-      case "month":
-        return "هذا الشهر";
-      default:
-        return "";
+      case "day": return "اليوم";
+      case "week": return "هذا الأسبوع";
+      case "month": return "هذا الشهر";
+      default: return period;
     }
   };
-
+  
+  const getDateRangeLabel = () => {
+    if (!dateRange?.from) return null;
+    
+    if (dateRange.to) {
+      return `من ${format(dateRange.from, "yyyy/MM/dd", { locale: arSA })} إلى ${format(dateRange.to, "yyyy/MM/dd", { locale: arSA })}`;
+    }
+    
+    return `${format(dateRange.from, "yyyy/MM/dd", { locale: arSA })}`;
+  };
+  
   return (
-    <div className="flex flex-wrap items-center gap-2 mt-3">
-      {(dateRange.from || dateRange.to) && (
-        <div className="bg-blue-50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-300 text-xs rounded-full px-3 py-1 flex items-center gap-1">
-          <Calendar className="h-3 w-3" />
-          <span>
-            {dateRange.from && dateRange.to
-              ? `${format(dateRange.from, "dd/MM/yyyy", { locale: arSA })} - ${format(
-                  dateRange.to,
-                  "dd/MM/yyyy",
-                  { locale: arSA }
-                )}`
-              : dateRange.from
-              ? `من ${format(dateRange.from, "dd/MM/yyyy", { locale: arSA })}`
-              : `إلى ${format(dateRange.to!, "dd/MM/yyyy", { locale: arSA })}`}
-          </span>
-        </div>
+    <div className="flex flex-wrap gap-2 items-center pt-3">
+      <div className="text-sm text-gray-500 ml-2">الفلاتر النشطة:</div>
+      
+      {dateRange?.from && (
+        <Badge variant="outline" className="gap-1 bg-gray-100 dark:bg-gray-800">
+          التاريخ: {getDateRangeLabel()}
+          <X className="h-3 w-3 cursor-pointer" onClick={() => {}} />
+        </Badge>
       )}
-
-      {status && (
-        <div className="bg-purple-50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-300 text-xs rounded-full px-3 py-1 flex items-center gap-1">
-          <Tag className="h-3 w-3" />
-          <span>الحالة: {getStatusLabel(status)}</span>
-        </div>
-      )}
-
-      {user && (
-        <div className="bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-300 text-xs rounded-full px-3 py-1 flex items-center gap-1">
-          <User className="h-3 w-3" />
-          <span>المستخدم: {getUserLabel(user)}</span>
-        </div>
-      )}
-
+      
       {period && (
-        <div className="bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-300 text-xs rounded-full px-3 py-1 flex items-center gap-1">
-          <Calendar className="h-3 w-3" />
-          <span>الفترة: {getPeriodLabel(period)}</span>
-        </div>
+        <Badge variant="outline" className="gap-1 bg-gray-100 dark:bg-gray-800">
+          الفترة: {getPeriodLabel(period)}
+          <X className="h-3 w-3 cursor-pointer" onClick={() => {}} />
+        </Badge>
       )}
-
-      <Button
-        variant="ghost"
-        size="sm"
+      
+      {status && (
+        <Badge variant="outline" className="gap-1 bg-gray-100 dark:bg-gray-800">
+          الحالة: {getStatusLabel(status)}
+          <X className="h-3 w-3 cursor-pointer" onClick={() => {}} />
+        </Badge>
+      )}
+      
+      {user && (
+        <Badge variant="outline" className="gap-1 bg-gray-100 dark:bg-gray-800">
+          المستخدم: {user === "admin" ? "مدير النظام" : user === "accountant" ? "المحاسب" : user}
+          <X className="h-3 w-3 cursor-pointer" onClick={() => {}} />
+        </Badge>
+      )}
+      
+      <Badge 
+        variant="outline" 
+        className="gap-1 bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400 cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/40"
         onClick={onResetFilters}
-        className="h-6 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 gap-1"
       >
+        إعادة تعيين الكل
         <X className="h-3 w-3" />
-        مسح الكل
-      </Button>
+      </Badge>
     </div>
   );
 };
