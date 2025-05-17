@@ -4,7 +4,7 @@ import { ErrorProvider } from '@/contexts/ErrorContext';
 import { ErrorBoundary } from '@/components/ui/error-boundary/ErrorBoundary';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { Toaster } from '@/components/ui/sonner';
-import { ErrorTracker } from '@/utils/errorTracker';
+import { ErrorTracker, detectStabilityIssues } from '@/utils/errorTracker';
 
 interface AppWithErrorHandlingProps {
   children: React.ReactNode;
@@ -143,7 +143,7 @@ export function AppWithErrorHandling({ children }: AppWithErrorHandlingProps) {
     };
     
     // تسجيل عدد إعادات التحميل المتكررة
-    ErrorTracker.detectStabilityIssues();
+    detectStabilityIssues();
     
     return () => {
       clearInterval(memoryChecker);

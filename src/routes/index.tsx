@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +9,13 @@ import { AppWithErrorHandling } from '@/AppWithErrorHandling';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard'; 
 import NotFound from '@/pages/NotFound'; // Import the NotFound page for 404 handling
+
+// Import specific pages for settings section
+import AiEngineSettingsPage from '@/pages/settings/AiEngineSettingsPage';
+import PageManagementPage from '@/pages/settings/PageManagementPage';
+import BranchesPage from '@/pages/settings/BranchesPage';
+import ActivityLogPage from '@/pages/settings/ActivityLogPage';
+import NotificationSettingsPage from '@/pages/settings/NotificationSettingsPage';
 
 // Import all route modules
 import { accountingRoutes } from './accountingRoutes';
@@ -55,46 +63,18 @@ const routeChildren = [
     path: "/dashboard",
     element: <StabilityWrapper componentName="لوحة التحكم" showToastOnError><Dashboard /></StabilityWrapper>,
   },
+  // إضافة المسارات المتاحة فقط
   {
     path: "settings/activity-log",
     element: <StabilityWrapper componentName="سجل النشاطات"><ActivityLogPage /></StabilityWrapper>,
-  },
-  // إضافة مسارات الإعدادات
-  {
-    path: "settings/system",
-    element: <StabilityWrapper componentName="إعدادات النظام"><SystemSettingsPage /></StabilityWrapper>,
-  },
-  {
-    path: "settings/roles",
-    element: <StabilityWrapper componentName="أدوار المستخدمين"><UserRolesPage /></StabilityWrapper>,
-  },
-  {
-    path: "settings/users",
-    element: <StabilityWrapper componentName="المستخدمين"><UsersPage /></StabilityWrapper>,
-  },
-  {
-    path: "settings/backup",
-    element: <StabilityWrapper componentName="النسخ الاحتياطي"><BackupPage /></StabilityWrapper>,
-  },
-  {
-    path: "settings/backup-test",
-    element: <StabilityWrapper componentName="اختبار النسخ الاحتياطي"><BackupTestPage /></StabilityWrapper>,
   },
   {
     path: "settings/branches",
     element: <StabilityWrapper componentName="الفروع"><BranchesPage /></StabilityWrapper>,
   },
   {
-    path: "settings/notifications",
-    element: <StabilityWrapper componentName="الإشعارات"><NotificationsPage /></StabilityWrapper>,
-  },
-  {
     path: "settings/notification-settings",
     element: <StabilityWrapper componentName="إعدادات الإشعارات"><NotificationSettingsPage /></StabilityWrapper>,
-  },
-  {
-    path: "settings/send-notification",
-    element: <StabilityWrapper componentName="إرسال إشعار"><SendNotificationPage /></StabilityWrapper>,
   },
   {
     path: "settings/ai-engine",
@@ -103,10 +83,6 @@ const routeChildren = [
   {
     path: "settings/page-management",
     element: <StabilityWrapper componentName="إدارة الصفحات"><PageManagementPage /></StabilityWrapper>,
-  },
-  {
-    path: "settings/theme",
-    element: <StabilityWrapper componentName="تخصيص المظهر"><ThemeCustomizationPage /></StabilityWrapper>,
   },
   // Spread all other route modules
   ...accountingRoutes,

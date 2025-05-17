@@ -322,22 +322,6 @@ if (typeof document !== 'undefined') {
   });
 }
 
-// واجهة برمجية مبسطة للاستخدام السريع
-export const ErrorTracker = {
-  error: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'error' }),
-  warning: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'warning' }),
-  info: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'info' }),
-  critical: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'critical' }),
-  renderError: trackRenderError,
-  getLog: getErrorLog,
-  getStats: getErrorStats,
-  clear: clearErrorLog
-};
-
 // إضافة خاصية للكشف عن مشاكل الاستقرار
 export const detectStabilityIssues = () => {
   // تتبع إعادة التحميل المتكرر
@@ -425,6 +409,23 @@ if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
     // تجاهل الأخطاء - قد لا تكون بعض المراقبات مدعومة في كل المتصفحات
   }
 }
+
+// واجهة برمجية مبسطة للاستخدام السريع
+export const ErrorTracker = {
+  error: (message: string, options?: { component?: string; additionalInfo?: any }) => 
+    trackError(message, { ...options, severity: 'error' }),
+  warning: (message: string, options?: { component?: string; additionalInfo?: any }) => 
+    trackError(message, { ...options, severity: 'warning' }),
+  info: (message: string, options?: { component?: string; additionalInfo?: any }) => 
+    trackError(message, { ...options, severity: 'info' }),
+  critical: (message: string, options?: { component?: string; additionalInfo?: any }) => 
+    trackError(message, { ...options, severity: 'critical' }),
+  renderError: trackRenderError,
+  getLog: getErrorLog,
+  getStats: getErrorStats,
+  clear: clearErrorLog,
+  detectStabilityIssues: detectStabilityIssues
+};
 
 // تصدير إضافي لتسهيل استخدام المكتبة
 export default ErrorTracker;
