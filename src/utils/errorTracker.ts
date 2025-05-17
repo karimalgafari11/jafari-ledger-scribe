@@ -412,14 +412,14 @@ if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
 
 // واجهة برمجية مبسطة للاستخدام السريع
 export const ErrorTracker = {
-  error: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'error' }),
-  warning: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'warning' }),
-  info: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'info' }),
-  critical: (message: string, options?: { component?: string; additionalInfo?: any }) => 
-    trackError(message, { ...options, severity: 'critical' }),
+  error: (message: string, options?: { component?: string; additionalInfo?: any; severity?: 'critical' | 'error' | 'warning' | 'info' }) => 
+    trackError(message, { ...options, severity: options?.severity || 'error' }),
+  warning: (message: string, options?: { component?: string; additionalInfo?: any; severity?: 'critical' | 'error' | 'warning' | 'info' }) => 
+    trackError(message, { ...options, severity: options?.severity || 'warning' }),
+  info: (message: string, options?: { component?: string; additionalInfo?: any; severity?: 'critical' | 'error' | 'warning' | 'info' }) => 
+    trackError(message, { ...options, severity: options?.severity || 'info' }),
+  critical: (message: string, options?: { component?: string; additionalInfo?: any; severity?: 'critical' | 'error' | 'warning' | 'info' }) => 
+    trackError(message, { ...options, severity: options?.severity || 'critical' }),
   renderError: trackRenderError,
   getLog: getErrorLog,
   getStats: getErrorStats,
@@ -429,3 +429,4 @@ export const ErrorTracker = {
 
 // تصدير إضافي لتسهيل استخدام المكتبة
 export default ErrorTracker;
+
