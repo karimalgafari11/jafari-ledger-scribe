@@ -2,6 +2,8 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import StabilityWrapper from '@/components/StabilityWrapper';
+import { AppWithErrorHandling } from '@/AppWithErrorHandling';
 
 // Import your components/pages here
 import Index from '@/pages/Index';
@@ -44,11 +46,12 @@ import { integrationsRoutes } from './integrationsRoutes';
 import { aboutRoutes } from './aboutRoutes';
 import { aiRoutes } from './aiRoutes';
 import { hrRoutes } from './hrRoutes';
+import { authRoutes } from './authRoutes';
 
 // Example of a PublicRoute component
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  return user ? <Navigate to="/" /> : <>{children}</>;
+  return user ? <Navigate to="/" /> : <StabilityWrapper>{children}</StabilityWrapper>;
 };
 
 // Example of a PrivateRoute component
@@ -59,7 +62,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     return <div>Loading...</div>; // You can replace this with a loading spinner
   }
 
-  return user ? <>{children}</> : <Navigate to="/auth/login" />;
+  return user ? <StabilityWrapper>{children}</StabilityWrapper> : <Navigate to="/auth/login" />;
 };
 
 // Combine all route children
@@ -142,7 +145,7 @@ const routeChildren = [
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <PrivateRoute><Index /></PrivateRoute>,
+    element: <AppWithErrorHandling><PrivateRoute><Index /></PrivateRoute></AppWithErrorHandling>,
     errorElement: <NotFound />,
     children: [
       {
@@ -152,20 +155,5 @@ export const router = createBrowserRouter([
       ...routeChildren,
     ]
   },
-  {
-    path: "/auth/login",
-    element: <PublicRoute><LoginPage /></PublicRoute>
-  },
-  {
-    path: "/auth/register",
-    element: <PublicRoute><RegisterPage /></PublicRoute>
-  },
-  {
-    path: "/auth/reset-password",
-    element: <PublicRoute><ResetPasswordPage /></PublicRoute>
-  },
-  {
-    path: "/auth/update-password",
-    element: <PublicRoute><UpdatePasswordPage /></PublicRoute>
-  },
+  ...authRoutes,
 ]);

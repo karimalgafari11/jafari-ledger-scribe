@@ -59,7 +59,6 @@ export const trackError = (
   if (errorObj.severity === 'critical') {
     try {
       // يمكن استدعاء نظام الإشعارات هنا 
-      // عبر window.showNotification أو ما يشابهه
       if (typeof window !== 'undefined' && 'showErrorNotification' in window) {
         (window as any).showErrorNotification(errorObj.message);
       }
@@ -136,36 +135,85 @@ const getConsoleStyleForSeverity = (severity: 'critical' | 'error' | 'warning' |
   }
 };
 
-// استماع لأخطاء غير معالجة على مستوى النافذة
+// تحسين استماع الأخطاء - إضافة مزيد من تفاصيل الخطأ
 if (typeof window !== 'undefined') {
   window.addEventListener('error', (event) => {
-    trackError(event.error || event.message, {
-      component: 'window',
-      additionalInfo: {
-        source: event.filename,
-        lineNumber: event.lineno,
-        columnNumber: event.colno
-      },
-      severity: 'critical'
-    });
+    // Prevent duplicate error reporting for the same error
+    const errorMessage = event.error ? event.error.message : event.message;
+    const isDuplicate = errorLog.some(entry => 
+      entry.message === errorMessage && 
+      Date.now() - entry.timestamp.getTime() < 5000 // Within last 5 seconds
+    );
+    
+    if (!isDuplicate) {
+      trackError(event.error || event.message, {
+        component: 'window',
+        additionalInfo: {
+          source: event.filename,
+          lineNumber: event.lineno,
+          columnNumber: event.colno,
+          timestamp: new Date().toISOString(),
+          url: window.location.href
+        },
+        severity: 'critical'
+      });
+    }
   });
   
-  // التقاط أخطاء الوعود غير المعالجة
+  // تحسين التقاط أخطاء الوعود غير المعالجة
   window.addEventListener('unhandledrejection', (event) => {
     let message = 'وعد غير معالج';
+    let stack = '';
+    
     if (event.reason instanceof Error) {
       message = event.reason.message;
+      stack = event.reason.stack || '';
     } else if (typeof event.reason === 'string') {
       message = event.reason;
+    } else if (typeof event.reason === 'object' && event.reason !== null) {
+      message = event.reason.message || JSON.stringify(event.reason);
     }
     
-    trackError(message, {
-      component: 'promise',
-      additionalInfo: event.reason,
-      severity: 'critical'
-    });
+    // Prevent duplicate promise rejection errors
+    const isDuplicate = errorLog.some(entry => 
+      entry.message === message && 
+      Date.now() - entry.timestamp.getTime() < 5000 // Within last 5 seconds
+    );
+    
+    if (!isDuplicate) {
+      trackError(message, {
+        component: 'promise',
+        additionalInfo: {
+          stack,
+          url: window.location.href,
+          timestamp: new Date().toISOString()
+        },
+        severity: 'critical'
+      });
+    }
   });
 }
+
+// Check for React rendering errors
+let lastRenderError = '';
+let renderErrorCount = 0;
+
+export const trackRenderError = (error: Error, componentStack: string) => {
+  // If it's the same error repeatedly, increment counter rather than logging multiple times
+  if (error.message === lastRenderError) {
+    renderErrorCount++;
+    if (renderErrorCount > 3) return; // Limit logging of the same error
+  } else {
+    lastRenderError = error.message;
+    renderErrorCount = 1;
+  }
+  
+  trackError(error, {
+    component: 'react-render',
+    additionalInfo: { componentStack },
+    severity: 'critical'
+  });
+};
 
 // واجهة برمجية مبسطة للاستخدام السريع
 export const ErrorTracker = {
@@ -177,7 +225,47 @@ export const ErrorTracker = {
     trackError(message, { ...options, severity: 'info' }),
   critical: (message: string, options?: { component?: string; additionalInfo?: any }) => 
     trackError(message, { ...options, severity: 'critical' }),
+  renderError: trackRenderError,
   getLog: getErrorLog,
   getStats: getErrorStats,
   clear: clearErrorLog
 };
+
+// إضافة خاصية للكشف عن مشاكل الاستقرار
+export const detectStabilityIssues = () => {
+  // تتبع إعادة التحميل المتكرر
+  const SESSION_RELOAD_KEY = 'app_reload_count';
+  const SESSION_RELOAD_TIME_KEY = 'app_reload_timestamp';
+  
+  try {
+    // التحقق من وقت إعادة التحميل
+    const now = Date.now();
+    const lastReload = parseInt(sessionStorage.getItem(SESSION_RELOAD_TIME_KEY) || '0', 10);
+    const reloadCount = parseInt(sessionStorage.getItem(SESSION_RELOAD_KEY) || '0', 10);
+    
+    // تحديث عداد إعادة التحميل
+    if (now - lastReload < 30000) { // إذا كان آخر تحميل قبل أقل من 30 ثانية
+      sessionStorage.setItem(SESSION_RELOAD_KEY, (reloadCount + 1).toString());
+    } else {
+      sessionStorage.setItem(SESSION_RELOAD_KEY, '1');
+    }
+    
+    sessionStorage.setItem(SESSION_RELOAD_TIME_KEY, now.toString());
+    
+    // تنبيه إذا كان هناك تحميل متكرر
+    if (reloadCount > 3) {
+      trackError('تم اكتشاف إعادة تحميل متكررة للصفحة', {
+        component: 'stability-monitor',
+        additionalInfo: { reloadCount, timeWindow: '30s' },
+        severity: 'warning'
+      });
+    }
+  } catch (e) {
+    // تجاهل أخطاء الوصول إلى SessionStorage (وضع خصوصية التصفح)
+  }
+};
+
+// تشغيل فحص الاستقرار عند تحميل الصفحة
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', detectStabilityIssues);
+}

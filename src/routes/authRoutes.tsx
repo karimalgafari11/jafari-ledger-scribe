@@ -7,27 +7,28 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import UpdatePasswordPage from "@/pages/auth/UpdatePasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
+import { AppWithErrorHandling } from "@/AppWithErrorHandling";
 
 export const authRoutes: RouteObject[] = [
   {
     path: "auth/login",
-    element: <PublicRoute><LoginPage /></PublicRoute>,
+    element: <AppWithErrorHandling><PublicRoute><LoginPage /></PublicRoute></AppWithErrorHandling>,
   },
   {
     path: "auth/register",
-    element: <PublicRoute><RegisterPage /></PublicRoute>,
+    element: <AppWithErrorHandling><PublicRoute><RegisterPage /></PublicRoute></AppWithErrorHandling>,
   },
   {
     path: "auth/forgot-password",
-    element: <PublicRoute><ForgotPasswordPage /></PublicRoute>,
+    element: <AppWithErrorHandling><PublicRoute><ForgotPasswordPage /></PublicRoute></AppWithErrorHandling>,
   },
   {
     path: "auth/reset-password",
-    element: <PublicRoute><ResetPasswordPage /></PublicRoute>,
+    element: <AppWithErrorHandling><PublicRoute><ResetPasswordPage /></PublicRoute></AppWithErrorHandling>,
   },
   {
     path: "auth/update-password",
-    element: <PublicRoute><UpdatePasswordPage /></PublicRoute>,
+    element: <AppWithErrorHandling><PublicRoute><UpdatePasswordPage /></PublicRoute></AppWithErrorHandling>,
   },
 ];
 
