@@ -1,107 +1,165 @@
 
 import React from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
 } from "@/components/ui/table";
-import { JournalEntry } from "@/types/journal";
+import { Checkbox } from "@/components/ui/checkbox";
 import { JournalStatusBadge } from "./JournalStatusBadge";
 import { JournalRowActions } from "./JournalRowActions";
-import { formatDate, formatNumber } from "@/utils/formatters";
+import { JournalEntry, JournalStatus } from "@/types/journal";
+import { format } from "date-fns";
+import { arSA } from "date-fns/locale";
 
 interface JournalTableProps {
   entries: JournalEntry[];
-  isLoading: boolean;
   selectedEntries: string[];
   onToggleSelection: (id: string, selected: boolean) => void;
   onSelectAll: (selected: boolean) => void;
+  onDelete: (id: string) => void;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  isLoading?: boolean;
 }
 
 export const JournalTable: React.FC<JournalTableProps> = ({
   entries,
-  isLoading,
   selectedEntries,
   onToggleSelection,
   onSelectAll,
+  onDelete,
   onView,
   onEdit,
-  onDelete
+  isLoading = false,
 }) => {
+  const areAllSelected =
+    entries.length > 0 && selectedEntries.length === entries.length;
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, "dd MMM yyyy", { locale: arSA });
+    } catch (error) {
+      return dateString;
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ar-SA", {
+      style: "currency",
+      currency: "SAR",
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const getRowClass = (status: JournalStatus) => {
+    switch (status) {
+      case "approved":
+        return "bg-green-50/50 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20";
+      case "canceled":
+        return "bg-red-50/50 dark:bg-red-900/10 hover:bg-red-50 dark:hover:bg-red-900/20";
+      case "pending":
+        return "bg-yellow-50/50 dark:bg-yellow-900/10 hover:bg-yellow-50 dark:hover:bg-yellow-900/20";
+      default:
+        return "";
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100"></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200"></div>
+          <span className="mr-2 text-gray-500 dark:text-gray-400">جاري التحميل...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-gray-300 dark:text-gray-600"
+        >
+          <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+          <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z" />
+          <line x1="9" y1="9" x2="15" y2="9" />
+          <line x1="9" y1="13" x2="15" y2="13" />
+          <line x1="9" y1="17" x2="13" y2="17" />
+        </svg>
+        <p className="mt-4 text-gray-500 dark:text-gray-400">لا توجد قيود محاسبية</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-gray-50">
+          <TableHeader className="bg-gray-50 dark:bg-gray-800/50">
             <TableRow>
-              <TableHead className="w-10 text-center">
-                <input 
-                  type="checkbox"
-                  className="rounded border-gray-300"
-                  checked={entries.length > 0 && selectedEntries.length === entries.length}
-                  onChange={(e) => onSelectAll(e.target.checked)}
+              <TableHead className="w-12 rtl:text-right">
+                <Checkbox
+                  checked={areAllSelected}
+                  onCheckedChange={onSelectAll}
+                  aria-label="تحديد الكل"
                 />
               </TableHead>
-              <TableHead className="text-center">رقم القيد</TableHead>
-              <TableHead className="text-center">تاريخ القيد</TableHead>
-              <TableHead className="text-center">الوصف</TableHead>
-              <TableHead className="text-center">مجموع المدين</TableHead>
-              <TableHead className="text-center">مجموع الدائن</TableHead>
-              <TableHead className="text-center">الحالة</TableHead>
-              <TableHead className="text-center">المستخدم</TableHead>
-              <TableHead className="text-center w-[100px]">الإجراءات</TableHead>
+              <TableHead className="w-32 rtl:text-right">رقم القيد</TableHead>
+              <TableHead className="w-32 rtl:text-right">التاريخ</TableHead>
+              <TableHead className="rtl:text-right">الوصف</TableHead>
+              <TableHead className="rtl:text-right">المدين</TableHead>
+              <TableHead className="rtl:text-right">الدائن</TableHead>
+              <TableHead className="w-32 rtl:text-right">الحالة</TableHead>
+              <TableHead className="w-36 rtl:text-right">الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
-                  جاري التحميل...
-                </TableCell>
-              </TableRow>
-            ) : entries.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
-                  لا توجد قيود لعرضها
-                </TableCell>
-              </TableRow>
-            ) : (
-              entries.map((entry) => (
-                <TableRow key={entry.id} className="hover:bg-gray-50/50">
-                  <TableCell className="text-center">
-                    <input 
-                      type="checkbox"
-                      className="rounded border-gray-300"
-                      checked={selectedEntries.includes(entry.id)}
-                      onChange={(e) => onToggleSelection(entry.id, e.target.checked)}
+            {entries.map((entry) => {
+              const isSelected = selectedEntries.includes(entry.id);
+              return (
+                <TableRow 
+                  key={entry.id} 
+                  className={`${getRowClass(entry.status)} hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors`}
+                >
+                  <TableCell>
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={(checked) =>
+                        onToggleSelection(entry.id, !!checked)
+                      }
+                      aria-label={`تحديد القيد ${entry.entryNumber}`}
                     />
                   </TableCell>
-                  <TableCell className="text-center font-medium">
-                    {entry.entryNumber}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatDate(entry.date)}
-                  </TableCell>
-                  <TableCell className="max-w-[250px] truncate">
+                  <TableCell className="font-medium">{entry.entryNumber}</TableCell>
+                  <TableCell>{formatDate(entry.date)}</TableCell>
+                  <TableCell className="max-w-md truncate">
                     {entry.description}
                   </TableCell>
-                  <TableCell className="text-center">
-                    {formatNumber(entry.totalDebit)}
+                  <TableCell className="text-green-600 dark:text-green-400 tabular-nums">
+                    {formatCurrency(entry.totalDebit)}
                   </TableCell>
-                  <TableCell className="text-center">
-                    {formatNumber(entry.totalCredit)}
+                  <TableCell className="text-red-600 dark:text-red-400 tabular-nums">
+                    {formatCurrency(entry.totalCredit)}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell>
                     <JournalStatusBadge status={entry.status} />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {entry.createdBy}
                   </TableCell>
                   <TableCell>
                     <JournalRowActions
@@ -113,8 +171,8 @@ export const JournalTable: React.FC<JournalTableProps> = ({
                     />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              );
+            })}
           </TableBody>
         </Table>
       </div>
